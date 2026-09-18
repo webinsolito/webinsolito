@@ -129,3 +129,15 @@ test('FuelGo: search Brescia and receive official stations', async ({ page }) =>
   await expect.poll(async()=>page.locator('.station').count(),{timeout:15000}).toBeGreaterThan(0);
   await expect(page.getByRole('link',{name:'Portami lì'}).first()).toBeVisible();
 });
+
+
+test('Settings screens: clean and reachable', async ({ page }) => {
+  for (const app of ['autobuddy','dealerflow','frigochef','stylematch','splitly','parkmemo','screensort','packr','docpocket','safebuy']) {
+    await page.goto('/'+app+'/');
+    await page.evaluate(()=>go('settings'));
+    const panel=page.locator('[data-panel="settings"]');
+    await expect(panel).toHaveClass(/on/);
+    await expect(panel.locator('.settingsShell')).toBeVisible();
+    await expect(panel.locator('.dangerZone')).toHaveCount(1);
+  }
+});
