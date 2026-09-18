@@ -75,11 +75,11 @@ def category(text):
     t=norm(text)
     rules=[
       ("Famiglia",r"\bbimb|bambin|family|famigl|laborator"),
-      ("Musica",r"music|concert|jazz|opera|pian|festival le x giornate"),
-      ("Cibo",r"enogastr|cibo|sapori|vino|wine|ristor|mercato della terra|franciacorta"),
-      ("Mercatini",r"mercat|antiquar|fiera"),
-      ("Sport",r"sport|trail|corsa|run|bike|gara|cammin"),
-      ("Cultura",r"cultur|muse|mostra|arte|teatro|cinema|festival|visita guidata|bibliotec"),
+      ("Sport",r"sport|trail|corsa|\brun\b|bike|gara|podistic|running|mtb|ciclist"),
+      ("Cibo",r"enogastr|\bcibo\b|sapori|\bvino\b|\bwine\b|ristor|mercato della terra|franciacorta in cantina|degust|formagg"),
+      ("Mercatini",r"mercat|antiquar|\bfiera\b"),
+      ("Musica",r"\bmusica|concert|\bjazz\b|\bopera\b|pianist|festival le ?x ?giornate"),
+      ("Cultura",r"cultur|muse|mostra|\barte\b|teatro|cinema|visita guidata|bibliotec|castello|storia|patrimonio"),
     ]
     for c,rx in rules:
         if re.search(rx,t):return c
@@ -144,7 +144,8 @@ def parse_detail(url,src):
     objs=jsonld_events(soup)
     obj=objs[0] if objs else {}
     h1=soup.find("h1")
-    title=(obj.get("name") if isinstance(obj,dict) else None) or (h1.get_text(" ",strip=True) if h1 else "")
+    ogt=soup.find("meta",attrs={"property":"og:title"})
+    title=(obj.get("name") if isinstance(obj,dict) else None) or (ogt.get("content","").strip() if ogt else "") or (h1.get_text(" ",strip=True) if h1 else "")
     title=re.sub(r"\s+"," ",title).strip()
     start=iso_date(obj.get("startDate")) if isinstance(obj,dict) else None
     end=iso_date(obj.get("endDate")) if isinstance(obj,dict) else None
@@ -160,7 +161,7 @@ def parse_detail(url,src):
     if not place:place=fallback_place(text,src)
     image=image_from_obj(obj,soup)
     cat=category(" ".join([title,desc]))
-    price=price_guess(text)
+    price=price_guess(" ".join([title,desc]))
     t=time_guess(text)
     key=hashlib.sha1((norm(title)+"|"+start).encode()).hexdigest()[:14]
     return{
