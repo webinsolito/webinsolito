@@ -159,7 +159,7 @@ def parse_detail(url,src):
     place=place_from_location(obj.get("location")) if isinstance(obj,dict) else ""
     if not place:place=fallback_place(text,src)
     image=image_from_obj(obj,soup)
-    cat=category(" ".join([title,desc,text[:1200]]))
+    cat=category(" ".join([title,desc]))
     price=price_guess(text)
     t=time_guess(text)
     key=hashlib.sha1((norm(title)+"|"+start).encode()).hexdigest()[:14]
