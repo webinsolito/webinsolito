@@ -72,6 +72,8 @@ def main():
     for r in rows(a_text):
         sid=r.get("idimpianto")
         if not sid:continue
+        prov=(r.get("provincia") or "").strip().upper()
+        if not re.fullmatch(r"[A-Z]{2}",prov):continue
         lat=fnum(r.get("latitudine"));lon=fnum(r.get("longitudine"))
         if not valid_coord(lat,lon):lat=lon=None
         stations[sid]={
@@ -80,7 +82,7 @@ def main():
             "n":r.get("nomeimpianto") or "",
             "a":r.get("indirizzo") or "",
             "c":r.get("comune") or "",
-            "p":r.get("provincia") or "",
+            "p":prov,
             "lat":round(lat,6) if lat is not None else None,
             "lon":round(lon,6) if lon is not None else None,
             "f":{}
