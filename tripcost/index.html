@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173a5e">
+<meta name="description" content="Calcola il costo di un viaggio in auto: carburante, pedaggi, parcheggi e quota per persona.">
+<link rel="canonical" href="https://webinsolito.github.io/webinsolito/tripcost/">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<meta property="og:title" content="TripCost — quanto costa questo viaggio?">
+<meta property="og:description" content="Carburante, pedaggi e quota per persona in pochi secondi.">
+<title>TripCost — costo viaggio auto</title>
+<link rel="stylesheet" href="../assets/webinsolito-core.css">
+<style>
+:root{--navy:#173a5e;--blue:#6fb7ff;--sand:#f2d6a0;--green:#7cffb2;--bg:#f3f6f8;--ink:#16293b;--muted:#748496;--line:#dce4ea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+.app{max-width:1040px;margin:auto;padding:14px 14px 84px}.top{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px;font-weight:950;font-size:20px}.brand img{width:44px}.top a{font-size:10px;color:#6d7e90;text-decoration:none}
+.hero{margin-top:14px;border-radius:28px;background:linear-gradient(135deg,#173a5e,#226887);color:#fff;padding:24px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:end;min-height:220px}.ey{font-size:9px;color:#f2d6a0;font-weight:900;letter-spacing:.14em}.hero h1{font-size:43px;line-height:.95;letter-spacing:-2px;margin:7px 0}.hero p{font-size:11px;line-height:1.5;color:#cedbe5;margin:0}.heroResult{background:#ffffff0d;border:1px solid #ffffff1a;border-radius:20px;padding:16px}.heroResult span{font-size:9px;color:#c3d2dd}.heroResult b{display:block;font-size:32px;margin-top:3px}
+.layout{display:grid;grid-template-columns:1fr .78fr;gap:12px;margin-top:12px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px}.card h2{font-size:18px;margin:0 0 10px}.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px;background:#fbfcfd;font:inherit;outline:none}.f:focus{border-color:var(--blue);box-shadow:0 0 0 4px #6fb7ff1f}.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fbfcfd;font-size:11px}.check input{width:18px;height:18px}.btn{border:0;border-radius:12px;padding:11px 13px;font-weight:900;cursor:pointer}.btn.primary{background:var(--navy);color:#fff}.btn.green{background:var(--green);color:#123624}.btn.soft{background:#edf2f5;color:#53677a}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.result{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fafcfd}.metric span{font-size:9px;color:#7a8998}.metric b{display:block;font-size:22px;margin-top:4px}.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf1f4;font-size:10px}.line:last-child{border:0}.history{display:grid;gap:8px}.hist{border:1px solid var(--line);border-radius:14px;padding:11px;display:flex;justify-content:space-between;gap:10px}.hist b{display:block;font-size:12px}.hist span{font-size:9px;color:#7a8999}.empty{font-size:10px;color:#8796a5;padding:8px 0}.note{margin-top:10px;background:#fff8e8;border:1px solid #eddfbb;border-radius:14px;padding:11px;font-size:9px;line-height:1.5;color:#685b35}
+@media(max-width:760px){.hero,.layout{grid-template-columns:1fr}.heroResult{display:none}.form,.result{grid-template-columns:1fr}.app{padding:10px 10px 78px}.hero{border-radius:24px}.hero h1{font-size:38px}.top a{display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TripCost","applicationCategory":"TravelApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"url":"https://webinsolito.github.io/webinsolito/tripcost/"}</script>
+</head>
+<body>
+<main class="app">
+<header class="top"><div class="brand"><img src="logo.svg" alt="">TripCost</div><a href="../">← Webinsolito</a></header>
+<section class="hero"><div><div class="ey">AUTO & MOBILITÀ</div><h1>Quanto costa questo viaggio?</h1><p>Km, consumo, carburante, pedaggi e persone: TripCost fa i conti e divide la spesa.</p></div><div class="heroResult"><span>Totale viaggio</span><b id="heroTotal">—</b><span id="heroPeople">Compila i dati per iniziare</span></div></section>
+<div class="layout">
+<section class="card"><h2>Il viaggio</h2>
+<div class="form">
+<input class="f" id="tripName" placeholder="Nome, es. Milano concerto">
+<input class="f" id="distance" type="number" min="0" step="1" placeholder="Km solo andata">
+<label class="check"><input id="roundTrip" type="checkbox" checked>Andata e ritorno</label>
+<input class="f" id="people" type="number" min="1" value="2" placeholder="Persone">
+<input class="f" id="cons" type="number" min="0" step=".1" value="6.5" placeholder="Consumo L/100 km">
+<input class="f" id="fuel" type="number" min="0" step=".001" placeholder="Prezzo carburante €/L">
+<input class="f" id="tolls" type="number" min="0" step=".1" placeholder="Pedaggi totali €">
+<input class="f" id="parking" type="number" min="0" step=".1" placeholder="Parcheggio €">
+<input class="f" id="other" type="number" min="0" step=".1" placeholder="Altri costi €">
+</div>
+<div class="actions"><button class="btn green" onclick="calc()">Calcola viaggio</button><button class="btn soft" onclick="loadExample()">Esempio</button></div>
+<div class="note">La quota per persona divide in parti uguali il costo totale. Eventuali accordi diversi vanno gestiti a parte, ad esempio con Splitly.</div>
+</section>
+<aside>
+<section class="card"><h2>Risultato</h2>
+<div class="result"><div class="metric"><span>Totale</span><b id="total">—</b></div><div class="metric"><span>A persona</span><b id="perPerson">—</b></div><div class="metric"><span>Carburante</span><b id="fuelCost">—</b></div><div class="metric"><span>Litri stimati</span><b id="litres">—</b></div></div>
+<div id="breakdown"></div>
+<div class="actions"><button class="btn primary" onclick="saveTrip()">Salva viaggio</button><a class="btn soft" style="text-decoration:none" href="../fuelgo/">Guarda prezzi carburante</a><a class="btn soft" style="text-decoration:none" href="../splitly/">Dividi spese</a></div>
+</section>
+<section class="card" style="margin-top:12px"><h2>Viaggi salvati</h2><div id="history" class="history"></div></section>
+</aside>
+</div>
+</main>
+<script src="../assets/webinsolito-core.js"></script>
+<script>
+const KEY='tripcost.v1';let last=null,S=Webinsolito.store.get(KEY,{history:[]});
+const euro=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n||0);
+const num=id=>Math.max(0,+document.getElementById(id).value||0);
+function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function init(){const q=new URLSearchParams(location.search),p=+q.get('fuel');if(p>0)fuel.value=p.toFixed(3);renderHistory()}
+function calc(){const kmOne=num('distance'),kmTotal=kmOne*(roundTrip.checked?2:1),p=Math.max(1,num('people')),c=num('cons'),fp=num('fuel'),l=kmTotal/100*c,fc=l*fp,tl=num('tolls'),pk=num('parking'),ot=num('other'),sum=fc+tl+pk+ot;last={name:tripName.value.trim()||'Viaggio',distance:kmOne,roundTrip:roundTrip.checked,kmTotal,people:p,cons:c,fuel:fp,litres:l,fuelCost:fc,tolls:tl,parking:pk,other:ot,total:sum,perPerson:sum/p,at:new Date().toISOString()};total.textContent=euro(sum);perPerson.textContent=euro(last.perPerson);fuelCost.textContent=euro(fc);litres.textContent=l.toFixed(1)+' L';heroTotal.textContent=euro(sum);heroPeople.textContent=euro(last.perPerson)+' a persona';breakdown.innerHTML=[['Distanza totale',kmTotal+' km'],['Carburante',euro(fc)],['Pedaggi',euro(tl)],['Parcheggio',euro(pk)],['Altri costi',euro(ot)]].map(x=>'<div class="line"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');return last}
+function saveTrip(){const x=calc();S.history.unshift(x);S.history=S.history.slice(0,12);Webinsolito.store.set(KEY,S);renderHistory();Webinsolito.toast('Viaggio salvato')}
+function renderHistory(){history.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+x.kmTotal+' km · '+euro(x.total)+' · '+euro(x.perPerson)+'/persona</span></div><button class="btn soft" onclick="removeTrip('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun viaggio salvato.</div>'}
+function removeTrip(i){S.history.splice(i,1);Webinsolito.store.set(KEY,S);renderHistory()}
+function loadExample(){tripName.value='Brescia → Milano';distance.value=95;roundTrip.checked=true;people.value=3;cons.value=6.4;fuel.value=1.8;tolls.value=16;parking.value=12;other.value=0;calc()}
+init();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
+</script>
+</body>
+</html>
