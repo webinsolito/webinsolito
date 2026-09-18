@@ -75,7 +75,7 @@ a{color:inherit}
 const slugMap={auto:'auto',food:'food',money:'soldi',events:'eventi',docs:'documenti',home:'casa',travel:'viaggi',style:'persona',shopping:'shopping',territory:'territorio',business:'business',study:'studio'};
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 let live=[],categories=[],cursor=-1,current=[];
-const input=document.getElementById('globalSearch'),results=document.getElementById('searchResults');
+const input=document.getElementById('globalSearch'),results=document.getElementById('searchResults'),countEl=document.getElementById('activeCount');
 function closeResults(){results.classList.remove('on');results.innerHTML='';cursor=-1;current=[]}
 function renderResults(q){
  current=WebinsolitoSearch.search(q,live,categories,9);cursor=-1;
@@ -94,13 +94,14 @@ function paintCursor(){
 }
 fetch('./apps.json',{cache:'no-store'}).then(r=>r.json()).then(x=>{
  categories=x.categories;
- live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);activeCount.textContent=live.length;
+ live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);countEl.textContent=live.length;
  categoryGrid.innerHTML=categories.map(c=>{
    const n=live.filter(a=>a.category===c.id).length;
    return '<a class="cat" style="--c1:'+c.colors[0]+';--c2:'+c.colors[1]+'" href="./'+slugMap[c.id]+'/"><div class="catIcon"><img src="./'+c.icon+'" alt=""></div><h2>'+esc(c.name)+'</h2><p>'+esc(c.tagline)+'</p><div class="catFoot"><span>'+n+' strumenti</span><span>→</span></div></a>';
  }).join('');
- input.addEventListener('input',()=>renderResults(input.value));
+ if(input.value.trim())renderResults(input.value);
 });
+input.addEventListener('input',()=>renderResults(input.value));
 input.addEventListener('keydown',e=>{
  const links=[...results.querySelectorAll('.res[href]')];if(!links.length)return;
  if(e.key==='ArrowDown'){e.preventDefault();cursor=(cursor+1)%links.length;paintCursor()}
