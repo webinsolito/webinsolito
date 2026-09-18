@@ -3,7 +3,7 @@ name: Functional QA
 on:
   workflow_dispatch:
   push:
-    branches: [main, candidate/auto-batch-01-2026-09-18]
+    branches: [main, 'candidate/**']
     paths:
       - "**/*.html"
       - "**/*.js"
