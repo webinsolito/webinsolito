@@ -125,7 +125,10 @@ test('merged duplicates point users to the stronger app',async({page})=>{
  const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket' };
  for(const [id,target] of Object.entries(merges)){
   await page.goto('/'+id+'/',{waitUntil:'domcontentloaded'});
-  await expect(page,id).toHaveURL(new RegExp('/'+target+'/?
+  await expect.poll(()=>new URL(page.url()).pathname,{message:id,timeout:6000}).toBe('/'+target+'/');
+  await expect(page.locator('body'),id).not.toBeEmpty();
+ }
+});
 
 test('catalog has 195 active apps and five documented merges',async({request})=>{
  const d=await (await request.get('/apps.json')).json();
