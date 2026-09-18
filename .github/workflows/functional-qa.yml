@@ -35,6 +35,8 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Build 200-app structural audit
         run: node scripts/quality-audit.mjs
+      - name: Measure rebuilt static assets
+        run: node scripts/performance-after.mjs
       - name: Serve repository
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/webinsolito-http.log 2>&1 &
@@ -72,5 +74,6 @@ jobs:
           path: |
             quality-artifacts/**
             test-results/quality-baseline/**
+            test-results/quality-after/**
           if-no-files-found: warn
           retention-days: 7
