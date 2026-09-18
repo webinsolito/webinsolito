@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/evcharge/",
+  "name": "EVCharge",
+  "short_name": "EVCharge",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Calcola energia, tempo e costo stimato di una ricarica elettrica.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
