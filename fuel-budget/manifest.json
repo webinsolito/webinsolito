@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/fuel-budget/",
+  "name": "FuelBudget",
+  "short_name": "FuelBudget",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Stima litri e spesa carburante mensile e annuale dai tuoi chilometri.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
