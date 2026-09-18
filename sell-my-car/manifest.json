@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/sell-my-car/",
+  "name": "SellMyCar",
+  "short_name": "SellMyCar",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Genera una bozza ordinata per l'annuncio di vendita dell'auto.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
