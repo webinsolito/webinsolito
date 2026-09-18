@@ -230,3 +230,25 @@ test('FuelGo: cost tools use the selected official price', async ({ page }) => {
   await expect(page.getByRole('link',{name:'Costo auto'}).first()).toHaveAttribute('href',/carcost\/\?fuel=/);
   await expect(page.getByRole('link',{name:'Costo viaggio'}).first()).toHaveAttribute('href',/tripcost\/\?fuel=/);
 });
+
+
+test('SEO and installability: every active app exposes canonical, description and install action', async ({ page, request }) => {
+  const r=await request.get('/apps.json');
+  const catalog=await r.json();
+  const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+  for(const app of active){
+    await page.goto('/'+app.path);
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="description"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
+    await expect(page.locator('.wi-app-install')).toBeVisible();
+  }
+});
+
+test('Homepage is generated from the central catalog', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#categories .cat')).toHaveCount(12);
+  await expect(page.locator('#activeCount')).toHaveText('14');
+  await expect(page.getByText('CarCost',{exact:true}).first()).toBeVisible();
+  await expect(page.getByText('TripCost',{exact:true}).first()).toBeVisible();
+});
