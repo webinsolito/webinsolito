@@ -55,7 +55,7 @@
 <div class="break" id="breakdown"></div>
 <div class="actions"><button class="btn primary" onclick="saveScenario()">Salva questo calcolo</button><a class="btn soft" style="text-decoration:none" href="../fuelgo/">Controlla carburante</a></div>
 </section>
-<section class="card" style="margin-top:12px"><h2>Calcoli salvati</h2><div id="history" class="history"></div></section>
+<section class="card" style="margin-top:12px"><h2>Calcoli salvati</h2><div id="historyList" class="history"></div></section>
 </aside>
 </div>
 </main>
@@ -68,7 +68,7 @@ function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':
 function init(){const q=new URLSearchParams(location.search),p=+q.get('fuel');if(p>0)fuel.value=p.toFixed(3);renderHistory()}
 function calc(){const p=num('price'),y=Math.max(1,num('years')),annualKm=Math.max(1,num('km')),c=num('cons'),fp=num('fuel'),res=Math.min(p,num('resale')),depr=Math.max(0,(p-res)/y),fa=annualKm/100*c*fp,ins=num('insurance'),tx=num('tax'),mnt=num('maintenance'),ty=num('tyres'),park=num('parking'),total=depr+fa+ins+tx+mnt+ty+park;last={name:carName.value.trim()||'La mia auto',price:p,years:y,km:annualKm,cons:c,fuel:fp,resale:res,depreciation:depr,fuelAnnual:fa,insurance:ins,tax:tx,maintenance:mnt,tyres:ty,parking:park,annual:total,monthly:total/12,perKm:total/annualKm,at:new Date().toISOString()};monthly.textContent=euro(last.monthly);annual.textContent=euro(total);perKm.textContent='€ '+last.perKm.toFixed(2);fuelAnnual.textContent=euro(fa);heroMonthly.textContent=euro(last.monthly);heroKm.textContent='circa € '+last.perKm.toFixed(2)+' / km';breakdown.innerHTML=[['Svalutazione',depr],['Carburante',fa],['Assicurazione',ins],['Bollo',tx],['Manutenzione',mnt],['Pneumatici',ty],['Parcheggi e pedaggi',park]].filter(x=>x[1]>0).map(x=>'<div class="line"><span>'+x[0]+'</span><b>'+euro(x[1])+'</b></div>').join('');return last}
 function saveScenario(){const x=calc();S.history.unshift(x);S.history=S.history.slice(0,12);Webinsolito.store.set(KEY,S);renderHistory();Webinsolito.toast('Calcolo salvato')}
-function renderHistory(){history.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+euro(x.monthly)+'/mese · € '+(+x.perKm).toFixed(2)+'/km</span></div><button class="btn soft" onclick="removeHist('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun calcolo salvato.</div>'}
+function renderHistory(){historyList.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+euro(x.monthly)+'/mese · € '+(+x.perKm).toFixed(2)+'/km</span></div><button class="btn soft" onclick="removeHist('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun calcolo salvato.</div>'}
 function removeHist(i){S.history.splice(i,1);Webinsolito.store.set(KEY,S);renderHistory()}
 function loadExample(){carName.value='Compatta benzina';price.value=22000;years.value=6;km.value=15000;cons.value=6.2;fuel.value=1.8;insurance.value=650;tax.value=220;maintenance.value=550;tyres.value=180;parking.value=300;resale.value=9000;calc()}
 init();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
