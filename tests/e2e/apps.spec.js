@@ -141,3 +141,14 @@ test('Settings screens: clean and reachable', async ({ page }) => {
     await expect(panel.locator('.dangerZone')).toHaveCount(1);
   }
 });
+
+
+test('Public UI: no developer jargon', async ({ page }) => {
+  const pages=['/','/autobuddy/','/dealerflow/','/bresciago/','/frigochef/','/stylematch/','/splitly/','/parkmemo/','/screensort/','/packr/','/docpocket/','/safebuy/','/fuelgo/'];
+  const banned=['local-first','mobile-first','indexeddb','tesseract.js','mini-crm','digital fitting room','shared money, zero chaos','photo inbox','travel memory','local document wallet','local risk scanner','punteggio euristico','svuota-frigo mode'];
+  for (const url of pages) {
+    await page.goto(url);
+    const visible=(await page.locator('body').innerText()).toLowerCase();
+    for (const term of banned) expect(visible, url+' contiene '+term).not.toContain(term);
+  }
+});
