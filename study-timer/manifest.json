@@ -1,0 +1,16 @@
+{
+  "name": "StudyTimer — Webinsolito",
+  "short_name": "StudyTimer",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#34346e",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
