@@ -11,5 +11,8 @@
 | jspsych/offline-pwa | pattern | MIT | installabilità/offline |
 | scribeocr/scribe.js | escluso | AGPL-3.0 | non integrato |
 | apache/pouchdb | valutato | Apache ecosystem | non integrato |
+| firstlinkai/omnitools | pattern | MIT | studiata architettura di utility client-side; nessun codice copiato |
+| CorentinTh/it-tools | pattern esclusivamente concettuale | GPL-3.0 | studiato lo scaffold di nuove utility; nessun codice copiato |
+| jfoclpf/autocosts | riferimento concettuale | GPL-3.0 | studiata la scomposizione dei costi auto; nessun codice copiato |
 
 Ogni nuova dipendenza o pezzo riutilizzato va registrato qui prima della pubblicazione.
