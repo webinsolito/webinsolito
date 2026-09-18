@@ -15,11 +15,11 @@ HEADERS={"User-Agent":"Webinsolito-BresciaGo/1.0 (+https://webinsolito.github.io
 TIMEOUT=20
 MONTHS={"gennaio":1,"febbraio":2,"marzo":3,"aprile":4,"maggio":5,"giugno":6,"luglio":7,"agosto":8,"settembre":9,"ottobre":10,"novembre":11,"dicembre":12}
 SOURCES=[
- {"name":"Comune di Brescia","listing":"https://comune.brescia.it/it/eventi","host":"comune.brescia.it","contains":"/it/events/","pages":3,"area":"Brescia","delay":0.85},
+ {"name":"Comune di Brescia","listing":"https://comune.brescia.it/it/eventi","host":"comune.brescia.it","contains":"/it/events/","pages":1,"area":"Brescia","delay":1.0},
  {"name":"Visit Brescia","listing":"https://www.visitbrescia.it/eventi/","host":"www.visitbrescia.it","contains":"/eventi/","pages":1,"area":"Brescia e provincia","delay":0.08},
 ]
 session=requests.Session();session.headers.update(HEADERS)
-retry=Retry(total=3,connect=2,read=2,status=3,backoff_factor=1.2,status_forcelist=[429,500,502,503,504],allowed_methods=frozenset(["GET"]),respect_retry_after_header=True)
+retry=Retry(total=2,connect=2,read=2,status=1,backoff_factor=0.8,status_forcelist=[429,500,502,503,504],allowed_methods=frozenset(["GET"]),respect_retry_after_header=False)
 session.mount("https://",HTTPAdapter(max_retries=retry))
 
 def get(url):
