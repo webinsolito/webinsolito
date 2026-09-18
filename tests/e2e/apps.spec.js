@@ -470,3 +470,64 @@ test('FileRename creates renamed downloadable copies locally', async ({ page }) 
   await expect(page.locator('#list')).toContainText('vacanza-foto-01.jpg');
   await expect(page.locator('#list a[download]')).toHaveCount(1);
 });
+
+
+test('Home intent search understands natural problems', async ({ page }) => {
+  await page.goto('/');
+  const q=page.locator('#globalSearch');
+  const cases=[
+    ['devo vendere la macchina','sell-my-car'],
+    ['mi scade la revisione','revisione-memo'],
+    ['quanto spendo per andare a Roma','tripcost'],
+    ['parto una settimana','packr'],
+    ['voglio dividere una cena','splitly'],
+    ['cosa cucino','frigochef'],
+    ['devo studiare per un esame','exam-planner'],
+    ['quanto mi costa davvero auto','carcost']
+  ];
+  for(const [query,id] of cases){
+    await q.fill(query);
+    const first=page.locator('#searchResults .res[href]').first();
+    await expect(first).toBeVisible();
+    await expect(first).toHaveAttribute('data-app-id',id);
+  }
+});
+
+test('Home fuzzy search tolerates a useful typo', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#globalSearch').fill('revizione auto');
+  await expect(page.locator('#searchResults .res[href]').first()).toHaveAttribute('data-app-id','revisione-memo');
+});
+
+test('Home visual hierarchy keeps categories strong without featured clutter', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('In evidenza')).toHaveCount(0);
+  await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
+  await expect(page.locator('#activeCount')).toHaveText('200');
+  const icon=page.locator('#categoryGrid .cat img').first();
+  const card=page.locator('#categoryGrid .cat').first();
+  const iconBox=await icon.boundingBox(), cardBox=await card.boundingBox();
+  expect(iconBox?.width).toBeGreaterThanOrEqual(56);
+  expect(cardBox?.height).toBeGreaterThanOrEqual(175);
+});
+
+test('Home stays dense and readable on iPhone', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name!=='iphone');
+  await page.goto('/');
+  const grid=page.locator('#categoryGrid');
+  const cols=await grid.evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
+  expect(cols).toBe(2);
+  const icon=await page.locator('#categoryGrid .cat img').first().boundingBox();
+  expect(icon?.width).toBeGreaterThanOrEqual(54);
+});
+
+test('Home visual before-after artifact', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name!=='desktop-chromium');
+  try{
+    await page.goto('https://webinsolito.github.io/webinsolito/?visual-baseline=run1',{waitUntil:'networkidle',timeout:15000});
+    await page.screenshot({path:'test-results/home-visual-before-desktop.png',fullPage:true});
+  }catch{}
+  await page.goto('/');
+  await page.waitForSelector('#categoryGrid .cat');
+  await page.screenshot({path:'test-results/home-visual-after-desktop.png',fullPage:true});
+});
