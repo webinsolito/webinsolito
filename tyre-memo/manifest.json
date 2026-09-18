@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/tyre-memo/",
+  "name": "TyreMemo",
+  "short_name": "TyreMemo",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Controlla rotazione e anzianità degli pneumatici.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
