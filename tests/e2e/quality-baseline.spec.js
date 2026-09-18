@@ -1,0 +1,41 @@
+const { test, expect } = require('@playwright/test');
+const fs=require('fs');
+const path=require('path');
+
+const catPaths={auto:'auto',food:'food',money:'soldi',events:'eventi',docs:'documenti',home:'casa',travel:'viaggi',style:'persona',shopping:'shopping',territory:'territorio',business:'business',study:'studio'};
+
+test('quality baseline home screenshots', async ({page},testInfo)=>{
+  await page.goto('/');
+  await page.waitForSelector('#categoryGrid .cat');
+  const dir='test-results/quality-baseline';
+  fs.mkdirSync(dir,{recursive:true});
+  await page.screenshot({path:`${dir}/home-${testInfo.project.name}.png`,fullPage:true});
+  await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
+});
+
+test('quality baseline category screenshots', async ({page},testInfo)=>{
+  const dir='test-results/quality-baseline/categories';
+  fs.mkdirSync(dir,{recursive:true});
+  for(const [id,p] of Object.entries(catPaths)){
+    await page.goto('/'+p+'/');
+    await page.waitForSelector('#apps .app');
+    await page.screenshot({path:`${dir}/${id}-${testInfo.project.name}.png`,fullPage:true});
+  }
+});
+
+test('visual audit: 3 structurally weakest apps per category', async ({page},testInfo)=>{
+  const audit=JSON.parse(fs.readFileSync(path.join(process.cwd(),'test-results/quality-audit.json'),'utf8'));
+  const dir='test-results/quality-baseline/apps';
+  fs.mkdirSync(dir,{recursive:true});
+  const catalog=JSON.parse(fs.readFileSync(path.join(process.cwd(),'apps.json'),'utf8'));
+  for(const [category,ids] of Object.entries(audit.visualSelection)){
+    for(const id of ids){
+      const app=catalog.apps.find(a=>a.id===id);
+      expect(app).toBeTruthy();
+      await page.goto('/'+app.path,{waitUntil:'domcontentloaded'});
+      await page.waitForTimeout(250);
+      await expect(page.locator('body')).not.toBeEmpty();
+      await page.screenshot({path:`${dir}/${category}__${id}__${testInfo.project.name}.png`,fullPage:true});
+    }
+  }
+});
