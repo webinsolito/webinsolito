@@ -61,3 +61,12 @@ jobs:
             test-results/home-visual-after-desktop.png
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload quality run screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-run-${{ github.run_id }}
+          path: test-results/quality-run
+          if-no-files-found: ignore
+          retention-days: 7
