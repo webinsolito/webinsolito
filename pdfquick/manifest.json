@@ -1,0 +1,18 @@
+{
+  "name": "PDFQuick — Webinsolito",
+  "short_name": "PDFQuick",
+  "id": "/webinsolito/pdfquick/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "../assets/categories/docs.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
