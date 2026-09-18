@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/discount-calc/",
+  "name": "DiscountCalc",
+  "short_name": "DiscountCalc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Calcola sconti percentuali, coupon fissi e prezzo finale.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
