@@ -1,5 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
+const PAGE_ERRORS=new WeakMap();
+test.beforeEach(async ({page})=>{const e=[];PAGE_ERRORS.set(page,e);page.on('pageerror',x=>e.push(x.message));});
+test.afterEach(async ({page})=>{expect(PAGE_ERRORS.get(page)||[],(PAGE_ERRORS.get(page)||[]).join('\n')).toEqual([]);});
+
 const APPS=['autobuddy','dealerflow','bresciago','frigochef','stylematch','splitly','parkmemo','screensort','packr','docpocket','safebuy','fuelgo'];
 
 for (const app of APPS) {
@@ -15,14 +19,14 @@ for (const app of APPS) {
 
 test('AutoBuddy: add a vehicle and persist it', async ({ page }) => {
   await page.goto('/autobuddy/');
-  await page.getByText('Auto',{exact:true}).first().click();
+  await page.locator('button[data-go="garage"]:visible').click();
   await page.getByRole('button',{name:/Veicolo/}).first().click();
   await page.locator('#vPlate').fill('QA123QA');
   await page.locator('#vModel').fill('Auto Test');
   await page.getByRole('button',{name:'Salva veicolo'}).click();
   await expect(page.locator('#garageGrid')).toContainText('Auto Test');
   await page.reload();
-  await page.getByText('Auto',{exact:true}).first().click();
+  await page.locator('button[data-go="garage"]:visible').click();
   await expect(page.locator('#garageGrid')).toContainText('Auto Test');
 });
 
@@ -82,11 +86,10 @@ test('ParkMemo: save parking without GPS', async ({ page }) => {
 
 test('ScreenSort: import a screenshot into IndexedDB', async ({ page }) => {
   await page.goto('/screensort/');
-  await page.getByText('Importa',{exact:true}).first().click();
+  await page.locator('button[data-go="import"]:visible').click();
   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z1xkAAAAASUVORK5CYII=','base64');
   await page.locator('#files').setInputFiles({name:'qa-shot.png',mimeType:'image/png',buffer:png});
   await page.getByRole('button',{name:'Importa nel dispositivo'}).click();
-  await page.getByText('Screenshot',{exact:true}).first().click();
   await expect.poll(async()=>page.locator('#grid').locator('img').count(),{timeout:10000}).toBeGreaterThan(0);
 });
 
@@ -102,11 +105,10 @@ test('Packr: create a trip and checklist', async ({ page }) => {
 
 test('DocPocket: archive a PDF locally', async ({ page }) => {
   await page.goto('/docpocket/');
-  await page.getByText('Aggiungi',{exact:true}).first().click();
-  await page.locator('#name').fill('Documento QA');
+  await page.locator('button[data-go="add"]:visible').click();
+  await page.locator('#docName').fill('Documento QA');
   await page.locator('#file').setInputFiles({name:'qa.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\\n% QA\\n')});
   await page.getByRole('button',{name:'Archivia sul dispositivo'}).click();
-  await page.getByText('Documenti',{exact:true}).first().click();
   await expect(page.locator('#wallet')).toContainText('Documento QA');
 });
 
