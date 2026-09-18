@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/stylematch/",
   "name": "StyleMatch",
   "short_name": "StyleMatch",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#17151C"
+  "theme_color": "#17151C",
+  "description": "Non scegliere una taglia. Scegli come vuoi che vesta.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

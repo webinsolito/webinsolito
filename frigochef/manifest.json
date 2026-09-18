@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/frigochef/",
   "name": "FrigoChef",
   "short_name": "FrigoChef",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#24382B"
+  "theme_color": "#20372A",
+  "description": "Prima guarda cosa hai. Poi scegli cosa cucinare.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

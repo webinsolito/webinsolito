@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/splitly/",
   "name": "Splitly",
   "short_name": "Splitly",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#232040"
+  "theme_color": "#232040",
+  "description": "Chi deve pagare chi, senza discussioni.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
