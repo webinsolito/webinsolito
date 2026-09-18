@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/carcost/",
+  "name": "CarCost — costo reale dell'auto",
+  "short_name": "CarCost",
+  "description": "Calcola quanto ti costa davvero un'auto al mese, all'anno e per km.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
