@@ -16,3 +16,9 @@
 | jfoclpf/autocosts | riferimento concettuale | GPL-3.0 | studiata la scomposizione dei costi auto; nessun codice copiato |
 
 Ogni nuova dipendenza o pezzo riutilizzato va registrato qui prima della pubblicazione.
+
+
+## Local utility vendors added in 200-app run
+
+- `davidshimjs/qrcodejs` → local QR generation for QRPocket and QRMenu → MIT → vendored minified browser build plus license notice.
+- `Stuk/jszip` → local ZIP creation for PhotoSort → MIT option of dual license → vendored browser build plus license notice.
