@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-18T12:51:59.929620+00:00",
-  "count": 58,
+  "generated_at": "2026-09-18T12:56:03.656275+00:00",
+  "count": 54,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
-      "links": 30,
-      "events": 10,
-      "errors": 12
+      "links": 15,
+      "events": 5,
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
@@ -545,64 +545,19 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/pigiama-run-2026-1024x650.jpg"
     },
     {
-      "id": "auto-31abbfbb5b6793",
-      "title": "Biblioteche sociali. Uncinetto",
-      "date": "2026-09-19",
-      "end_date": "2026-09-19",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/biblioteche-2026-uncinetto-buffalora-1024x650.jpg"
-    },
-    {
-      "id": "auto-e9b361b0868468",
-      "title": "Giancarlo Staffoni. La forza di rette, colori e geometrie",
-      "date": "2026-09-19",
-      "end_date": "2026-09-19",
+      "id": "auto-245c2c0f546a0f",
+      "title": "Settimana Europea Mobilità 2026",
+      "date": "2026-09-18",
+      "end_date": "2026-09-18",
       "time": "",
       "place": "Brescia",
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/giancarlo-staffoni-la-forza-di-rette-colori-e-geometrie",
+      "url": "https://comune.brescia.it/it/events/settimana-europea-mobilita-2026-2518671",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/inaugurazione-mostra-giancarlo-staffoni-la-forza-di-rette-colori-e-geometrie-19-settembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-e07d66dd0a91e4",
-      "title": "Giuseppe Zanardelli. Mostra",
-      "date": "2026-09-19",
-      "end_date": "2026-09-19",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/giuseppe-zanardelli-mostra-2516520-2516738-2517027-2517285-2517452-2518422-2518569-2518696",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-mostra-zanardelli-1024x650.jpg"
-    },
-    {
-      "id": "auto-a1251af5b2d7a8",
-      "title": "Mo.Ca 2026 – And it felt like home",
-      "date": "2026-09-19",
-      "end_date": "2026-09-19",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-and-it-felt-like-home-19sett-11ott-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/sem-2026-1024x650.jpg"
     },
     {
       "id": "auto-2cbc4003788d3f",
@@ -618,21 +573,6 @@
       "note": "Un evento che unisce la passione per la corsa alle bellezze della città: ogni anno a settembre a Brescia torna la Cidneo Urban Trail!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/castello-brescia-dall-alto.jpg"
-    },
-    {
-      "id": "auto-398e1d6f8b038b",
-      "title": "Giornata degli Internati Militari Italiani",
-      "date": "2026-09-20",
-      "end_date": "2026-09-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/giornata-degli-internati-militari-italiani",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fond-micheletti-2026-internati-militari-italiani-20-settembre-1024x650.jpg"
     },
     {
       "id": "auto-923f9a221f0b34",
