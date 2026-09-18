@@ -4,7 +4,7 @@ const PAGE_ERRORS=new WeakMap();
 test.beforeEach(async ({page})=>{const e=[];PAGE_ERRORS.set(page,e);page.on('pageerror',x=>e.push(x.message));});
 test.afterEach(async ({page})=>{expect(PAGE_ERRORS.get(page)||[],(PAGE_ERRORS.get(page)||[]).join('\n')).toEqual([]);});
 
-const APPS=['autobuddy','fuelgo','carcost','tripcost','parkmemo','dealerflow','bresciago','frigochef','stylematch','splitly','screensort','packr','docpocket','safebuy'];
+const APPS=['autobuddy','fuelgo','carcost','tripcost','parkmemo','bollo-check','revisione-memo','tyre-memo','service-book','fuel-saver','car-value','parking-cost','evcharge','range-calc','sell-my-car','dealerflow','bresciago','frigochef','stylematch','splitly','screensort','packr','docpocket','safebuy'];
 
 for (const app of APPS) {
   test(app+' loads without JavaScript page errors', async ({ page }) => {
@@ -208,7 +208,8 @@ test('Catalog: active apps, manifests and icons exist', async ({ request }) => {
   const catalog=await r.json();
   expect(catalog.categories).toHaveLength(12);
   const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
-  expect(active.length).toBeGreaterThanOrEqual(14);
+  expect(active.length).toBeGreaterThanOrEqual(24);
+  expect(active.filter(a=>a.category==='auto')).toHaveLength(15);
   for(const app of active){
     const pageRes=await request.get('/'+app.path);
     expect(pageRes.ok(),app.name+' page').toBeTruthy();
@@ -245,17 +246,153 @@ test('SEO and installability: every active app exposes canonical, description an
   }
 });
 
-test('Home and categories are separate pages', async ({ page }) => {
+test('Home links directly to real category pages', async ({ page, request }) => {
   await page.goto('/');
-  await expect(page.locator('#categories')).toHaveCount(0);
+  await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
   await expect(page.locator('#groups')).toHaveCount(0);
-  await expect(page.locator('#activeCount')).toHaveText('14');
-  await expect(page.getByRole('link',{name:/Esplora tutti gli strumenti/i})).toHaveAttribute('href','./categorie.html');
-  await expect(page.getByText('AutoBuddy',{exact:true}).first()).toBeVisible();
+  await expect(page.getByRole('link',{name:/Auto & mobilità/i})).toHaveAttribute('href','./auto/');
+  await page.goto('/auto/');
+  await expect(page.locator('#apps .app')).toHaveCount(15);
+  await expect(page.locator('#availableCount')).toHaveText('15 disponibili');
+  const old=await request.get('/categorie.html');
+  expect(old.ok()).toBeTruthy();
+});
 
-  await page.goto('/categorie.html');
-  await expect(page.locator('#categories .cat')).toHaveCount(12);
-  await expect(page.locator('#groups .group')).toHaveCount(12);
-  await expect(page.locator('#activeCount')).toContainText('14');
-  await expect(page.getByText('TripCost',{exact:true}).first()).toBeVisible();
+
+test('Auto MVP: BolloCheck validates, calculates and resets', async ({ page }) => {
+  await page.goto('/bollo-check/');
+  await page.getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#expiry').fill('2027-01-15');
+  await page.locator('#amount').fill('240');
+  await page.getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#daysLeft')).not.toHaveText('—');
+  await page.getByRole('button',{name:'Reset'}).click();
+  await expect(page.locator('#daysLeft')).toHaveText('—');
+});
+
+test('Auto MVP: RevisioneMemo calculates a reminder', async ({ page }) => {
+  await page.goto('/revisione-memo/');
+  await page.getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#baseDate').fill('2026-01-15');
+  await page.locator('#months').fill('24');
+  await page.getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#nextDate')).not.toHaveText('—');
+});
+
+test('Auto MVP: TyreMemo rejects impossible km and calculates valid data', async ({ page }) => {
+  await page.goto('/tyre-memo/');
+  await page.locator('#installKm').fill('50000');
+  await page.locator('#currentKm').fill('40000');
+  await page.getByRole('button',{name:'Controlla'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#currentKm').fill('56000');
+  await page.getByRole('button',{name:'Controlla'}).click();
+  await expect(page.locator('#kmLeft')).not.toHaveText('—');
+});
+
+test('Auto MVP: ServiceBook stores a maintenance entry', async ({ page }) => {
+  await page.goto('/service-book/');
+  await page.getByRole('button',{name:'Salva intervento'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#title').fill('Tagliando QA');
+  await page.locator('#date').fill('2026-09-18');
+  await page.locator('#km').fill('45000');
+  await page.locator('#cost').fill('320');
+  await page.getByRole('button',{name:'Salva intervento'}).click();
+  await expect(page.locator('#list')).toContainText('Tagliando QA');
+  await page.reload();
+  await expect(page.locator('#list')).toContainText('Tagliando QA');
+});
+
+test('Auto MVP: FuelSaver calculates net detour benefit', async ({ page }) => {
+  await page.goto('/fuel-saver/');
+  await page.getByRole('button',{name:'Confronta'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#priceA').fill('1.90');
+  await page.locator('#priceB').fill('1.75');
+  await page.locator('#litres').fill('40');
+  await page.locator('#detour').fill('6');
+  await page.locator('#cons').fill('6.5');
+  await page.getByRole('button',{name:'Confronta'}).click();
+  await expect(page.locator('#net')).not.toHaveText('—');
+});
+
+test('Auto MVP: CarValue returns transparent depreciation estimate', async ({ page }) => {
+  await page.goto('/car-value/');
+  await page.getByRole('button',{name:'Calcola stima'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#price').fill('30000');
+  await page.locator('#years').fill('4');
+  await page.locator('#rate').fill('12');
+  await page.getByRole('button',{name:'Calcola stima'}).click();
+  await expect(page.locator('#value')).not.toHaveText('—');
+});
+
+test('Auto MVP: ParkingCost validates time and calculates tariff', async ({ page }) => {
+  await page.goto('/parking-cost/');
+  await page.locator('#start').fill('2026-09-18T12:00');
+  await page.locator('#end').fill('2026-09-18T10:00');
+  await page.getByRole('button',{name:'Calcola costo'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#end').fill('2026-09-18T15:30');
+  await page.locator('#first').fill('2');
+  await page.locator('#next').fill('1.5');
+  await page.getByRole('button',{name:'Calcola costo'}).click();
+  await expect(page.locator('#cost')).not.toHaveText('—');
+});
+
+test('Auto MVP: EVCharge calculates energy time and cost', async ({ page }) => {
+  await page.goto('/evcharge/');
+  await page.locator('#battery').fill('60');
+  await page.locator('#startPct').fill('80');
+  await page.locator('#targetPct').fill('20');
+  await page.locator('#power').fill('11');
+  await page.getByRole('button',{name:'Calcola ricarica'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#startPct').fill('20');
+  await page.locator('#targetPct').fill('80');
+  await page.locator('#price').fill('0.45');
+  await page.getByRole('button',{name:'Calcola ricarica'}).click();
+  await expect(page.locator('#cost')).not.toHaveText('—');
+  await expect(page.locator('#time')).not.toHaveText('—');
+});
+
+test('Auto MVP: RangeCalc calculates fuel and EV range', async ({ page }) => {
+  await page.goto('/range-calc/');
+  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#capacity').fill('50');
+  await page.locator('#level').fill('50');
+  await page.locator('#cons').fill('6');
+  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await expect(page.locator('#range')).toContainText('km');
+  await page.locator('#mode').selectOption('ev');
+  await page.locator('#capacity').fill('70');
+  await page.locator('#cons').fill('18');
+  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await expect(page.locator('#available')).toContainText('kWh');
+});
+
+test('Auto MVP: SellMyCar generates and persists a listing draft', async ({ page }) => {
+  await page.goto('/sell-my-car/');
+  await page.getByRole('button',{name:'Genera annuncio'}).click();
+  await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#make').fill('Toyota');
+  await page.locator('#model').fill('Yaris');
+  await page.locator('#year').fill('2022');
+  await page.locator('#km').fill('32000');
+  await page.locator('#price').fill('15900');
+  await page.getByRole('button',{name:'Genera annuncio'}).click();
+  await expect(page.locator('#output')).toHaveValue(/Toyota Yaris/);
+  await page.reload();
+  await expect(page.locator('#output')).toHaveValue(/Toyota Yaris/);
+});
+
+test('Real category pages exist for all 12 macro-categories', async ({ request }) => {
+  for (const slug of ['auto','food','soldi','eventi','documenti','casa','viaggi','persona','shopping','territorio','business','studio']) {
+    const r=await request.get('/'+slug+'/');
+    expect(r.ok(),slug).toBeTruthy();
+  }
 });
