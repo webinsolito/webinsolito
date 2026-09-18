@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/safebuy/",
   "name": "SafeBuy",
   "short_name": "SafeBuy",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#17283E"
+  "theme_color": "#17283E",
+  "description": "Prima di pagare, guarda i segnali.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

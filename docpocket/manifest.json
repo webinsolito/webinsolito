@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/docpocket/",
   "name": "DocPocket",
   "short_name": "DocPocket",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#17243C"
+  "theme_color": "#17243C",
+  "description": "I documenti importanti, prima che servano.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

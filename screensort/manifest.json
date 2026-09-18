@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/screensort/",
   "name": "ScreenSort",
   "short_name": "ScreenSort",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#201A33"
+  "theme_color": "#201A33",
+  "description": "Gli screenshot diventano cose da ritrovare.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
