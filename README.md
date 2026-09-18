@@ -37,3 +37,13 @@ Hub gratuito con 12 app web mobile-first pubblicate su GitHub Pages.
 - il meteo live non è collegato a Packr perché la Free API Open-Meteo è indicata per uso non commerciale e il progetto vuole restare riutilizzabile senza ambiguità di costo/licenza.
 
 Rollback pre-V2: `rollback/pre-v2-deepening-2026-09-18`.
+
+
+## BresciaGo automatic feed
+- GitHub Actions workflow: `.github/workflows/bresciago-events.yml`
+- schedule: every 3 hours + manual dispatch;
+- collector: `automation/bresciago/update_events.py`;
+- public feed: `bresciago/data/events.json`;
+- active sources: Comune di Brescia and Visit Brescia;
+- the collector preserves original source URLs, removes duplicates, drops expired events and refuses to overwrite the feed if collection returns no valid events;
+- BresciaGo fetches the public feed on launch and keeps favorites, itinerary and manually added events local to each device.
