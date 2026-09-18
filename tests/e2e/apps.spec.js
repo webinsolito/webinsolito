@@ -32,11 +32,11 @@ test('AutoBuddy: add a vehicle and persist it', async ({ page }) => {
 
 test('DealerFlow: create a lead', async ({ page }) => {
   await page.goto('/dealerflow/');
-  await page.getByRole('button',{name:/Nuovo lead/i}).click();
+  await page.getByRole('button',{name:/Nuovo cliente/i}).click();
   await page.locator('#lName').fill('Cliente QA');
   await page.locator('#lContact').fill('0300000000');
   await page.locator('#lInterest').fill('Auto QA');
-  await page.getByRole('button',{name:'Salva lead'}).click();
+  await page.getByRole('button',{name:'Salva cliente'}).click();
   await expect(page.getByText('Cliente QA',{exact:true})).toBeVisible();
 });
 
@@ -80,7 +80,7 @@ test('ParkMemo: save parking without GPS', async ({ page }) => {
   await page.goto('/parkmemo/');
   await page.locator('#note').fill('Parcheggio QA');
   await page.locator('#address').fill('Brescia');
-  await page.getByRole('button',{name:'Salva senza GPS'}).click();
+  await page.getByRole('button',{name:'Salva senza posizione'}).click();
   await expect(page.locator('#activeCard')).toContainText('Parcheggio QA');
 });
 
@@ -117,7 +117,7 @@ test('SafeBuy: scan returns a result', async ({ page }) => {
   await page.locator('#url').fill('https://example.com/prodotto');
   await page.locator('#seller').fill('Negozio QA');
   await page.locator('#price').fill('99');
-  await page.getByRole('button',{name:'ANALIZZA'}).click();
+  await page.getByRole('button',{name:'CONTROLLA'}).click();
   await expect(page.locator('#result')).toContainText('/100');
 });
 
