@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/subscriptions/",
+  "name": "Subscriptions",
+  "short_name": "Subscriptions",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Tieni un elenco degli abbonamenti e vedi il loro costo mensile e annuale.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
