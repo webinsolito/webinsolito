@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import hashlib, json, re, sys, unicodedata
+import hashlib, json, re, sys, time, unicodedata
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -13,10 +15,12 @@ HEADERS={"User-Agent":"Webinsolito-BresciaGo/1.0 (+https://webinsolito.github.io
 TIMEOUT=20
 MONTHS={"gennaio":1,"febbraio":2,"marzo":3,"aprile":4,"maggio":5,"giugno":6,"luglio":7,"agosto":8,"settembre":9,"ottobre":10,"novembre":11,"dicembre":12}
 SOURCES=[
- {"name":"Comune di Brescia","listing":"https://comune.brescia.it/it/eventi","host":"comune.brescia.it","contains":"/it/events/","pages":3,"area":"Brescia"},
- {"name":"Visit Brescia","listing":"https://www.visitbrescia.it/eventi/","host":"www.visitbrescia.it","contains":"/eventi/","pages":1,"area":"Brescia e provincia"},
+ {"name":"Comune di Brescia","listing":"https://comune.brescia.it/it/eventi","host":"comune.brescia.it","contains":"/it/events/","pages":3,"area":"Brescia","delay":0.85},
+ {"name":"Visit Brescia","listing":"https://www.visitbrescia.it/eventi/","host":"www.visitbrescia.it","contains":"/eventi/","pages":1,"area":"Brescia e provincia","delay":0.08},
 ]
 session=requests.Session();session.headers.update(HEADERS)
+retry=Retry(total=3,connect=2,read=2,status=3,backoff_factor=1.2,status_forcelist=[429,500,502,503,504],allowed_methods=frozenset(["GET"]),respect_retry_after_header=True)
+session.mount("https://",HTTPAdapter(max_retries=retry))
 
 def get(url):
     r=session.get(url,timeout=TIMEOUT);r.raise_for_status();return r.text
@@ -182,6 +186,7 @@ def main():
         links=collect_links(src);parsed=0;errors=0
         for url in links:
             try:
+                time.sleep(src.get("delay",0))
                 e=parse_detail(url,src)
                 if not e:continue
                 ed=date.fromisoformat(e["end_date"] or e["date"]);sd=date.fromisoformat(e["date"])
