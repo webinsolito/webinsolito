@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/inflation-calc/",
+  "name": "InflationCalc",
+  "short_name": "InflationCalc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Simula l'effetto di un tasso d'inflazione scelto sul potere d'acquisto nel tempo.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
