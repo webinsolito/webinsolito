@@ -1,5 +1,5 @@
 (function microRuntime(){
-  const d=window.WI_DEF;
+  const d=window.WI_DEF||(window.WI_DEFS||{})[document.body.dataset.tool];
   const $=s=>document.querySelector(s);
   const esc=s=>(s??'').toString().replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
   const slugs={auto:"auto",food:"food",money:"soldi",events:"eventi",docs:"documenti",home:"casa",travel:"viaggi",style:"persona",shopping:"shopping",territory:"territorio",business:"business",study:"studio"};
