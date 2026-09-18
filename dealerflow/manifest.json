@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/dealerflow/",
   "name": "DealerFlow",
   "short_name": "DealerFlow",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#171B20"
+  "theme_color": "#111418",
+  "description": "La concessionaria, in movimento.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

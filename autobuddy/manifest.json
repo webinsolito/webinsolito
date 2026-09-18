@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/autobuddy/",
   "name": "AutoBuddy",
   "short_name": "AutoBuddy",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#16283F"
+  "theme_color": "#102238",
+  "description": "La tua auto. Tutto in un posto.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

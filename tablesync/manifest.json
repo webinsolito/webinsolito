@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/tablesync/",
   "name": "TableSync",
   "short_name": "TableSync",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#17352A"
+  "theme_color": "#17352A",
+  "description": "La sala, senza caos.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

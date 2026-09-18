@@ -1,8 +1,19 @@
 {
+  "id": "/webinsolito/bresciago/",
   "name": "BresciaGo",
   "short_name": "BresciaGo",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f9",
-  "theme_color": "#111B31"
+  "theme_color": "#111B31",
+  "description": "Cosa facciamo oggi?",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
