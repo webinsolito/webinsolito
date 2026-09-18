@@ -419,3 +419,47 @@ test('Shared micro-app engine performs a calculation and persists a record', asy
   await page.getByRole('button', { name: 'Salva' }).click();
   await expect(page.locator('#list')).toContainText('Pasta');
 });
+
+
+test('Category pages hide planned ideas from visitors', async ({ page }) => {
+  await page.goto('/documenti/');
+  await expect(page.getByText('In arrivo')).toHaveCount(0);
+  await expect(page.locator('#planned')).toBeHidden();
+});
+
+test('Specialized utilities perform their real functions', async ({ page }) => {
+  await page.goto('/warranty-check/');
+  await page.locator('#date').fill('2026-01-01');
+  await page.locator('#months').fill('24');
+  await page.getByRole('button', { name: 'Calcola' }).click();
+  await expect(page.locator('#out')).toContainText('01/01/2028');
+
+  await page.goto('/serial-check/');
+  await page.locator('#serial').fill('1HGCM82633A004352');
+  await page.getByRole('button', { name: 'Controlla formato' }).click();
+  await expect(page.locator('#out')).toContainText('VIN');
+
+  await page.goto('/secure-notes/');
+  await page.locator('#pass').fill('test-passphrase-123');
+  await page.locator('#note').fill('nota privata test');
+  await page.getByRole('button', { name: 'Cifra e salva' }).click();
+  await expect(page.locator('#status')).toContainText('cifrata');
+  await page.getByRole('button', { name: 'Decifra' }).click();
+  await expect(page.locator('#note')).toHaveValue('nota privata test');
+
+  await page.goto('/qrpocket/');
+  await page.locator('#text').fill('https://webinsolito.github.io/webinsolito/');
+  await page.getByRole('button', { name: 'Genera QR' }).click();
+  await expect(page.locator('#qr canvas, #qr img, #qr svg')).toHaveCount(1);
+});
+
+test('FileRename creates renamed downloadable copies locally', async ({ page }) => {
+  await page.goto('/file-rename/');
+  await page.locator('#files').setInputFiles([
+    { name: 'foto.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('fake-jpg-data') }
+  ]);
+  await page.locator('#prefix').fill('vacanza-');
+  await page.getByRole('button', { name: 'Prepara nomi' }).click();
+  await expect(page.locator('#list')).toContainText('vacanza-foto-01.jpg');
+  await expect(page.locator('#list a[download]')).toHaveCount(1);
+});
