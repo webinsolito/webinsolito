@@ -233,15 +233,22 @@ test('FuelGo: cost tools use the selected official price', async ({ page }) => {
 });
 
 
-test('SEO and installability: every active app exposes canonical, description and install action', async ({ page, request }) => {
+test('SEO and installability: every active app has metadata, with browser install smoke per category', async ({ page, request }) => {
   const r=await request.get('/apps.json');
   const catalog=await r.json();
   const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
   for(const app of active){
+    const res=await request.get('/'+app.path);
+    expect(res.ok(),app.name+' page').toBeTruthy();
+    const html=await res.text();
+    expect(html,app.name+' canonical').toMatch(/<link[^>]+rel=["']canonical["']/i);
+    expect(html,app.name+' description').toMatch(/<meta[^>]+name=["']description["']/i);
+    expect(html,app.name+' manifest').toMatch(/<link[^>]+rel=["']manifest["']/i);
+  }
+  for(const category of catalog.categories){
+    const app=active.find(a=>a.category===category.id);
+    expect(app,category.id+' sample').toBeTruthy();
     await page.goto('/'+app.path);
-    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
-    await expect(page.locator('meta[name="description"]')).toHaveCount(1);
-    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
     await expect(page.locator('.wi-app-install')).toBeVisible();
   }
 });
