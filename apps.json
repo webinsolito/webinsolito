@@ -1430,7 +1430,7 @@
       "id": "pdfquick",
       "name": "PDFQuick",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di PDFQuick direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Trasforma immagini in pagine pronte da stampare o salvare come PDF dal browser.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "pdfquick/",
@@ -1438,14 +1438,14 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Elaborazione locale · stampa PDF del browser",
       "updated": "2026-09-18"
     },
     {
       "id": "scan-pocket",
       "name": "ScanPocket",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di ScanPocket direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Scatta o scegli una foto, ruotala, convertila in bianco e nero e scarica la copia pulita.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "scan-pocket/",
@@ -1453,14 +1453,14 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Canvas/File API locale",
       "updated": "2026-09-18"
     },
     {
       "id": "file-rename",
       "name": "FileRename",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di FileRename direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Prepara nuovi nomi per più file e scarica copie rinominate senza upload.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "file-rename/",
@@ -1468,14 +1468,14 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "File API locale",
       "updated": "2026-09-18"
     },
     {
       "id": "photo-sort",
       "name": "PhotoSort",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di PhotoSort direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Raggruppa foto per mese e crea uno ZIP con cartelle ordinate direttamente nel browser.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "photo-sort/",
@@ -1483,7 +1483,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "File API locale · JSZip MIT",
       "updated": "2026-09-18"
     },
     {
@@ -1520,7 +1520,7 @@
       "id": "qrpocket",
       "name": "QRPocket",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di QRPocket direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Genera QR code da testo o link direttamente nel browser, senza inviare il contenuto a server esterni.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "qrpocket/",
@@ -1528,14 +1528,14 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Elaborazione locale · QRCode.js MIT",
       "updated": "2026-09-18"
     },
     {
       "id": "secure-notes",
       "name": "SecureNotes",
       "category": "docs",
-      "description": "Salva e ritrova le informazioni di SecureNotes direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Cifra una nota con passphrase usando AES-GCM e salva sul dispositivo solo il contenuto cifrato.",
       "icon": "assets/categories/docs.svg",
       "color": "#789bff",
       "path": "secure-notes/",
@@ -1543,7 +1543,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Web Crypto AES-GCM/PBKDF2 · storage locale cifrato",
       "updated": "2026-09-18"
     },
     {
@@ -2015,7 +2015,7 @@
       "id": "jet-lag",
       "name": "JetLag",
       "category": "travel",
-      "description": "Salva e ritrova le informazioni di JetLag direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Calcola differenza di fuso e un piano semplice di adattamento prima del viaggio.",
       "icon": "assets/categories/travel.svg",
       "color": "#f2d6a0",
       "path": "jet-lag/",
@@ -2023,7 +2023,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Calcolo locale su fusi inseriti dall'utente",
       "updated": "2026-09-18"
     },
     {
@@ -2420,7 +2420,7 @@
       "id": "warranty-check",
       "name": "WarrantyCheck",
       "category": "shopping",
-      "description": "Salva e ritrova le informazioni di WarrantyCheck direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Calcola la fine garanzia da data d'acquisto e durata dichiarata.",
       "icon": "assets/categories/shopping.svg",
       "color": "#f3c640",
       "path": "warranty-check/",
@@ -2428,7 +2428,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Calcolo locale su dati utente",
       "updated": "2026-09-18"
     },
     {
@@ -2525,7 +2525,7 @@
       "id": "serial-check",
       "name": "SerialCheck",
       "category": "shopping",
-      "description": "Salva e ritrova le informazioni di SerialCheck direttamente sul dispositivo, senza fogli o note sparse.",
+      "description": "Controlla localmente formato IMEI/VIN e checksum IMEI, senza fingere verifiche su banche dati.",
       "icon": "assets/categories/shopping.svg",
       "color": "#f3c640",
       "path": "serial-check/",
@@ -2533,7 +2533,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Controllo formato locale · nessuna banca dati esterna",
       "updated": "2026-09-18"
     },
     {
@@ -3035,7 +3035,7 @@
       "id": "qrmenu",
       "name": "QRMenu",
       "category": "business",
-      "description": "Prepara un menu digitale testuale ordinato da condividere.",
+      "description": "Crea un menu digitale testuale e genera localmente il relativo QR code.",
       "icon": "assets/categories/business.svg",
       "color": "#648ed2",
       "path": "qrmenu/",
@@ -3043,7 +3043,7 @@
       "version": "1",
       "featured": false,
       "offline": true,
-      "data": "Dati elaborati nel browser e salvati localmente quando necessario",
+      "data": "Elaborazione locale · QRCode.js MIT",
       "updated": "2026-09-18"
     },
     {
