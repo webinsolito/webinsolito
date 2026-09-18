@@ -6,7 +6,8 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT=Path(__file__).resolve().parents[2]
-DATA_DIR=ROOT/"fuelgo"/"data"\nINDEX=DATA_DIR/"index.json"
+DATA_DIR=ROOT/"fuelgo"/"data"
+INDEX=DATA_DIR/"index.json"
 ANAG="https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv"
 PRICES="https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv"
 UA="Webinsolito-FuelGo/1.0 (+https://webinsolito.github.io/webinsolito/fuelgo/)"
