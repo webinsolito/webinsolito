@@ -1,0 +1,18 @@
+{
+  "name": "DiscountCalc — Webinsolito",
+  "short_name": "DiscountCalc",
+  "id": "/webinsolito/discount-calc/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "../assets/categories/money.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
