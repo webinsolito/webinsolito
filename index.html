@@ -1,1 +1,115 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09111b"><meta name="description" content="Webinsolito: strumenti gratuiti e veloci per risolvere piccole cose di ogni giorno."><link rel="canonical" href="https://webinsolito.github.io/webinsolito/"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/webinsolito-logo.svg"><title>Webinsolito</title><style>*{box-sizing:border-box}body{margin:0;background:#09111b;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1120px;margin:auto;padding:18px 16px 70px}.top{display:flex;align-items:center}.brand{display:flex;gap:10px;align-items:center;font-weight:950;letter-spacing:.04em}.brand img{width:42px;height:42px}.hero{padding:90px 0 34px;max-width:850px}.hero h1{font-size:clamp(54px,9vw,96px);line-height:.9;letter-spacing:-5px;margin:0 0 20px}.hero p{font-size:18px;color:#a7b4c2;max-width:700px;line-height:1.5}.searchBox{max-width:720px;position:relative;margin-top:26px}.search{width:100%;padding:16px;background:#101a26;border:1px solid #2c3b4e;border-radius:16px;color:#fff;font-size:16px}.results{display:none;position:absolute;top:58px;left:0;right:0;background:#0f1823;border:1px solid #2a394b;border-radius:16px;z-index:20;overflow:hidden}.results.on{display:block}.res{display:flex;gap:10px;padding:12px;text-decoration:none;color:inherit;border-bottom:1px solid #1e2b3a}.res:last-child{border-bottom:0}.res img{width:36px;height:36px;border-radius:10px}.res b{font-size:13px}.res span{display:block;font-size:10px;color:#8191a2;margin-top:2px}.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}.cat{min-height:170px;padding:18px;border:1px solid #243244;border-radius:24px;text-decoration:none;color:inherit;background:linear-gradient(145deg,var(--c1),#0d1620);display:flex;flex-direction:column}.cat img{width:50px;height:50px;border-radius:14px}.cat h2{font-size:19px;margin:16px 0 7px}.cat p{font-size:11px;color:#b0bdca;line-height:1.45;margin:0}.cat b{margin-top:auto;padding-top:18px;font-size:11px;color:#fff}.footer{margin-top:42px;border-top:1px solid #1d2836;padding-top:18px;font-size:10px;color:#718294}@media(max-width:850px){.cats{grid-template-columns:repeat(3,1fr)}}@media(max-width:620px){.cats{grid-template-columns:repeat(2,1fr)}.hero{padding-top:64px}.hero h1{letter-spacing:-3px}.cat{min-height:150px}}</style></head><body><main class="wrap"><header class="top"><div class="brand"><img src="./assets/webinsolito-logo.svg" alt="">WEBINSOLITO</div></header><section class="hero"><h1>Ti serve qualcosa?<br>Trovala qui.</h1><p>Strumenti semplici e gratuiti per risparmiare tempo nelle cose di ogni giorno.</p><div class="searchBox"><input id="globalSearch" class="search" placeholder="Cerca quello che devi fare…"><div id="searchResults" class="results"></div></div></section><section id="categoryGrid" class="cats" aria-label="Categorie Webinsolito"></section><footer class="footer">Webinsolito · veloce, gratuito, senza passaggi inutili</footer></main><script>const slugMap={"auto":"auto","food":"food","money":"soldi","events":"eventi","docs":"documenti","home":"casa","travel":"viaggi","style":"persona","shopping":"shopping","territory":"territorio","business":"business","study":"studio"},esc=s=>(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));let live=[];fetch('./apps.json',{cache:'no-store'}).then(r=>r.json()).then(x=>{live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);categoryGrid.innerHTML=x.categories.map(c=>'<a class="cat" style="--c1:'+c.colors[0]+'" href="./'+slugMap[c.id]+'/"><img src="./'+c.icon+'" alt=""><h2>'+esc(c.name)+'</h2><p>'+esc(c.tagline)+'</p><b>Apri categoria →</b></a>').join('');globalSearch.oninput=()=>{const q=globalSearch.value.trim().toLowerCase();if(!q){searchResults.classList.remove('on');return}const r=live.filter(a=>(a.name+' '+a.description).toLowerCase().includes(q)).slice(0,10);searchResults.innerHTML=r.map(a=>'<a class="res" href="./'+a.path+'"><img src="./'+a.icon+'" alt=""><div><b>'+esc(a.name)+'</b><span>'+esc(a.description)+'</span></div></a>').join('')||'<div class="res"><b>Nessun risultato</b></div>';searchResults.classList.add('on')}});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});</script></body></html>
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09111b">
+<meta name="description" content="Webinsolito: strumenti gratuiti e veloci per risolvere piccole cose di ogni giorno.">
+<link rel="canonical" href="https://webinsolito.github.io/webinsolito/">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/webinsolito-logo.svg">
+<title>Webinsolito</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark}
+body{margin:0;background:#09111b;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit}
+.wrap{max-width:1180px;margin:auto;padding:20px 22px 72px}
+.top{display:flex;align-items:center;min-height:52px}
+.brand{display:flex;gap:12px;align-items:center;font-weight:950;letter-spacing:.045em;font-size:14px}
+.brand img{width:48px;height:48px}
+.hero{padding:68px 0 42px;max-width:860px}
+.ey{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:900;letter-spacing:.12em;color:#7cffb2;text-transform:uppercase}
+.ey:before{content:"";width:7px;height:7px;border-radius:50%;background:#7cffb2;box-shadow:0 0 18px #7cffb2}
+.hero h1{font-size:clamp(52px,8vw,84px);line-height:.93;letter-spacing:-4.5px;margin:12px 0 18px;max-width:780px}
+.hero p{font-size:17px;color:#aebbc8;max-width:650px;line-height:1.55;margin:0}
+.searchBox{max-width:760px;position:relative;margin-top:28px}
+.searchShell{display:flex;align-items:center;gap:12px;background:#101a26;border:1px solid #314359;border-radius:18px;padding:0 16px;box-shadow:0 16px 50px rgba(0,0,0,.18)}
+.searchIcon{font-size:20px;color:#7cffb2;line-height:1}
+.search{width:100%;padding:17px 0;background:transparent;border:0;outline:0;color:#fff;font-size:17px}
+.search::placeholder{color:#728295}
+.results{display:none;position:absolute;top:64px;left:0;right:0;background:#0d1722;border:1px solid #304156;border-radius:18px;z-index:30;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.results.on{display:block}
+.res{display:flex;align-items:center;gap:12px;padding:12px 14px;text-decoration:none;border-bottom:1px solid #1d2b3a;transition:background .12s ease}
+.res:last-child{border-bottom:0}
+.res:hover,.res.active{background:#142131}
+.res img{width:42px;height:42px;border-radius:12px;flex:none}
+.resText{min-width:0;flex:1}
+.res b{font-size:13px}
+.res span{display:block;font-size:10px;color:#91a1b2;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res em{font-style:normal;font-size:9px;font-weight:800;color:#7cffb2;margin-left:auto;white-space:nowrap}
+.cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:6px}
+.cat{position:relative;min-height:188px;padding:19px;border:1px solid #29394c;border-radius:26px;text-decoration:none;color:inherit;background:linear-gradient(145deg,var(--c1),#0e1722 68%);display:flex;flex-direction:column;overflow:hidden;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.cat:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-45px;top:-55px;background:var(--c2);opacity:.09;filter:blur(4px);pointer-events:none}
+.cat:hover{transform:translateY(-3px);border-color:#425a74;box-shadow:0 18px 42px rgba(0,0,0,.22)}
+.catIcon{width:68px;height:68px;border-radius:20px;display:grid;place-items:center;background:rgba(7,13,20,.38);border:1px solid rgba(255,255,255,.11);position:relative;z-index:1}
+.cat img{width:60px;height:60px;border-radius:16px}
+.cat h2{font-size:19px;line-height:1.12;margin:17px 0 7px;letter-spacing:-.2px}
+.cat p{font-size:11px;color:#c0cad5;line-height:1.45;margin:0;max-width:95%}
+.catFoot{margin-top:auto;padding-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:850;color:#e8eef5}
+.catFoot span:last-child{font-size:14px;color:#7cffb2}
+.footer{margin-top:44px;border-top:1px solid #1d2938;padding-top:18px;font-size:10px;color:#718294}
+@media(max-width:940px){.cats{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{padding-top:58px}}
+@media(max-width:680px){.wrap{padding:16px 14px 54px}.brand img{width:44px;height:44px}.hero{padding:46px 0 30px}.hero h1{font-size:clamp(48px,14vw,68px);letter-spacing:-3px}.hero p{font-size:15px}.searchBox{margin-top:22px}.search{font-size:16px}.cats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cat{min-height:176px;padding:14px;border-radius:22px}.catIcon{width:62px;height:62px;border-radius:18px}.cat img{width:56px;height:56px}.cat h2{font-size:16px;margin-top:14px}.cat p{font-size:10px}.catFoot{padding-top:12px;font-size:9px}}
+@media(max-width:380px){.cats{grid-template-columns:1fr}.cat{min-height:154px}}
+@media(prefers-reduced-motion:reduce){.cat,.res{transition:none}.cat:hover{transform:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top"><div class="brand"><img src="./assets/webinsolito-logo.svg" alt="">WEBINSOLITO</div></header>
+<section class="hero">
+<div class="ey">200 strumenti · gratis</div>
+<h1>Dimmi cosa devi fare.</h1>
+<p>Scrivilo come ti viene. Webinsolito prova a capire il problema e ti porta allo strumento giusto.</p>
+<div class="searchBox">
+<div class="searchShell"><span class="searchIcon" aria-hidden="true">⌕</span><input id="globalSearch" class="search" autocomplete="off" aria-label="Cerca uno strumento" placeholder="Es. devo vendere la macchina, parto una settimana…"></div>
+<div id="searchResults" class="results" role="listbox" aria-live="polite"></div>
+</div>
+</section>
+<section id="categoryGrid" class="cats" aria-label="Categorie Webinsolito"></section>
+<footer class="footer">Webinsolito · veloce, gratuito, senza account obbligatorio</footer>
+</main>
+<script src="./assets/home-search.js"></script>
+<script>
+const slugMap={auto:'auto',food:'food',money:'soldi',events:'eventi',docs:'documenti',home:'casa',travel:'viaggi',style:'persona',shopping:'shopping',territory:'territorio',business:'business',study:'studio'};
+const esc=s=>(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let live=[],categories=[],cursor=-1,current=[];
+const input=document.getElementById('globalSearch'),results=document.getElementById('searchResults');
+function closeResults(){results.classList.remove('on');results.innerHTML='';cursor=-1;current=[]}
+function renderResults(q){
+ current=WebinsolitoSearch.search(q,live,categories,9);cursor=-1;
+ if(!q.trim()){closeResults();return}
+ results.innerHTML=current.length?current.map((r,i)=>{
+   if(r.type==='category'){
+     const c=r.category;return '<a class="res" role="option" data-i="'+i+'" href="./'+slugMap[c.id]+'/"><img src="./'+c.icon+'" alt=""><div class="resText"><b>'+esc(c.name)+'</b><span>'+esc(c.tagline)+'</span></div><em>Categoria</em></a>';
+   }
+   const a=r.app,c=categories.find(x=>x.id===a.category);
+   return '<a class="res" role="option" data-i="'+i+'" data-app-id="'+esc(a.id)+'" href="./'+a.path+'"><img src="./'+a.icon+'" alt=""><div class="resText"><b>'+esc(a.name)+'</b><span>'+esc(a.description)+'</span></div><em>'+esc(r.reason||(c?.name||''))+'</em></a>';
+ }).join(''):'<div class="res"><div class="resText"><b>Non trovo ancora lo strumento giusto.</b><span>Prova a descrivere il problema con altre parole.</span></div></div>';
+ results.classList.add('on');
+}
+function paintCursor(){
+ [...results.querySelectorAll('.res[href]')].forEach((el,i)=>el.classList.toggle('active',i===cursor));
+}
+fetch('./apps.json',{cache:'no-store'}).then(r=>r.json()).then(x=>{
+ categories=x.categories;
+ live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+ categoryGrid.innerHTML=categories.map(c=>{
+   const n=live.filter(a=>a.category===c.id).length;
+   return '<a class="cat" style="--c1:'+c.colors[0]+';--c2:'+c.colors[1]+'" href="./'+slugMap[c.id]+'/"><div class="catIcon"><img src="./'+c.icon+'" alt=""></div><h2>'+esc(c.name)+'</h2><p>'+esc(c.tagline)+'</p><div class="catFoot"><span>'+n+' strumenti</span><span>→</span></div></a>';
+ }).join('');
+ input.addEventListener('input',()=>renderResults(input.value));
+});
+input.addEventListener('keydown',e=>{
+ const links=[...results.querySelectorAll('.res[href]')];if(!links.length)return;
+ if(e.key==='ArrowDown'){e.preventDefault();cursor=(cursor+1)%links.length;paintCursor()}
+ if(e.key==='ArrowUp'){e.preventDefault();cursor=(cursor-1+links.length)%links.length;paintCursor()}
+ if(e.key==='Enter'&&cursor>=0){e.preventDefault();links[cursor].click()}
+ if(e.key==='Escape')closeResults();
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.searchBox'))closeResults()});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+</script>
+</body>
+</html>
