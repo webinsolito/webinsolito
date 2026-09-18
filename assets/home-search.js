@@ -73,7 +73,7 @@ window.WebinsolitoSearch={
   for(const intent of INTENTS){
    const m=intentScore(nq,intent);
    if(m>=.52)for(let i=0;i<intent.targets.length;i++){
-    const id=intent.targets[i],b=28*m-(i*3);
+    const id=intent.targets[i],b=42*m-(i*8);
     if(b>(boosts.get(id)||0)){boosts.set(id,b);reasons.set(id,intent.label)}
    }
   }
