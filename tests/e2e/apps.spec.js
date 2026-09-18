@@ -396,3 +396,26 @@ test('Real category pages exist for all 12 macro-categories', async ({ request }
     expect(r.ok(),slug).toBeTruthy();
   }
 });
+
+
+test('Catalog reaches 200 real apps and home stays category-only', async ({ page }) => {
+  const catalog = await (await page.request.get('/apps.json')).json();
+  const active = catalog.apps.filter(a => ['MVP','BETA','STABLE'].includes(a.status) && a.path);
+  expect(active).toHaveLength(200);
+  await page.goto('/');
+  await expect(page.getByText('In evidenza')).toHaveCount(0);
+  await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
+});
+
+test('Shared micro-app engine performs a calculation and persists a record', async ({ page }) => {
+  await page.goto('/discount-calc/');
+  await page.locator('#f_price').fill('100');
+  await page.locator('#f_discount').fill('20');
+  await page.getByRole('button', { name: 'Calcola' }).click();
+  await expect(page.locator('#out')).toContainText('80');
+  await page.goto('/pantry/');
+  await page.locator('#f_item').fill('Pasta');
+  await page.locator('#f_qty').fill('2 pacchi');
+  await page.getByRole('button', { name: 'Salva' }).click();
+  await expect(page.locator('#list')).toContainText('Pasta');
+});
