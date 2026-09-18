@@ -251,7 +251,7 @@ test('Home and categories are separate pages', async ({ page }) => {
   await expect(page.locator('#groups')).toHaveCount(0);
   await expect(page.locator('#activeCount')).toHaveText('14');
   await expect(page.getByRole('link',{name:/Esplora tutti gli strumenti/i})).toHaveAttribute('href','./categorie.html');
-  await expect(page.getByText('CarCost',{exact:true}).first()).toBeVisible();
+  await expect(page.getByText('AutoBuddy',{exact:true}).first()).toBeVisible();
 
   await page.goto('/categorie.html');
   await expect(page.locator('#categories .cat')).toHaveCount(12);
