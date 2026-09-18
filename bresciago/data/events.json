@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "generated_at": null,
+  "count": 0,
+  "sources": [
+    {
+      "name": "Comune di Brescia",
+      "ok": false,
+      "links": 0,
+      "events": 0,
+      "errors": 0
+    },
+    {
+      "name": "Visit Brescia",
+      "ok": false,
+      "links": 0,
+      "events": 0,
+      "errors": 0
+    }
+  ],
+  "events": []
+}
