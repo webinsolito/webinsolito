@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132d45">
+<meta name="description" content="Calcola il costo reale della tua auto: carburante, assicurazione, bollo, manutenzione, svalutazione e costo per km.">
+<link rel="canonical" href="https://webinsolito.github.io/webinsolito/carcost/">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<meta property="og:title" content="CarCost — quanto costa davvero la tua auto?">
+<meta property="og:description" content="Costo mensile, annuale e per km in pochi secondi.">
+<title>CarCost — costo reale auto</title>
+<link rel="stylesheet" href="../assets/webinsolito-core.css">
+<style>
+:root{--navy:#132d45;--blue:#6fb7ff;--green:#7cffb2;--bg:#f3f6f8;--ink:#152638;--muted:#738396;--line:#dce4ea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+.app{max-width:1080px;margin:auto;padding:14px 14px 84px}.top{display:flex;justify-content:space-between;align-items:center}.brand{display:flex;align-items:center;gap:9px;font-size:20px;font-weight:950}.brand img{width:44px}.top a{font-size:10px;color:#6d7e90;text-decoration:none}
+.hero{margin-top:14px;border-radius:28px;background:linear-gradient(135deg,#132d45,#1f5277);color:#fff;padding:25px;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;min-height:220px;align-items:end}.ey{font-size:9px;color:#7cffb2;font-weight:900;letter-spacing:.14em}.hero h1{font-size:44px;line-height:.95;letter-spacing:-2px;margin:7px 0}.hero p{font-size:11px;color:#c9d7e2;line-height:1.5;margin:0}.heroResult{background:#ffffff0d;border:1px solid #ffffff1b;border-radius:20px;padding:16px}.heroResult span{font-size:9px;color:#b9c9d6}.heroResult b{font-size:32px;display:block;margin-top:3px}
+.layout{display:grid;grid-template-columns:1fr .8fr;gap:12px;margin-top:12px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px}.card h2{font-size:18px;margin:0 0 10px}.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px;background:#fbfcfd;font:inherit;outline:none}.f:focus{border-color:var(--blue);box-shadow:0 0 0 4px #6fb7ff1f}.lab{font-size:9px;font-weight:850;color:#6b7b8d;margin:9px 2px 5px}.btn{border:0;border-radius:12px;padding:11px 13px;font-weight:900;cursor:pointer}.btn.primary{background:var(--navy);color:#fff}.btn.green{background:var(--green);color:#123624}.btn.soft{background:#edf2f5;color:#53677a}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.result{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fafcfd}.metric span{font-size:9px;color:#7a8998}.metric b{display:block;font-size:23px;margin-top:4px}.break{margin-top:10px}.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf1f4;font-size:10px}.line:last-child{border-bottom:0}.history{display:grid;gap:8px;margin-top:10px}.hist{border:1px solid var(--line);border-radius:14px;padding:11px;display:flex;justify-content:space-between;gap:10px}.hist b{display:block;font-size:12px}.hist span{font-size:9px;color:#788899}.empty{color:#8795a5;font-size:10px;padding:10px 0}.note{margin-top:10px;border-radius:14px;background:#edf6ff;border:1px solid #cfe4f8;color:#496579;padding:11px;font-size:9px;line-height:1.5}
+@media(max-width:760px){.hero,.layout{grid-template-columns:1fr}.heroResult{display:none}.form,.result{grid-template-columns:1fr}.app{padding:10px 10px 78px}.hero{border-radius:24px}.hero h1{font-size:38px}.top a{display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"CarCost","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"url":"https://webinsolito.github.io/webinsolito/carcost/"}</script>
+</head>
+<body>
+<main class="app">
+<header class="top"><div class="brand"><img src="logo.svg" alt="">CarCost</div><a href="../">← Webinsolito</a></header>
+<section class="hero"><div><div class="ey">AUTO & MOBILITÀ</div><h1>Quanto ti costa davvero l'auto?</h1><p>Metti i costi che conosci. CarCost li trasforma in costo mensile, annuale e per chilometro.</p></div><div class="heroResult"><span>Costo mensile stimato</span><b id="heroMonthly">—</b><span id="heroKm">Compila i dati per iniziare</span></div></section>
+<div class="layout">
+<section class="card">
+<h2>I dati essenziali</h2>
+<div class="form">
+<input class="f" id="carName" placeholder="Auto, es. Golf 1.5 TSI">
+<input class="f" id="price" type="number" min="0" step="100" placeholder="Prezzo acquisto €">
+<input class="f" id="years" type="number" min="1" max="30" value="5" placeholder="Anni che pensi di tenerla">
+<input class="f" id="km" type="number" min="1" step="1000" value="15000" placeholder="Km all'anno">
+<input class="f" id="cons" type="number" min="0" step=".1" value="6.5" placeholder="Consumo L/100 km">
+<input class="f" id="fuel" type="number" min="0" step=".001" placeholder="Prezzo carburante €/L">
+</div>
+<div class="lab">COSTI ANNUALI</div>
+<div class="form">
+<input class="f" id="insurance" type="number" min="0" placeholder="Assicurazione €">
+<input class="f" id="tax" type="number" min="0" placeholder="Bollo €">
+<input class="f" id="maintenance" type="number" min="0" placeholder="Manutenzione media €">
+<input class="f" id="tyres" type="number" min="0" placeholder="Pneumatici media €">
+<input class="f" id="parking" type="number" min="0" placeholder="Parcheggi/pedaggi €">
+<input class="f" id="resale" type="number" min="0" placeholder="Valore rivendita stimato €">
+</div>
+<div class="actions"><button class="btn green" onclick="calc()">Calcola costo reale</button><button class="btn soft" onclick="loadExample()">Esempio</button></div>
+<div class="note">È una stima basata sui numeri che inserisci: non include imprevisti, finanziamenti o variazioni future dei prezzi.</div>
+</section>
+<aside>
+<section class="card"><h2>Risultato</h2>
+<div class="result"><div class="metric"><span>Al mese</span><b id="monthly">—</b></div><div class="metric"><span>All'anno</span><b id="annual">—</b></div><div class="metric"><span>Per km</span><b id="perKm">—</b></div><div class="metric"><span>Solo carburante</span><b id="fuelAnnual">—</b></div></div>
+<div class="break" id="breakdown"></div>
+<div class="actions"><button class="btn primary" onclick="saveScenario()">Salva questo calcolo</button><a class="btn soft" style="text-decoration:none" href="../fuelgo/">Controlla carburante</a></div>
+</section>
+<section class="card" style="margin-top:12px"><h2>Calcoli salvati</h2><div id="history" class="history"></div></section>
+</aside>
+</div>
+</main>
+<script src="../assets/webinsolito-core.js"></script>
+<script>
+const KEY='carcost.v1';let last=null,S=Webinsolito.store.get(KEY,{history:[]});
+const euro=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
+const num=id=>Math.max(0,+document.getElementById(id).value||0);
+function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function init(){const q=new URLSearchParams(location.search),p=+q.get('fuel');if(p>0)fuel.value=p.toFixed(3);renderHistory()}
+function calc(){const p=num('price'),y=Math.max(1,num('years')),annualKm=Math.max(1,num('km')),c=num('cons'),fp=num('fuel'),res=Math.min(p,num('resale')),depr=Math.max(0,(p-res)/y),fa=annualKm/100*c*fp,ins=num('insurance'),tx=num('tax'),mnt=num('maintenance'),ty=num('tyres'),park=num('parking'),total=depr+fa+ins+tx+mnt+ty+park;last={name:carName.value.trim()||'La mia auto',price:p,years:y,km:annualKm,cons:c,fuel:fp,resale:res,depreciation:depr,fuelAnnual:fa,insurance:ins,tax:tx,maintenance:mnt,tyres:ty,parking:park,annual:total,monthly:total/12,perKm:total/annualKm,at:new Date().toISOString()};monthly.textContent=euro(last.monthly);annual.textContent=euro(total);perKm.textContent='€ '+last.perKm.toFixed(2);fuelAnnual.textContent=euro(fa);heroMonthly.textContent=euro(last.monthly);heroKm.textContent='circa € '+last.perKm.toFixed(2)+' / km';breakdown.innerHTML=[['Svalutazione',depr],['Carburante',fa],['Assicurazione',ins],['Bollo',tx],['Manutenzione',mnt],['Pneumatici',ty],['Parcheggi e pedaggi',park]].filter(x=>x[1]>0).map(x=>'<div class="line"><span>'+x[0]+'</span><b>'+euro(x[1])+'</b></div>').join('');return last}
+function saveScenario(){const x=calc();S.history.unshift(x);S.history=S.history.slice(0,12);Webinsolito.store.set(KEY,S);renderHistory();Webinsolito.toast('Calcolo salvato')}
+function renderHistory(){history.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+euro(x.monthly)+'/mese · € '+(+x.perKm).toFixed(2)+'/km</span></div><button class="btn soft" onclick="removeHist('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun calcolo salvato.</div>'}
+function removeHist(i){S.history.splice(i,1);Webinsolito.store.set(KEY,S);renderHistory()}
+function loadExample(){carName.value='Compatta benzina';price.value=22000;years.value=6;km.value=15000;cons.value=6.2;fuel.value=1.8;insurance.value=650;tax.value=220;maintenance.value=550;tyres.value=180;parking.value=300;resale.value=9000;calc()}
+init();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
+</script>
+</body>
+</html>
