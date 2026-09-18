@@ -7,7 +7,7 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 - costo ricorrente: €0;
 - catalogo centrale: `apps.json`;
 - categorie: 12;
-- app pubblicate in questa candidate: 24;
+- app pubblicate in questa candidate: 30;
 - app future registrate come `PLANNED`: non vengono mostrate come funzionanti;
 - dati utente: locali al browser salvo le app che leggono fonti pubbliche documentate;
 - PWA: manifest per le app + service worker root;
@@ -39,16 +39,26 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
 ### Food
 - **FrigoChef** — dispensa, ricette, scadenze e lista spesa.
+- **ExpiryFood** — scadenze alimentari ordinate per urgenza.
 
 ### Persona
 - **StyleMatch** — misure guidate, vestibilità e stima taglia.
 
 ### Soldi
 - **Splitly** — spese condivise, quote e trasferimenti semplificati.
+- **Subscriptions** — abbonamenti, rinnovi e costo mensile/annuale.
 
 ### Documenti
 - **ScreenSort** — screenshot, raccolte, ricerca testo e azioni multiple.
 - **DocPocket** — documenti, scadenze, preferiti, lettura testo e backup protetti.
+
+### Casa
+- **HomeMemo** — manutenzioni e scadenze ricorrenti di casa.
+- **UtilityMeter** — letture di luce, gas e acqua con confronto consumi.
+
+### Studio
+- **StudyTimer** — timer di concentrazione con storico locale.
+- **GradeCalc** — media pesata e voto necessario per un obiettivo.
 
 ### Viaggi
 - **Packr** — checklist adattiva e storico destinazioni.
@@ -90,9 +100,11 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
 ## Rollback
 - `rollback/pre-ecosystem-expansion-2026-09-18`
+- `rollback/pre-cross-category-batch-01-2026-09-18`
 
 ## Candidate
 - `candidate/ecosystem-phase1-2026-09-18`
+- `candidate/cross-category-batch-01-2026-09-18`
 
 ## Pagine categoria
 La navigazione principale segue `Home → Categoria → App`. Ogni macro-categoria ha un URL reale (`/auto/`, `/food/`, `/soldi/`, `/eventi/`, `/documenti/`, `/casa/`, `/viaggi/`, `/persona/`, `/shopping/`, `/territorio/`, `/business/`, `/studio/`). `categorie.html` non è più un catalogo generale: reindirizza alla home.
