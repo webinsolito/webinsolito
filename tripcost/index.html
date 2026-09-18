@@ -48,7 +48,7 @@
 <div id="breakdown"></div>
 <div class="actions"><button class="btn primary" onclick="saveTrip()">Salva viaggio</button><a class="btn soft" style="text-decoration:none" href="../fuelgo/">Guarda prezzi carburante</a><a class="btn soft" style="text-decoration:none" href="../splitly/">Dividi spese</a></div>
 </section>
-<section class="card" style="margin-top:12px"><h2>Viaggi salvati</h2><div id="history" class="history"></div></section>
+<section class="card" style="margin-top:12px"><h2>Viaggi salvati</h2><div id="historyList" class="history"></div></section>
 </aside>
 </div>
 </main>
@@ -61,7 +61,7 @@ function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':
 function init(){const q=new URLSearchParams(location.search),p=+q.get('fuel');if(p>0)fuel.value=p.toFixed(3);renderHistory()}
 function calc(){const kmOne=num('distance'),kmTotal=kmOne*(roundTrip.checked?2:1),p=Math.max(1,num('people')),c=num('cons'),fp=num('fuel'),l=kmTotal/100*c,fc=l*fp,tl=num('tolls'),pk=num('parking'),ot=num('other'),sum=fc+tl+pk+ot;last={name:tripName.value.trim()||'Viaggio',distance:kmOne,roundTrip:roundTrip.checked,kmTotal,people:p,cons:c,fuel:fp,litres:l,fuelCost:fc,tolls:tl,parking:pk,other:ot,total:sum,perPerson:sum/p,at:new Date().toISOString()};total.textContent=euro(sum);perPerson.textContent=euro(last.perPerson);fuelCost.textContent=euro(fc);litres.textContent=l.toFixed(1)+' L';heroTotal.textContent=euro(sum);heroPeople.textContent=euro(last.perPerson)+' a persona';breakdown.innerHTML=[['Distanza totale',kmTotal+' km'],['Carburante',euro(fc)],['Pedaggi',euro(tl)],['Parcheggio',euro(pk)],['Altri costi',euro(ot)]].map(x=>'<div class="line"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');return last}
 function saveTrip(){const x=calc();S.history.unshift(x);S.history=S.history.slice(0,12);Webinsolito.store.set(KEY,S);renderHistory();Webinsolito.toast('Viaggio salvato')}
-function renderHistory(){history.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+x.kmTotal+' km · '+euro(x.total)+' · '+euro(x.perPerson)+'/persona</span></div><button class="btn soft" onclick="removeTrip('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun viaggio salvato.</div>'}
+function renderHistory(){historyList.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+x.kmTotal+' km · '+euro(x.total)+' · '+euro(x.perPerson)+'/persona</span></div><button class="btn soft" onclick="removeTrip('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun viaggio salvato.</div>'}
 function removeTrip(i){S.history.splice(i,1);Webinsolito.store.set(KEY,S);renderHistory()}
 function loadExample(){tripName.value='Brescia → Milano';distance.value=95;roundTrip.checked=true;people.value=3;cons.value=6.4;fuel.value=1.8;tolls.value=16;parking.value=12;other.value=0;calc()}
 init();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
