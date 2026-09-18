@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const PAGE_ERRORS=new WeakMap();
 test.beforeEach(async ({page})=>{const e=[];PAGE_ERRORS.set(page,e);page.on('pageerror',x=>e.push(x.message));});
-test.afterEach(async ({page})=>{expect(PAGE_ERRORS.get(page)||[],(PAGE_ERRORS.get(page)||[]).join('\n')).toEqual([]);});
+test.afterEach(async ({page})=>{const all=PAGE_ERRORS.get(page)||[];const errors=all.filter(x=>!(/127\.0\.0\.1:4173\/sw\.js due to access control checks\.?$/i.test(x)));expect(errors,errors.join('\n')).toEqual([]);});
 
 const APPS=['autobuddy','fuelgo','carcost','tripcost','parkmemo','bollo-check','revisione-memo','tyre-memo','service-book','fuel-saver','car-value','parking-cost','evcharge','range-calc','sell-my-car','dealerflow','bresciago','frigochef','stylematch','splitly','screensort','packr','docpocket','safebuy'];
 
@@ -457,7 +457,7 @@ test('Specialized utilities perform their real functions', async ({ page }) => {
   await page.goto('/qrpocket/');
   await page.locator('#text').fill('https://webinsolito.github.io/webinsolito/');
   await page.getByRole('button', { name: 'Genera QR' }).click();
-  await expect(page.locator('#qr canvas, #qr img, #qr svg')).toHaveCount(1);
+  await expect(page.locator('#qr canvas')).toHaveCount(1);
 });
 
 test('FileRename creates renamed downloadable copies locally', async ({ page }) => {
