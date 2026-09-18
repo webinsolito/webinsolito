@@ -122,10 +122,65 @@ test('BusinessCard creates preview and local contact QR',async({page})=>{
 });
 
 test('merged duplicates point users to the stronger app',async({page})=>{
- const merges={ 'damage-log':'AccidentKit','car-docs':'DocPocket','home-docs':'DocPocket','booking-lite':'Appointment','receipt-box':'ReceiptPocket' };
+ const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket' };
  for(const [id,target] of Object.entries(merges)){
   await page.goto('/'+id+'/',{waitUntil:'domcontentloaded'});
-  await expect(page.locator('body'),id).toContainText('Ora è dentro '+target);
+  await expect(page,id).toHaveURL(new RegExp('/'+target+'/?
+
+test('catalog has 195 active apps and five documented merges',async({request})=>{
+ const d=await (await request.get('/apps.json')).json();
+ const active=d.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+ expect(active).toHaveLength(195);
+ expect(d.apps.filter(a=>a.status==='MERGED')).toHaveLength(5);
+});
+
+test('mobile quality at 360, 390 and 430 for Home and 20 rebuilt apps',async({page},testInfo)=>{
+ test.skip(testInfo.project.name!=='desktop-chromium');
+ test.setTimeout(150000);
+ for(const width of [360,390,430]){
+  await page.setViewportSize({width,height:850});
+  await page.goto('/');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Home overflow '+width).toBeTruthy();
+  await expect(page.locator('#categoryGrid .cat img').first()).toBeVisible();
+  for(const id of calcApps){
+   await page.goto('/'+id+'/');
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),id+' overflow '+width).toBeTruthy();
+   await expect(page.locator('.pro-shell'),id).toBeVisible();
+  }
+ }
+});
+
+test('AFTER screenshots: Home, categories and rebuilt apps',async({page},testInfo)=>{
+ test.setTimeout(120000);
+ const dir='test-results/quality-after/'+testInfo.project.name;
+ fs.mkdirSync(dir,{recursive:true});
+ await page.goto('/');await page.waitForSelector('#categoryGrid .cat');await page.screenshot({path:dir+'/home.png',fullPage:true});
+ for(const slug of ['auto','documenti','casa','viaggi','shopping','studio']){
+  await page.goto('/'+slug+'/');await page.waitForSelector('#apps .app');await page.screenshot({path:dir+'/category-'+slug+'.png',fullPage:true});
+ }
+ for(const id of ['accident-kit','leftover-chef','home-budget','paint-calc','fuel-trip','fake-shop','business-card','unit-tools']){
+  await page.goto('/'+id+'/');await page.waitForSelector('#work');await page.screenshot({path:dir+'/app-'+id+'.png',fullPage:true});
+ }
+});
+
+test('performance budget for rebuilt static assets',async({request})=>{
+ const limits={
+  '/':16000,
+  '/assets/home-search.js':10000,
+  '/assets/category-page.css':7000,
+  '/assets/category-page.js':9000,
+  '/assets/microapp-pro.css':10000,
+  '/assets/microapp-pro-defs.js':30000,
+  '/assets/microapp-pro.js':35000
+ };
+ for(const [url,max] of Object.entries(limits)){
+  const r=await request.get(url);expect(r.ok(),url).toBeTruthy();
+  const b=Buffer.byteLength(await r.body());
+  expect(b,url+' bytes').toBeLessThanOrEqual(max);
+ }
+});
+),{timeout:6000});
+  await expect(page.locator('body'),id).not.toBeEmpty();
  }
 });
 
