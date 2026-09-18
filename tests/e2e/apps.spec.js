@@ -245,10 +245,17 @@ test('SEO and installability: every active app exposes canonical, description an
   }
 });
 
-test('Homepage is generated from the central catalog', async ({ page }) => {
+test('Home and categories are separate pages', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('#categories .cat')).toHaveCount(12);
+  await expect(page.locator('#categories')).toHaveCount(0);
+  await expect(page.locator('#groups')).toHaveCount(0);
   await expect(page.locator('#activeCount')).toHaveText('14');
+  await expect(page.getByRole('link',{name:/Esplora tutti gli strumenti/i})).toHaveAttribute('href','./categorie.html');
   await expect(page.getByText('CarCost',{exact:true}).first()).toBeVisible();
+
+  await page.goto('/categorie.html');
+  await expect(page.locator('#categories .cat')).toHaveCount(12);
+  await expect(page.locator('#groups .group')).toHaveCount(12);
+  await expect(page.locator('#activeCount')).toContainText('14');
   await expect(page.getByText('TripCost',{exact:true}).first()).toBeVisible();
 });
