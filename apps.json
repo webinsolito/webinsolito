@@ -317,36 +317,6 @@
       "updated": "2026-09-18"
     },
     {
-      "id": "car-cost",
-      "name": "CarCost",
-      "category": "auto",
-      "description": "In valutazione per una futura versione Webinsolito.",
-      "icon": "assets/categories/auto.svg",
-      "color": "#6fb7ff",
-      "path": "",
-      "status": "PLANNED",
-      "version": "0",
-      "featured": false,
-      "offline": null,
-      "data": "Da definire",
-      "updated": "2026-09-18"
-    },
-    {
-      "id": "trip-cost",
-      "name": "TripCost",
-      "category": "auto",
-      "description": "In valutazione per una futura versione Webinsolito.",
-      "icon": "assets/categories/auto.svg",
-      "color": "#6fb7ff",
-      "path": "",
-      "status": "PLANNED",
-      "version": "0",
-      "featured": false,
-      "offline": null,
-      "data": "Da definire",
-      "updated": "2026-09-18"
-    },
-    {
       "id": "fuel-saver",
       "name": "FuelSaver",
       "category": "auto",
@@ -3404,6 +3374,36 @@
       "featured": false,
       "offline": null,
       "data": "Da definire",
+      "updated": "2026-09-18"
+    },
+    {
+      "id": "carcost",
+      "name": "CarCost",
+      "category": "auto",
+      "description": "Costo reale dell'auto al mese, all'anno e per km.",
+      "icon": "carcost/logo.svg",
+      "color": "#6FB7FF",
+      "path": "carcost/",
+      "status": "BETA",
+      "version": "1",
+      "featured": true,
+      "offline": true,
+      "data": "Dati inseriti dall’utente",
+      "updated": "2026-09-18"
+    },
+    {
+      "id": "tripcost",
+      "name": "TripCost",
+      "category": "auto",
+      "description": "Carburante, pedaggi, parcheggi e quota per persona.",
+      "icon": "tripcost/logo.svg",
+      "color": "#F2D6A0",
+      "path": "tripcost/",
+      "status": "BETA",
+      "version": "1",
+      "featured": true,
+      "offline": true,
+      "data": "Dati inseriti dall’utente",
       "updated": "2026-09-18"
     }
   ]
