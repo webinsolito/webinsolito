@@ -209,7 +209,7 @@ test('Catalog: active apps, manifests and icons exist', async ({ request }) => {
   expect(catalog.categories).toHaveLength(12);
   const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
   expect(active.length).toBeGreaterThanOrEqual(24);
-  expect(active.filter(a=>a.category==='auto')).toHaveLength(15);
+  expect(active.filter(a=>a.category==='auto')).toHaveLength(17);
   for(const app of active){
     const pageRes=await request.get('/'+app.path);
     expect(pageRes.ok(),app.name+' page').toBeTruthy();
@@ -259,8 +259,8 @@ test('Home links directly to real category pages', async ({ page, request }) => 
   await expect(page.locator('#groups')).toHaveCount(0);
   await expect(page.getByRole('link',{name:/Auto & mobilità/i})).toHaveAttribute('href','./auto/');
   await page.goto('/auto/');
-  await expect(page.locator('#apps .app')).toHaveCount(15);
-  await expect(page.locator('#availableCount')).toHaveText('15 disponibili');
+  await expect(page.locator('#apps .app')).toHaveCount(17);
+  await expect(page.locator('#availableCount')).toHaveText('17 disponibili');
   const old=await request.get('/categorie.html');
   expect(old.ok()).toBeTruthy();
 });
@@ -431,7 +431,7 @@ test('Shared micro-app engine performs a calculation and persists a record', asy
 test('Category pages hide planned ideas from visitors', async ({ page }) => {
   await page.goto('/documenti/');
   await expect(page.getByText('In arrivo')).toHaveCount(0);
-  await expect(page.locator('#planned')).toBeHidden();
+  await expect(page.locator('#planned')).toHaveCount(0);
 });
 
 test('Specialized utilities perform their real functions', async ({ page }) => {
