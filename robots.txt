@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://webinsolito.github.io/webinsolito/sitemap.xml

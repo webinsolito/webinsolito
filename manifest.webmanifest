@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/",
+  "name": "Webinsolito — strumenti gratuiti",
+  "short_name": "Webinsolito",
+  "description": "Strumenti gratuiti per le piccole cose di ogni giorno.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "assets/webinsolito-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
