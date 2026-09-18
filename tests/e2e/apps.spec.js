@@ -117,7 +117,7 @@ test('SafeBuy: scan returns a result', async ({ page }) => {
   await page.locator('#url').fill('https://example.com/prodotto');
   await page.locator('#seller').fill('Negozio QA');
   await page.locator('#price').fill('99');
-  await page.getByRole('button',{name:'CONTROLLA'}).click();
+  await page.locator('button[onclick="runScan()"]:visible').click();
   await expect(page.locator('#result')).toContainText('/100');
 });
 
