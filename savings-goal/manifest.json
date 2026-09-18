@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/savings-goal/",
+  "name": "SavingsGoal",
+  "short_name": "SavingsGoal",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Calcola quanto tempo serve per raggiungere un obiettivo di risparmio.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
