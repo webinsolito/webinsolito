@@ -17,6 +17,7 @@ const INTENTS=[
  {phrases:["voglio risparmiare","risparmiare soldi","mettere soldi da parte","risparmio"],targets:["savings-goal","budget-lite","subscriptions"],label:"risparmiare"},
  {phrases:["devo cambiare casa","cambio casa","cambiare appartamento"],targets:["moving-list","home-inventory","home-docs"],label:"organizzare un cambio casa"},
  {phrases:["devo organizzare i documenti","organizzare documenti","mettere ordine documenti"],targets:["docpocket","archive-box","home-docs"],label:"organizzare documenti"},
+ {phrases:["cosa faccio oggi","eventi oggi","cosa fare oggi","cosa fare stasera","eventi stasera","eventi weekend","cosa fare weekend","eventi gratis","eventi con bambini"],targets:["bresciago"],label:"trovare qualcosa da fare"},
  {phrases:["documenti auto","scadenze auto","organizzare documenti macchina"],targets:["car-docs","autobuddy","revisione-memo"],label:"organizzare i documenti auto"}
 ];
 const SYNONYMS=[
