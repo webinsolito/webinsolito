@@ -171,7 +171,7 @@ test('CarCost: calculate and save a real ownership scenario', async ({ page }) =
   await expect(page.locator('#monthly')).not.toHaveText('—');
   await expect(page.locator('#perKm')).toContainText('€');
   await page.getByRole('button',{name:'Salva questo calcolo'}).click();
-  await expect(page.locator('#history')).toContainText('Auto QA');
+  await expect(page.locator('#historyList')).toContainText('Auto QA');
 });
 
 test('TripCost: calculate total and split per person', async ({ page }) => {
@@ -186,7 +186,7 @@ test('TripCost: calculate total and split per person', async ({ page }) => {
   await expect(page.locator('#total')).not.toHaveText('—');
   await expect(page.locator('#perPerson')).not.toHaveText('—');
   await page.getByRole('button',{name:'Salva viaggio'}).click();
-  await expect(page.locator('#history')).toContainText('Viaggio QA');
+  await expect(page.locator('#historyList')).toContainText('Viaggio QA');
 });
 
 test('DocPocket: native encrypted-backup crypto roundtrip', async ({ page }) => {
