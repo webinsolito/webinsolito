@@ -2,10 +2,10 @@
 const INTENTS=[
  {phrases:["vendere auto","vendere macchina","vendo auto","mettere in vendita auto","fare annuncio auto"],targets:["sell-my-car","car-value","carcost"],label:"vendere un'auto"},
  {phrases:["scade revisione","scadenza revisione","fare revisione","quando revisione","revisione auto"],targets:["revisione-memo","autobuddy"],label:"gestire la revisione"},
- {phrases:["quanto costa viaggio","quanto spendo viaggio","andare a roma","costo viaggio auto","costo trasferta"],targets:["tripcost","fuel-trip","road-trip"],label:"calcolare un viaggio"},
+ {phrases:["quanto costa viaggio","quanto spendo viaggio","quanto spendo per un viaggio","andare a roma","costo viaggio auto","costo trasferta"],targets:["tripcost","fuel-trip","road-trip"],label:"calcolare un viaggio"},
  {phrases:["parto una settimana","parto per viaggio","preparare valigia","cosa porto viaggio","lista valigia"],targets:["packr","trip-planner","travel-docs"],label:"preparare un viaggio"},
  {phrases:["dividere cena","dividere conto","dividere spese","chi deve dare soldi","spesa tra amici"],targets:["splitly","trip-share"],label:"dividere una spesa"},
- {phrases:["cosa cucino","cosa cucinare","ho in frigo","avanzi frigo","ricetta con quello che ho"],targets:["frigochef","leftover-chef","meal-planner"],label:"decidere cosa cucinare"},
+ {phrases:["cosa cucino","cosa cucino stasera","cosa cucinare","ho in frigo","avanzi frigo","ricetta con quello che ho"],targets:["frigochef","leftover-chef","meal-planner"],label:"decidere cosa cucinare"},
  {phrases:["costo vero auto","quanto costa auto","spese auto","costo annuale auto","costo mensile auto"],targets:["carcost","fuel-budget","service-book"],label:"capire il costo dell'auto"},
  {phrases:["benzina meno cara","benzina economica","distributore conveniente","prezzo carburante","dove fare benzina"],targets:["fuelgo","fuel-saver"],label:"risparmiare sul carburante"},
  {phrases:["studiare esame","preparare esame","organizzare studio","piano esame","devo studiare"],targets:["exam-planner","study-timer","study-notes"],label:"preparare un esame"},
@@ -14,6 +14,9 @@ const INTENTS=[
  {phrases:["preventivo cliente","fare preventivo","scrivere preventivo","prezzo lavoro cliente"],targets:["quote-maker","client-memo","price-list"],label:"preparare un preventivo"},
  {phrases:["qr code","creare qr","fare qr","qr link"],targets:["qrpocket","qrmenu"],label:"creare un QR"},
  {phrases:["budget casa","spese di casa","organizzare spese casa","quanto spendo casa"],targets:["home-budget","home-expense","budget-lite"],label:"organizzare le spese di casa"},
+ {phrases:["voglio risparmiare","risparmiare soldi","mettere soldi da parte","risparmio"],targets:["savings-goal","budget-lite","subscriptions"],label:"risparmiare"},
+ {phrases:["devo cambiare casa","cambio casa","cambiare appartamento"],targets:["moving-list","home-inventory","home-docs"],label:"organizzare un cambio casa"},
+ {phrases:["devo organizzare i documenti","organizzare documenti","mettere ordine documenti"],targets:["docpocket","archive-box","home-docs"],label:"organizzare documenti"},
  {phrases:["documenti auto","scadenze auto","organizzare documenti macchina"],targets:["car-docs","autobuddy","revisione-memo"],label:"organizzare i documenti auto"}
 ];
 const SYNONYMS=[

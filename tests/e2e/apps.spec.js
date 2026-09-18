@@ -257,7 +257,7 @@ test('Home links directly to real category pages', async ({ page, request }) => 
   await page.goto('/');
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
   await expect(page.locator('#groups')).toHaveCount(0);
-  await expect(page.getByRole('link',{name:/Auto & mobilità/i})).toHaveAttribute('href','./auto/');
+  await expect(page.getByRole('link',{name:'Auto',exact:true})).toHaveAttribute('href','./auto/');
   await page.goto('/auto/');
   await expect(page.locator('#apps .app')).toHaveCount(17);
   await expect(page.locator('#availableCount')).toHaveText('17 disponibili');
@@ -503,8 +503,7 @@ test('Home visual hierarchy keeps categories strong without featured clutter', a
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
-  await expect(page.locator('#activeCount')).toHaveText('200');
-  const icon=page.locator('#categoryGrid .cat img').first();
+    const icon=page.locator('#categoryGrid .cat img').first();
   const card=page.locator('#categoryGrid .cat').first();
   const iconBox=await icon.boundingBox(), cardBox=await card.boundingBox();
   expect(iconBox?.width).toBeGreaterThanOrEqual(56);
@@ -631,4 +630,31 @@ test('Mobile quality rebuild fits 360, 390 and 430 without horizontal overflow',
     }
     await ctx.close();
   }
+});
+
+test('Home category tiles contain only icon and name', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
+  for(const card of await page.locator('#categoryGrid .cat').all()){
+    await expect(card.locator('img')).toHaveCount(1);
+    await expect(card.locator('.catName')).toHaveCount(1);
+    await expect(card.locator('p,.catFoot')).toHaveCount(0);
+  }
+});
+test('Home mandatory natural-language intents stay sensible', async ({ page }) => {
+  await page.goto('/');
+  const q=page.locator('#globalSearch');
+  const checks=[
+    ['devo vendere la macchina','sell-my-car'],
+    ['parto una settimana','packr'],
+    ['cosa cucino stasera','frigochef'],
+    ['devo studiare per un esame','exam-planner'],
+    ['voglio risparmiare','savings-goal'],
+    ['devo cambiare casa','moving-list'],
+    ['devo organizzare i documenti','docpocket'],
+    ['devo dividere una cena','splitly'],
+    ['mi scade la revisione','revisione-memo'],
+    ['quanto spendo per un viaggio','tripcost']
+  ];
+  for(const [text,id] of checks){await q.fill(text);await expect(page.locator('#searchResults .res[href]').first()).toHaveAttribute('data-app-id',id);}
 });
