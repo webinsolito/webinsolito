@@ -405,10 +405,10 @@ test('Real category pages exist for all 12 macro-categories', async ({ request }
 });
 
 
-test('Catalog reaches 200 real apps and home stays category-only', async ({ page }) => {
+test('Catalog keeps only useful active apps and home stays category-only', async ({ page }) => {
   const catalog = await (await page.request.get('/apps.json')).json();
   const active = catalog.apps.filter(a => ['MVP','BETA','STABLE'].includes(a.status) && a.path);
-  expect(active).toHaveLength(200);
+  expect(active).toHaveLength(196);
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
@@ -530,4 +530,105 @@ test('Home visual before-after artifact', async ({ page }, testInfo) => {
   await page.goto('/');
   await page.waitForSelector('#categoryGrid .cat');
   await page.screenshot({path:'test-results/home-visual-after-desktop.png',fullPage:true});
+});
+
+
+test('Quality rebuild: 20 improved apps expose their specific flows', async ({ page }) => {
+  const cases = [
+    ['/seasonal-food/','#monthName'],
+    ['/cocktail-mix/','#recipe'],
+    ['/budget-lite/','#stats'],
+    ['/savings-goal/','#target'],
+    ['/warranty-pocket/','#months'],
+    ['/manuals-pocket/','#source'],
+    ['/laundry-helper/','#fabric'],
+    ['/plant-water/','#interval'],
+    ['/currency-pocket/','#fee'],
+    ['/outfit-picker/','#tops'],
+    ['/capsule-wardrobe/','#list'],
+    ['/wishlist/','#target'],
+    ['/return-memo/','#next'],
+    ['/recycle-helper/','#q'],
+    ['/waste-day/','#day'],
+    ['/work-timer/','#project'],
+    ['/quote-maker/','#lines'],
+    ['/text-counter/','#txt'],
+    ['/decision-helper/','#wBenefit'],
+    ['/wardrobe/','#season']
+  ];
+  for (const [url,sel] of cases) {
+    await page.goto(url);
+    await expect(page.locator(sel)).toBeVisible();
+  }
+});
+
+test('BudgetLite calculates totals and keeps records', async ({ page }) => {
+  await page.goto('/budget-lite/');
+  await page.locator('#item').fill('Spesa QA');
+  await page.locator('#amount').fill('25');
+  await page.locator('#type').selectOption('expense');
+  await page.getByRole('button',{name:'Salva'}).click();
+  await expect(page.locator('#list')).toContainText('Spesa QA');
+  await expect(page.locator('#stats')).toContainText('25');
+});
+
+test('WarrantyPocket calculates a real expiry', async ({ page }) => {
+  await page.goto('/warranty-pocket/');
+  await page.locator('#item').fill('Telefono QA');
+  await page.locator('#date').fill('2026-01-15');
+  await page.locator('#months').selectOption('24');
+  await page.getByRole('button',{name:'Salva garanzia'}).click();
+  await expect(page.locator('#list')).toContainText('15/01/2028');
+});
+
+test('PlantWater marks a plant watered today', async ({ page }) => {
+  await page.goto('/plant-water/');
+  await page.locator('#item').fill('Ficus QA');
+  await page.locator('#interval').fill('7');
+  await page.getByRole('button',{name:'Salva'}).click();
+  await expect(page.locator('#list')).toContainText('Ficus QA');
+  await page.getByRole('button',{name:'Fatto oggi'}).click();
+  await expect(page.locator('#list')).toContainText('tra 7 giorni');
+});
+
+test('QuoteMaker calculates line items and VAT', async ({ page }) => {
+  await page.goto('/quote-maker/');
+  await page.locator('[data-k="desc"]').fill('Servizio QA');
+  await page.locator('[data-k="qty"]').fill('2');
+  await page.locator('[data-k="price"]').fill('100');
+  await page.locator('#vat').fill('22');
+  await page.getByRole('button',{name:'Calcola preventivo'}).click();
+  await expect(page.locator('#out')).toContainText('244');
+});
+
+test('Wardrobe data can feed OutfitPicker', async ({ page }) => {
+  await page.goto('/wardrobe/');
+  await page.locator('#item').fill('Maglia blu');
+  await page.locator('#type').selectOption('top');
+  await page.getByRole('button',{name:'Salva capo'}).click();
+  await page.goto('/outfit-picker/');
+  await page.getByRole('button',{name:'Usa Wardrobe'}).click();
+  await expect(page.locator('#tops')).toContainText('Maglia blu');
+});
+
+test('Merged apps are no longer active catalog entries', async ({ request }) => {
+  const c=await (await request.get('/apps.json')).json();
+  for(const id of ['focus-mode','laundry-tags','eventi-go','today-nearby']){
+    const a=c.apps.find(x=>x.id===id);
+    expect(a.status).toBe('MERGED');
+    expect(a.path).toBe('');
+  }
+});
+
+test('Mobile quality rebuild fits 360, 390 and 430 without horizontal overflow', async ({ browser }) => {
+  for(const width of [360,390,430]){
+    const ctx=await browser.newContext({viewport:{width,height:844}});
+    const p=await ctx.newPage();
+    for(const id of ['budget-lite','warranty-pocket','laundry-helper','plant-water','currency-pocket','outfit-picker','wishlist','return-memo','recycle-helper','waste-day','work-timer','quote-maker','text-counter','decision-helper','wardrobe']){
+      await p.goto('/'+id+'/');
+      const overflow=await p.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+      expect(overflow,id+' overflow @'+width).toBe(false);
+    }
+    await ctx.close();
+  }
 });
