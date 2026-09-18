@@ -209,7 +209,7 @@ test('Catalog: active apps, manifests and icons exist', async ({ request }) => {
   expect(catalog.categories).toHaveLength(12);
   const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
   expect(active.length).toBeGreaterThanOrEqual(24);
-  expect(active.filter(a=>a.category==='auto')).toHaveLength(17);
+  expect(active.filter(a=>a.category==='auto')).toHaveLength(16);
   for(const app of active){
     const pageRes=await request.get('/'+app.path);
     expect(pageRes.ok(),app.name+' page').toBeTruthy();
@@ -259,8 +259,8 @@ test('Home links directly to real category pages', async ({ page, request }) => 
   await expect(page.locator('#groups')).toHaveCount(0);
   await expect(page.getByRole('link',{name:/Auto & mobilità/i})).toHaveAttribute('href','./auto/');
   await page.goto('/auto/');
-  await expect(page.locator('#apps .app')).toHaveCount(17);
-  await expect(page.locator('#availableCount')).toHaveText('17 disponibili');
+  await expect(page.locator('#apps .app')).toHaveCount(16);
+  await expect(page.locator('#intentGrid .intent')).toHaveCount(4);
   const old=await request.get('/categorie.html');
   expect(old.ok()).toBeTruthy();
 });
@@ -405,10 +405,10 @@ test('Real category pages exist for all 12 macro-categories', async ({ request }
 });
 
 
-test('Catalog reaches 200 real apps and home stays category-only', async ({ page }) => {
+test('Catalog keeps the quality-first active set and home stays category-only', async ({ page }) => {
   const catalog = await (await page.request.get('/apps.json')).json();
   const active = catalog.apps.filter(a => ['MVP','BETA','STABLE'].includes(a.status) && a.path);
-  expect(active).toHaveLength(200);
+  expect(active).toHaveLength(195);
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
@@ -503,12 +503,11 @@ test('Home visual hierarchy keeps categories strong without featured clutter', a
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
-  await expect(page.locator('#activeCount')).toHaveText('200');
   const icon=page.locator('#categoryGrid .cat img').first();
   const card=page.locator('#categoryGrid .cat').first();
   const iconBox=await icon.boundingBox(), cardBox=await card.boundingBox();
-  expect(iconBox?.width).toBeGreaterThanOrEqual(56);
-  expect(cardBox?.height).toBeGreaterThanOrEqual(175);
+  expect(iconBox?.width).toBeGreaterThanOrEqual(88);
+  expect(cardBox?.height).toBeGreaterThanOrEqual(150);
 });
 
 test('Home stays dense and readable on iPhone', async ({ page }, testInfo) => {
