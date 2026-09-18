@@ -147,6 +147,7 @@ def parse_detail(url,src):
     ogt=soup.find("meta",attrs={"property":"og:title"})
     title=(obj.get("name") if isinstance(obj,dict) else None) or (ogt.get("content","").strip() if ogt else "") or (h1.get_text(" ",strip=True) if h1 else "")
     title=re.sub(r"\s+"," ",title).strip()
+    title=re.sub(r"\s*[|\-–]\s*Visit Brescia\s*$","",title,flags=re.I).strip()
     start=iso_date(obj.get("startDate")) if isinstance(obj,dict) else None
     end=iso_date(obj.get("endDate")) if isinstance(obj,dict) else None
     if not start:
@@ -191,7 +192,8 @@ def main():
         statuses.append({"name":src["name"],"ok":parsed>0,"links":len(links),"events":parsed,"errors":errors})
     dedup={}
     for e in events:
-        k=(norm(e["title"]),e["date"])
+        title_key=re.sub(r"\b20\d{2}\b","",norm(e["title"])).replace(" ","")
+        k=(title_key,e["date"])
         old=dedup.get(k)
         if not old or (len(e.get("note") or "")+len(e.get("place") or ""))>(len(old.get("note") or "")+len(old.get("place") or "")):
             dedup[k]=e
