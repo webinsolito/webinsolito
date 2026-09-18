@@ -89,7 +89,7 @@ test('ScreenSort: import a screenshot into IndexedDB', async ({ page }) => {
   await page.locator('button[data-go="import"]:visible').click();
   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z1xkAAAAASUVORK5CYII=','base64');
   await page.locator('#files').setInputFiles({name:'qa-shot.png',mimeType:'image/png',buffer:png});
-  await page.getByRole('button',{name:'Importa nel dispositivo'}).click();
+  await page.getByRole('button',{name:'Importa screenshot'}).click();
   await expect.poll(async()=>page.locator('#grid').locator('img').count(),{timeout:10000}).toBeGreaterThan(0);
 });
 
@@ -108,7 +108,7 @@ test('DocPocket: archive a PDF locally', async ({ page }) => {
   await page.locator('button[data-go="add"]:visible').click();
   await page.locator('#docName').fill('Documento QA');
   await page.locator('#file').setInputFiles({name:'qa.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\\n% QA\\n')});
-  await page.getByRole('button',{name:'Archivia sul dispositivo'}).click();
+  await page.getByRole('button',{name:'Salva documento'}).click();
   await expect(page.locator('#wallet')).toContainText('Documento QA');
 });
 
