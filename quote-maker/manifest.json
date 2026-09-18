@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/business.svg",
+      "src": "../assets/apps/quality/quote-maker.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

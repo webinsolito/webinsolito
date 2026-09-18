@@ -408,7 +408,7 @@ test('Real category pages exist for all 12 macro-categories', async ({ request }
 test('Catalog keeps only useful active apps and home stays category-only', async ({ page }) => {
   const catalog = await (await page.request.get('/apps.json')).json();
   const active = catalog.apps.filter(a => ['MVP','BETA','STABLE'].includes(a.status) && a.path);
-  expect(active).toHaveLength(196);
+  expect(active).toHaveLength(181);
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
@@ -612,7 +612,7 @@ test('Wardrobe data can feed OutfitPicker', async ({ page }) => {
 
 test('Merged apps are no longer active catalog entries', async ({ request }) => {
   const c=await (await request.get('/apps.json')).json();
-  for(const id of ['focus-mode','laundry-tags','eventi-go','today-nearby']){
+  for(const id of ['focus-mode','laundry-tags','eventi-go','today-nearby','weekend-go','tonight','free-events','family-events','market-go','concert-go','festival-go','museum-go','cinema-go','outdoor-go','date-ideas','rainy-day','kids-weekend','village-fest','local-sport']){
     const a=c.apps.find(x=>x.id===id);
     expect(a.status).toBe('MERGED');
     expect(a.path).toBe('');
@@ -657,4 +657,19 @@ test('Home mandatory natural-language intents stay sensible', async ({ page }) =
     ['quanto spendo per un viaggio','tripcost']
   ];
   for(const [text,id] of checks){await q.fill(text);await expect(page.locator('#searchResults .res[href]').first()).toHaveAttribute('data-app-id',id);}
+});
+
+test('BresciaGo absorbs merged event views', async ({ page }) => {
+  for(const [view,label] of [['weekend','Weekend'],['free','Gratis'],['family','Famiglia'],['music','Musica']]){
+    await page.goto('/bresciago/?view='+view);
+    await expect(page.locator('#sectionTitle')).toContainText(label,{timeout:15000});
+    await expect(page.locator('#feedStatus')).toContainText('eventi',{timeout:15000});
+  }
+});
+test('No active catalog link points to a merged app', async ({ request }) => {
+  const c=await (await request.get('/apps.json')).json();
+  const merged=new Set(c.apps.filter(a=>a.status==='MERGED').map(a=>a.id));
+  const active=c.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+  expect(active.some(a=>merged.has(a.id))).toBe(false);
+  expect(active).toHaveLength(181);
 });

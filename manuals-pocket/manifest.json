@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/docs.svg",
+      "src": "../assets/apps/quality/manuals-pocket.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

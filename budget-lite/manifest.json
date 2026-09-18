@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/money.svg",
+      "src": "../assets/apps/quality/budget-lite.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/study.svg",
+      "src": "../assets/apps/quality/text-counter.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

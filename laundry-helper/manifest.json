@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/home.svg",
+      "src": "../assets/apps/quality/laundry-helper.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

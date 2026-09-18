@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/shopping.svg",
+      "src": "../assets/apps/quality/return-memo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

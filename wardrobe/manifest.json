@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/style.svg",
+      "src": "../assets/apps/quality/wardrobe.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

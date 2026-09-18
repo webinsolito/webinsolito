@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/territory.svg",
+      "src": "../assets/apps/quality/waste-day.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

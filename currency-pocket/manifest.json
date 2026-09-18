@@ -9,7 +9,7 @@
   "theme_color": "#09111b",
   "icons": [
     {
-      "src": "../assets/categories/travel.svg",
+      "src": "../assets/apps/quality/currency-pocket.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
