@@ -62,8 +62,8 @@ const worst=[...rows].sort((a,b)=>a.score-b.score||a.bytes-b.bytes).slice(0,30);
 const visualSelection=Object.fromEntries(Object.entries(byCat).map(([k,v])=>[k,v.slice(0,3).map(x=>x.id)]));
 
 const out={generated_at:new Date().toISOString(),active:rows.length,rows,worst30:worst.map(x=>x.id),visualSelection};
-fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
-fs.writeFileSync(path.join(root,'test-results','quality-audit.json'),JSON.stringify(out,null,2));
+fs.mkdirSync(path.join(root,'quality-artifacts'),{recursive:true});
+fs.writeFileSync(path.join(root,'quality-artifacts','quality-audit.json'),JSON.stringify(out,null,2));
 const md=[
  '# Webinsolito quality audit',
  '',
@@ -77,5 +77,5 @@ const md=[
  '',
  ...Object.entries(visualSelection).map(([k,v])=>'- '+k+': '+v.join(', '))
 ];
-fs.writeFileSync(path.join(root,'test-results','quality-audit.md'),md.join('\n'));
+fs.writeFileSync(path.join(root,'quality-artifacts','quality-audit.md'),md.join('\n'));
 console.log(JSON.stringify({active:rows.length,worst30:out.worst30,visualSelection},null,2));
