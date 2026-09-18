@@ -59,7 +59,7 @@ a{color:inherit}
 <main class="wrap">
 <header class="top"><div class="brand"><img src="./assets/webinsolito-logo.svg" alt="">WEBINSOLITO</div></header>
 <section class="hero">
-<div class="ey">200 strumenti · gratis</div>
+<div class="ey"><span id="activeCount">—</span> strumenti · gratis</div>
 <h1>Dimmi cosa devi fare.</h1>
 <p>Scrivilo come ti viene. Webinsolito prova a capire il problema e ti porta allo strumento giusto.</p>
 <div class="searchBox">
@@ -94,7 +94,7 @@ function paintCursor(){
 }
 fetch('./apps.json',{cache:'no-store'}).then(r=>r.json()).then(x=>{
  categories=x.categories;
- live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+ live=x.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);activeCount.textContent=live.length;
  categoryGrid.innerHTML=categories.map(c=>{
    const n=live.filter(a=>a.category===c.id).length;
    return '<a class="cat" style="--c1:'+c.colors[0]+';--c2:'+c.colors[1]+'" href="./'+slugMap[c.id]+'/"><div class="catIcon"><img src="./'+c.icon+'" alt=""></div><h2>'+esc(c.name)+'</h2><p>'+esc(c.tagline)+'</p><div class="catFoot"><span>'+n+' strumenti</span><span>→</span></div></a>';
