@@ -50,3 +50,14 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload home visual comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-visual-${{ github.run_id }}
+          path: |
+            test-results/home-visual-before-desktop.png
+            test-results/home-visual-after-desktop.png
+          if-no-files-found: ignore
+          retention-days: 7
