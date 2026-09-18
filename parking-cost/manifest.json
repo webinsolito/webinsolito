@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/parking-cost/",
+  "name": "ParkingCost",
+  "short_name": "ParkingCost",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Calcola il costo di un parcheggio da durata e tariffa.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
