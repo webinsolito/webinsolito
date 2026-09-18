@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/daily-spend/",
+  "name": "DailySpend",
+  "short_name": "DailySpend",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Trasforma il budget rimanente in una soglia di spesa giornaliera.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
