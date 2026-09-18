@@ -1,49 +1,85 @@
-# Webinsolito Apps V3
+# Webinsolito
 
-Hub gratuito con 12 app web mobile-first pubblicate su GitHub Pages.
+Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
-## Stato reale
+## Stato
 - hosting: GitHub Pages;
-- costo ricorrente aggiuntivo del progetto: €0;
-- dati: localStorage / IndexedDB sul dispositivo;
-- ogni app ha identità, logo, navigazione e flussi propri;
-- PWA manifest per ogni app + service worker root;
-- backup JSON presente nelle app dove ha senso;
-- nessun backend attivo: i dati non si sincronizzano automaticamente fra dispositivi.
+- costo ricorrente: €0;
+- catalogo centrale: `apps.json`;
+- categorie: 12;
+- app pubblicate in questa candidate: 14;
+- app future registrate come `PLANNED`: non vengono mostrate come funzionanti;
+- dati utente: locali al browser salvo le app che leggono fonti pubbliche documentate;
+- PWA: manifest per le app + service worker root;
+- test browser: Chromium desktop + WebKit/iPhone.
 
-## App
-- **AutoBuddy** — garage multi-auto, scadenze, spese, manutenzione, documenti e parcheggio.\n- **FuelGo** — distributori vicini, prezzi MIMIT, distanza, confronto self/servito e navigazione.
-- **DealerFlow** — stock, pipeline drag/drop, lead, agenda, preventivi e test drive.
-- **BresciaGo** — feed eventi reali salvati con fonte, filtri e itinerario personale.
-- **FrigoChef** — dispensa, ricette per compatibilità, scadenze ingredienti e lista spesa.
-- **StyleMatch** — misure guidate, tabella taglie specifica e stima del fit.
-- **Splitly** — quote uguali/personalizzate e calcolo dei trasferimenti netti.
-- **ParkMemo** — GPS, mappa OpenStreetMap, timer, foto, condivisione e luoghi frequenti.
-- **ScreenSort** — archivio screenshot in IndexedDB, bulk actions, raccolte e OCR browser.
-- **Packr** — checklist adattiva, storico destinazioni e memoria degli extra personali.
-- **DocPocket** — wallet locale per PDF/immagini, scadenze, preferiti, cestino, backup e OCR immagini.
-- **SafeBuy** — analisi euristica locale di link e segnali d’acquisto con spiegazioni.
+## App pubblicate
+### Auto & mobilità
+- **AutoBuddy** — garage, scadenze, spese, manutenzione, documenti e parcheggio.
+- **FuelGo** — prezzi carburante MIMIT, distanza, freschezza e navigazione.
+- **ParkMemo** — posizione parcheggio, timer, foto, cronologia e luoghi frequenti.
+- **CarCost** — costo reale auto al mese, all’anno e per km.
+- **TripCost** — costo viaggio, carburante, pedaggi e quota per persona.
 
-## Dipendenze esterne
-- **Tesseract.js** viene caricato da CDN in ScreenSort e DocPocket per OCR browser; progetto Apache-2.0.
-- **OpenStreetMap** viene usato da ParkMemo per la mappa embedded quando è disponibile una posizione GPS.
-- BresciaGo aggiorna automaticamente il feed da fonti pubbliche selezionate e conserva sempre il link originale.\n- FuelGo usa i dataset quotidiani MIMIT “Prezzi praticati e anagrafica degli impianti”, riutilizzati secondo IODL 2.0.
+### Lavoro
+- **DealerFlow** — auto, clienti, trattative e agenda.
 
-## Limiti noti
-- niente sincronizzazione cloud/account;
-- OCR richiede rete al primo caricamento del motore ed è più lento su telefoni meno potenti;
-- iOS/browser può cancellare storage locale in alcune condizioni: esportare backup per dati importanti;
-- il meteo live non è collegato a Packr perché la Free API Open-Meteo è indicata per uso non commerciale e il progetto vuole restare riutilizzabile senza ambiguità di costo/licenza.
+### Eventi
+- **BresciaGo** — eventi reali con fonte originale e selezione personale.
 
-Rollback pre-V2: `rollback/pre-v2-deepening-2026-09-18`.
+### Food
+- **FrigoChef** — dispensa, ricette, scadenze e lista spesa.
 
+### Persona
+- **StyleMatch** — misure guidate, vestibilità e stima taglia.
 
-## BresciaGo automatic feed
-- GitHub Actions workflow: `.github/workflows/bresciago-events.yml`
-- schedule: every 3 hours + manual dispatch;
+### Soldi
+- **Splitly** — spese condivise, quote e trasferimenti semplificati.
+
+### Documenti
+- **ScreenSort** — screenshot, raccolte, ricerca testo e azioni multiple.
+- **DocPocket** — documenti, scadenze, preferiti, lettura testo e backup protetti.
+
+### Viaggi
+- **Packr** — checklist adattiva e storico destinazioni.
+
+### Shopping
+- **SafeBuy** — segnali spiegabili e livelli di attenzione, senza falso punteggio di precisione.
+
+## Architettura
+- `apps.json` è la fonte centrale per homepage, categorie e stato delle app.
+- Le app possono essere `PLANNED`, `MVP`, `BETA` o `STABLE`.
+- Solo MVP/BETA/STABLE con percorso reale vengono mostrate come utilizzabili.
+- `assets/webinsolito-core.js` contiene funzioni comuni leggere.
+- `docs/github-audit.md` documenta l’audit GitHub-first.
+- `docs/reuse-register.md` registra dipendenze, licenze e pattern riutilizzati.
+
+## Dipendenze e fonti
+- **Tesseract.js**: Apache-2.0, usato per lettura testo da immagini.
+- **OpenStreetMap**: usato da ParkMemo per la mappa.
+- **MIMIT**: dati ufficiali carburanti per FuelGo, IODL 2.0.
+- **BresciaGo**: fonti pubbliche selezionate con URL originale conservato.
+- **Web Crypto nativo**: AES-GCM + PBKDF2 per copie protette di DocPocket.
+
+## Automazioni
+### BresciaGo
+- workflow: `.github/workflows/bresciago-events.yml`;
 - collector: `automation/bresciago/update_events.py`;
-- public feed: `bresciago/data/events.json`;
-- active sources: Comune di Brescia and Visit Brescia;
-- the collector preserves original source URLs, removes duplicates, drops expired events and refuses to overwrite the feed if collection returns no valid events;
-- BresciaGo fetches the public feed on launch and keeps favorites, itinerary and manually added events local to each device.
-\n\n## FuelGo automatic feed\n- workflow: `.github/workflows/fuelgo-data.yml`;\n- collector: `automation/fuelgo/update_fuel.py`;\n- source: MIMIT open data, aggiornamento quotidiano, licenza IODL 2.0;\n- feed pubblico: `fuelgo/data/stations.json`;\n- l’app usa GPS solo nel browser dell’utente oppure ricerca per Comune; nessuna posizione viene inviata a Webinsolito.\n
+- feed: `bresciago/data/events.json`.
+
+### FuelGo
+- workflow: `.github/workflows/fuelgo-data.yml`;
+- collector: `automation/fuelgo/update_fuel.py`;
+- feed diviso per provincia in `fuelgo/data/provinces/`.
+
+## Limiti reali
+- nessuna sincronizzazione cloud/account;
+- lettura testo può richiedere rete al primo caricamento;
+- lo storage browser può essere cancellato dal sistema: DocPocket offre backup e richiesta di storage persistente;
+- le funzioni che richiederebbero servizi a pagamento non vengono simulate.
+
+## Rollback
+- `rollback/pre-ecosystem-expansion-2026-09-18`
+
+## Candidate
+- `candidate/ecosystem-phase1-2026-09-18`
