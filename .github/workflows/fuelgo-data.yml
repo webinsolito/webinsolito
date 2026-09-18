@@ -1,0 +1,45 @@
+name: Update FuelGo data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 9,13 * * *"
+  push:
+    paths:
+      - "automation/fuelgo/**"
+      - ".github/workflows/fuelgo-data.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fuelgo-data
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download and normalize MIMIT fuel data
+        run: python automation/fuelgo/update_fuel.py
+
+      - name: Commit changed feed
+        run: |
+          if git diff --quiet -- fuelgo/data/stations.json; then
+            echo "FuelGo feed unchanged"
+            exit 0
+          fi
+          git config user.name "webinsolito-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add fuelgo/data/stations.json
+          git commit -m "chore(fuelgo): refresh MIMIT fuel prices [skip ci]"
+          git push

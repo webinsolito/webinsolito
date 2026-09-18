@@ -1,6 +1,6 @@
-# Webinsolito Apps V2
+# Webinsolito Apps V3
 
-Hub gratuito con 11 app web mobile-first pubblicate su GitHub Pages.
+Hub gratuito con 12 app web mobile-first pubblicate su GitHub Pages.
 
 ## Stato reale
 - hosting: GitHub Pages;
@@ -12,7 +12,7 @@ Hub gratuito con 11 app web mobile-first pubblicate su GitHub Pages.
 - nessun backend attivo: i dati non si sincronizzano automaticamente fra dispositivi.
 
 ## App
-- **AutoBuddy** — garage multi-auto, scadenze, spese, manutenzione, documenti e parcheggio.
+- **AutoBuddy** — garage multi-auto, scadenze, spese, manutenzione, documenti e parcheggio.\n- **FuelGo** — distributori vicini, prezzi MIMIT, distanza, confronto self/servito e navigazione.
 - **DealerFlow** — stock, pipeline drag/drop, lead, agenda, preventivi e test drive.
 - **BresciaGo** — feed eventi reali salvati con fonte, filtri e itinerario personale.
 - **FrigoChef** — dispensa, ricette per compatibilità, scadenze ingredienti e lista spesa.
@@ -27,7 +27,7 @@ Hub gratuito con 11 app web mobile-first pubblicate su GitHub Pages.
 ## Dipendenze esterne
 - **Tesseract.js** viene caricato da CDN in ScreenSort e DocPocket per OCR browser; progetto Apache-2.0.
 - **OpenStreetMap** viene usato da ParkMemo per la mappa embedded quando è disponibile una posizione GPS.
-- BresciaGo collega le fonti ufficiali Comune di Brescia e Visit Brescia; non inventa eventi né fa scraping automatico.
+- BresciaGo aggiorna automaticamente il feed da fonti pubbliche selezionate e conserva sempre il link originale.\n- FuelGo usa i dataset quotidiani MIMIT “Prezzi praticati e anagrafica degli impianti”, riutilizzati secondo IODL 2.0.
 
 ## Limiti noti
 - niente sincronizzazione cloud/account;
@@ -46,3 +46,4 @@ Rollback pre-V2: `rollback/pre-v2-deepening-2026-09-18`.
 - active sources: Comune di Brescia and Visit Brescia;
 - the collector preserves original source URLs, removes duplicates, drops expired events and refuses to overwrite the feed if collection returns no valid events;
 - BresciaGo fetches the public feed on launch and keeps favorites, itinerary and manually added events local to each device.
+\n\n## FuelGo automatic feed\n- workflow: `.github/workflows/fuelgo-data.yml`;\n- collector: `automation/fuelgo/update_fuel.py`;\n- source: MIMIT open data, aggiornamento quotidiano, licenza IODL 2.0;\n- feed pubblico: `fuelgo/data/stations.json`;\n- l’app usa GPS solo nel browser dell’utente oppure ricerca per Comune; nessuna posizione viene inviata a Webinsolito.\n
