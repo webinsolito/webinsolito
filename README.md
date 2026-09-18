@@ -1,6 +1,6 @@
 # Webinsolito Apps V2
 
-Hub gratuito con 12 app web mobile-first pubblicate su GitHub Pages.
+Hub gratuito con 11 app web mobile-first pubblicate su GitHub Pages.
 
 ## Stato reale
 - hosting: GitHub Pages;
@@ -14,7 +14,6 @@ Hub gratuito con 12 app web mobile-first pubblicate su GitHub Pages.
 ## App
 - **AutoBuddy** — garage multi-auto, scadenze, spese, manutenzione, documenti e parcheggio.
 - **DealerFlow** — stock, pipeline drag/drop, lead, agenda, preventivi e test drive.
-- **TableSync** — mappa sala, tavoli, prenotazioni, lista attesa e turni.
 - **BresciaGo** — feed eventi reali salvati con fonte, filtri e itinerario personale.
 - **FrigoChef** — dispensa, ricette per compatibilità, scadenze ingredienti e lista spesa.
 - **StyleMatch** — misure guidate, tabella taglie specifica e stima del fit.
