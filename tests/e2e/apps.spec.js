@@ -4,7 +4,7 @@ const PAGE_ERRORS=new WeakMap();
 test.beforeEach(async ({page})=>{const e=[];PAGE_ERRORS.set(page,e);page.on('pageerror',x=>e.push(x.message));});
 test.afterEach(async ({page})=>{expect(PAGE_ERRORS.get(page)||[],(PAGE_ERRORS.get(page)||[]).join('\n')).toEqual([]);});
 
-const APPS=['autobuddy','dealerflow','bresciago','frigochef','stylematch','splitly','parkmemo','screensort','packr','docpocket','safebuy','fuelgo'];
+const APPS=['autobuddy','fuelgo','carcost','tripcost','parkmemo','dealerflow','bresciago','frigochef','stylematch','splitly','screensort','packr','docpocket','safebuy'];
 
 for (const app of APPS) {
   test(app+' loads without JavaScript page errors', async ({ page }) => {
@@ -118,7 +118,8 @@ test('SafeBuy: scan returns a result', async ({ page }) => {
   await page.locator('#seller').fill('Negozio QA');
   await page.locator('#price').fill('99');
   await page.locator('button[onclick="runScan()"]:visible').click();
-  await expect(page.locator('#result')).toContainText('/100');
+  await expect(page.locator('#result')).not.toContainText('/100');
+  await expect(page.locator('#result')).toContainText(/Pochi segnali|Attenzione/);
 });
 
 test('FuelGo: search Brescia and receive official stations', async ({ page }) => {
@@ -151,4 +152,81 @@ test('Public UI: no developer jargon', async ({ page }) => {
     const visible=(await page.locator('body').innerText()).toLowerCase();
     for (const term of banned) expect(visible, url+' contiene '+term).not.toContain(term);
   }
+});
+
+
+test('CarCost: calculate and save a real ownership scenario', async ({ page }) => {
+  await page.goto('/carcost/');
+  await page.locator('#carName').fill('Auto QA');
+  await page.locator('#price').fill('20000');
+  await page.locator('#years').fill('5');
+  await page.locator('#km').fill('15000');
+  await page.locator('#cons').fill('6');
+  await page.locator('#fuel').fill('1.80');
+  await page.locator('#insurance').fill('600');
+  await page.locator('#tax').fill('200');
+  await page.locator('#maintenance').fill('500');
+  await page.locator('#resale').fill('8000');
+  await page.getByRole('button',{name:'Calcola costo reale'}).click();
+  await expect(page.locator('#monthly')).not.toHaveText('—');
+  await expect(page.locator('#perKm')).toContainText('€');
+  await page.getByRole('button',{name:'Salva questo calcolo'}).click();
+  await expect(page.locator('#history')).toContainText('Auto QA');
+});
+
+test('TripCost: calculate total and split per person', async ({ page }) => {
+  await page.goto('/tripcost/');
+  await page.locator('#tripName').fill('Viaggio QA');
+  await page.locator('#distance').fill('100');
+  await page.locator('#people').fill('4');
+  await page.locator('#cons').fill('6');
+  await page.locator('#fuel').fill('1.80');
+  await page.locator('#tolls').fill('20');
+  await page.getByRole('button',{name:'Calcola viaggio'}).click();
+  await expect(page.locator('#total')).not.toHaveText('—');
+  await expect(page.locator('#perPerson')).not.toHaveText('—');
+  await page.getByRole('button',{name:'Salva viaggio'}).click();
+  await expect(page.locator('#history')).toContainText('Viaggio QA');
+});
+
+test('DocPocket: native encrypted-backup crypto roundtrip', async ({ page }) => {
+  await page.goto('/docpocket/');
+  const ok=await page.evaluate(async()=>{
+    const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+    const key=await cryptoKey('Password-QA-123',salt);
+    const plain=new TextEncoder().encode('docpocket-qa');
+    const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain);
+    const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,enc);
+    return new TextDecoder().decode(dec)==='docpocket-qa';
+  });
+  expect(ok).toBe(true);
+});
+
+test('Catalog: active apps, manifests and icons exist', async ({ request }) => {
+  const r=await request.get('/apps.json');
+  expect(r.ok()).toBeTruthy();
+  const catalog=await r.json();
+  expect(catalog.categories).toHaveLength(12);
+  const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+  expect(active.length).toBeGreaterThanOrEqual(14);
+  for(const app of active){
+    const pageRes=await request.get('/'+app.path);
+    expect(pageRes.ok(),app.name+' page').toBeTruthy();
+    const manifestRes=await request.get('/'+app.path+'manifest.json');
+    expect(manifestRes.ok(),app.name+' manifest').toBeTruthy();
+    const m=await manifestRes.json();
+    expect(m.name).toBeTruthy();
+    const iconRes=await request.get('/'+app.icon);
+    expect(iconRes.ok(),app.name+' icon').toBeTruthy();
+  }
+});
+
+test('FuelGo: cost tools use the selected official price', async ({ page }) => {
+  await page.goto('/fuelgo/');
+  await expect(page.locator('#dataFreshness')).toContainText('impianti',{timeout:15000});
+  await page.locator('#cityInput').fill('Brescia');
+  await page.getByRole('button',{name:'Cerca'}).click();
+  await expect.poll(async()=>page.locator('.station').count(),{timeout:15000}).toBeGreaterThan(0);
+  await expect(page.getByRole('link',{name:'Costo auto'}).first()).toHaveAttribute('href',/carcost\/\?fuel=/);
+  await expect(page.getByRole('link',{name:'Costo viaggio'}).first()).toHaveAttribute('href',/tripcost\/\?fuel=/);
 });
