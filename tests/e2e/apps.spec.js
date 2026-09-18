@@ -1,0 +1,128 @@
+const { test, expect } = require('@playwright/test');
+
+const APPS=['autobuddy','dealerflow','bresciago','frigochef','stylematch','splitly','parkmemo','screensort','packr','docpocket','safebuy','fuelgo'];
+
+for (const app of APPS) {
+  test(app+' loads without JavaScript page errors', async ({ page }) => {
+    const errors=[];
+    page.on('pageerror',e=>errors.push(e.message));
+    await page.goto('/'+app+'/',{waitUntil:'domcontentloaded'});
+    await page.waitForTimeout(400);
+    expect(errors,errors.join('\n')).toEqual([]);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+}
+
+test('AutoBuddy: add a vehicle and persist it', async ({ page }) => {
+  await page.goto('/autobuddy/');
+  await page.getByText('Auto',{exact:true}).first().click();
+  await page.getByRole('button',{name:/Veicolo/}).first().click();
+  await page.locator('#vPlate').fill('QA123QA');
+  await page.locator('#vModel').fill('Auto Test');
+  await page.getByRole('button',{name:'Salva veicolo'}).click();
+  await expect(page.getByText('Auto Test',{exact:true})).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Auto Test',{exact:true})).toBeVisible();
+});
+
+test('DealerFlow: create a lead', async ({ page }) => {
+  await page.goto('/dealerflow/');
+  await page.getByRole('button',{name:/Nuovo lead/i}).click();
+  await page.locator('#lName').fill('Cliente QA');
+  await page.locator('#lContact').fill('0300000000');
+  await page.locator('#lInterest').fill('Auto QA');
+  await page.getByRole('button',{name:'Salva lead'}).click();
+  await expect(page.getByText('Cliente QA',{exact:true})).toBeVisible();
+});
+
+test('BresciaGo: automatic feed loads and an event can be chosen', async ({ page }) => {
+  await page.goto('/bresciago/');
+  await expect.poll(async()=>page.locator('.event').count(),{timeout:15000}).toBeGreaterThan(0);
+  await page.getByRole('button',{name:'Scegli evento'}).first().click();
+  await expect(page.locator('#pickedCount')).not.toHaveText('');
+});
+
+test('FrigoChef: add an ingredient', async ({ page }) => {
+  await page.goto('/frigochef/');
+  await page.locator('#iName').fill('Pomodoro QA');
+  await page.locator('#iQty').fill('2');
+  await page.getByRole('button',{name:'Aggiungi ingrediente'}).click();
+  await expect(page.getByText('Pomodoro QA',{exact:true})).toBeVisible();
+});
+
+test('StyleMatch: save measurements locally', async ({ page }) => {
+  page.on('dialog',d=>d.accept());
+  await page.goto('/stylematch/');
+  await page.locator('#height').fill('175');
+  await page.locator('#chest').fill('96');
+  await page.locator('#waist').fill('82');
+  await page.locator('#hip').fill('98');
+  await page.getByRole('button',{name:'Salva profilo'}).click();
+  const stored=await page.evaluate(()=>localStorage.getItem('stylematch.v2'));
+  expect(stored).toContain('175');
+});
+
+test('Splitly: create a group', async ({ page }) => {
+  await page.goto('/splitly/');
+  await page.locator('#gName').fill('Weekend QA');
+  await page.locator('#gPeople').fill('Alice, Bob');
+  await page.getByRole('button',{name:'Salva gruppo'}).click();
+  await expect(page.getByText('Alice',{exact:true})).toBeVisible();
+  await expect(page.getByText('Bob',{exact:true})).toBeVisible();
+});
+
+test('ParkMemo: save parking without GPS', async ({ page }) => {
+  await page.goto('/parkmemo/');
+  await page.locator('#note').fill('Parcheggio QA');
+  await page.locator('#address').fill('Brescia');
+  await page.getByRole('button',{name:'Salva senza GPS'}).click();
+  await expect(page.getByText('Parcheggio QA',{exact:true})).toBeVisible();
+});
+
+test('ScreenSort: import a screenshot into IndexedDB', async ({ page }) => {
+  await page.goto('/screensort/');
+  await page.getByText('Importa',{exact:true}).first().click();
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z1xkAAAAASUVORK5CYII=','base64');
+  await page.locator('#files').setInputFiles({name:'qa-shot.png',mimeType:'image/png',buffer:png});
+  await page.getByRole('button',{name:'Importa nel dispositivo'}).click();
+  await page.getByText('Screenshot',{exact:true}).first().click();
+  await expect.poll(async()=>page.locator('#grid').locator('img').count(),{timeout:10000}).toBeGreaterThan(0);
+});
+
+test('Packr: create a trip and checklist', async ({ page }) => {
+  await page.goto('/packr/');
+  await page.locator('#dest').fill('Brescia QA');
+  await page.locator('#start').fill('2026-10-01');
+  await page.locator('#end').fill('2026-10-03');
+  await page.getByRole('button',{name:'Genera checklist'}).click();
+  await expect(page.getByText('Brescia QA',{exact:true}).first()).toBeVisible();
+  await expect(page.locator('#categories')).not.toBeEmpty();
+});
+
+test('DocPocket: archive a PDF locally', async ({ page }) => {
+  await page.goto('/docpocket/');
+  await page.getByText('Aggiungi',{exact:true}).first().click();
+  await page.locator('#name').fill('Documento QA');
+  await page.locator('#file').setInputFiles({name:'qa.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\\n% QA\\n')});
+  await page.getByRole('button',{name:'Archivia sul dispositivo'}).click();
+  await page.getByText('Documenti',{exact:true}).first().click();
+  await expect(page.getByText('Documento QA',{exact:true})).toBeVisible();
+});
+
+test('SafeBuy: scan returns a result', async ({ page }) => {
+  await page.goto('/safebuy/');
+  await page.locator('#url').fill('https://example.com/prodotto');
+  await page.locator('#seller').fill('Negozio QA');
+  await page.locator('#price').fill('99');
+  await page.getByRole('button',{name:'ANALIZZA'}).click();
+  await expect(page.locator('#result')).toContainText('/100');
+});
+
+test('FuelGo: search Brescia and receive official stations', async ({ page }) => {
+  await page.goto('/fuelgo/');
+  await expect(page.locator('#dataFreshness')).toContainText('impianti',{timeout:15000});
+  await page.locator('#cityInput').fill('Brescia');
+  await page.getByRole('button',{name:'Cerca'}).click();
+  await expect.poll(async()=>page.locator('.station').count(),{timeout:15000}).toBeGreaterThan(0);
+  await expect(page.getByRole('link',{name:'Portami lì'}).first()).toBeVisible();
+});

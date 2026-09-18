@@ -1,0 +1,53 @@
+name: Functional QA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "autobuddy/**"
+      - "dealerflow/**"
+      - "bresciago/**"
+      - "frigochef/**"
+      - "stylematch/**"
+      - "splitly/**"
+      - "parkmemo/**"
+      - "screensort/**"
+      - "packr/**"
+      - "docpocket/**"
+      - "safebuy/**"
+      - "fuelgo/**"
+      - "tests/**"
+      - "playwright.config.js"
+      - "package.json"
+      - ".github/workflows/functional-qa.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Serve repository
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/webinsolito-http.log 2>&1 &
+          echo $! > /tmp/webinsolito-http.pid
+          sleep 2
+      - name: Run functional browser tests
+        run: npm run test:e2e
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-qa-artifacts
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7
