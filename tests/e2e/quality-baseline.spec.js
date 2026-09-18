@@ -39,3 +39,16 @@ test('visual audit: 3 structurally weakest apps per category', async ({page},tes
     }
   }
 });
+
+
+test('three Home variants and icon-size experiment', async ({page},testInfo)=>{
+  const dir='test-results/quality-baseline/variants';
+  fs.mkdirSync(dir,{recursive:true});
+  for(const v of ['a','b','c']){
+    await page.goto('/experiments/home-'+v+'.html');
+    await page.waitForSelector('#grid .tile');
+    await page.screenshot({path:`${dir}/home-${v}-${testInfo.project.name}.png`,fullPage:true});
+  }
+  await page.goto('/experiments/icon-sizes.html');
+  await page.screenshot({path:`${dir}/icon-sizes-${testInfo.project.name}.png`,fullPage:true});
+});
