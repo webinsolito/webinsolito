@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/"fuelgo"/"data"/"stations.json"
+DATA_DIR=ROOT/"fuelgo"/"data"\nINDEX=DATA_DIR/"index.json"
 ANAG="https://www.mimit.gov.it/images/exportCSV/anagrafica_impianti_attivi.csv"
 PRICES="https://www.mimit.gov.it/images/exportCSV/prezzo_alle_8.csv"
 UA="Webinsolito-FuelGo/1.0 (+https://webinsolito.github.io/webinsolito/fuelgo/)"
@@ -102,19 +102,31 @@ def main():
     compact.sort(key=lambda s:(s["p"],s["c"],s["b"],str(s["id"])))
     if len(compact)<1000:
         raise SystemExit(f"Solo {len(compact)} impianti validi: rifiuto sovrascrittura")
-    payload={
-        "schema":1,
-        "generated_at":datetime.now(timezone.utc).isoformat(),
-        "source":"Ministero delle Imprese e del Made in Italy",
-        "license":"IODL 2.0",
-        "source_date_anagrafica":a_date,
-        "source_date_prices":p_date,
-        "count":len(compact),
-        "stations":compact
-    }
-    OUT.parent.mkdir(parents=True,exist_ok=True)
-    OUT.write_text(json.dumps(payload,ensure_ascii=False,separators=(",",":"))+"\n","utf-8")
-    print(json.dumps({"stations":len(compact),"anagrafica":a_date,"prices":p_date},ensure_ascii=False))
+    def slug(s):
+        x=unicodedata.normalize("NFKD",s or "").encode("ascii","ignore").decode().lower()
+        x=re.sub(r"[^a-z0-9]+","-",x).strip("-")
+        return x or "senza-provincia"
+    groups={}
+    for s in compact: groups.setdefault(s["p"] or "Senza provincia",[]).append(s)
+    DATA_DIR.mkdir(parents=True,exist_ok=True)
+    prov_dir=DATA_DIR/"provinces";prov_dir.mkdir(parents=True,exist_ok=True)
+    keep=set();index_prov=[]
+    for pname,items in sorted(groups.items()):
+        fname=slug(pname)+".json";keep.add(fname)
+        coords=[(s["lat"],s["lon"]) for s in items if s["lat"] is not None and s["lon"] is not None]
+        cities=sorted({s["c"] for s in items if s["c"]})
+        entry={"name":pname,"file":fname,"cities":cities,"count":len(items),"minLat":None,"maxLat":None,"minLon":None,"maxLon":None}
+        if coords:
+            entry.update({"minLat":min(x[0] for x in coords),"maxLat":max(x[0] for x in coords),"minLon":min(x[1] for x in coords),"maxLon":max(x[1] for x in coords)})
+        (prov_dir/fname).write_text(json.dumps({"province":pname,"stations":items},ensure_ascii=False,separators=(",",":"))+"\n","utf-8")
+        index_prov.append(entry)
+    for old in prov_dir.glob("*.json"):
+        if old.name not in keep: old.unlink()
+    legacy=DATA_DIR/"stations.json"
+    if legacy.exists(): legacy.unlink()
+    payload={"schema":2,"generated_at":datetime.now(timezone.utc).isoformat(),"source":"Ministero delle Imprese e del Made in Italy","license":"IODL 2.0","source_date_anagrafica":a_date,"source_date_prices":p_date,"count":len(compact),"provinces":index_prov}
+    INDEX.write_text(json.dumps(payload,ensure_ascii=False,separators=(",",":"))+"\n","utf-8")
+    print(json.dumps({"stations":len(compact),"provinces":len(index_prov),"anagrafica":a_date,"prices":p_date},ensure_ascii=False))
 
 if __name__=="__main__":
     main()
