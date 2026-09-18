@@ -1,0 +1,18 @@
+{
+  "name": "TripShare — Webinsolito",
+  "short_name": "TripShare",
+  "id": "/webinsolito/trip-share/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "../assets/categories/travel.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

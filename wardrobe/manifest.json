@@ -1,0 +1,18 @@
+{
+  "name": "Wardrobe — Webinsolito",
+  "short_name": "Wardrobe",
+  "id": "/webinsolito/wardrobe/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "../assets/categories/style.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

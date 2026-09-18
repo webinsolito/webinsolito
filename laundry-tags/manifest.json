@@ -1,0 +1,18 @@
+{
+  "name": "LaundryTags — Webinsolito",
+  "short_name": "LaundryTags",
+  "id": "/webinsolito/laundry-tags/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111b",
+  "theme_color": "#09111b",
+  "icons": [
+    {
+      "src": "../assets/categories/style.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
