@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/range-calc/",
+  "name": "RangeCalc",
+  "short_name": "RangeCalc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Stima l'autonomia residua di auto termiche o elettriche.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
