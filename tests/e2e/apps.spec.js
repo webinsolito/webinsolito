@@ -20,9 +20,10 @@ test('AutoBuddy: add a vehicle and persist it', async ({ page }) => {
   await page.locator('#vPlate').fill('QA123QA');
   await page.locator('#vModel').fill('Auto Test');
   await page.getByRole('button',{name:'Salva veicolo'}).click();
-  await expect(page.getByText('Auto Test',{exact:true})).toBeVisible();
+  await expect(page.locator('#garageGrid')).toContainText('Auto Test');
   await page.reload();
-  await expect(page.getByText('Auto Test',{exact:true})).toBeVisible();
+  await page.getByText('Auto',{exact:true}).first().click();
+  await expect(page.locator('#garageGrid')).toContainText('Auto Test');
 });
 
 test('DealerFlow: create a lead', async ({ page }) => {
@@ -67,8 +68,8 @@ test('Splitly: create a group', async ({ page }) => {
   await page.locator('#gName').fill('Weekend QA');
   await page.locator('#gPeople').fill('Alice, Bob');
   await page.getByRole('button',{name:'Salva gruppo'}).click();
-  await expect(page.getByText('Alice',{exact:true})).toBeVisible();
-  await expect(page.getByText('Bob',{exact:true})).toBeVisible();
+  await expect(page.locator('#participants')).toContainText('Alice');
+  await expect(page.locator('#participants')).toContainText('Bob');
 });
 
 test('ParkMemo: save parking without GPS', async ({ page }) => {
@@ -76,7 +77,7 @@ test('ParkMemo: save parking without GPS', async ({ page }) => {
   await page.locator('#note').fill('Parcheggio QA');
   await page.locator('#address').fill('Brescia');
   await page.getByRole('button',{name:'Salva senza GPS'}).click();
-  await expect(page.getByText('Parcheggio QA',{exact:true})).toBeVisible();
+  await expect(page.locator('#activeCard')).toContainText('Parcheggio QA');
 });
 
 test('ScreenSort: import a screenshot into IndexedDB', async ({ page }) => {
@@ -106,7 +107,7 @@ test('DocPocket: archive a PDF locally', async ({ page }) => {
   await page.locator('#file').setInputFiles({name:'qa.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\\n% QA\\n')});
   await page.getByRole('button',{name:'Archivia sul dispositivo'}).click();
   await page.getByText('Documenti',{exact:true}).first().click();
-  await expect(page.getByText('Documento QA',{exact:true})).toBeVisible();
+  await expect(page.locator('#wallet')).toContainText('Documento QA');
 });
 
 test('SafeBuy: scan returns a result', async ({ page }) => {
