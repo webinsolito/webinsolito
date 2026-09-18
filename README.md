@@ -7,7 +7,7 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 - costo ricorrente: €0;
 - catalogo centrale: `apps.json`;
 - categorie: 12;
-- app pubblicate in questa candidate: 14;
+- app pubblicate in questa candidate: 24;
 - app future registrate come `PLANNED`: non vengono mostrate come funzionanti;
 - dati utente: locali al browser salvo le app che leggono fonti pubbliche documentate;
 - PWA: manifest per le app + service worker root;
@@ -20,6 +20,16 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 - **ParkMemo** — posizione parcheggio, timer, foto, cronologia e luoghi frequenti.
 - **CarCost** — costo reale auto al mese, all’anno e per km.
 - **TripCost** — costo viaggio, carburante, pedaggi e quota per persona.
+- **BolloCheck** — promemoria bollo e accantonamento.
+- **RevisioneMemo** — promemoria revisione personalizzato.
+- **TyreMemo** — rotazione e anzianità pneumatici.
+- **ServiceBook** — storico manutenzione e prossimi interventi.
+- **FuelSaver** — confronto tra prezzo carburante e costo deviazione.
+- **CarValue** — stima matematica della svalutazione.
+- **ParkingCost** — calcolo durata e costo parcheggio.
+- **EVCharge** — energia, tempo e costo ricarica EV.
+- **RangeCalc** — autonomia residua termica/elettrica.
+- **SellMyCar** — generatore bozza annuncio auto.
 
 ### Lavoro
 - **DealerFlow** — auto, clienti, trattative e agenda.
@@ -83,3 +93,6 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
 ## Candidate
 - `candidate/ecosystem-phase1-2026-09-18`
+
+## Pagine categoria
+La navigazione principale segue `Home → Categoria → App`. Ogni macro-categoria ha un URL reale (`/auto/`, `/food/`, `/soldi/`, `/eventi/`, `/documenti/`, `/casa/`, `/viaggi/`, `/persona/`, `/shopping/`, `/territorio/`, `/business/`, `/studio/`). `categorie.html` non è più un catalogo generale: reindirizza alla home.
