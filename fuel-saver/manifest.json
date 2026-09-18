@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/fuel-saver/",
+  "name": "FuelSaver",
+  "short_name": "FuelSaver",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#132d45",
+  "description": "Confronta due distributori e calcola se la deviazione conviene davvero.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
