@@ -1,0 +1,19 @@
+{
+  "id": "/webinsolito/budget-lite/",
+  "name": "BudgetLite",
+  "short_name": "BudgetLite",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0f4b45",
+  "description": "Budget mensile essenziale con entrate, spese e margine disponibile.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
