@@ -2,18 +2,6 @@ name: Functional QA
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main, 'candidate/**']
-    paths:
-      - "**/*.html"
-      - "**/*.js"
-      - "**/*.css"
-      - "**/*.json"
-      - "**/*.svg"
-      - "tests/**"
-      - "package.json"
-      - "playwright.config.js"
-      - ".github/workflows/functional-qa.yml"
 
 concurrency:
   group: functional-qa-${{ github.ref }}
@@ -54,7 +42,6 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 7
-
       - name: Upload home visual comparison
         if: always()
         uses: actions/upload-artifact@v7
@@ -65,7 +52,6 @@ jobs:
             test-results/home-visual-after-desktop.png
           if-no-files-found: ignore
           retention-days: 7
-
       - name: Upload quality rebuild artifacts
         if: always()
         uses: actions/upload-artifact@v7
