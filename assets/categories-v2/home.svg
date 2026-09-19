@@ -1,6 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none"><defs>
- <linearGradient id="p" x1="36" y1="26" x2="144" y2="152" gradientUnits="userSpaceOnUse"><stop stop-color="#e4d3a4"/><stop offset=".55" stop-color="#9b8155"/><stop offset="1" stop-color="#142235"/></linearGradient>
- <linearGradient id="hi" x1="48" y1="34" x2="134" y2="138" gradientUnits="userSpaceOnUse"><stop stop-color="#fff" stop-opacity=".98"/><stop offset=".45" stop-color="#fff" stop-opacity=".32"/><stop offset="1" stop-color="#fff" stop-opacity=".04"/></linearGradient>
- <filter id="ds" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".30"/></filter>
- <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
- </defs><ellipse cx="90" cy="151" rx="48" ry="10" fill="#000" opacity=".20" filter="url(#soft)"/><g filter="url(#ds)"><path d="M28 91 90 38l62 53-14 16-10-9v42q0 10-10 10H62q-10 0-10-10V98l-10 9-14-16Z" fill="url(#p)"/><path d="M27 91 90 36l64 55" stroke="#f0dfb8" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><rect x="78" y="108" width="27" height="42" rx="8" fill="#fff6dd"/><rect x="60" y="91" width="18" height="18" rx="5" fill="#d9f3ff"/><rect x="107" y="91" width="18" height="18" rx="5" fill="#d9f3ff"/></g></svg>
+<linearGradient id="wall" x1="52" y1="62" x2="127" y2="145" gradientUnits="userSpaceOnUse"><stop stop-color="#fffaf0"/><stop offset=".58" stop-color="#eadfcf"/><stop offset="1" stop-color="#c8bca9"/></linearGradient>
+<linearGradient id="roof" x1="48" y1="54" x2="132" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#35557a"/><stop offset="1" stop-color="#14263e"/></linearGradient>
+<linearGradient id="gold" x1="76" y1="103" x2="107" y2="139" gradientUnits="userSpaceOnUse"><stop stop-color="#f3c97d"/><stop offset="1" stop-color="#b88235"/></linearGradient>
+<filter id="ds" x="-45%" y="-45%" width="190%" height="200%"><feDropShadow dx="0" dy="13" stdDeviation="10" flood-color="#000" flood-opacity=".28"/></filter>
+<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="8"/></filter></defs>
+<ellipse cx="90" cy="151" rx="48" ry="10" fill="#000" opacity=".18" filter="url(#soft)"/>
+<g filter="url(#ds)"><path d="M48 88 90 49l42 39v53q0 10-10 10H58q-10 0-10-10V88Z" fill="url(#wall)"/>
+<path d="M31 91 87 39q3-3 6 0l56 52-13 15-46-42-46 42-13-15Z" fill="url(#roof)"/>
+<path d="M108 55v-16h15v30" fill="#263d5a"/>
+<rect x="77" y="108" width="27" height="43" rx="8" fill="url(#gold)"/>
+<rect x="60" y="91" width="19" height="19" rx="5" fill="#d9efff"/><path d="M69.5 91v19M60 100.5h19" stroke="#9bbbd1" stroke-width="2"/>
+<rect x="107" y="91" width="19" height="19" rx="5" fill="#d9efff"/><path d="M116.5 91v19M107 100.5h19" stroke="#9bbbd1" stroke-width="2"/>
+<path d="M48 129c7 4 14 6 22 6M111 135c8 0 15-2 21-6" stroke="#87996c" stroke-width="6" stroke-linecap="round"/></g></svg>
