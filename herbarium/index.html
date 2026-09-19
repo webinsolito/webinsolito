@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10271f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Herbarium">
+  <title>HERBARIUM — Candidate Preview</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <aside class="preview-banner">
+      <strong>CANDIDATE PREVIEW</strong>
+      <span>Auto-update H24 · ultimo head verde: 516738ef</span>
+    </aside>
+    <header><small>HERBARIUM</small><h1>The Living Atlas</h1><span id="network">offline-first</span></header>
+    <section class="hero"><p>Discover · Explore · Learn · Preserve</p><h2>Il tuo atlante della natura, costruito da osservazioni reali.</h2><button data-view="field">Scopri una pianta</button></section>
+    <section id="home" class="view active"><div class="stats"><article><b id="speciesCount">0</b><span>Specie verificate</span></article><article><b id="observationCount">0</b><span>Osservazioni</span></article></div><p class="notice">HERBARIUM non inventa un nome quando l'evidenza non basta.</p></section>
+    <section id="field" class="view"><h2>Nuova osservazione</h2><p>Carica più viste. In questa baseline recuperata l'identificazione automatica non viene simulata: senza un motore botanico validato il risultato resta UNKNOWN.</p><div class="capture"><label>Pianta intera<input id="whole" type="file" accept="image/*" capture="environment"></label><label>Fiore<input id="flower" type="file" accept="image/*" capture="environment"></label><label>Foglia<input id="leaf" type="file" accept="image/*" capture="environment"></label><label>Dettaglio<input id="detail" type="file" accept="image/*" capture="environment"></label></div><button id="analyse" disabled>Analizza offline</button><output id="result">UNKNOWN — aggiungi almeno una foto.</output><button data-view="home">Torna alla home</button></section>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
