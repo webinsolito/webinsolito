@@ -2,13 +2,6 @@ name: Update FuelGo data
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "15 9,13 * * *"
-  push:
-    paths:
-      - "automation/fuelgo/**"
-      - ".github/workflows/fuelgo-data.yml"
-
 permissions:
   contents: write
 
