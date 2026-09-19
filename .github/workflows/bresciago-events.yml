@@ -2,6 +2,7 @@ name: Update BresciaGo events
 
 on:
   workflow_dispatch:
+
 permissions:
   contents: write
 
@@ -14,8 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync main before generating data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
 
       - name: Python
         uses: actions/setup-python@v7
@@ -28,14 +38,21 @@ jobs:
       - name: Collect and validate events
         run: python automation/bresciago/update_events.py
 
-      - name: Commit changed feed
+      - name: Commit changed feed safely
+        shell: bash
         run: |
+          set -euo pipefail
           if git diff --quiet -- bresciago/data/events.json; then
             echo "Feed unchanged"
             exit 0
+          fi
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::error::main changed while BresciaGo was generating data. Aborting safely; rerun manually."
+            exit 1
           fi
           git config user.name "webinsolito-bot"
           git config user.email "actions@users.noreply.github.com"
           git add bresciago/data/events.json
           git commit -m "chore(bresciago): refresh automatic events [skip ci]"
-          git push
+          git push origin HEAD:main
