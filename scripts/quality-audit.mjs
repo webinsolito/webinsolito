@@ -31,7 +31,7 @@ for(const app of active){
   const brand=/WEBINSOLITO|Webinsolito/i.test(html);
   const shared=/webinsolito-core|microapp\.css|utility\.css|category-page/i.test(html);
   const responsive=/@media|clamp\(|min\(|max\(/i.test(html);
-  const errors=/TODO|FIXME|NOT_AVAILABLE_IN_ENV|coming soon|in arrivo/i.test(html);
+  const errors=/\bTODO\b|\bFIXME\b|NOT_AVAILABLE_IN_ENV|coming soon|in arrivo/i.test(html);
   const text=html.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ');
   const uniqueWords=meaningful((app.description||'')+' '+text).size;
 
