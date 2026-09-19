@@ -15,8 +15,8 @@
   const save=v=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}};
   const field=f=>{
     const id="f_"+f[0],type=f[2]||"text";
-    if(type==="textarea") return `<div class="field"><label>${esc(f[1])}</label><textarea class="f" id="${id}"></textarea></div>`;
-    return `<div class="field"><label>${esc(f[1])}</label><input class="f" id="${id}" type="${esc(type)}"${f[3]?` step="${f[3]}"`:""}></div>`;
+    if(type==="textarea") return `<div class="field"><label for="${id}">${esc(f[1])}</label><textarea class="f" id="${id}"></textarea></div>`;
+    return `<div class="field"><label for="${id}">${esc(f[1])}</label><input class="f" id="${id}" type="${esc(type)}"${f[3]?` step="${f[3]}"`:""}></div>`;
   };
   const val=k=>{
     const e=$("#f_"+k);
@@ -131,7 +131,7 @@
 
   function renderChecklist(){
     let S=load({items:d.items.map(t=>({t,done:false}))});
-    work.innerHTML='<section class="card"><h2>Checklist</h2><div id="list"></div><div class="field"><label>Aggiungi voce</label><input class="f" id="custom"></div><div class="actions"><button class="btn primary" id="add">Aggiungi</button><button class="btn" id="reset">Ripristina</button></div></section>';
+    work.innerHTML='<section class="card"><h2>Checklist</h2><div id="list"></div><div class="field"><label for="custom">Aggiungi voce</label><input class="f" id="custom"></div><div class="actions"><button class="btn primary" id="add">Aggiungi</button><button class="btn" id="reset">Ripristina</button></div></section>';
     const draw=()=>{$("#list").innerHTML=S.items.map((x,i)=>`<label class="check ${x.done?"done":""}"><input type="checkbox" data-i="${i}" ${x.done?"checked":""}><span>${esc(x.t)}</span></label>`).join("")+`<p class="muted">${S.items.filter(x=>x.done).length} / ${S.items.length} completate</p>`};
     $("#list").onchange=e=>{if(e.target.dataset.i==null)return;S.items[+e.target.dataset.i].done=e.target.checked;save(S);draw()};
     $("#add").onclick=()=>{const x=$("#custom").value.trim();if(!x)return;S.items.push({t:x,done:false});$("#custom").value="";save(S);draw()};
@@ -141,7 +141,7 @@
 
   function renderTimer(){
     let left=25*60,t=null;
-    work.innerHTML='<section class="card"><h2>Timer</h2><div class="field"><label>Minuti</label><input class="f" id="mins" type="number" value="25" min="1" max="240"></div><div id="clock" style="font-size:52px;font-weight:950">25:00</div><div class="actions"><button class="btn primary" id="start">Avvia / pausa</button><button class="btn" id="reset">Reset</button></div></section>';
+    work.innerHTML='<section class="card"><h2>Timer</h2><div class="field"><label for="mins">Minuti</label><input class="f" id="mins" type="number" value="25" min="1" max="240"></div><div id="clock" style="font-size:52px;font-weight:950">25:00</div><div class="actions"><button class="btn primary" id="start">Avvia / pausa</button><button class="btn" id="reset">Reset</button></div></section>';
     const draw=()=>$("#clock").textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
     $("#start").onclick=()=>{if(t){clearInterval(t);t=null;return}if(left<=0)left=(+$("#mins").value||25)*60;t=setInterval(()=>{left--;draw();if(left<=0){clearInterval(t);t=null;alert("Tempo terminato")}},1000)};
     $("#reset").onclick=()=>{if(t)clearInterval(t);t=null;left=(+$("#mins").value||25)*60;draw()};
@@ -161,7 +161,7 @@
 
   function renderFlash(){
     let S=load({items:[]}),pos=0,showing=false;
-    work.innerHTML='<div class="grid"><section class="card"><h2>Nuova carta</h2><div class="field"><label>Domanda</label><input class="f" id="q"></div><div class="field"><label>Risposta</label><textarea class="f" id="a"></textarea></div><button class="btn primary" id="add">Salva carta</button></section><section class="card"><h2>Ripasso</h2><div id="card" class="result">Nessuna carta.</div><div class="actions"><button class="btn primary" id="flip">Mostra risposta</button><button class="btn" id="next">Prossima</button></div></section></div>';
+    work.innerHTML='<div class="grid"><section class="card"><h2>Nuova carta</h2><div class="field"><label for="q">Domanda</label><input class="f" id="q"></div><div class="field"><label for="a">Risposta</label><textarea class="f" id="a"></textarea></div><button class="btn primary" id="add">Salva carta</button></section><section class="card"><h2>Ripasso</h2><div id="card" class="result">Nessuna carta.</div><div class="actions"><button class="btn primary" id="flip">Mostra risposta</button><button class="btn" id="next">Prossima</button></div></section></div>';
     const draw=()=>{$("#card").textContent=S.items.length?(showing?S.items[pos].a:S.items[pos].q):"Nessuna carta."};
     $("#add").onclick=()=>{const q=$("#q").value.trim(),a=$("#a").value.trim();if(!q||!a)return;S.items.push({q,a});save(S);$("#q").value=$("#a").value="";pos=S.items.length-1;showing=false;draw()};
     $("#flip").onclick=()=>{showing=!showing;draw()};
