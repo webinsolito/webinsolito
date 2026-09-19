@@ -42,6 +42,7 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 7
+
       - name: Upload home visual comparison
         if: always()
         uses: actions/upload-artifact@v7
@@ -52,6 +53,7 @@ jobs:
             test-results/home-visual-after-desktop.png
           if-no-files-found: ignore
           retention-days: 7
+
       - name: Upload quality rebuild artifacts
         if: always()
         uses: actions/upload-artifact@v7
