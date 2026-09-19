@@ -1,15 +1,17 @@
 (()=>{"use strict";
 const INTENTS=[
  {phrases:["vendere auto","vendere macchina","vendo auto","mettere in vendita auto","fare annuncio auto"],targets:["sell-my-car","car-value","carcost"],label:"vendere un'auto"},
+ {phrases:["quanto vale auto","quanto vale la mia auto","quanto vale macchina","quanto vale la mia macchina","valore auto","valutare auto","valutare macchina"],targets:["car-value","sell-my-car","used-price"],label:"stimare il valore dell'auto"},
  {phrases:["scade revisione","scadenza revisione","fare revisione","quando revisione","revisione auto"],targets:["revisione-memo","autobuddy"],label:"gestire la revisione"},
+ {phrases:["bollo assicurazione revisione","ricordare bollo assicurazione revisione","scadenze macchina","scadenze della macchina"],targets:["autobuddy","revisione-memo","docpocket"],label:"ricordare le scadenze auto"},
  {phrases:["quanto costa viaggio","quanto spendo viaggio","andare a roma","costo viaggio auto","costo trasferta"],targets:["tripcost","fuel-trip","road-trip"],label:"calcolare un viaggio"},
- {phrases:["parto una settimana","parto per viaggio","preparare valigia","cosa porto viaggio","lista valigia"],targets:["packr","trip-planner","travel-docs"],label:"preparare un viaggio"},
+ {phrases:["parto una settimana","parto per viaggio","preparare valigia","cosa porto viaggio","cosa mettere in valigia","cosa devo mettere in valigia","lista valigia"],targets:["packr","trip-planner","travel-docs"],label:"preparare un viaggio"},
  {phrases:["dividere cena","dividere conto","dividere spese","chi deve dare soldi","spesa tra amici"],targets:["splitly","trip-share"],label:"dividere una spesa"},
  {phrases:["cosa cucino","cosa cucino stasera","cosa cucinare","ho in frigo","avanzi frigo","ricetta con quello che ho"],targets:["frigochef","leftover-chef","meal-planner"],label:"decidere cosa cucinare"},
  {phrases:["costo vero auto","quanto costa auto","spese auto","costo annuale auto","costo mensile auto"],targets:["carcost","fuel-budget","service-book"],label:"capire il costo dell'auto"},
  {phrases:["benzina meno cara","benzina economica","distributore conveniente","prezzo carburante","dove fare benzina"],targets:["fuelgo","fuel-saver"],label:"risparmiare sul carburante"},
  {phrases:["studiare esame","preparare esame","organizzare studio","piano esame","devo studiare","devo studiare per un esame"],targets:["exam-planner","study-timer","study-notes"],label:"preparare un esame"},
- {phrases:["voglio risparmiare","devo risparmiare","risparmiare soldi","mettere soldi da parte","spendo troppo"],targets:["savings-goal","budget-lite","home-budget","price-compare"],label:"risparmiare"},
+ {phrases:["voglio risparmiare","devo risparmiare","risparmiare soldi","mettere soldi da parte","non riesco a mettere soldi da parte","non riesco a risparmiare","spendo troppo"],targets:["savings-goal","budget-lite","home-budget","price-compare"],label:"risparmiare"},
  {phrases:["organizzare documenti","devo organizzare i documenti","mettere in ordine documenti","archiviare documenti"],targets:["docpocket","checklist","warranty-pocket"],label:"organizzare i documenti"},
  {phrases:["trasloco","cambiare casa","devo cambiare casa","sto cambiando casa","organizzare trasloco"],targets:["moving-list","home-inventory","docpocket"],label:"organizzare un trasloco"},
  {phrases:["garanzia prodotto","quando scade garanzia","salvare garanzie","scontrino garanzia"],targets:["warranty-check","warranty-pocket","receipt-pocket"],label:"gestire una garanzia"},
@@ -23,6 +25,9 @@ const SYNONYMS=[
  ["benzina","carburante","diesel","gasolio"],
  ["viaggio","trasferta","vacanza","partenza"],
  ["spesa","costo","prezzo","soldi"],
+ ["valore","valutare","vale","stima","stimare"],
+ ["risparmiare","risparmio","accantonare"],
+ ["valigia","bagaglio","bagagli"],
  ["casa","abitazione","appartamento"],
  ["documento","documenti","carta","carte"],
  ["scadenza","scade","scadere","rinnovo"],
@@ -32,7 +37,7 @@ const SYNONYMS=[
  ["garanzia","warranty"],
  ["conto","cena","rimborso","dividere"]
 ];
-const STOP=new Set(["devo","voglio","vorrei","mi","serve","per","il","lo","la","i","gli","le","un","una","uno","di","da","a","in","con","e","o","che","come","fare","faccio","posso","quanto"]);
+const STOP=new Set(["devo","voglio","vorrei","mi","mia","mio","mie","miei","serve","per","il","lo","la","i","gli","le","un","una","uno","di","da","a","in","con","e","o","che","come","fare","faccio","posso","quanto"]);
 const strip=s=>(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
 const tokens=s=>strip(s).split(" ").filter(x=>x&&!STOP.has(x));
 const synonymSet=t=>{const out=new Set([t]);for(const g of SYNONYMS)if(g.includes(t))g.forEach(x=>out.add(x));return out};
