@@ -2,18 +2,48 @@
   "id": "/webinsolito/",
   "name": "Webinsolito — strumenti gratuiti",
   "short_name": "Webinsolito",
-  "description": "Strumenti gratuiti per le piccole cose di ogni giorno.",
+  "description": "Strumenti gratuiti e veloci per risolvere cose concrete, senza account obbligatorio.",
+  "lang": "it",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#09111b",
   "theme_color": "#09111b",
+  "categories": ["utilities", "productivity", "lifestyle"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "assets/webinsolito-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Auto",
+      "short_name": "Auto",
+      "description": "Strumenti pratici per auto, costi e scadenze",
+      "url": "./auto/"
+    },
+    {
+      "name": "Documenti",
+      "short_name": "Documenti",
+      "description": "Organizza documenti, scadenze e pratiche",
+      "url": "./documenti/"
+    },
+    {
+      "name": "Soldi",
+      "short_name": "Soldi",
+      "description": "Budget, spese, confronti e risparmio",
+      "url": "./soldi/"
+    },
+    {
+      "name": "Viaggi",
+      "short_name": "Viaggi",
+      "description": "Pianifica partenze, costi e cose da portare",
+      "url": "./viaggi/"
     }
   ]
 }
