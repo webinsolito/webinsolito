@@ -2,20 +2,6 @@ name: Functional QA
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "candidate/**"
-    paths:
-      - "**/*.html"
-      - "**/*.js"
-      - "**/*.css"
-      - "**/*.json"
-      - "**/*.svg"
-      - "tests/**"
-      - "scripts/**"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/functional-qa.yml"
 
 concurrency:
   group: functional-qa-${{ github.ref }}
