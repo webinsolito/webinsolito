@@ -19,6 +19,7 @@ concurrency:
 permissions:
   actions: read
   checks: read
+  copilot-requests: write
   contents: write
   issues: write
   pull-requests: write
