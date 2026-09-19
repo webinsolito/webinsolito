@@ -2,16 +2,6 @@ name: Webinsolito H24 Autopilot
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "23 * * * *"
-      timezone: "Europe/Rome"
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/webinsolito-autopilot-hourly.yml"
-      - ".github/AUTOPILOT_MISSION.md"
-      - ".github/agents/webinsolito-director.agent.md"
-
 concurrency:
   group: webinsolito-h24-autopilot
   cancel-in-progress: false
