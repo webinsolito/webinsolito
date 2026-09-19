@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-19T06:34:09.454505+00:00",
+  "generated_at": "2026-09-19T09:29:19.522865+00:00",
   "count": 57,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 8,
-      "errors": 0
+      "events": 7,
+      "errors": 1
     },
     {
       "name": "Visit Brescia",
