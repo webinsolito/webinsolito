@@ -1,6 +1,19 @@
 name: Functional QA
 
 on:
+  push:
+    branches:
+      - 'candidate/**'
+    paths:
+      - '**/*.html'
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.css'
+      - '**/*.json'
+      - '**/*.svg'
+      - 'tests/**'
+      - 'scripts/**'
+      - '.github/workflows/functional-qa.yml'
   workflow_dispatch:
 
 concurrency:
