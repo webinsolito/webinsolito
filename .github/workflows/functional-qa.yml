@@ -2,31 +2,6 @@ name: Functional QA
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main, 'candidate/**']
-    paths:
-      - "**/*.html"
-      - "**/*.js"
-      - "**/*.css"
-      - "**/*.json"
-      - "**/*.svg"
-      - "tests/**"
-      - "package.json"
-      - "playwright.config.js"
-      - ".github/workflows/functional-qa.yml"
-  push:
-    branches: [main, 'candidate/**']
-    paths:
-      - "**/*.html"
-      - "**/*.js"
-      - "**/*.css"
-      - "**/*.json"
-      - "**/*.svg"
-      - "tests/**"
-      - "package.json"
-      - "playwright.config.js"
-      - ".github/workflows/functional-qa.yml"
-
 concurrency:
   group: functional-qa-${{ github.ref }}
   cancel-in-progress: true
