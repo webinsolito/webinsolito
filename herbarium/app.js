@@ -32,6 +32,17 @@
     } finally { db.close(); }
   };
 
+  const loadObservations = async () => {
+    const db = await openDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Lettura osservazioni locali fallita.'));
+      });
+    } finally { db.close(); }
+  };
+
   const saveObservation = async observation => {
     const db = await openDb();
     try {
@@ -48,7 +59,7 @@
   const renderStats = async () => {
     try { observationCount.textContent = String(await countObservations()); }
     catch { observationCount.textContent = '—'; }
-    speciesCount.textContent = '0';
+    speciesCount.textContent = '0'; // UNKNOWN observations never become verified species.
   };
 
   const update = () => {
@@ -78,6 +89,9 @@
   });
 
   const prepareEvidenceImage = async file => {
+    if (file.type && !file.type.startsWith('image/')) {
+      throw new Error("Il file selezionato non è un'immagine.");
+    }
     const original = await fileToDataUrl(file);
     const image = await loadImage(original);
     const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(image.naturalWidth, image.naturalHeight));
