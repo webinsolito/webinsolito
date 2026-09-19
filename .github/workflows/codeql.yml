@@ -2,6 +2,10 @@ name: CodeQL
 
 on:
   workflow_dispatch:
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   security-events: write
