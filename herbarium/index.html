@@ -1,57 +1,13 @@
 <!doctype html>
 <html lang="it">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07110d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Herbarium">
-  <title>HERBARIUM — Source Recovery</title>
-  <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-  <main class="shell">
-    <div class="preview-ribbon" role="status">CANDIDATE PREVIEW · 6461c32e</div>
-    <header class="app-header"><div class="brand"><small>HERBARIUM</small><h1>The Living Atlas</h1></div><span id="network" class="status-pill">offline-first</span></header>
-    <section class="hero"><p class="eyebrow">Discover · Explore · Learn · Preserve</p><h2>Il tuo atlante della natura, costruito da osservazioni reali.</h2><p class="hero-copy">Raccogli prove fotografiche sul dispositivo. Se l'evidenza non basta, HERBARIUM resta prudente.</p><button class="primary-action" data-view="field">Scopri una pianta</button><button class="secondary-action" data-view="book">Apri il volume</button><button class="secondary-action" data-view="atlas">Apri l'atlante</button></section>
-
-    <section id="home" class="view active">
-      <div class="section-head"><div><p class="eyebrow">Il tuo erbario</p><h2>Osservazioni locali</h2></div><span class="privacy-badge">Privato · locale</span></div>
-      <div class="stats"><article><b id="speciesCount">0</b><span>Specie verificate</span></article><article><b id="observationCount">0</b><span>Osservazioni</span></article></div>
-      <p class="notice"><strong>Prudenza prima di tutto.</strong> HERBARIUM non inventa un nome quando l'evidenza non basta.</p>
-      <div class="trust-row" aria-label="Principi della baseline"><span>Offline-first</span><span>UNKNOWN quando serve</span></div>
-    </section>
-
-    <section id="field" class="view">
-      <div class="section-head"><div><p class="eyebrow">Nuova prova</p><h2>Nuova osservazione</h2></div><span class="privacy-badge">Sul dispositivo</span></div>
-      <p class="lead">Carica più viste della stessa pianta. In questa baseline recuperata l'identificazione automatica non viene simulata: senza un motore botanico validato il risultato resta UNKNOWN.</p>
-      <div class="step-card"><div class="step-title"><span class="step-number">1</span><div><strong>Raccogli le viste</strong><small>Più dettagli aiutano a conservare prove migliori.</small></div></div><div class="capture">
-        <label><span>Pianta intera</span><small>Forma generale</small><input id="whole" type="file" accept="image/*" capture="environment"></label>
-        <label><span>Fiore</span><small>Petali e struttura</small><input id="flower" type="file" accept="image/*" capture="environment"></label>
-        <label><span>Foglia</span><small>Profilo e nervature</small><input id="leaf" type="file" accept="image/*" capture="environment"></label>
-        <label><span>Dettaglio</span><small>Fusto, frutto o corteccia</small><input id="detail" type="file" accept="image/*" capture="environment"></label>
-      </div></div>
-      <div class="step-card analysis-card"><div class="step-title"><span class="step-number">2</span><div><strong>Valuta senza forzare</strong><small>Nessuna specie viene confermata senza un motore validato.</small></div><span class="unknown-badge">UNKNOWN</span></div><button id="analyse" class="primary-action" disabled>Analizza offline</button><output id="result" class="result-state" role="status" aria-live="polite">UNKNOWN — aggiungi almeno una foto.</output></div>
-      <div class="actions"><button class="secondary-action" data-view="home">Torna alla home</button></div>
-    </section>
-
-    <section id="book" class="view" aria-labelledby="bookTitle">
-      <div class="section-head"><div><p class="eyebrow">Bibliotheca personalis</p><h2 id="bookTitle">Herbarium — Volume I</h2></div><span class="privacy-badge">Solo dati reali</span></div>
-      <article class="book-cover"><small>HERBARIUM</small><h3>Flora Observata</h3><p>Volumen Primum</p><strong id="bookCount">0 osservazioni</strong></article>
-      <p class="notice"><strong>Nessuna certezza inventata.</strong> Le osservazioni UNKNOWN restano in attesa e non diventano tavole di specie verificate.</p>
-      <section class="book-section"><div class="section-head"><div><p class="eyebrow">Specimina incerta</p><h2>Osservazioni in attesa</h2></div><span id="pendingCount" class="unknown-badge">0</span></div><div id="pendingList" class="pending-list" aria-live="polite"></div></section>
-      <div class="actions"><button class="secondary-action" data-view="home">Torna alla home</button></div>
-    </section>
-
-    <section id="atlas" class="view" aria-labelledby="atlasTitle">
-      <div class="section-head"><div><p class="eyebrow">Living Atlas · locale</p><h2 id="atlasTitle">Atlante delle osservazioni</h2></div><span class="privacy-badge">Nessun cloud</span></div>
-      <p class="lead">Questa recovery non inventa territori o coordinate: mostra soltanto dati geografici realmente presenti nelle osservazioni locali.</p>
-      <div class="stats atlas-stats"><article><b id="atlasLocatedCount">0</b><span>Osservazioni localizzate</span></article><article><b id="atlasRegionCount">0</b><span>Regioni reali</span></article></div>
-      <section class="step-card"><div class="section-head"><div><p class="eyebrow">Copertura</p><h2>Regioni osservate</h2></div></div><div id="atlasRegions" class="atlas-regions" aria-live="polite"></div></section>
-      <p class="notice"><strong>Privacy geografica.</strong> Nessuna coordinata viene inviata o aggiunta automaticamente. Le osservazioni senza posizione restano fuori dall'atlante.</p>
-      <div class="actions"><button class="secondary-action" data-view="home">Torna alla home</button></div>
-    </section>
-  </main>
-  <script src="./app.js"></script>
-</body>
-</html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07110d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Herbarium"><title>HERBARIUM — Source Recovery</title><link rel="stylesheet" href="./styles.css"></head>
+<body><main class="shell"><div class="preview-ribbon" role="status">CANDIDATE PREVIEW · dca4b9c1</div>
+<header class="app-header"><div class="brand"><small>HERBARIUM</small><h1>The Living Atlas</h1></div><span id="network" class="status-pill">offline-first</span></header>
+<section class="hero"><p class="eyebrow">Discover · Explore · Learn · Preserve</p><h2>Il tuo atlante della natura, costruito da osservazioni reali.</h2><p class="hero-copy">Raccogli prove fotografiche sul dispositivo. Se l'evidenza non basta, HERBARIUM resta prudente.</p><button class="primary-action" data-view="field">Scopri una pianta</button><button class="secondary-action" data-view="collection">Raccolta</button><button class="secondary-action" data-view="book">Apri il volume</button><button class="secondary-action" data-view="atlas">Apri l'atlante</button><button class="secondary-action" data-view="academy">Academy</button></section>
+<section id="home" class="view active"><div class="section-head"><div><p class="eyebrow">Il tuo erbario</p><h2>Osservazioni locali</h2></div><span class="privacy-badge">Privato · locale</span></div><div class="stats"><article><b id="speciesCount">0</b><span>Specie verificate</span></article><article><b id="observationCount">0</b><span>Osservazioni</span></article></div><p class="notice"><strong>Prudenza prima di tutto.</strong> HERBARIUM non inventa un nome quando l'evidenza non basta.</p><div class="trust-row"><span>Offline-first</span><span>UNKNOWN quando serve</span></div></section>
+<section id="field" class="view"><div class="section-head"><div><p class="eyebrow">Nuova prova</p><h2>Nuova osservazione</h2></div><span class="privacy-badge">Sul dispositivo</span></div><p class="lead">Carica più viste della stessa pianta. Senza un motore botanico validato il risultato resta UNKNOWN.</p><div class="step-card"><div class="step-title"><span class="step-number">1</span><div><strong>Raccogli le viste</strong><small>Più dettagli aiutano a conservare prove migliori.</small></div></div><div class="capture"><label><span>Pianta intera</span><input id="whole" type="file" accept="image/*" capture="environment"></label><label><span>Fiore</span><input id="flower" type="file" accept="image/*" capture="environment"></label><label><span>Foglia</span><input id="leaf" type="file" accept="image/*" capture="environment"></label><label><span>Dettaglio</span><input id="detail" type="file" accept="image/*" capture="environment"></label></div></div><div class="step-card analysis-card"><div class="step-title"><span class="step-number">2</span><div><strong>Valuta senza forzare</strong></div><span class="unknown-badge">UNKNOWN</span></div><button id="analyse" class="primary-action" disabled>Analizza offline</button><output id="result" class="result-state" role="status" aria-live="polite">UNKNOWN — aggiungi almeno una foto.</output></div><div class="actions"><button class="secondary-action" data-view="home">Torna alla home</button></div></section>
+<section id="collection" class="view" aria-labelledby="collectionTitle"><div class="section-head"><div><p class="eyebrow">Raccolta personale</p><h2 id="collectionTitle">Le tue osservazioni</h2></div><span class="privacy-badge">Solo dati locali</span></div><p class="lead">La raccolta mostra esclusivamente osservazioni realmente salvate su questo dispositivo. Gli elementi incerti restano UNKNOWN.</p><div class="stats"><article><b id="collectionCount">0</b><span>Osservazioni reali</span></article><article><b id="collectionVerifiedCount">0</b><span>Specie verificate</span></article></div><div id="collectionList" class="pending-list" aria-live="polite"></div><p class="notice"><strong>Nessun dato fittizio.</strong> Non vengono create piante iniziali, specie o identificazioni per riempire la raccolta.</p><div class="actions"><button class="secondary-action" data-view="home">Torna alla home</button></div></section>
+<section id="book" class="view"><div class="section-head"><div><p class="eyebrow">Bibliotheca personalis</p><h2>Herbarium — Volume I</h2></div><span class="privacy-badge">Solo dati reali</span></div><article class="book-cover"><small>HERBARIUM</small><h3>Flora Observata</h3><p>Volumen Primum</p><strong id="bookCount">0 osservazioni</strong></article><p class="notice"><strong>Nessuna certezza inventata.</strong> Le osservazioni UNKNOWN restano in attesa.</p><section class="book-section"><div class="section-head"><div><p class="eyebrow">Specimina incerta</p><h2>Osservazioni in attesa</h2></div><span id="pendingCount" class="unknown-badge">0</span></div><div id="pendingList" class="pending-list"></div></section><button class="secondary-action" data-view="home">Torna alla home</button></section>
+<section id="atlas" class="view"><div class="section-head"><div><p class="eyebrow">Living Atlas · locale</p><h2>Atlante delle osservazioni</h2></div><span class="privacy-badge">Nessun cloud</span></div><p class="lead">Mostra soltanto dati geografici realmente presenti nelle osservazioni locali.</p><div class="stats"><article><b id="atlasLocatedCount">0</b><span>Osservazioni localizzate</span></article><article><b id="atlasRegionCount">0</b><span>Regioni reali</span></article></div><div id="atlasRegions" class="atlas-regions"></div><p class="notice"><strong>Privacy geografica.</strong> Nessuna coordinata viene inviata o aggiunta automaticamente.</p><button class="secondary-action" data-view="home">Torna alla home</button></section>
+<section id="academy" class="view" aria-labelledby="academyTitle"><div class="section-head"><div><p class="eyebrow">Academy · taccuino scientifico</p><h2 id="academyTitle">Impara dalle tue osservazioni</h2></div><span class="privacy-badge">Solo dati locali</span></div><p class="lead">L'Academy recuperata non inventa lezioni, specie o progressi. Organizza soltanto ciò che hai davvero osservato e indica quali prove mancano.</p><div class="stats"><article><b id="academyObservationCount">0</b><span>Osservazioni disponibili</span></article><article><b id="academyMultiViewCount">0</b><span>Con più viste</span></article></div><div id="academyList" class="pending-list" aria-live="polite"></div><p class="notice"><strong>Nessun corso fittizio.</strong> Finché non esiste una determinazione botanica validata, l'Academy insegna a migliorare le prove e mantiene ogni osservazione UNKNOWN.</p><button class="secondary-action" data-view="home">Torna alla home</button></section>
+</main><script src="./app.js"></script></body></html>
