@@ -2,6 +2,9 @@ name: Functional QA
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'qa/manual-*'
 
 concurrency:
   group: functional-qa-${{ github.ref }}
