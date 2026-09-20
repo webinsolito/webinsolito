@@ -8,6 +8,4 @@
 <g filter="url(#ds)"><path d="M62 62 78 51l12 12 12-12 16 11 18 72H44l18-72Z" fill="url(#cloth)"/>
 <path d="M78 51c1-10 6-16 12-16s11 6 12 16" stroke="#f5efe6" stroke-width="7" stroke-linecap="round"/>
 <path d="m78 51 12 20 12-20" fill="url(#navy)"/>
-<path d="M66 82h48M62 99h56" stroke="#ffffff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>
-<g transform="translate(38 108)"><path d="M0 11c7-8 16-8 23 0M23 11c7-8 16-8 23 0" stroke="#19283c" stroke-width="6" stroke-linecap="round"/><circle cx="11" cy="11" r="10" fill="#20344d"/><circle cx="35" cy="11" r="10" fill="#20344d"/><path d="M21 11h4" stroke="#b18a50" stroke-width="3"/></g>
-<g transform="translate(120 101)"><rect x="0" y="12" width="24" height="32" rx="7" fill="url(#gold)"/><rect x="7" y="4" width="10" height="10" rx="3" fill="#273a54"/><path d="M6 24h12" stroke="#fff5dc" stroke-opacity=".8" stroke-width="3" stroke-linecap="round"/></g></g></svg>
+<path d="M66 82h48M62 99h56" stroke="#ffffff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/></g></svg>
