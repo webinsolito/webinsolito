@@ -3,22 +3,92 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#10271f">
+  <meta name="theme-color" content="#07110d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
-  <title>HERBARIUM — Candidate Preview</title>
+  <title>HERBARIUM — Source Recovery</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <main class="shell">
-    <aside class="preview-banner">
-      <strong>CANDIDATE PREVIEW</strong>
-      <span>Auto-update H24 · ultimo head verde: 5fac6079</span>
-    </aside>
-    <header><small>HERBARIUM</small><h1>The Living Atlas</h1><span id="network">offline-first</span></header>
-    <section class="hero"><p>Discover · Explore · Learn · Preserve</p><h2>Il tuo atlante della natura, costruito da osservazioni reali.</h2><button data-view="field">Scopri una pianta</button></section>
-    <section id="home" class="view active"><div class="stats"><article><b id="speciesCount">0</b><span>Specie verificate</span></article><article><b id="observationCount">0</b><span>Osservazioni</span></article></div><p class="notice">HERBARIUM non inventa un nome quando l'evidenza non basta.</p></section>
-    <section id="field" class="view"><h2>Nuova osservazione</h2><p>Carica più viste. In questa baseline recuperata l'identificazione automatica non viene simulata: senza un motore botanico validato il risultato resta UNKNOWN.</p><div class="capture"><label>Pianta intera<input id="whole" type="file" accept="image/*" capture="environment"></label><label>Fiore<input id="flower" type="file" accept="image/*" capture="environment"></label><label>Foglia<input id="leaf" type="file" accept="image/*" capture="environment"></label><label>Dettaglio<input id="detail" type="file" accept="image/*" capture="environment"></label></div><button id="analyse" disabled>Analizza offline</button><output id="result">UNKNOWN — aggiungi almeno una foto.</output><button data-view="home">Torna alla home</button></section>
+    <div class="preview-ribbon" role="status">CANDIDATE PREVIEW · c7b8df05</div>
+    <header class="app-header">
+      <div class="brand">
+        <small>HERBARIUM</small>
+        <h1>The Living Atlas</h1>
+      </div>
+      <span id="network" class="status-pill">offline-first</span>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Discover · Explore · Learn · Preserve</p>
+      <h2>Il tuo atlante della natura, costruito da osservazioni reali.</h2>
+      <p class="hero-copy">Raccogli prove fotografiche sul dispositivo. Se l'evidenza non basta, HERBARIUM resta prudente.</p>
+      <button class="primary-action" data-view="field">Scopri una pianta</button>
+    </section>
+
+    <section id="home" class="view active">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Il tuo erbario</p>
+          <h2>Osservazioni locali</h2>
+        </div>
+        <span class="privacy-badge">Privato · locale</span>
+      </div>
+
+      <div class="stats">
+        <article><b id="speciesCount">0</b><span>Specie verificate</span></article>
+        <article><b id="observationCount">0</b><span>Osservazioni</span></article>
+      </div>
+
+      <p class="notice"><strong>Prudenza prima di tutto.</strong> HERBARIUM non inventa un nome quando l'evidenza non basta.</p>
+
+      <div class="trust-row" aria-label="Principi della baseline">
+        <span>Offline-first</span>
+        <span>UNKNOWN quando serve</span>
+      </div>
+    </section>
+
+    <section id="field" class="view">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Nuova prova</p>
+          <h2>Nuova osservazione</h2>
+        </div>
+        <span class="privacy-badge">Sul dispositivo</span>
+      </div>
+
+      <p class="lead">Carica più viste della stessa pianta. In questa baseline recuperata l'identificazione automatica non viene simulata: senza un motore botanico validato il risultato resta UNKNOWN.</p>
+
+      <div class="step-card">
+        <div class="step-title">
+          <span class="step-number">1</span>
+          <div><strong>Raccogli le viste</strong><small>Più dettagli aiutano a conservare prove migliori.</small></div>
+        </div>
+
+        <div class="capture">
+          <label><span>Pianta intera</span><small>Forma generale</small><input id="whole" type="file" accept="image/*" capture="environment"></label>
+          <label><span>Fiore</span><small>Petali e struttura</small><input id="flower" type="file" accept="image/*" capture="environment"></label>
+          <label><span>Foglia</span><small>Profilo e nervature</small><input id="leaf" type="file" accept="image/*" capture="environment"></label>
+          <label><span>Dettaglio</span><small>Fusto, frutto o corteccia</small><input id="detail" type="file" accept="image/*" capture="environment"></label>
+        </div>
+      </div>
+
+      <div class="step-card analysis-card">
+        <div class="step-title">
+          <span class="step-number">2</span>
+          <div><strong>Valuta senza forzare</strong><small>Nessuna specie viene confermata senza un motore validato.</small></div>
+          <span class="unknown-badge">UNKNOWN</span>
+        </div>
+
+        <button id="analyse" class="primary-action" disabled>Analizza offline</button>
+        <output id="result" class="result-state" role="status" aria-live="polite">UNKNOWN — aggiungi almeno una foto.</output>
+      </div>
+
+      <div class="actions">
+        <button class="secondary-action" data-view="home">Torna alla home</button>
+      </div>
+    </section>
   </main>
   <script src="./app.js"></script>
 </body>

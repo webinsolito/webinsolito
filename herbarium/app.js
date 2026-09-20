@@ -4,6 +4,7 @@
   const STORE_NAME = 'observations';
   const MAX_IMAGE_EDGE = 1600;
   const JPEG_QUALITY = 0.78;
+  const MAX_INPUT_BYTES = 12 * 1024 * 1024;
   const inputs = [...document.querySelectorAll('input[type=file]')];
   const analyse = document.getElementById('analyse');
   const result = document.getElementById('result');
@@ -91,6 +92,9 @@
   const prepareEvidenceImage = async file => {
     if (file.type && !file.type.startsWith('image/')) {
       throw new Error("Il file selezionato non è un'immagine.");
+    }
+    if (file.size && file.size > MAX_INPUT_BYTES) {
+      throw new Error("La foto selezionata supera il limite locale consentito.");
     }
     const original = await fileToDataUrl(file);
     const image = await loadImage(original);
