@@ -350,7 +350,7 @@ async function loadMemory(){
 }
 async function loadWindows(){
   const el=document.getElementById('windowsData');if(!bridgeOnline){el.textContent='NON COLLEGATO · stato Windows non disponibile.';return}
-  try{const d=await bridgeFetch('/windows/status');el.textContent=d.available?'DISPONIBILE':'NON DISPONIBILE · '+(d.state||'non verificato')+' · pipeline: '+(d.pipeline||[]).join(' → ');}catch(e){el.textContent='ERRORE · '+e.message}
+  try{const d=await bridgeFetch('/windows/status');el.textContent='OBSERVE: '+String(d.observe||'NON VERIFICATO').toUpperCase()+' · ACTION: '+String(d.action||'NON VERIFICATO').toUpperCase()+' · VERIFY: '+String(d.verify||'NON VERIFICATO').toUpperCase()+' · '+(d.pipeline||[]).join(' → ');}catch(e){el.textContent='ERRORE · '+e.message}
 }
 function loadSecurity(){
   const el=document.getElementById('securityData');if(!bridgeOnline||!bridgeSnapshot){el.textContent='NON COLLEGATO · stato sicurezza non disponibile.';return}
