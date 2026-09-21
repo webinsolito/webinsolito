@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated": "2026-09-18",
+  "updated": "2026-09-21",
   "categories": [
     {
       "id": "auto",
@@ -140,16 +140,16 @@
       "id": "autobuddy",
       "name": "AutoBuddy",
       "category": "auto",
-      "description": "Garage, scadenze, spese, manutenzione e parcheggio.",
+      "description": "Garage, scadenze, bollo, revisione, pneumatici, spese, manutenzione, documenti e parcheggio.",
       "icon": "autobuddy/logo.svg",
       "color": "#4F9CF9",
       "path": "autobuddy/",
       "status": "BETA",
-      "version": "3",
+      "version": "4",
       "featured": true,
       "offline": true,
       "data": "Dati inseriti dall’utente",
-      "updated": "2026-09-18"
+      "updated": "2026-09-21"
     },
     {
       "id": "fuelgo",
@@ -350,46 +350,49 @@
       "id": "bollo-check",
       "name": "BolloCheck",
       "category": "auto",
-      "description": "Promemoria bollo con giorni mancanti e accantonamento mensile.",
+      "description": "Funzione consolidata in AutoBuddy: scadenza bollo e accantonamento rapido.",
       "icon": "bollo-check/logo.svg",
       "color": "#6fb7ff",
       "path": "bollo-check/",
-      "status": "MVP",
+      "status": "MERGED",
       "version": "1",
       "featured": false,
       "offline": true,
       "data": "Dati inseriti dall’utente",
-      "updated": "2026-09-18"
+      "updated": "2026-09-21",
+      "merged_into": "autobuddy"
     },
     {
       "id": "revisione-memo",
       "name": "RevisioneMemo",
       "category": "auto",
-      "description": "Promemoria revisione basato sulla data e sull'intervallo scelto.",
+      "description": "Funzione consolidata in AutoBuddy: calcolo rapido del prossimo promemoria revisione.",
       "icon": "revisione-memo/logo.svg",
       "color": "#6fb7ff",
       "path": "revisione-memo/",
-      "status": "MVP",
+      "status": "MERGED",
       "version": "1",
       "featured": false,
       "offline": true,
       "data": "Dati inseriti dall’utente",
-      "updated": "2026-09-18"
+      "updated": "2026-09-21",
+      "merged_into": "autobuddy"
     },
     {
       "id": "tyre-memo",
       "name": "TyreMemo",
       "category": "auto",
-      "description": "Rotazione e anzianità pneumatici con promemoria semplici.",
+      "description": "Funzione consolidata in AutoBuddy: promemoria rotazione e controllo età pneumatici.",
       "icon": "tyre-memo/logo.svg",
       "color": "#6fb7ff",
       "path": "tyre-memo/",
-      "status": "MVP",
+      "status": "MERGED",
       "version": "1",
       "featured": false,
       "offline": true,
       "data": "Dati inseriti dall’utente",
-      "updated": "2026-09-18"
+      "updated": "2026-09-21",
+      "merged_into": "autobuddy"
     },
     {
       "id": "service-book",
