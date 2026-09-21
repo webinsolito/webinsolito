@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEURA — Candidate Preview</title>
+<meta name="theme-color" content="#07111f">
+<style>
+:root{
+  --bg:#07111f;--bg2:#0b1727;--panel:#0f1d31cc;--line:#20344f;
+  --txt:#f4f8ff;--muted:#8ea4bf;--cyan:#5fe7ff;--violet:#a78bfa;
+  --green:#38d996;--yellow:#f5c451;--red:#ff6878;--shadow:0 24px 70px #0008;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt);background:
+radial-gradient(900px 500px at 10% -10%,#0f4b6b66,transparent 65%),
+radial-gradient(700px 500px at 90% 10%,#5b36a855,transparent 60%),
+linear-gradient(180deg,#07111f 0%,#091421 45%,#06101b 100%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,#000,transparent 75%)}
+.wrap{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 56px}
+.top{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:26px}
+.brand{display:flex;align-items:center;gap:13px}
+.orb{width:48px;height:48px;border-radius:17px;background:radial-gradient(circle at 34% 30%,#dffaff 0 7%,#5fe7ff 8% 25%,#5f78ff 45%,#171d46 72%);box-shadow:0 0 34px #5fe7ff55,inset 0 0 24px #fff2}
+.brand b{display:block;font-size:18px;letter-spacing:.14em}
+.brand span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.badge{border:1px solid #2e496c;background:#0d1d31cc;border-radius:999px;padding:8px 11px;color:#cfe8ff;font-size:12px;white-space:nowrap}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:18px;margin-bottom:18px}
+.panel{border:1px solid var(--line);background:linear-gradient(180deg,#101f34e8,#0a1728e8);box-shadow:var(--shadow);border-radius:26px;backdrop-filter:blur(18px)}
+.hero-main{padding:30px;min-height:310px;position:relative;overflow:hidden}
+.hero-main:after{content:"";position:absolute;width:280px;height:280px;border:1px solid #5fe7ff22;border-radius:50%;right:-70px;top:-70px;box-shadow:0 0 0 40px #5fe7ff0a,0 0 0 80px #a78bfa08}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,78px);line-height:.92;margin:16px 0 16px;letter-spacing:-.055em}
+.lead{max-width:650px;color:#b8c8da;font-size:16px;line-height:1.65;margin:0 0 24px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--txt);border:1px solid #29435f;background:#10213a;padding:11px 14px;border-radius:14px;font-weight:700;font-size:13px}
+.btn.primary{background:linear-gradient(135deg,#48d9f1,#846ef6);border:0;color:#07111f}
+.btn:hover{transform:translateY(-1px)}
+.health{padding:24px;display:flex;flex-direction:column;justify-content:space-between}
+.big{font-size:62px;font-weight:900;letter-spacing:-.055em}
+.big small{font-size:18px;color:var(--muted);font-weight:700}
+.health p{color:var(--muted);margin:5px 0 18px}
+.bar{height:10px;border-radius:999px;background:#172941;overflow:hidden}
+.bar i{display:block;height:100%;width:63%;background:linear-gradient(90deg,var(--cyan),var(--violet));border-radius:inherit}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.pill{border:1px solid var(--line);background:#0a1726;border-radius:15px;padding:12px}
+.pill b{display:block;font-size:19px}.pill span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.green b{color:var(--green)}.yellow b{color:var(--yellow)}.red b{color:var(--red)}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:28px 2px 12px}
+.section-title h2{font-size:20px;margin:0}.section-title span{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{padding:19px;border:1px solid var(--line);background:#0c1a2ccb;border-radius:20px;min-height:150px}
+.card-top{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.icon{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:#152a43;border:1px solid #294560;font-size:18px}
+.dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 16px currentColor;margin-top:7px}
+.card h3{font-size:14px;margin:15px 0 7px}.card p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+.progress{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:11px;color:var(--muted)}
+.mini{height:5px;flex:1;margin-left:10px;background:#172941;border-radius:999px;overflow:hidden}.mini i{height:100%;display:block;border-radius:inherit}
+.current{margin-top:18px;padding:22px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}
+.ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--yellow) 0 88%,#1a2b41 88% 100%);position:relative}
+.ring:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#0d1b2e}
+.ring b{position:relative;z-index:2;font-size:17px}
+.current h3{margin:0 0 5px;font-size:16px}.current p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.state{font-size:11px;font-weight:800;padding:8px 10px;border-radius:999px;color:#2c2100;background:#f5c451}
+.log{margin-top:14px;padding:18px 20px}
+.log-row{display:grid;grid-template-columns:100px 1fr auto;gap:12px;padding:12px 0;border-bottom:1px solid #1b2b40;font-size:12px}
+.log-row:last-child{border-bottom:0}.hash{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--cyan)}.muted{color:var(--muted)}
+footer{margin-top:24px;display:flex;justify-content:space-between;gap:16px;color:#6f879f;font-size:11px}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.current{grid-template-columns:auto 1fr}.state{grid-column:1/-1;width:max-content}.log-row{grid-template-columns:84px 1fr}.log-row span:last-child{display:none}}
+@media(max-width:570px){.wrap{width:min(100% - 18px,1180px);padding-top:14px}.top{align-items:flex-start}.badge{font-size:10px}.hero-main{padding:22px;min-height:0}.health{padding:20px}.grid{grid-template-columns:1fr}.current{grid-template-columns:1fr}.ring{width:64px;height:64px}.trio{gap:6px}.pill{padding:10px}.big{font-size:52px}footer{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="orb" aria-hidden="true"></div>
+      <div><b>NEURA</b><span>Local Intelligence System</span></div>
+    </div>
+    <div class="badge">CANDIDATE PREVIEW · C9.53</div>
+  </header>
+
+  <section class="hero">
+    <div class="panel hero-main">
+      <div class="eyebrow">Affidabilità prima di tutto</div>
+      <h1>NEURA<br>CONTROL</h1>
+      <p class="lead">Preview web di controllo del progetto NEURA/NeuraZero. Mostra lo stato reale della candidate corrente senza fingere che funzioni già come l'app desktop finale.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/webinsolito/neura/tree/candidate/c9-53-memory-retrieval-fabric" target="_blank" rel="noreferrer">Apri candidate C9.53 ↗</a>
+        <a class="btn" href="https://github.com/webinsolito/neura/actions" target="_blank" rel="noreferrer">GitHub Actions ↗</a>
+      </div>
+    </div>
+    <aside class="panel health">
+      <div>
+        <div class="eyebrow">Stato progettuale stimato</div>
+        <div class="big">63<small>%</small></div>
+        <p>Avanzamento dell'architettura NEURA complessiva. Non è un benchmark di accuratezza.</p>
+        <div class="bar"><i></i></div>
+      </div>
+      <div class="trio">
+        <div class="pill green"><b>44%</b><span>Verde</span></div>
+        <div class="pill yellow"><b>49%</b><span>Giallo</span></div>
+        <div class="pill red"><b>7%</b><span>Rosso</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="section-title"><h2>Moduli principali</h2><span>stato corrente</span></div>
+  <section class="grid">
+    <article class="card"><div class="card-top"><div class="icon">🧠</div><i class="dot" style="color:var(--yellow);background:currentColor"></i></div><h3>Memory Retrieval Fabric</h3><p>BM25 + semantic + entity + temporal. Hardening input, query ed embedding subprocess già applicato.</p><div class="progress"><span>88%</span><div class="mini"><i style="width:88%;background:var(--yellow)"></i></div></div></article>
+    <article class="card"><div class="card-top"><div class="icon">🛡️</div><i class="dot" style="color:var(--green);background:currentColor"></i></div><h3>Recovery & Release Integrity</h3><p>Rollback, source integrity e recovery sono tra le aree più mature dell'architettura.</p><div class="progress"><span>90%</span><div class="mini"><i style="width:90%;background:var(--green)"></i></div></div></article>
+    <article class="card"><div class="card-top"><div class="icon">⚙️</div><i class="dot" style="color:var(--green);background:currentColor"></i></div><h3>Context Budget Core</h3><p>Gestione del contesto e struttura core già avanzate; resta integrazione con i gate futuri.</p><div class="progress"><span>88%</span><div class="mini"><i style="width:88%;background:var(--green)"></i></div></div></article>
+    <article class="card"><div class="card-top"><div class="icon">🔐</div><i class="dot" style="color:var(--yellow);background:currentColor"></i></div><h3>Capability & Tool Safety</h3><p>Capability gate, passport, MCP firewall e sandbox Windows sono ancora da consolidare in candidate dedicate.</p><div class="progress"><span>42%</span><div class="mini"><i style="width:42%;background:var(--yellow)"></i></div></div></article>
+    <article class="card"><div class="card-top"><div class="icon">🪟</div><i class="dot" style="color:var(--yellow);background:currentColor"></i></div><h3>Windows Control</h3><p>UI Automation semantica, verifica stato e fallback visuale sono in roadmap ma non ancora completamente verdi.</p><div class="progress"><span>38%</span><div class="mini"><i style="width:38%;background:var(--yellow)"></i></div></div></article>
+    <article class="card"><div class="card-top"><div class="icon">🎙️</div><i class="dot" style="color:var(--yellow);background:currentColor"></i></div><h3>Voice Reliability</h3><p>Wake word, STT/TTS e warm residency restano una delle macro-aree meno mature.</p><div class="progress"><span>32%</span><div class="mini"><i style="width:32%;background:var(--yellow)"></i></div></div></article>
+  </section>
+
+  <div class="section-title"><h2>Candidate attuale</h2><span>non promossa</span></div>
+  <section class="panel current">
+    <div class="ring"><b>88%</b></div>
+    <div><h3>C9.53 · Memory Retrieval Fabric</h3><p>Hardening retrieval, Unicode, anti-repetition BM25, validazione embedding, limiti input/output, timeout e fail-soft. Test locali pertinenti passati. Full GitHub CI e Windows cross-build ancora da verificare.</p></div>
+    <div class="state">GIALLO</div>
+  </section>
+
+  <section class="panel log">
+    <div class="log-row"><span class="muted">HEAD stato</span><span class="hash">4ea022b</span><span class="muted">candidate</span></div>
+    <div class="log-row"><span class="muted">CI gate</span><span>Focused + race aggiornati per subprocess embedding</span><span class="muted">manuale</span></div>
+    <div class="log-row"><span class="muted">Stable</span><span>Non modificata dal lavoro C9.53</span><span class="muted">protetta</span></div>
+    <div class="log-row"><span class="muted">Costo core</span><span>0 € ricorrenti</span><span class="muted">local-first</span></div>
+  </section>
+
+  <footer>
+    <span>NEURA Candidate Preview · controllo umano richiesto prima di ogni promozione.</span>
+    <span>Aggiornato 21 settembre 2026</span>
+  </footer>
+</div>
+</body>
+</html>
