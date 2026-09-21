@@ -1,4 +1,4 @@
-(()=>{"use strict";const catId=document.body.dataset.category,esc=s=>(s??'').toString().replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m])),safeRel=p=>/^(?!\\/)(?!.*(?:^|\\/)\\.\\.(?:\\/|$))[a-z0-9][a-z0-9._\\/-]*$/i.test(p||"")?p:"";
+(()=>{"use strict";const catId=document.body.dataset.category,esc=s=>(s??'').toString().replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m])),safeRel=s=>{const p=(s||"").trim();return p&&!p.startsWith("/")&&!p.includes("\\")&&!p.split("/").some(x=>!x||x===".."||x==="."||!/^[a-z0-9._-]+$/i.test(x))?p:""};
 const intents={
 auto:[["Quanto mi costa l’auto?","carcost"],["Mi scade la revisione","autobuddy"],["Benzina meno cara","fuelgo"],["Quanto costa un viaggio?","tripcost"]],
 food:[["Cosa cucino?","frigochef"],["Uso gli avanzi","leftover-chef"],["Organizzo la spesa","shopping-list"],["Ricalcolo le dosi","portion-calc"]],
