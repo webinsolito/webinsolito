@@ -28,7 +28,7 @@ test('mandatory intent queries produce sensible first results',async({page})=>{
   ['devo cambiare casa','moving-list'],
   ['devo organizzare i documenti','docpocket'],
   ['devo dividere una cena','splitly'],
-  ['mi scade la revisione','revisione-memo'],
+  ['mi scade la revisione','autobuddy'],
   ['quanto spendo per un viaggio','tripcost']
  ];
  for(const [query,id] of cases){
@@ -159,6 +159,38 @@ test('catalog truth stays internally coherent',async({request})=>{
   expect(app.path,app.id+' keeps a compatibility route').toBeTruthy();
   expect(app.merged_into,app.id+' declares its destination').toBeTruthy();
   expect(activeIds.has(app.merged_into),app.id+' targets a live app').toBeTruthy();
+ }
+});
+
+test('sitemap contains only indexable live routes',async({request})=>{
+ const d=await (await request.get('/apps.json')).json();
+ const xml=await (await request.get('/sitemap.xml')).text();
+ const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+ const merged=d.apps.filter(a=>a.status==='MERGED'&&a.path);
+ const planned=d.apps.filter(a=>a.status==='PLANNED'&&a.path);
+ expect(urls).toHaveLength(200);
+ for(const a of merged)expect(urls,a.id).not.toContain('https://webinsolito.github.io/webinsolito/'+a.path);
+ for(const a of planned)expect(urls,a.id).not.toContain('https://webinsolito.github.io/webinsolito/'+a.path);
+ for(const a of d.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path)){
+  expect(urls,a.id).toContain('https://webinsolito.github.io/webinsolito/'+a.path);
+ }
+});
+
+test('search routes normal language and common typos to live products',async({page})=>{
+ await page.goto('/');
+ const q=page.locator('#globalSearch');
+ const cases=[
+  ['mi scade la revisione','autobuddy'],
+  ['revisone macchina','autobuddy'],
+  ['benzinna economica','fuelgo'],
+  ['devo organizzare i documeti','docpocket'],
+  ['non riesco a risparmiare','savings-goal']
+ ];
+ for(const [query,id] of cases){
+  await q.fill(query);
+  const first=page.locator('#searchResults .res[href]').first();
+  await expect(first,query).toBeVisible();
+  await expect(first,query).toHaveAttribute('data-app-id',id);
  }
 });
 
