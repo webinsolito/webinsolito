@@ -2,7 +2,7 @@
 const id=document.body.dataset.tool,d=(window.WI_PRO_DEFS||{})[id],q=s=>document.querySelector(s);
 if(!d||!q("#work"))return;
 const esc=s=>(s??"").toString().replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-const safeRel=s=>/^(?!\\/)(?!.*(?:^|\\/)\\.\\.(?:\\/|$))[a-z0-9][a-z0-9._\\/-]*$/i.test(s||"")?s:"";
+const safeRel=s=>{const p=(s||"").trim();return p&&!p.startsWith("/")&&!p.includes("\\")&&!p.split("/").some(x=>!x||x===".."||x==="."||!/^[a-z0-9._-]+$/i.test(x))?p:""};
 const safeWebUrl=s=>{let x=(s||"").trim();if(!x)return"";if(!/^[a-z][a-z0-9+.-]*:/i.test(x))x="https://"+x;try{const u=new URL(x);return /^(https?:)$/.test(u.protocol)?u.href:""}catch{return""}};
 const safeName=s=>(s||"download").replace(/[^a-z0-9._-]+/gi,"-").replace(/^-+|-+$/g,"").slice(0,80)||"download";
 const euro=n=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Number(n)||0);
