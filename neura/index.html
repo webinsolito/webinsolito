@@ -206,7 +206,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
   <main class="main">
     <header class="topbar">
       <div class="top-left"><div class="top-title"><b id="screenTitle">HQ · CAPO</b><span id="screenSub">Centro operativo NEURA</span></div></div>
-      <div class="status"><i></i><span>Core locale offline</span></div>
+      <div class="status" id="bridgeStatus"><i></i><span id="bridgeStatusText">Core locale OFFLINE</span></div>
     </header>
 
     <section class="centerstage" id="screen-hq">
@@ -249,35 +249,35 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 
     <section class="activity" id="screen-operations">
       <h2>Operazioni</h2><p>Qui compariranno missioni, azioni, receipt e verifiche quando il core locale sarà connesso.</p>
-      <div class="empty">Nessuna operazione reale disponibile in questa sessione web.<br>NEURA non inventa attività quando il motore locale è offline.</div>
+      <div class="empty" id="operationsData">NON COLLEGATO · avvia il bridge locale NEURA per leggere receipt reali.</div>
     </section>
 
     <section class="activity" id="screen-memory">
       <h2>Memoria</h2><p>Interfaccia del Memory Retrieval Fabric. La candidate C9.53 esiste realmente, ma questa pagina pubblica non legge memorie personali dal PC.</p>
-      <div class="empty">Backend memoria locale non collegato.<br>Recall e retrieval restano sul dispositivo quando il runtime sarà attivo.</div>
+      <div class="empty" id="memoryData">NON COLLEGATO · nessuna memoria viene mostrata senza backend locale.</div>
     </section>
 
     <section class="activity" id="screen-windows">
       <h2>Windows</h2><p>Area dedicata a osservazione, azione e verifica sul desktop Windows.</p>
-      <div class="empty">Computer-use non disponibile dal sito pubblico.<br>Il runtime locale dovrà applicare observe → preflight → execute → verify.</div>
+      <div class="empty" id="windowsData">NON COLLEGATO · stato Windows non disponibile.</div>
     </section>
 
     <section class="activity" id="screen-security">
       <h2>Sicurezza</h2><p>Capability, permessi, isolamento e policy prima di ogni azione sensibile.</p>
-      <div class="empty">Nessuna capability concessa dal browser pubblico.<br>Le policy reali appartengono al core locale.</div>
+      <div class="empty" id="securityData">NON COLLEGATO · stato sicurezza non disponibile.</div>
     </section>
 
     <section class="activity" id="screen-models">
       <h2>Modelli</h2><p>Routing e runtime locali a costo ricorrente core 0 €.</p>
-      <div class="empty">Nessun modello viene scaricato o chiamato da questa pagina.<br>Il model fabric locale sarà mostrato qui quando collegato.</div>
+      <div class="empty" id="modelsData">NON COLLEGATO · stato modello non disponibile.</div>
     </section>
   </main>
 
   <aside class="ops">
     <div class="ops-head"><b>Operazioni</b><span>LIVE</span></div>
-    <div class="op"><div class="op-row"><b>Core locale</b><span class="badge off">OFFLINE</span></div><p>Il sito pubblico non è collegato al runtime Windows.</p></div>
-    <div class="op"><div class="op-row"><b>CAPO</b><span class="badge wait">ATTESA</span></div><p>Pronto a ricevere comandi quando il bridge locale sarà disponibile.</p></div>
-    <div class="op"><div class="op-row"><b>Memoria</b><span class="badge wait">C9.53</span></div><p>Memory Retrieval Fabric in candidate, non promossa.</p></div>
+    <div class="op"><div class="op-row"><b>Core locale</b><span class="badge off" id="coreBadge">OFFLINE</span></div><p id="coreDetail">Bridge localhost non rilevato.</p></div>
+    <div class="op"><div class="op-row"><b>CAPO</b><span class="badge wait" id="capoBadge">ATTESA</span></div><p id="capoDetail">Nessun comando inviato al core.</p></div>
+    <div class="op"><div class="op-row"><b>Memoria</b><span class="badge wait" id="memoryBadge">NON COLLEGATA</span></div><p id="memoryDetail">Conteggio memoria non disponibile.</p></div>
     <div class="op"><div class="op-row"><b>Azioni Windows</b><span class="badge off">BLOCCATE</span></div><p>Nessun controllo desktop dal browser pubblico.</p></div>
     <div class="ops-note">Questa UI è il front-end operativo di NEURA, non la dashboard avanzamento. Lo stato progetto resta separato.</div>
   </aside>
@@ -307,6 +307,59 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
+const BRIDGE='http://127.0.0.1:8765';
+let bridgeOnline=false, bridgeSnapshot=null;
+async function bridgeFetch(path,options={}){
+  const ctl=new AbortController(); const timer=setTimeout(()=>ctl.abort(),options.timeout||2500);
+  try{
+    const r=await fetch(BRIDGE+path,{...options,signal:ctl.signal,headers:{'Content-Type':'application/json',...(options.headers||{})}});
+    let data={}; try{data=await r.json()}catch(_){}
+    if(!r.ok){const e=new Error(data.error||data.message||('HTTP '+r.status));e.status=r.status;e.data=data;throw e}
+    return data;
+  }finally{clearTimeout(timer)}
+}
+function setBridgeState(ok,status){
+  bridgeOnline=ok; bridgeSnapshot=status||null;
+  const dot=document.querySelector('#bridgeStatus i'), text=document.getElementById('bridgeStatusText');
+  const cb=document.getElementById('coreBadge'), cd=document.getElementById('coreDetail');
+  if(ok){
+    dot.style.background='var(--green)';dot.style.boxShadow='0 0 13px var(--green)';
+    text.textContent='Core locale ONLINE · '+(status.version||'V1');
+    cb.textContent='ONLINE';cb.className='badge';cb.style.color='#7ff0bd';
+    cd.textContent=(status.candidate||'candidate non dichiarata')+' · stable '+(status.stable||'non verificata');
+    document.getElementById('memoryBadge').textContent=String(status.memory_count??0)+' MEM';
+    document.getElementById('memoryDetail').textContent='Persistenti locali · dati reali del bridge';
+  }else{
+    dot.style.background='var(--red)';dot.style.boxShadow='0 0 13px var(--red)';
+    text.textContent='Core locale OFFLINE';
+    cb.textContent='OFFLINE';cb.className='badge off';cb.removeAttribute('style');cd.textContent='Bridge localhost non rilevato.';
+    document.getElementById('memoryBadge').textContent='NON COLLEGATA';document.getElementById('memoryDetail').textContent='Conteggio memoria non disponibile.';
+  }
+}
+async function refreshBridge(){
+  try{const s=await bridgeFetch('/status',{timeout:1800});setBridgeState(true,s);return s}catch(_){setBridgeState(false,null);return null}
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+async function loadOperations(){
+  const el=document.getElementById('operationsData');if(!bridgeOnline){el.innerHTML='NON COLLEGATO · avvia il bridge locale NEURA per leggere receipt reali.';return}
+  try{const d=await bridgeFetch('/receipts?limit=20');const items=d.items||[];el.innerHTML=items.length?items.map(x=>'<div style="text-align:left;padding:8px 0;border-bottom:1px solid #203040"><b>'+esc(x.action)+'</b> · '+esc(x.status)+'<br><span style="color:#71859b">'+esc(x.detail||x.error||x.finished_at)+'</span></div>').join(''):'NESSUNA OPERAZIONE REGISTRATA';}catch(e){el.textContent='ERRORE · '+e.message}
+}
+async function loadMemory(){
+  const el=document.getElementById('memoryData');if(!bridgeOnline){el.textContent='NON COLLEGATO · nessuna memoria viene mostrata senza backend locale.';return}
+  try{const d=await bridgeFetch('/memory?limit=20');const items=d.items||[];el.innerHTML=items.length?items.map(x=>'<div style="text-align:left;padding:8px 0;border-bottom:1px solid #203040">'+esc(x.text)+'<br><span style="color:#71859b">'+esc(x.created_at)+'</span></div>').join(''):'MEMORIA VUOTA';}catch(e){el.textContent='ERRORE · '+e.message}
+}
+async function loadWindows(){
+  const el=document.getElementById('windowsData');if(!bridgeOnline){el.textContent='NON COLLEGATO · stato Windows non disponibile.';return}
+  try{const d=await bridgeFetch('/windows/status');el.textContent=d.available?'DISPONIBILE':'NON DISPONIBILE · '+(d.state||'non verificato')+' · pipeline: '+(d.pipeline||[]).join(' → ');}catch(e){el.textContent='ERRORE · '+e.message}
+}
+function loadSecurity(){
+  const el=document.getElementById('securityData');if(!bridgeOnline||!bridgeSnapshot){el.textContent='NON COLLEGATO · stato sicurezza non disponibile.';return}
+  const s=bridgeSnapshot.security||{};el.textContent='Loopback: '+(s.loopback_only?'ATTIVO':'NON VERIFICATO')+' · origin allowlist: '+(s.origin_allowlist?'ATTIVA':'NON VERIFICATA')+' · shell: '+(s.shell_execution?'ABILITATA':'DISABILITATA')+' · tool allowlist: '+(s.tool_allowlist?'ATTIVA':'NON VERIFICATA')+' · tool distruttivi: '+(s.destructive_tools??'NON VERIFICATO');
+}
+function loadModels(){
+  const el=document.getElementById('modelsData');if(!bridgeOnline||!bridgeSnapshot){el.textContent='NON COLLEGATO · stato modello non disponibile.';return}
+  el.textContent=bridgeSnapshot.model==='available'?'MODEL ADAPTER LOCALE DISPONIBILE':'MODELLO LOCALE NON CONFIGURATO · fallback deterministico limitato attivo';
+}
 const titles={
   hq:['HQ · CAPO','Centro operativo NEURA'],
   operations:['HQ · Operazioni','Azioni, receipt e verifica'],
@@ -323,6 +376,11 @@ function showScreen(name){
   document.querySelectorAll('[data-mobile]').forEach(x=>x.classList.toggle('active',x.dataset.mobile===name));
   document.getElementById('screenTitle').textContent=titles[name][0];
   document.getElementById('screenSub').textContent=titles[name][1];
+  if(name==='operations')loadOperations();
+  if(name==='memory')loadMemory();
+  if(name==='windows')loadWindows();
+  if(name==='security')loadSecurity();
+  if(name==='models')loadModels();
 }
 document.querySelectorAll('.dept').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
 document.querySelectorAll('[data-mobile]').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.mobile)));
@@ -334,14 +392,24 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLower
 palette.addEventListener('click',e=>{if(e.target===palette)closePalette()});
 document.querySelectorAll('.palette-item').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.go)showScreen(b.dataset.go);if(b.dataset.link)location.href=b.dataset.link;closePalette()}));
 pinput.addEventListener('input',()=>{const q=pinput.value.toLowerCase();document.querySelectorAll('.palette-item').forEach(b=>b.style.display=b.textContent.toLowerCase().includes(q)?'block':'none')});
-document.getElementById('commandForm').addEventListener('submit',e=>{
+document.getElementById('commandForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const input=document.getElementById('commandInput'), text=input.value.trim();
-  if(!text)return;
-  input.value='';
-  const old=document.querySelector('.capo p');
-  old.textContent='Comando ricevuto nella preview: “'+text+'”. Il core locale è offline, quindi NEURA non dichiara alcuna azione eseguita.';
-  if(window.setCapoThinking){window.setCapoThinking(true);setTimeout(()=>window.setCapoThinking(false),2600);}
+  const input=document.getElementById('commandInput'), text=input.value.trim(); if(!text)return;
+  input.value=''; const out=document.querySelector('.capo p');
+  if(!bridgeOnline){out.textContent='OFFLINE · comando NON inviato. Avvia il bridge locale NEURA su 127.0.0.1:8765.';await refreshBridge();return}
+  document.getElementById('capoBadge').textContent='ESECUZIONE';document.getElementById('capoDetail').textContent=esc(text);
+  if(window.setCapoThinking)window.setCapoThinking(true);
+  try{
+    const data=await bridgeFetch('/command',{method:'POST',body:JSON.stringify({goal:text}),timeout:66000});
+    const rid=(data.receipt_ids||[])[0]||'nessun receipt';
+    out.textContent=(data.status||'NON VERIFICATO').toUpperCase()+' · '+(data.message||'risposta ricevuta')+' · receipt '+rid;
+    document.getElementById('capoBadge').textContent=(data.status||'RISPOSTA').toUpperCase();
+    document.getElementById('capoDetail').textContent='receipt '+rid;
+    await refreshBridge();
+  }catch(err){
+    const data=err.data||{};out.textContent=(data.status||'ERRORE').toUpperCase()+' · '+(data.message||err.message);
+    document.getElementById('capoBadge').textContent='ERRORE';document.getElementById('capoDetail').textContent=data.message||err.message;
+  }finally{if(window.setCapoThinking)window.setCapoThinking(false)}
 });
 
 /* ---------- CAPO V1 · GIORNO 1 / TRUE 3D ---------- */
@@ -568,7 +636,7 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
   animate(0);
 })();
 
-showScreen('hq');
+refreshBridge();setInterval(refreshBridge,5000);showScreen('hq');
 </script>
 </body>
 </html>
