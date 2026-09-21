@@ -87,6 +87,31 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 }
 .core:before,.core:after{content:"";position:absolute;border-radius:50%;inset:-22px;border:1px solid rgba(103,232,255,.10)}
 .core:after{inset:-46px;border-color:rgba(159,124,255,.065)}
+.viewer-shell{
+  width:min(520px,72vw);height:min(480px,52vh);min-height:330px;margin:0 auto 18px;position:relative;
+  border-radius:34px;overflow:hidden;border:1px solid rgba(190,155,102,.16);
+  background:
+    radial-gradient(circle at 50% 45%,rgba(162,123,72,.08),transparent 46%),
+    linear-gradient(180deg,rgba(13,17,21,.66),rgba(5,9,13,.34));
+  box-shadow:inset 0 0 90px rgba(0,0,0,.32),0 20px 70px rgba(0,0,0,.20);
+  touch-action:none;cursor:grab
+}
+.viewer-shell:active{cursor:grabbing}
+#capoCanvas{width:100%;height:100%;display:block}
+.viewer-hud{
+  position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:7px;padding:7px 9px;
+  border:1px solid rgba(190,155,102,.18);border-radius:999px;background:rgba(7,10,13,.58);
+  color:#bba987;font-size:8px;font-weight:900;letter-spacing:.16em;backdrop-filter:blur(10px)
+}
+.hud-dot{width:6px;height:6px;border-radius:50%;background:#b78d54;box-shadow:0 0 12px rgba(183,141,84,.65)}
+.viewer-help{
+  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap;
+  color:#657386;font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 8px;border-radius:999px;background:rgba(5,8,12,.45);backdrop-filter:blur(8px)
+}
+.viewer-shell.thinking{border-color:rgba(103,232,255,.22);box-shadow:inset 0 0 110px rgba(42,103,134,.10),0 20px 80px rgba(35,90,130,.12)}
+.viewer-shell.thinking .viewer-hud{color:#8eeeff;border-color:rgba(103,232,255,.22)}
+.viewer-shell.thinking .hud-dot{background:var(--cyan);box-shadow:0 0 16px var(--cyan)}
 .capo h1{font-size:clamp(42px,6vw,72px);letter-spacing:-.055em;margin:0 0 10px;line-height:.92}
 .capo p{margin:0 auto;color:var(--muted);font-size:13px;line-height:1.65;max-width:620px}
 .command-wrap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:min(820px,calc(100% - 36px));z-index:4}
@@ -128,7 +153,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 @media(max-width:1040px){.hq{grid-template-columns:180px 1fr}.ops{display:none}}
 @media(max-width:720px){
   body{overflow:auto}.hq{display:block;min-height:100vh}.rail{display:none}.topbar{height:62px;padding:0 13px}.stage{min-height:calc(100vh - 62px);padding:30px 16px 145px}
-  .core{width:112px;height:112px;border-radius:38px}.capo h1{font-size:48px}.command-wrap{bottom:82px;width:calc(100% - 20px)}.hint{display:none}
+  .viewer-shell{width:min(100%,480px);height:390px;min-height:300px}.capo h1{font-size:48px}.command-wrap{bottom:82px;width:calc(100% - 20px)}.hint{display:none}
   .mobile-tabs{position:fixed;display:flex;bottom:0;left:0;right:0;height:64px;background:rgba(4,10,17,.94);border-top:1px solid var(--line);z-index:20;justify-content:space-around;align-items:center}
   .mobile-tabs button{width:56px;height:50px;border:0;background:transparent;color:#71869d;border-radius:14px;font-size:17px}.mobile-tabs button.active{background:#0e2137;color:#fff}
   .activity{padding-bottom:90px}
@@ -164,7 +189,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
       <div class="stage">
         <div class="capo">
           <div class="capo-kicker">CAPO · orchestrazione locale</div>
-          <div class="core" aria-hidden="true"></div>
+          <div class="viewer-shell" id="capoViewer" aria-label="Viewer 3D interattivo del CAPO">
+    <canvas id="capoCanvas"></canvas>
+    <div class="viewer-hud">
+      <span class="hud-dot"></span>
+      <span id="capoMode">IDLE</span>
+    </div>
+    <div class="viewer-help">TRASCINA · RUOTA 360° &nbsp; / &nbsp; ROTELLA · ZOOM</div>
+  </div>
           <h1>Dimmi cosa devo fare.</h1>
           <p>CAPO coordina memoria, modelli, strumenti e azioni Windows. In questa preview web il core locale non è collegato: nessuna operazione sul PC viene simulata come completata.</p>
         </div>
@@ -237,6 +269,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 const titles={
   hq:['HQ · CAPO','Centro operativo NEURA'],
@@ -272,7 +305,186 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
   input.value='';
   const old=document.querySelector('.capo p');
   old.textContent='Comando ricevuto nella preview: “'+text+'”. Il core locale è offline, quindi NEURA non dichiara alcuna azione eseguita.';
+  if(window.setCapoThinking){window.setCapoThinking(true);setTimeout(()=>window.setCapoThinking(false),2600);}
 });
+
+/* ---------- CAPO V1 · GIORNO 1 / TRUE 3D ---------- */
+(function initCapo3D(){
+  const canvas=document.getElementById('capoCanvas');
+  const host=document.getElementById('capoViewer');
+  if(!canvas || !host || !window.THREE) return;
+
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.12;
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(35,1,.1,100);
+  camera.position.set(0,1.0,7.4);
+
+  const hemi=new THREE.HemisphereLight(0xc7d6e8,0x20170f,1.3);
+  scene.add(hemi);
+  const key=new THREE.DirectionalLight(0xffe4bf,4.0);key.position.set(4,6,5);scene.add(key);
+  const rim=new THREE.PointLight(0x67e8ff,16,12);rim.position.set(-4,2.4,-2);scene.add(rim);
+  const warm=new THREE.PointLight(0xd29b54,11,10);warm.position.set(3,-1,3);scene.add(warm);
+
+  const bronze=new THREE.MeshStandardMaterial({color:0x8b6844,metalness:.92,roughness:.24});
+  const darkMetal=new THREE.MeshStandardMaterial({color:0x171b20,metalness:.88,roughness:.30});
+  const gunmetal=new THREE.MeshStandardMaterial({color:0x30363d,metalness:.93,roughness:.22});
+  const black=new THREE.MeshStandardMaterial({color:0x080b0e,metalness:.72,roughness:.34});
+  const glass=new THREE.MeshPhysicalMaterial({color:0x23323f,metalness:.08,roughness:.08,transmission:.70,transparent:true,opacity:.55,thickness:.8,clearcoat:1});
+  const cyanMat=new THREE.MeshStandardMaterial({color:0x67e8ff,emissive:0x164957,emissiveIntensity:.34,metalness:.38,roughness:.20});
+  const softLight=new THREE.MeshStandardMaterial({color:0xb98e59,emissive:0x5a3216,emissiveIntensity:.55,metalness:.35,roughness:.23});
+
+  const capo=new THREE.Group();
+  scene.add(capo);
+
+  const cyl=(r1,r2,h,mat,segments=64)=>{
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,segments),mat);
+    m.castShadow=false;m.receiveShadow=false;return m;
+  };
+  const tor=(r,t,mat,segments=96)=>{
+    const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,18,segments),mat);
+    m.rotation.x=Math.PI/2;return m;
+  };
+  const box=(x,y,z,mat)=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),mat);return m;
+  };
+
+  // Base / compute foundation.
+  const base=cyl(1.55,1.65,.30,darkMetal);base.position.y=-2.45;capo.add(base);
+  const baseRing=tor(1.46,.08,bronze);baseRing.position.y=-2.28;capo.add(baseRing);
+  const baseCore=cyl(1.14,1.22,.42,black);baseCore.position.y=-2.06;capo.add(baseCore);
+  const baseLight=tor(1.07,.035,softLight);baseLight.position.y=-1.83;capo.add(baseLight);
+
+  // Central logic spine.
+  const spine=cyl(.26,.26,3.55,gunmetal,48);spine.position.y=-.10;capo.add(spine);
+  const spineGlass=cyl(.36,.36,3.05,glass,48);spineGlass.position.y=-.05;capo.add(spineGlass);
+  const spinePulse=cyl(.095,.095,3.0,cyanMat,32);spinePulse.position.y=-.05;capo.add(spinePulse);
+
+  // Memory module: four vertical drums with actual axial relation to spine.
+  const memoryGroup=new THREE.Group();memoryGroup.position.y=-.92;capo.add(memoryGroup);
+  [-.62,-.21,.21,.62].forEach((x,i)=>{
+    const drum=cyl(.26,.26,.70,i%2?bronze:gunmetal,40);
+    drum.rotation.z=Math.PI/2;drum.position.set(x,0,0);memoryGroup.add(drum);
+    const axle=cyl(.08,.08,.92,darkMetal,24);axle.rotation.z=Math.PI/2;axle.position.set(x,0,0);memoryGroup.add(axle);
+  });
+  const memoryRail=box(1.8,.10,.52,darkMetal);memoryGroup.add(memoryRail);
+
+  // Planning ring: physically mounted around central column.
+  const planning=tor(1.13,.085,bronze);planning.position.y=.18;capo.add(planning);
+  const planningInner=tor(.79,.032,softLight);planningInner.position.y=.18;capo.add(planningInner);
+
+  // Security shutters: six radial plates surrounding the protected core.
+  const shutters=new THREE.Group();shutters.position.y=.72;capo.add(shutters);
+  for(let i=0;i<6;i++){
+    const a=(i/6)*Math.PI*2;
+    const plate=box(.42,.82,.11,darkMetal);
+    plate.position.set(Math.cos(a)*1.02,0,Math.sin(a)*1.02);
+    plate.rotation.y=-a;
+    shutters.add(plate);
+    plate.userData.baseX=plate.position.x;plate.userData.baseZ=plate.position.z;plate.userData.angle=a;
+  }
+
+  // Protected reasoning chamber.
+  const chamber=cyl(.62,.62,.94,glass,64);chamber.position.y=.72;capo.add(chamber);
+  const chamberTop=tor(.63,.045,gunmetal);chamberTop.position.y=1.18;capo.add(chamberTop);
+  const chamberBottom=tor(.63,.045,gunmetal);chamberBottom.position.y=.26;capo.add(chamberBottom);
+
+  // Tool interface: functional radial ports, no random ornament.
+  const toolRing=new THREE.Group();toolRing.position.y=1.48;capo.add(toolRing);
+  const toolHub=cyl(.78,.78,.20,darkMetal,64);toolRing.add(toolHub);
+  for(let i=0;i<4;i++){
+    const a=(i/4)*Math.PI*2;
+    const rail=box(.74,.12,.16,gunmetal);
+    rail.position.set(Math.cos(a)*.73,0,Math.sin(a)*.73);rail.rotation.y=-a;
+    toolRing.add(rail);
+    const port=cyl(.11,.11,.30,bronze,24);port.rotation.z=Math.PI/2;
+    port.position.set(Math.cos(a)*1.15,0,Math.sin(a)*1.15);port.rotation.y=-a;
+    toolRing.add(port);
+  }
+
+  // Crown / candidate-evolution layer.
+  const crownLower=tor(.95,.07,gunmetal);crownLower.position.y=1.86;capo.add(crownLower);
+  const crown=cyl(1.12,1.04,.28,darkMetal,64);crown.position.y=2.07;capo.add(crown);
+  const crownAccent=tor(.98,.035,bronze);crownAccent.position.y=2.22;capo.add(crownAccent);
+
+  // Functional vertical stanchions visually tie layers together.
+  for(let i=0;i<4;i++){
+    const a=(i/4)*Math.PI*2+Math.PI/4;
+    const post=cyl(.045,.045,3.65,bronze,20);
+    post.position.set(Math.cos(a)*1.30,-.02,Math.sin(a)*1.30);
+    capo.add(post);
+  }
+
+  // Floor shadow catcher proxy / visual pedestal ring.
+  const floorRing=tor(1.78,.025,new THREE.MeshStandardMaterial({color:0x40301e,metalness:.5,roughness:.6}));
+  floorRing.position.y=-2.62;capo.add(floorRing);
+
+  capo.rotation.x=-.07;
+
+  let targetY=.42,targetX=-.08,zoom=7.4;
+  let drag=false,lastX=0,lastY=0,thinking=false;
+  let idlePhase=0;
+
+  function resize(){
+    const r=host.getBoundingClientRect();
+    renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);
+    camera.aspect=r.width/Math.max(1,r.height);
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(host);resize();
+
+  host.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;host.setPointerCapture(e.pointerId)});
+  host.addEventListener('pointermove',e=>{
+    if(!drag)return;
+    const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+    targetY+=dx*.008;targetX=Math.max(-.48,Math.min(.34,targetX+dy*.005));
+  });
+  host.addEventListener('pointerup',()=>drag=false);
+  host.addEventListener('pointercancel',()=>drag=false);
+  host.addEventListener('wheel',e=>{
+    e.preventDefault();zoom=Math.max(5.25,Math.min(10.2,zoom+e.deltaY*.006));
+  },{passive:false});
+
+  window.setCapoThinking=function(on){
+    thinking=!!on;
+    host.classList.toggle('thinking',thinking);
+    document.getElementById('capoMode').textContent=thinking?'THINKING':'IDLE';
+  };
+
+  function animate(t){
+    requestAnimationFrame(animate);
+    const dt=.016;
+    idlePhase+=dt;
+    if(!drag) targetY += thinking ? .0033 : .00085;
+    capo.rotation.y += (targetY-capo.rotation.y)*.07;
+    capo.rotation.x += (targetX-capo.rotation.x)*.07;
+    camera.position.z += (zoom-camera.position.z)*.08;
+
+    const pulse=thinking ? 1.35+Math.sin(t*.010)*.45 : .34+Math.sin(t*.0022)*.06;
+    cyanMat.emissiveIntensity=pulse;
+    spinePulse.scale.y=thinking ? 1.0+Math.sin(t*.008)*.025 : 1;
+
+    planning.rotation.z += thinking ? .012 : .0021;
+    toolRing.rotation.y -= thinking ? .009 : .0016;
+    crown.rotation.y += thinking ? .004 : .0008;
+    memoryGroup.rotation.y += thinking ? .0035 : .0006;
+
+    shutters.children.forEach((p,i)=>{
+      if(!p.userData.angle && p.userData.angle!==0)return;
+      const spread=thinking ? 1.15+Math.sin(t*.004+i)*.025 : 1.02;
+      p.position.x=Math.cos(p.userData.angle)*spread;
+      p.position.z=Math.sin(p.userData.angle)*spread;
+    });
+
+    renderer.render(scene,camera);
+  }
+  animate(0);
+})();
+
 showScreen('hq');
 </script>
 </body>
