@@ -194,6 +194,37 @@ test('search routes normal language and common typos to live products',async({pa
  }
 });
 
+test('consolidation migrates legacy local data',async({page})=>{
+ await page.goto('/');
+ await page.evaluate(()=>{
+  localStorage.setItem('wi.micro.quick-quiz.v1',JSON.stringify({items:[{q:'Capitale Italia?',a:'Roma'}]}));
+  localStorage.setItem('wi.micro.route-day.v1',JSON.stringify({items:[{item:'Museo',date:'2026-09-25',notes:'Ore 10'}]}));
+ });
+ await page.goto('/flashcards/');
+ await expect(page.locator('#card')).toContainText('Capitale Italia?');
+ await page.goto('/trip-planner/');
+ await expect(page.locator('#list')).toContainText('Museo');
+});
+
+test('PWA cache has a versioned offline fallback',async({request})=>{
+ const sw=await (await request.get('/sw.js')).text();
+ const offline=await request.get('/offline.html');
+ expect(offline.ok()).toBeTruthy();
+ expect(sw).toContain("webinsolito-v18");
+ expect(sw).toContain("./offline.html");
+ expect(sw).not.toContain("travel-premium.webp");
+ expect(sw).not.toContain("travel-transparent.webp");
+});
+
+test('BusinessCard rejects executable URL schemes',async({page})=>{
+ await page.goto('/business-card/');
+ await page.locator('#f_name').fill('Mario Rossi');
+ await page.locator('#f_web').fill('javascript:alert(1)');
+ await page.getByRole('button',{name:'Genera'}).click();
+ await expect(page.locator('#bcp')).toContainText('Sito non valido');
+ await expect(page.locator('#bcp a[href^="javascript:"]')).toHaveCount(0);
+});
+
 test('mobile quality at 360, 390 and 430 for Home and 20 rebuilt apps',async({page},testInfo)=>{
  test.skip(testInfo.project.name!=='desktop-chromium');
  test.setTimeout(150000);
