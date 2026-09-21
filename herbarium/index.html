@@ -3,113 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f3efe4">
+  <meta name="theme-color" content="#f6f1e6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
-  <title>HERBARIUM — Il tuo atlante botanico</title>
-  <link rel="stylesheet" href="./styles.css">\n  <style>.candidate-preview-banner{margin:0 0 10px;padding:7px 11px;border:1px solid rgba(154,123,79,.2);border-radius:999px;background:rgba(255,253,247,.78);color:#80633f;font-size:.62rem;font-weight:850;letter-spacing:.12em;text-align:center;text-transform:uppercase}</style>
+  <title>HERBARIUM — Scopri la natura intorno a te</title>
+  <link rel="stylesheet" href="./styles.css">\n  <style>.candidate-preview-banner{margin:0 0 10px;padding:7px 11px;border:1px solid rgba(154,123,79,.18);border-radius:999px;background:rgba(255,253,247,.82);color:#80633f;font-size:.6rem;font-weight:850;letter-spacing:.12em;text-align:center;text-transform:uppercase}</style>
 </head>
-<body class="home-page">
-<main class="shell home-shell">\n  <div class="candidate-preview-banner" role="status">CANDIDATE PREVIEW · 67fd96c8</div>
-  <header class="app-header home-header">
-    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home">
-      <span class="brand-mark" aria-hidden="true">H</span>
-      <span class="brand-copy"><small>HERBARIUM</small><strong>Living Atlas</strong></span>
+<body class="home-page approved-home">
+<main class="shell home-shell">\n  <div class="candidate-preview-banner" role="status">CANDIDATE PREVIEW · cc72a38e</div>
+  <header class="editorial-header">
+    <a class="editorial-brand" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="editorial-brand-leaf" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M12 51C20 31 31 17 52 9c-1 20-9 35-27 44"/><path d="M16 46c12-8 23-17 32-29"/><path d="M30 31c-1-8 1-15 5-21"/><path d="M37 24c7 0 12 2 17 5"/></svg>
+      </span>
+      <span>
+        <strong>HERBARIUM</strong>
+        <small>Piante · Natura · Conoscenza</small>
+      </span>
     </a>
-    <span id="network" class="status-pill">dati locali</span>
+    <span id="network" class="editorial-network">locale</span>
   </header>
 
-  <section class="home-hero premium-hero" aria-labelledby="homeTitle">
-    <div class="hero-content">
-      <p class="eyebrow">Il tuo taccuino botanico</p>
-      <h1 id="homeTitle">Osserva la natura.<br><em>Conservala davvero.</em></h1>
-      <p class="hero-copy">Fotografa ciò che incontri, custodisci le osservazioni sul tuo dispositivo e costruisci un erbario personale senza identificazioni forzate.</p>
-
-      <div class="home-actions" aria-label="Azioni principali">
-        <a class="primary-action action-camera" href="./observe.html">
-          <span class="action-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 8.5h3l1.6-2h6.8l1.6 2h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18v-8A1.5 1.5 0 0 1 4 8.5Z"/><circle cx="12" cy="14" r="3.2"/></svg>
-          </span>
-          <span><strong>Scatta una foto</strong><small>Inizia una nuova osservazione</small></span>
-        </a>
-        <a class="secondary-action action-library" href="./observe.html">
-          <span class="action-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 16 3.2-3.4 2.5 2.4 2.1-2.1L19 17"/><circle cx="8.5" cy="9" r="1.3"/></svg>
-          </span>
-          <span><strong>Scegli dalla libreria</strong><small>Usa una foto che hai già</small></span>
-        </a>
-      </div>
+  <section class="editorial-home-hero" aria-labelledby="homeTitle">
+    <div class="editorial-hero-copy">
+      <p class="hero-kicker">Un mondo di piante a portata di mano</p>
+      <h1 id="homeTitle">Scopri la natura<br>intorno a te.</h1>
+      <p>Scatta una foto, documenta ciò che incontri e costruisci il tuo erbario personale. Se le prove non bastano, HERBARIUM non forza mai un nome.</p>
+      <div class="hero-quote"><span aria-hidden="true">❧</span><em>Ogni pianta racconta una storia.</em></div>
     </div>
-
-    <div class="hero-botanical" aria-hidden="true">
-      <div class="leaf leaf-one"></div>
-      <div class="leaf leaf-two"></div>
-      <div class="leaf leaf-three"></div>
-      <div class="hero-seal"><span>Privato</span><strong>Locale</strong></div>
+    <div class="editorial-hero-art">
+      <img src="./assets/botanical-hero.svg" alt="Ramo fiorito illustrato">
+      <span class="hero-handnote">Osserva<br>Conosci<br>Rispetta</span>
     </div>
   </section>
 
-  <section class="home-overview" aria-labelledby="overviewTitle">
-    <div class="section-head home-section-head">
-      <div>
-        <p class="eyebrow">Il tuo spazio</p>
-        <h2 id="overviewTitle">Tutto ciò che raccogli, in un posto solo.</h2>
-      </div>
-    </div>
-
-    <div class="stats premium-stats">
-      <article>
-        <span class="stat-icon" aria-hidden="true">◌</span>
-        <div><b id="observationCount">0</b><span>Osservazioni</span></div>
-      </article>
-      <article>
-        <span class="stat-icon" aria-hidden="true">✦</span>
-        <div><b id="speciesCount">0</b><span>Specie verificate</span></div>
-      </article>
-    </div>
-  </section>
-
-  <nav class="home-destinations" aria-label="Esplora HERBARIUM">
-    <a class="destination-card destination-collection" href="./collection.html">
-      <span class="destination-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M5 5.5h14v13H5z"/><path d="M8 3.5h8M8 8.5h8M8 12h5"/></svg>
+  <nav class="approved-action-grid" aria-label="Azioni principali">
+    <a class="approved-card approved-card-primary" href="./observe.html">
+      <span class="approved-card-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 8.5h3l1.6-2h6.8l1.6 2h3A1.5 1.5 0 0 1 21.5 10v8A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18v-8A1.5 1.5 0 0 1 4 8.5Z"/><circle cx="12" cy="14" r="3.2"/></svg>
       </span>
-      <span class="destination-copy"><small>Raccolta</small><strong>Le mie osservazioni</strong><em>Rivedi ciò che hai salvato</em></span>
-      <span class="destination-arrow" aria-hidden="true">→</span>
+      <span class="approved-card-copy"><strong>Scatta una foto</strong><small>Avvia una nuova osservazione</small></span>
+      <span class="approved-card-arrow" aria-hidden="true">→</span>
     </a>
-    <a class="destination-card destination-book" href="./book.html">
-      <span class="destination-icon" aria-hidden="true">
+
+    <a class="approved-card approved-card-library" href="./observe.html">
+      <span class="approved-card-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 16 3.2-3.4 2.5 2.4 2.1-2.1L19 17"/><circle cx="8.5" cy="9" r="1.3"/></svg>
+      </span>
+      <span class="approved-card-copy"><strong>Scegli dalla libreria</strong><small>Usa una foto che hai già</small></span>
+      <span class="approved-card-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a class="approved-card approved-card-collection" href="./collection.html">
+      <span class="approved-card-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h4"/><path d="M4 7h2M4 11h2M4 15h2"/></svg>
+      </span>
+      <span class="approved-card-copy"><strong>Le mie osservazioni</strong><small>Il tuo diario botanico</small></span>
+      <span class="approved-card-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a class="approved-card approved-card-book" href="./book.html">
+      <span class="approved-card-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M4 5.5c3.4 0 5.9.6 8 2.1v11c-2.1-1.5-4.6-2.1-8-2.1z"/><path d="M20 5.5c-3.4 0-5.9.6-8 2.1v11c2.1-1.5 4.6-2.1 8-2.1z"/></svg>
       </span>
-      <span class="destination-copy"><small>Libro botanico</small><strong>Il mio erbario</strong><em>Costruisci il tuo volume personale</em></span>
-      <span class="destination-arrow" aria-hidden="true">→</span>
-    </a>
-    <a class="destination-card destination-atlas" href="./atlas.html">
-      <span class="destination-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="m4 6 5-2 6 2 5-2v14l-5 2-6-2-5 2z"/><path d="M9 4v14M15 6v14"/></svg>
-      </span>
-      <span class="destination-copy"><small>Atlante</small><strong>I luoghi osservati</strong><em>Ritrova i dati geografici già salvati</em></span>
-      <span class="destination-arrow" aria-hidden="true">→</span>
-    </a>
-    <a class="destination-card destination-academy" href="./academy.html">
-      <span class="destination-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="m3 9 9-5 9 5-9 5z"/><path d="M7 12.5V17c3.2 2 6.8 2 10 0v-4.5"/></svg>
-      </span>
-      <span class="destination-copy"><small>Academy</small><strong>Impara dalle tue prove</strong><em>Approfondisci senza inventare dati</em></span>
-      <span class="destination-arrow" aria-hidden="true">→</span>
+      <span class="approved-card-copy"><strong>Il libro botanico</strong><small>Il tuo erbario personale</small></span>
+      <span class="approved-card-arrow" aria-hidden="true">→</span>
     </a>
   </nav>
 
-  <aside class="trust-note" aria-label="Privacy e prudenza">
-    <span class="trust-icon" aria-hidden="true">✓</span>
-    <p><strong>I tuoi dati restano qui.</strong> HERBARIUM conserva localmente le osservazioni e mantiene l’esito incerto quando non ci sono prove sufficienti.</p>
-  </aside>
+  <section class="editorial-banner" aria-label="Missione HERBARIUM">
+    <img src="./assets/botanical-sprig.svg" alt="" aria-hidden="true">
+    <div>
+      <p class="eyebrow">Piccoli gesti, grandi cambiamenti</p>
+      <h2>Un futuro più verde inizia dalla conoscenza.</h2>
+    </div>
+    <a href="./academy.html" aria-label="Apri Academy">→</a>
+  </section>
 
-  <nav class="mobile-tabbar" aria-label="Navigazione principale">
+  <section class="home-meta-row" aria-label="Riepilogo locale">
+    <div><b id="observationCount">0</b><span>osservazioni</span></div>
+    <div><b id="speciesCount">0</b><span>specie verificate</span></div>
+    <a href="./atlas.html"><strong>Atlante</strong><span>Esplora i luoghi →</span></a>
+  </section>
+
+  <nav class="mobile-tabbar approved-tabbar" aria-label="Navigazione principale">
     <a class="active" href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
-    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Osserva</small></a>
+    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Nuova</small></a>
     <a href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
-    <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+    <a href="./book.html"><span aria-hidden="true">▤</span><small>Erbario</small></a>
   </nav>
 </main>
 <script src="./app.js"></script>

@@ -3,27 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07110d">
+  <meta name="theme-color" content="#f3efe4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
   <title>Raccolta — HERBARIUM</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="collection-page">
 <main class="shell">
   <header class="app-header">
-    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home"><small>HERBARIUM</small><strong>The Living Atlas</strong></a>
-    <span id="network" class="status-pill">offline-first</span>
+    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span class="brand-copy"><small>HERBARIUM</small><strong>Living Atlas</strong></span>
+    </a>
+    <span id="network" class="status-pill">dati locali</span>
   </header>
-  <section class="page-panel" aria-labelledby="collectionTitle">
-    <div class="page-toolbar">
+
+  <section class="collection-screen" aria-labelledby="collectionTitle">
+    <div class="page-toolbar simple-toolbar">
       <a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a>
-      <div><p class="eyebrow">Raccolta personale</p><h1 id="collectionTitle">Le tue osservazioni</h1></div>
-      <span class="privacy-badge">Solo dati locali</span>
+      <div><p class="eyebrow">Raccolta personale</p><h1 id="collectionTitle">Le tue osservazioni.</h1></div>
     </div>
-    <p class="lead">Solo osservazioni realmente salvate su questo dispositivo. Gli elementi incerti restano UNKNOWN.</p>
-    <div class="stats"><article><b id="collectionCount">0</b><span>Osservazioni reali</span></article><article><b id="collectionVerifiedCount">0</b><span>Specie verificate</span></article></div>
-    <div id="collectionList" class="pending-list" aria-live="polite"></div>
-    <p class="notice"><strong>Nessun dato fittizio.</strong> Nessuna pianta iniziale o identificazione viene creata per riempire la raccolta.</p>
+
+    <div class="collection-hero">
+      <div>
+        <p>Qui trovi solo ciò che hai fotografato davvero. Nessun riempitivo, nessuna specie inventata.</p>
+        <a class="small-cta" href="./observe.html">＋ Nuova osservazione</a>
+      </div>
+      <img src="./assets/botanical-sprig.svg" alt="" aria-hidden="true">
+    </div>
+
+    <div class="stats premium-stats collection-stats">
+      <article>
+        <span class="stat-icon" aria-hidden="true">◌</span>
+        <div><b id="collectionCount">0</b><span>Osservazioni</span></div>
+      </article>
+      <article>
+        <span class="stat-icon" aria-hidden="true">✦</span>
+        <div><b id="collectionVerifiedCount">0</b><span>Specie verificate</span></div>
+      </article>
+    </div>
+
+    <div class="collection-section-head">
+      <div><p class="eyebrow">Archivio locale</p><h2>Le più recenti</h2></div>
+      <span class="privacy-badge">Privato</span>
+    </div>
+
+    <div id="collectionList" class="observation-grid" aria-live="polite"></div>
   </section>
-</main><script src="./app.js"></script></body></html>
+
+  <nav class="mobile-tabbar" aria-label="Navigazione principale">
+    <a href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
+    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Osserva</small></a>
+    <a class="active" href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
+    <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+  </nav>
+</main>
+<script src="./app.js"></script>
+</body>
+</html>

@@ -3,20 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07110d">
+  <meta name="theme-color" content="#f3efe4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
-  <title>Volume I — HERBARIUM</title>
+  <title>Libro botanico — HERBARIUM</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="book-page">
 <main class="shell">
-  <header class="app-header"><a class="brand-link" href="./index.html" aria-label="HERBARIUM Home"><small>HERBARIUM</small><strong>The Living Atlas</strong></a><span id="network" class="status-pill">offline-first</span></header>
-  <section class="page-panel" aria-labelledby="bookTitle">
-    <div class="page-toolbar"><a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a><div><p class="eyebrow">Bibliotheca personalis</p><h1 id="bookTitle">Herbarium — Volume I</h1></div><span class="privacy-badge">Solo dati reali</span></div>
-    <article class="book-cover"><small>HERBARIUM</small><h2>Flora Observata</h2><p>Volumen Primum</p><strong id="bookCount">0 osservazioni</strong></article>
-    <p class="notice"><strong>Nessuna certezza inventata.</strong> Le osservazioni UNKNOWN restano in attesa e non generano una tavola botanica.</p>
-    <section class="book-section" aria-labelledby="platesTitle"><div class="section-head"><div><p class="eyebrow">Tabulae botanicae</p><h2 id="platesTitle">Schede botaniche validate</h2></div><span id="verifiedPlateCount" class="unknown-badge">0</span></div><p class="lead">Quando una determinazione dispone di dati botanici validati, il Libro la compone come tavola editoriale: nomenclatura, famiglia, caratteri osservabili e note disponibili. I campi mancanti vengono omessi, mai inventati.</p><div id="verifiedPlates" class="botanical-plates"></div></section>
-    <section class="book-section"><div class="section-head"><div><p class="eyebrow">Specimina incerta</p><h2>Osservazioni in attesa</h2></div><span id="pendingCount" class="unknown-badge">0</span></div><div id="pendingList" class="pending-list"></div></section>
+  <header class="app-header">
+    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span class="brand-copy"><small>HERBARIUM</small><strong>Living Atlas</strong></span>
+    </a>
+    <span id="network" class="status-pill">dati locali</span>
+  </header>
+
+  <section class="book-screen" aria-labelledby="bookTitle">
+    <div class="page-toolbar simple-toolbar">
+      <a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a>
+      <div><p class="eyebrow">Libro botanico</p><h1 id="bookTitle">Il tuo erbario personale.</h1></div>
+    </div>
+
+    <article class="editorial-book-hero">
+      <div class="editorial-book-copy">
+        <p class="eyebrow">Volume I</p>
+        <h2>Flora Observata</h2>
+        <p>Un volume costruito soltanto con osservazioni reali salvate sul tuo dispositivo.</p>
+        <strong id="bookCount">0 osservazioni</strong>
+      </div>
+      <img src="./assets/botanical-sprig.svg" alt="" aria-hidden="true">
+    </article>
+
+    <section class="book-section verified-section" aria-labelledby="platesTitle">
+      <div class="collection-section-head">
+        <div><p class="eyebrow">Schede botaniche</p><h2 id="platesTitle">Pagine validate</h2></div>
+        <span id="verifiedPlateCount" class="privacy-badge">0</span>
+      </div>
+      <p class="section-copy">Quando una specie dispone di dati realmente validati, HERBARIUM la trasforma in una pagina botanica completa. I campi mancanti restano vuoti.</p>
+      <div id="verifiedPlates" class="botanical-plates"></div>
+    </section>
+
+    <section class="book-section pending-section">
+      <div class="collection-section-head">
+        <div><p class="eyebrow">In attesa</p><h2>Osservazioni da verificare</h2></div>
+        <span id="pendingCount" class="privacy-badge">0</span>
+      </div>
+      <p class="section-copy">Le osservazioni senza una determinazione sicura restano qui: conservate, visibili e mai trasformate in specie inventate.</p>
+      <div id="pendingList" class="book-observation-grid"></div>
+    </section>
   </section>
-</main><script src="./app.js"></script><script src="./book-plates.js"></script></body></html>
+
+  <nav class="mobile-tabbar" aria-label="Navigazione principale">
+    <a href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
+    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Osserva</small></a>
+    <a href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
+    <a class="active" href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+  </nav>
+</main>
+<script src="./app.js"></script>
+<script src="./book-plates.js"></script>
+</body>
+</html>

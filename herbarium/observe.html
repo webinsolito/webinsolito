@@ -3,52 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07110d">
+  <meta name="theme-color" content="#f3efe4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
-  <title>Nuova osservazione — HERBARIUM</title>
+  <title>Osserva — HERBARIUM</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="observe-page">
 <main class="shell">
   <header class="app-header">
-    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home"><small>HERBARIUM</small><strong>The Living Atlas</strong></a>
-    <span id="network" class="status-pill">offline-first</span>
+    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span class="brand-copy"><small>HERBARIUM</small><strong>Living Atlas</strong></span>
+    </a>
+    <span id="network" class="status-pill">dati locali</span>
   </header>
-  <section class="page-panel" aria-labelledby="fieldTitle">
-    <div class="page-toolbar">
-      <a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a>
-      <div><p class="eyebrow">Nuova prova</p><h1 id="fieldTitle">Nuova osservazione</h1></div>
-      <span class="privacy-badge">Sul dispositivo</span>
-    </div>
-    <p class="lead">Aggiungi una o più viste della stessa pianta. Senza un motore botanico validato il risultato resta UNKNOWN.</p>
 
-    <div class="step-card">
-      <div class="step-title"><span class="step-number">1</span><div><strong>Raccogli le viste</strong><small>Scegli foto della stessa osservazione.</small></div></div>
-      <div class="capture">
-        <label><span>Pianta intera</span><small>Forma generale</small><input id="whole" type="file" accept="image/*" capture="environment"></label>
+  <section class="capture-screen" aria-labelledby="fieldTitle">
+    <div class="page-toolbar simple-toolbar">
+      <a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a>
+      <div><p class="eyebrow">Nuova osservazione</p><h1 id="fieldTitle">Fotografa ciò che hai davanti.</h1></div>
+    </div>
+
+    <p class="capture-intro">Una foto basta per iniziare. Se vuoi, puoi aggiungere altri dettagli per documentare meglio la pianta.</p>
+
+    <section class="capture-primary" aria-label="Aggiungi una foto">
+      <label class="capture-choice camera-choice">
+        <span class="capture-choice-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 8.5h3l1.6-2h6.8l1.6 2h3A1.5 1.5 0 0 1 21.5 10v8A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18v-8A1.5 1.5 0 0 1 4 8.5Z"/><circle cx="12" cy="14" r="3.2"/></svg>
+        </span>
+        <span class="capture-choice-copy"><strong>Scatta una foto</strong><small>Apri la fotocamera</small></span>
+        <input id="whole" type="file" accept="image/*" capture="environment">
+      </label>
+
+      <label class="capture-choice library-choice">
+        <span class="capture-choice-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 16 3.2-3.4 2.5 2.4 2.1-2.1L19 17"/><circle cx="8.5" cy="9" r="1.3"/></svg>
+        </span>
+        <span class="capture-choice-copy"><strong>Scegli dalla libreria</strong><small>Usa una foto già scattata</small></span>
+        <input id="detail" type="file" accept="image/*">
+      </label>
+    </section>
+
+    <details class="extra-evidence">
+      <summary><span>＋</span> Aggiungi altri dettagli</summary>
+      <p>Fiore e foglia aiutano a documentare meglio la stessa osservazione.</p>
+      <div class="capture-secondary">
         <label><span>Fiore</span><small>Petali e struttura</small><input id="flower" type="file" accept="image/*" capture="environment"></label>
         <label><span>Foglia</span><small>Profilo e nervature</small><input id="leaf" type="file" accept="image/*" capture="environment"></label>
-        <label><span>Dettaglio</span><small>Fusto, frutto o corteccia</small><input id="detail" type="file" accept="image/*" capture="environment"></label>
       </div>
-    </div>
+    </details>
 
-    <div class="step-card">
-      <div class="step-title"><span class="step-number">2</span><div><strong>Segnale negativo esplicito</strong><small>Usalo solo se sai già che la foto non mostra una pianta. Non viene dedotto automaticamente dall’immagine.</small></div></div>
-      <label for="negativeSignal"><span>Questa osservazione mostra</span></label>
+    <details class="advanced-check">
+      <summary>La foto non mostra una pianta?</summary>
+      <p>Puoi segnalarlo manualmente. Questo controllo resta separato dal riconoscimento automatico.</p>
+      <label class="select-label" for="negativeSignal">Cosa mostra la foto?</label>
       <select id="negativeSignal" aria-label="Segnale negativo esplicito">
-        <option value="">Non so / possibile pianta — resta UNKNOWN</option>
-        <option value="object">Un oggetto, non una pianta</option>
-        <option value="animal">Un animale, non una pianta</option>
-        <option value="print">Una stampa o immagine di una pianta</option>
+        <option value="">Non so / possibile pianta</option>
+        <option value="object">Un oggetto</option>
+        <option value="animal">Un animale</option>
+        <option value="print">Una stampa o immagine</option>
         <option value="tablecloth">Una tovaglia o motivo decorativo</option>
       </select>
-    </div>
+    </details>
 
-    <div class="step-card analysis-card">
-      <div class="step-title"><span class="step-number">3</span><div><strong>Salva senza forzare</strong><small>Senza segnale negativo esplicito l’esito prudente resta UNKNOWN.</small></div><span class="unknown-badge">UNKNOWN / REJECT</span></div>
-      <button id="analyse" class="primary-action" disabled>Analizza offline</button>
-      <output id="result" class="result-state" role="status" aria-live="polite">UNKNOWN — aggiungi almeno una foto.</output>
-    </div>
+    <section class="analysis-card result-panel" aria-labelledby="resultTitle">
+      <div class="result-panel-head">
+        <div>
+          <p class="eyebrow">Esito prudente</p>
+          <h2 id="resultTitle">Prima la certezza, poi il nome.</h2>
+        </div>
+        <span class="result-dot" aria-hidden="true"></span>
+      </div>
+      <output id="result" class="result-state" role="status" aria-live="polite">Aggiungi una foto per iniziare.</output>
+      <button id="analyse" class="primary-action analyse-action" disabled>
+        <span>Salva e analizza sul dispositivo</span>
+        <b aria-hidden="true">→</b>
+      </button>
+      <p class="privacy-line"><span aria-hidden="true">✓</span> Le foto restano sul dispositivo.</p>
+    </section>
   </section>
-</main><script src="./app.js"></script></body></html>
+
+  <nav class="mobile-tabbar" aria-label="Navigazione principale">
+    <a href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
+    <a class="active" href="./observe.html"><span aria-hidden="true">＋</span><small>Osserva</small></a>
+    <a href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
+    <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+  </nav>
+</main>
+<script src="./app.js"></script>
+</body>
+</html>
