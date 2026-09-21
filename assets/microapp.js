@@ -15,6 +15,30 @@
   const key="wi.micro."+d.id+".v1";
   const load=f=>{try{const x=localStorage.getItem(key);return x?JSON.parse(x):f}catch{return f}};
   const save=v=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}};
+  const migrateLegacy=()=>{
+    if(!Array.isArray(d.migrateFrom)||!d.migrateFrom.length)return;
+    const current=load({items:[]});if(!Array.isArray(current.items))current.items=[];
+    const fingerprint=x=>JSON.stringify(x,Object.keys(x||{}).sort());
+    const seen=new Set(current.items.map(fingerprint));let changed=false;
+    for(const oldId of d.migrateFrom){
+      const flag="wi.micro.migrated."+d.id+"."+oldId;if(localStorage.getItem(flag))continue;
+      try{
+        const old=JSON.parse(localStorage.getItem("wi.micro."+oldId+".v1")||"null");
+        if(old&&Array.isArray(old.items)){
+          for(const item of old.items){
+            let mapped;
+            if(d.kind==="flash")mapped={q:item.q??item.question??"",a:item.a??item.answer??""};
+            else if(Array.isArray(d.fields)){mapped={};for(const field of d.fields)mapped[field[0]]=item[field[0]]??""}
+            else mapped=item;
+            const fp=fingerprint(mapped);if(!seen.has(fp)){seen.add(fp);current.items.push(mapped);changed=true}
+          }
+        }
+      }catch{}
+      try{localStorage.setItem(flag,"1")}catch{}
+    }
+    if(changed)save(current);
+  };
+  migrateLegacy();
   const field=f=>{
     const id="f_"+f[0],type=f[2]||"text";
     if(type==="textarea") return `<div class="field"><label for="${id}">${esc(f[1])}</label><textarea class="f" id="${id}" maxlength="2000"></textarea></div>`;
