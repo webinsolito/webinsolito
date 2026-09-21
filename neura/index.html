@@ -3,224 +3,231 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NEURA — Control Center</title>
+<title>NEURA — Local Intelligence</title>
 <meta name="theme-color" content="#06111d">
 <style>
 :root{
-  --bg:#06111d;--bg2:#091727;--panel:rgba(13,27,45,.78);--panel2:rgba(16,34,56,.88);
-  --line:rgba(126,166,214,.18);--line2:rgba(126,166,214,.28);
-  --text:#f6f9ff;--muted:#96abc2;--muted2:#6f859e;
-  --cyan:#68e7ff;--blue:#78a9ff;--violet:#9a7cff;
-  --green:#39d99c;--yellow:#f4c354;--red:#ff6d7d;
-  --shadow:0 24px 80px rgba(0,0,0,.36);
+  --bg:#06111d;--bg2:#0a1727;--panel:rgba(12,26,43,.86);--panel2:rgba(16,34,55,.92);
+  --line:rgba(121,161,208,.18);--line2:rgba(121,161,208,.28);--text:#f4f8ff;--muted:#8fa6c0;
+  --cyan:#68e7ff;--blue:#78a9ff;--violet:#9a7cff;--green:#3bd99d;--yellow:#f4c354;--red:#ff6d7d;
 }
 *{box-sizing:border-box}
-html{background:var(--bg);color-scheme:dark}
-body{
-  margin:0;min-height:100vh;color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(900px 600px at -8% -12%,rgba(67,177,255,.20),transparent 65%),
-    radial-gradient(800px 560px at 105% -8%,rgba(145,94,255,.18),transparent 62%),
-    radial-gradient(700px 600px at 50% 110%,rgba(63,215,198,.08),transparent 60%),
-    linear-gradient(180deg,#06111d 0%,#081522 50%,#050d17 100%);
-  overflow-x:hidden;
-}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
-  background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:34px 34px;
-  mask-image:linear-gradient(to bottom,#000 0%,transparent 78%);
-}
-a{color:inherit}
-.shell{width:min(1240px,calc(100% - 28px));margin:auto;padding:18px 0 56px}
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px;
-  padding:10px 4px;
-}
-.brand{display:flex;align-items:center;gap:14px}
-.logo{
-  width:54px;height:54px;border-radius:18px;position:relative;overflow:hidden;
-  background:
-    radial-gradient(circle at 32% 28%,#f5feff 0 7%,#6ceaff 8% 25%,#6e88ff 43%,#251d55 76%);
-  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 16px 35px rgba(104,231,255,.18),inset 0 0 24px rgba(255,255,255,.16);
-}
-.logo:after{content:"";position:absolute;inset:7px;border:1px solid rgba(255,255,255,.18);border-radius:13px}
-.brand-title{font-weight:900;letter-spacing:.18em;font-size:18px}
-.brand-sub{color:var(--muted);font-size:11px;margin-top:4px}
-.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
-.chip{
-  display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 13px;border-radius:999px;
-  border:1px solid var(--line2);background:rgba(10,23,39,.7);backdrop-filter:blur(16px);
-  color:#dceaff;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.04em
-}
-.chip.live:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--yellow);box-shadow:0 0 14px var(--yellow)}
-.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}
-.panel{
-  border:1px solid var(--line);border-radius:30px;background:linear-gradient(180deg,var(--panel2),var(--panel));
-  box-shadow:var(--shadow);backdrop-filter:blur(22px);
-}
-.hero-main{min-height:390px;padding:36px;position:relative;overflow:hidden;isolation:isolate}
-.hero-main:before{
-  content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-110px;top:-170px;z-index:-1;
-  background:radial-gradient(circle,rgba(104,231,255,.20),rgba(154,124,255,.08) 45%,transparent 70%);
-  filter:blur(6px)
-}
-.hero-main:after{
-  content:"";position:absolute;right:40px;top:46px;width:190px;height:190px;border-radius:50%;
-  border:1px solid rgba(104,231,255,.14);box-shadow:0 0 0 34px rgba(104,231,255,.035),0 0 0 68px rgba(154,124,255,.025)
-}
-.eyebrow{
-  display:flex;align-items:center;gap:9px;color:var(--cyan);font-size:11px;font-weight:900;
-  letter-spacing:.17em;text-transform:uppercase
-}
-.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 16px var(--cyan)}
-h1{font-size:clamp(54px,8vw,92px);line-height:.88;letter-spacing:-.065em;margin:20px 0 20px;max-width:720px}
-.lead{max-width:690px;color:#b9c9db;font-size:16px;line-height:1.72;margin:0}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.btn{
-  min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:0 16px;border-radius:15px;
-  text-decoration:none;font-size:12px;font-weight:900;border:1px solid var(--line2);background:#0f2239;transition:.18s ease
-}
-.btn:hover{transform:translateY(-2px);border-color:rgba(104,231,255,.5)}
-.btn.primary{color:#06111d;border:0;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 14px 32px rgba(104,231,255,.16)}
-.hero-side{padding:26px;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
-.kicker{font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-.score{display:flex;align-items:flex-end;gap:7px;margin-top:10px}
-.score b{font-size:76px;line-height:.95;letter-spacing:-.065em}
-.score span{font-size:20px;color:var(--muted);font-weight:800;margin-bottom:8px}
-.score-note{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 16px}
-.mainbar{height:12px;border-radius:999px;background:#15283f;border:1px solid #213853;overflow:hidden}
-.mainbar i{display:block;width:63%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));box-shadow:0 0 18px rgba(104,231,255,.3)}
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.metric{padding:14px;border-radius:17px;border:1px solid var(--line);background:rgba(6,17,29,.55)}
-.metric strong{display:block;font-size:23px;line-height:1;margin-bottom:6px}
-.metric span{font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.green strong{color:var(--green)}.yellow strong{color:var(--yellow)}.red strong{color:var(--red)}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:30px 4px 13px}
-.section-head h2{font-size:21px;margin:0;letter-spacing:-.025em}.section-head span{font-size:11px;color:var(--muted)}
-.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.card{
-  position:relative;padding:20px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(14,29,48,.82),rgba(9,20,34,.72));
-  min-height:180px;overflow:hidden;transition:.18s ease
-}
-.card:hover{transform:translateY(-2px);border-color:rgba(104,231,255,.28)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start}
-.icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#132840;border:1px solid #284863;font-size:19px}
-.dot{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 16px currentColor;margin-top:7px}
-.card h3{margin:16px 0 7px;font-size:14px}
-.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.62}
-.progress{display:flex;align-items:center;gap:10px;margin-top:17px;font-size:11px;font-weight:800;color:var(--muted)}
-.mini{height:6px;flex:1;background:#15273d;border-radius:999px;overflow:hidden}.mini i{display:block;height:100%;border-radius:inherit}
-.current{margin-top:12px;padding:22px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px}
-.ring{width:82px;height:82px;border-radius:50%;position:relative;background:conic-gradient(var(--yellow) 0 88%,#1a2d44 88% 100%);box-shadow:0 0 24px rgba(244,195,84,.09)}
-.ring:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#0b1a2c;border:1px solid #243a54}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;z-index:2;font-size:18px}
-.current h3{margin:0 0 6px;font-size:16px}.current p{margin:0;color:var(--muted);font-size:12px;line-height:1.62}
-.state{padding:9px 12px;border-radius:999px;background:var(--yellow);color:#352600;font-size:10px;font-weight:900;letter-spacing:.1em}
-.status-strip{margin-top:14px;padding:7px 20px}
-.row{display:grid;grid-template-columns:110px 1fr auto;gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #1a2d43;font-size:12px}
-.row:last-child{border-bottom:0}.muted{color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--cyan);word-break:break-all}
-.small{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
-.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-.road{padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(8,19,32,.62)}
-.road b{font-size:12px;display:block;margin-bottom:7px}.road span{font-size:10px;color:var(--muted);line-height:1.5;display:block}
-.footer{display:flex;justify-content:space-between;gap:16px;margin-top:24px;padding:0 4px;color:var(--muted2);font-size:10px}
-@media(max-width:960px){.hero{grid-template-columns:1fr}.modules{grid-template-columns:1fr 1fr}.roadmap{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){
-  .shell{width:min(100% - 18px,1240px);padding-top:10px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}
-  .hero-main{padding:24px;min-height:0}.hero-main:after{display:none}.hero-side{padding:20px}h1{font-size:56px}
-  .modules{grid-template-columns:1fr}.roadmap{grid-template-columns:1fr}.current{grid-template-columns:1fr}.row{grid-template-columns:90px 1fr}.row .small{display:none}
-  .score b{font-size:58px}.footer{flex-direction:column}.trio{gap:6px}.metric{padding:11px}
-}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{background:
+radial-gradient(850px 520px at -8% -8%,rgba(64,180,255,.18),transparent 64%),
+radial-gradient(800px 520px at 108% 2%,rgba(150,102,255,.16),transparent 64%),
+linear-gradient(180deg,#06111d,#081522 52%,#050d17)}
+button,input{font:inherit}
+.app{display:grid;grid-template-columns:84px minmax(0,1fr) 320px;min-height:100vh}
+.sidebar{border-right:1px solid var(--line);background:rgba(5,14,24,.72);backdrop-filter:blur(22px);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:17px;background:radial-gradient(circle at 32% 28%,#fff 0 7%,#68e7ff 8% 25%,#708cff 44%,#251c55 76%);box-shadow:0 10px 28px rgba(104,231,255,.16),inset 0 0 24px rgba(255,255,255,.14);margin-bottom:10px}
+.navbtn{width:56px;height:56px;border-radius:18px;border:1px solid transparent;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:20px;transition:.18s}
+.navbtn:hover,.navbtn.active{background:#10243b;color:#fff;border-color:var(--line2)}
+.navspacer{flex:1}
+.center{min-width:0;display:flex;flex-direction:column}
+.topbar{height:78px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px;background:rgba(7,17,29,.45);backdrop-filter:blur(18px)}
+.brand b{display:block;font-size:16px;letter-spacing:.16em}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.conn{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:999px;padding:9px 12px;background:#0c1e31;color:var(--muted);font-size:11px;font-weight:800}
+.conn i{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 14px var(--red)}
+.chatwrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.messages{flex:1;overflow:auto;padding:30px clamp(18px,4vw,54px) 20px}
+.hero{max-width:780px;margin:5vh auto 30px;text-align:center}
+.orb{width:88px;height:88px;margin:0 auto 18px;border-radius:30px;background:radial-gradient(circle at 34% 28%,#fff 0 7%,#68e7ff 8% 23%,#7186ff 44%,#241c54 74%);box-shadow:0 18px 50px rgba(104,231,255,.18),0 0 0 1px rgba(255,255,255,.06),inset 0 0 30px rgba(255,255,255,.15)}
+.hero h1{font-size:clamp(34px,5vw,56px);letter-spacing:-.05em;margin:0}.hero p{color:var(--muted);font-size:14px;line-height:1.7;max-width:650px;margin:12px auto 0}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:760px;margin:24px auto 0}
+.q{border:1px solid var(--line);border-radius:18px;background:rgba(10,23,39,.62);padding:16px;text-align:left;cursor:pointer;color:var(--text)}
+.q b{display:block;font-size:12px;margin-bottom:6px}.q span{color:var(--muted);font-size:11px;line-height:1.45}
+.msg{max-width:820px;margin:0 auto 14px;display:flex;gap:11px;align-items:flex-start}
+.msg.user{justify-content:flex-end}.bubble{max-width:min(680px,86%);padding:13px 15px;border-radius:18px;background:#0d2035;border:1px solid var(--line);font-size:13px;line-height:1.6;white-space:pre-wrap}
+.msg.user .bubble{background:linear-gradient(135deg,#183c54,#27375c);border-color:#31516d}
+.avatar{width:30px;height:30px;border-radius:10px;background:radial-gradient(circle at 32% 28%,#fff 0 7%,#68e7ff 8% 26%,#6c7fff 46%,#241b52 76%);flex:none}
+.composer{padding:14px 22px 22px;background:linear-gradient(180deg,transparent,rgba(5,13,23,.92) 28%)}
+.composerbox{max-width:860px;margin:auto;border:1px solid var(--line2);background:#0d1f34;border-radius:22px;padding:10px;display:flex;align-items:center;gap:10px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.composerbox input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#fff;padding:9px 7px;font-size:13px}
+.send{width:42px;height:42px;border-radius:14px;border:0;cursor:pointer;color:#07111d;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--violet))}
+.notice{max-width:860px;margin:8px auto 0;color:var(--muted);font-size:10px;text-align:center}
+.right{border-left:1px solid var(--line);background:rgba(7,17,29,.62);padding:18px;overflow:auto}
+.section{margin-bottom:18px}.section h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.card{border:1px solid var(--line);border-radius:18px;background:rgba(13,29,48,.72);padding:14px;margin-bottom:9px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}.sub{color:var(--muted);font-size:10px;margin-top:5px;line-height:1.45}
+.badge{font-size:9px;font-weight:900;letter-spacing:.08em;padding:6px 8px;border-radius:999px;background:#172c44;color:#c8d9ec}.badgered{background:rgba(255,109,125,.12);color:#ff9aa5}.badgegreen{background:rgba(59,217,157,.12);color:#7af0bd}.badgeyellow{background:rgba(244,195,84,.12);color:#ffd980}
+.action{width:100%;min-height:42px;border-radius:14px;border:1px solid var(--line2);background:#10233a;color:#fff;cursor:pointer;font-size:11px;font-weight:800;margin-top:8px}
+.action.primary{border:0;color:#07111d;background:linear-gradient(135deg,var(--cyan),var(--violet))}
+.panelview{display:none}.panelview.active{display:block}
+.viewpad{padding:30px clamp(18px,4vw,54px);overflow:auto}.viewpad h2{font-size:28px;margin:0 0 8px}.viewpad>p{color:var(--muted);font-size:13px;line-height:1.6}
+.list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.tile{border:1px solid var(--line);border-radius:18px;background:rgba(12,26,43,.72);padding:17px}.tile b{font-size:13px}.tile p{font-size:11px;line-height:1.5;color:var(--muted);margin:7px 0 0}
+.settings label{display:block;color:var(--muted);font-size:11px;margin:14px 0 7px}.settings input{width:100%;border:1px solid var(--line2);background:#0b1c2f;color:#fff;padding:12px;border-radius:13px;outline:0}
+.link{color:var(--cyan);text-decoration:none}
+@media(max-width:1000px){.app{grid-template-columns:72px 1fr}.right{display:none}.sidebar{padding-inline:7px}.navbtn{width:52px;height:52px}.quick{grid-template-columns:1fr}}
+@media(max-width:620px){.app{grid-template-columns:1fr}.sidebar{position:fixed;z-index:10;bottom:0;left:0;right:0;height:68px;border-right:0;border-top:1px solid var(--line);flex-direction:row;justify-content:space-around;padding:6px;background:rgba(5,14,24,.94)}.logo,.navspacer,.hide-mobile{display:none}.navbtn{height:52px}.center{padding-bottom:68px}.topbar{height:66px;padding:0 14px}.messages{padding:20px 12px}.composer{padding:10px 10px 14px}.hero{margin-top:3vh}.hero h1{font-size:38px}}
 </style>
 </head>
 <body>
-<div class="shell">
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <div class="brand-title">NEURA</div>
-        <div class="brand-sub">Local Intelligence System · Control Center</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo" title="NEURA"></div>
+    <button class="navbtn active" data-view="chat" title="Chat">✦</button>
+    <button class="navbtn" data-view="tasks" title="Attività">✓</button>
+    <button class="navbtn" data-view="memory" title="Memoria">🧠</button>
+    <button class="navbtn" data-view="models" title="Modelli">◫</button>
+    <div class="navspacer"></div>
+    <button class="navbtn" data-view="settings" title="Impostazioni">⚙</button>
+  </aside>
+
+  <main class="center">
+    <header class="topbar">
+      <div class="brand"><b>NEURA</b><span>Local Intelligence System</span></div>
+      <div class="conn" id="conn"><i></i><span id="connText">Motore locale non connesso</span></div>
+    </header>
+
+    <section class="panelview active chatwrap" id="view-chat">
+      <div class="messages" id="messages">
+        <div class="hero" id="welcome">
+          <div class="orb"></div>
+          <h1>Cosa vuoi fare?</h1>
+          <p>Questa è l'interfaccia del programma NEURA. I comandi che richiedono Windows vengono eseguiti solo quando il motore locale è collegato: nessuna azione viene simulata o dichiarata completata senza verifica.</p>
+          <div class="quick">
+            <button class="q" data-prompt="Controlla lo stato del sistema"><b>Stato sistema</b><span>Verifica motore locale, memoria e componenti disponibili.</span></button>
+            <button class="q" data-prompt="Cerca nei miei ricordi locali"><b>Memoria</b><span>Interroga il Memory Retrieval Fabric quando il backend è disponibile.</span></button>
+            <button class="q" data-prompt="Mostrami le attività recenti"><b>Attività</b><span>Visualizza comandi, risultati e verifiche dell'agente.</span></button>
+          </div>
+        </div>
       </div>
+      <div class="composer">
+        <form class="composerbox" id="form">
+          <input id="input" autocomplete="off" placeholder="Scrivi a NEURA…" aria-label="Messaggio">
+          <button class="send" type="submit">↑</button>
+        </form>
+        <div class="notice">Il browser è solo l'interfaccia. Le azioni sul PC richiedono il motore NEURA locale collegato.</div>
+      </div>
+    </section>
+
+    <section class="panelview viewpad" id="view-tasks">
+      <h2>Attività</h2><p>Registro locale dell'interfaccia. Le azioni Windows appariranno qui solo dopo esecuzione verificata dal motore locale.</p>
+      <div class="list" id="taskList">
+        <div class="tile"><b>Nessuna attività eseguita</b><p>Il motore locale non è ancora collegato a questa interfaccia.</p></div>
+      </div>
+    </section>
+
+    <section class="panelview viewpad" id="view-memory">
+      <h2>Memoria</h2><p>Il Memory Retrieval Fabric C9.53 è il backend previsto per questa sezione. La pagina non inventa ricordi se il motore locale non risponde.</p>
+      <div class="list">
+        <div class="tile"><b>Ricerca ibrida</b><p>BM25 + semantic + entity + temporal.</p></div>
+        <div class="tile"><b>Fail-soft</b><p>Se gli embedding non sono disponibili, il retrieval lessicale resta operativo nel motore locale.</p></div>
+        <div class="tile"><b>Stato backend</b><p id="memoryState">Non collegato.</p></div>
+        <div class="tile"><b>Privacy</b><p>Architettura local-first con costo ricorrente core 0 €.</p></div>
+      </div>
+    </section>
+
+    <section class="panelview viewpad" id="view-models">
+      <h2>Modelli</h2><p>NEURA è progettata per modelli locali. Questa interfaccia non scarica né attiva servizi cloud automaticamente.</p>
+      <div class="list">
+        <div class="tile"><b>Local model fabric</b><p>Routing locale e fallback controllato previsti dall'architettura.</p></div>
+        <div class="tile"><b>BitNet adapter</b><p>Adapter embedding locale presente nella candidate C9.53; benchmark reale ancora da completare.</p></div>
+      </div>
+    </section>
+
+    <section class="panelview viewpad settings" id="view-settings">
+      <h2>Impostazioni</h2><p>Configura il bridge locale quando sarà attivo sul PC.</p>
+      <label for="endpoint">Endpoint motore locale</label>
+      <input id="endpoint" value="http://127.0.0.1:8765">
+      <button class="action primary" id="connectBtn">Connetti motore locale</button>
+      <a class="action" style="display:grid;place-items:center;text-decoration:none" href="../neura-status/">Apri dashboard avanzamento</a>
+    </section>
+  </main>
+
+  <aside class="right">
+    <div class="section">
+      <h3>Sistema</h3>
+      <div class="card"><div class="row"><b>Motore locale</b><span class="badge badgered" id="engineBadge">OFFLINE</span></div><div class="sub">In attesa del bridge locale NEURA.</div></div>
+      <div class="card"><div class="row"><b>Candidate</b><span class="badge badgeyellow">C9.53</span></div><div class="sub">Memory Retrieval Fabric · non promossa.</div></div>
+      <div class="card"><div class="row"><b>Costo core</b><span class="badge badgegreen">0 €</span></div><div class="sub">Local-first, nessun costo ricorrente obbligatorio.</div></div>
     </div>
-    <div class="top-actions">
-      <span class="chip live">CANDIDATE PREVIEW · C9.53</span>
-      <a class="chip" href="https://github.com/webinsolito/neura/actions" target="_blank" rel="noreferrer">Actions ↗</a>
+    <div class="section">
+      <h3>Azioni rapide</h3>
+      <button class="action primary" id="connectBtn2">Connetti motore locale</button>
+      <button class="action" onclick="location.href='../neura-status/'">Stato progetto</button>
+      <button class="action" onclick="window.open('https://github.com/webinsolito/neura','_blank')">Repository</button>
     </div>
-  </header>
-
-  <section class="hero">
-    <div class="panel hero-main">
-      <div>
-        <div class="eyebrow">Affidabilità prima di tutto</div>
-        <h1>NEURA<br>CONTROL</h1>
-        <p class="lead">Dashboard di controllo del progetto NEURA/NeuraZero. Mostra lo stato reale della candidate, le aree mature e quelle ancora da chiudere senza trasformare stime o idee in falsi PASS.</p>
-      </div>
-      <div class="actions">
-        <a class="btn primary" href="https://github.com/webinsolito/neura/tree/candidate/c9-53-memory-retrieval-fabric" target="_blank" rel="noreferrer">Apri C9.53 ↗</a>
-        <a class="btn" href="https://github.com/webinsolito/neura" target="_blank" rel="noreferrer">Repository ↗</a>
-        <a class="btn" href="https://github.com/webinsolito/neura/actions" target="_blank" rel="noreferrer">GitHub Actions ↗</a>
-      </div>
+    <div class="section">
+      <h3>Sicurezza</h3>
+      <div class="card"><div class="row"><b>Azioni Windows</b><span class="badge badgered">BLOCCATE</span></div><div class="sub">Finché il motore locale non è connesso, nessun comando viene eseguito sul PC.</div></div>
     </div>
-
-    <aside class="panel hero-side">
-      <div>
-        <div class="kicker">Stato progettuale stimato</div>
-        <div class="score"><b>63</b><span>%</span></div>
-        <p class="score-note">Avanzamento complessivo dell'architettura NEURA. Stima progettuale, non benchmark di accuratezza.</p>
-        <div class="mainbar"><i></i></div>
-      </div>
-      <div class="trio">
-        <div class="metric green"><strong>44%</strong><span>Verde</span></div>
-        <div class="metric yellow"><strong>49%</strong><span>Giallo</span></div>
-        <div class="metric red"><strong>7%</strong><span>Rosso</span></div>
-      </div>
-    </aside>
-  </section>
-
-  <div class="section-head"><h2>Moduli principali</h2><span>stato corrente</span></div>
-  <section class="modules">
-    <article class="card"><div class="card-top"><div class="icon">🧠</div><i class="dot" style="color:var(--yellow)"></i></div><h3>Memory Retrieval Fabric</h3><p>BM25 + semantic + entity + temporal. Query hardening, Unicode, validazione embedding e subprocess safety già integrati.</p><div class="progress"><span>88%</span><div class="mini"><i style="width:88%;background:var(--yellow)"></i></div></div></article>
-    <article class="card"><div class="card-top"><div class="icon">🛡️</div><i class="dot" style="color:var(--green)"></i></div><h3>Recovery & Release Integrity</h3><p>Rollback, source integrity e recovery sono tra le aree più mature del progetto.</p><div class="progress"><span>90%</span><div class="mini"><i style="width:90%;background:var(--green)"></i></div></div></article>
-    <article class="card"><div class="card-top"><div class="icon">⚙️</div><i class="dot" style="color:var(--green)"></i></div><h3>Context Budget Core</h3><p>Gestione del contesto e struttura core già avanzate; restano integrazioni con i gate futuri.</p><div class="progress"><span>88%</span><div class="mini"><i style="width:88%;background:var(--green)"></i></div></div></article>
-    <article class="card"><div class="card-top"><div class="icon">🔐</div><i class="dot" style="color:var(--yellow)"></i></div><h3>Capability & Tool Safety</h3><p>Capability Gate, Passport, MCP Firewall e sandbox Windows sono ancora da consolidare.</p><div class="progress"><span>42%</span><div class="mini"><i style="width:42%;background:var(--yellow)"></i></div></div></article>
-    <article class="card"><div class="card-top"><div class="icon">🪟</div><i class="dot" style="color:var(--yellow)"></i></div><h3>Windows Control</h3><p>UI Automation semantica, verifica stato e fallback visuale sono ancora in roadmap.</p><div class="progress"><span>38%</span><div class="mini"><i style="width:38%;background:var(--yellow)"></i></div></div></article>
-    <article class="card"><div class="card-top"><div class="icon">🎙️</div><i class="dot" style="color:var(--yellow)"></i></div><h3>Voice Reliability</h3><p>Wake word, STT/TTS e resource-aware residency restano tra le sezioni meno mature.</p><div class="progress"><span>32%</span><div class="mini"><i style="width:32%;background:var(--yellow)"></i></div></div></article>
-  </section>
-
-  <div class="section-head"><h2>Candidate attuale</h2><span>non promossa</span></div>
-  <section class="panel current">
-    <div class="ring"><b>88%</b></div>
-    <div>
-      <h3>C9.53 · Memory Retrieval Fabric</h3>
-      <p>Hardening retrieval, anti-repetition BM25, tokenizer Unicode, validazione embedding, limiti input/output, timeout e fallback sicuro. Test locali pertinenti passati. GitHub CI completa e Windows cross-build restano da verificare.</p>
-    </div>
-    <div class="state">GIALLO</div>
-  </section>
-
-  <section class="panel status-strip">
-    <div class="row"><span class="muted">HEAD stato</span><span class="mono">4ea022b</span><span class="small">candidate</span></div>
-    <div class="row"><span class="muted">CI gate</span><span>Focused + race aggiornati anche per embedding subprocess</span><span class="small">manuale</span></div>
-    <div class="row"><span class="muted">Stable</span><span>Non modificata dal lavoro C9.53</span><span class="small">protetta</span></div>
-    <div class="row"><span class="muted">Costo core</span><span>0 € ricorrenti</span><span class="small">local-first</span></div>
-  </section>
-
-  <div class="section-head"><h2>Prossime aree</h2><span>una candidate alla volta</span></div>
-  <section class="roadmap">
-    <div class="road"><b>Capability Gate</b><span>Autorizzazioni e limiti espliciti prima delle azioni.</span></div>
-    <div class="road"><b>Verified Action Loop</b><span>Azione → osservazione → verifica → retry/rollback.</span></div>
-    <div class="road"><b>Windows Control</b><span>UI Automation semantica con fallback visuale.</span></div>
-    <div class="road"><b>Flight Recorder</b><span>Audit riproducibile e replay delle decisioni.</span></div>
-  </section>
-
-  <footer class="footer">
-    <span>NEURA Candidate Preview · controllo umano prima di ogni promozione.</span>
-    <span>Aggiornato 21 settembre 2026</span>
-  </footer>
+  </aside>
 </div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const messages=$('#messages'), input=$('#input'), welcome=$('#welcome'), endpoint=$('#endpoint');
+let connected=false;
+
+function addMessage(role,text){
+  if(welcome) welcome.style.display='none';
+  const row=document.createElement('div');
+  row.className='msg '+(role==='user'?'user':'');
+  if(role!=='user'){const av=document.createElement('div');av.className='avatar';row.appendChild(av)}
+  const b=document.createElement('div');b.className='bubble';b.textContent=text;row.appendChild(b);
+  messages.appendChild(row);messages.scrollTop=messages.scrollHeight;
+  const hist=JSON.parse(localStorage.getItem('neura_chat')||'[]');hist.push({role,text,ts:Date.now()});localStorage.setItem('neura_chat',JSON.stringify(hist.slice(-100)));
+}
+function restore(){
+  const hist=JSON.parse(localStorage.getItem('neura_chat')||'[]');
+  if(hist.length){welcome.style.display='none';hist.forEach(x=>addMessageNoSave(x.role,x.text))}
+}
+function addMessageNoSave(role,text){
+  const row=document.createElement('div');row.className='msg '+(role==='user'?'user':'');
+  if(role!=='user'){const av=document.createElement('div');av.className='avatar';row.appendChild(av)}
+  const b=document.createElement('div');b.className='bubble';b.textContent=text;row.appendChild(b);messages.appendChild(row)
+}
+async function connectEngine(){
+  const base=endpoint.value.replace(/\/$/,'');localStorage.setItem('neura_endpoint',base);
+  $('#connText').textContent='Connessione…';
+  try{
+    const r=await fetch(base+'/health',{method:'GET',signal:AbortSignal.timeout(2200)});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    connected=true;
+    $('#conn').querySelector('i').style.background='var(--green)';
+    $('#conn').querySelector('i').style.boxShadow='0 0 14px var(--green)';
+    $('#connText').textContent='Motore locale connesso';
+    $('#engineBadge').textContent='ONLINE';$('#engineBadge').className='badge badgegreen';
+    $('#memoryState').textContent='Motore locale raggiungibile.';
+  }catch(e){
+    connected=false;
+    $('#conn').querySelector('i').style.background='var(--red)';
+    $('#conn').querySelector('i').style.boxShadow='0 0 14px var(--red)';
+    $('#connText').textContent='Motore locale non connesso';
+    $('#engineBadge').textContent='OFFLINE';$('#engineBadge').className='badge badgered';
+    $('#memoryState').textContent='Non collegato.';
+  }
+}
+async function send(text){
+  if(!text.trim()) return;
+  addMessage('user',text.trim());
+  if(!connected){
+    addMessage('assistant','Il motore locale NEURA non è collegato. Il messaggio è stato salvato nell’interfaccia ma non è stato eseguito sul PC.');
+    return;
+  }
+  try{
+    const base=endpoint.value.replace(/\/$/,'');
+    const r=await fetch(base+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    addMessage('assistant',data.reply||data.message||'Risposta ricevuta dal motore locale.');
+  }catch(e){
+    connected=false;
+    addMessage('assistant','Connessione al motore locale interrotta. Nessuna azione viene dichiarata completata.');
+    connectEngine();
+  }
+}
+$('#form').addEventListener('submit',e=>{e.preventDefault();const v=input.value;input.value='';send(v)});
+$$('.q').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.prompt;input.focus()}));
+$$('.navbtn[data-view]').forEach(b=>b.addEventListener('click',()=>{
+  $$('.navbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  $$('.panelview').forEach(x=>x.classList.remove('active'));$('#view-'+b.dataset.view).classList.add('active');
+}));
+$('#connectBtn').addEventListener('click',connectEngine);$('#connectBtn2').addEventListener('click',connectEngine);
+endpoint.value=localStorage.getItem('neura_endpoint')||endpoint.value;
+restore();
+</script>
 </body>
 </html>
