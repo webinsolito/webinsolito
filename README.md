@@ -2,86 +2,106 @@
 
 Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
-## Stato
+## Stato reale del catalogo
+
+Stato verificato su `apps.json` il 21 settembre 2026:
+
+- elementi totali registrati: **218**;
+- categorie: **12**;
+- app attive con percorso reale (`MVP`, `BETA`, `STABLE`): **187**;
+- app consolidate in prodotti più forti (`MERGED`): **13**;
+- idee future non pubblicate (`PLANNED`): **18**;
 - hosting: GitHub Pages;
 - costo ricorrente: €0;
-- catalogo centrale: `apps.json`;
-- categorie: 12;
-- app pubblicate in questa candidate: 30;
-- app future registrate come `PLANNED`: non vengono mostrate come funzionanti;
 - dati utente: locali al browser salvo le app che leggono fonti pubbliche documentate;
-- PWA: manifest per le app + service worker root;
-- test browser: Chromium desktop + WebKit/iPhone.
+- PWA: manifest + service worker root.
 
-## App pubblicate
-### Auto & mobilità
-- **AutoBuddy** — garage, scadenze, spese, manutenzione, documenti e parcheggio.
-- **FuelGo** — prezzi carburante MIMIT, distanza, freschezza e navigazione.
-- **ParkMemo** — posizione parcheggio, timer, foto, cronologia e luoghi frequenti.
-- **CarCost** — costo reale auto al mese, all’anno e per km.
-- **TripCost** — costo viaggio, carburante, pedaggi e quota per persona.
-- **BolloCheck** — promemoria bollo e accantonamento.
-- **RevisioneMemo** — promemoria revisione personalizzato.
-- **TyreMemo** — rotazione e anzianità pneumatici.
-- **ServiceBook** — storico manutenzione e prossimi interventi.
-- **FuelSaver** — confronto tra prezzo carburante e costo deviazione.
-- **CarValue** — stima matematica della svalutazione.
-- **ParkingCost** — calcolo durata e costo parcheggio.
-- **EVCharge** — energia, tempo e costo ricarica EV.
-- **RangeCalc** — autonomia residua termica/elettrica.
-- **SellMyCar** — generatore bozza annuncio auto.
+`apps.json` è la fonte di verità del catalogo. I numeri nel README non devono essere aggiornati a mano senza verificare prima quel file.
 
-### Lavoro
-- **DealerFlow** — auto, clienti, trattative e agenda.
+## App attive per categoria
 
-### Eventi
-- **BresciaGo** — eventi reali con fonte originale e selezione personale.
+| Categoria | Attive |
+| --- | ---: |
+| Auto & mobilità | 12 |
+| Food & spesa | 15 |
+| Soldi & risparmio | 16 |
+| Eventi & tempo libero | 20 |
+| Documenti & organizzazione | 16 |
+| Casa | 19 |
+| Viaggi | 19 |
+| Persona & stile | 14 |
+| Shopping & sicurezza | 16 |
+| Territorio & ambiente | 3 |
+| Lavoro & business | 19 |
+| Studio & produttività | 18 |
+| **Totale** | **187** |
 
-### Food
-- **FrigoChef** — dispensa, ricette, scadenze e lista spesa.
-- **ExpiryFood** — scadenze alimentari ordinate per urgenza.
+## Prodotti principali
 
-### Persona
-- **StyleMatch** — misure guidate, vestibilità e stima taglia.
+Le app evidenziate come `featured` nel catalogo reale sono:
 
-### Soldi
-- **Splitly** — spese condivise, quote e trasferimenti semplificati.
-- **Subscriptions** — abbonamenti, rinnovi e costo mensile/annuale.
+- **AutoBuddy** — garage, scadenze, bollo, revisione, pneumatici, manutenzione, spese, documenti e parcheggio;
+- **FuelGo** — prezzi ufficiali carburante, distanza e percorso;
+- **BresciaGo** — eventi a Brescia e provincia con fonti originali;
+- **FrigoChef** — ricette costruite su ciò che hai davvero in casa;
+- **Splitly** — spese condivise, saldi e rimborsi;
+- **Packr** — checklist di viaggio adattive e storico destinazioni;
+- **DocPocket** — documenti, scadenze e ricerca locale;
+- **SafeBuy** — segnali spiegabili per acquisti online più consapevoli;
+- **FuelSaver** — confronto tra prezzo carburante e costo deviazione;
+- **CarCost** — costo reale dell’auto;
+- **TripCost** — costo reale di un viaggio.
 
-### Documenti
-- **ScreenSort** — screenshot, raccolte, ricerca testo e azioni multiple.
-- **DocPocket** — documenti, scadenze, preferiti, lettura testo e backup protetti.
+Questa lista non sostituisce il catalogo completo: serve a indicare i prodotti principali su cui concentrare qualità, UX e QA.
 
-### Casa
-- **HomeMemo** — manutenzioni e scadenze ricorrenti di casa.
-- **UtilityMeter** — letture di luce, gas e acqua con confronto consumi.
+## Consolidamenti attivi
 
-### Studio
-- **StudyTimer** — timer di concentrazione con storico locale.
-- **GradeCalc** — media pesata e voto necessario per un obiettivo.
+Le app `MERGED` restano registrate per compatibilità, redirect e migrazione dati, ma non devono essere contate come prodotti attivi autonomi.
 
-### Viaggi
-- **Packr** — checklist adattiva e storico destinazioni.
+- `bollo-check` → `autobuddy`
+- `revisione-memo` → `autobuddy`
+- `tyre-memo` → `autobuddy`
+- `service-book` → `autobuddy`
+- `damage-log` → `accident-kit`
+- `expiry-food` → `pantry`
+- `freezer-memo` → `pantry`
+- `daily-spend` → `home-budget`
+- `budget-lite` → `home-budget`
+- `receipt-box` → `receipt-pocket`
+- `home-docs` → `docpocket`
+- `car-docs` → `docpocket`
+- `booking-lite` → `appointment`
 
-### Shopping
-- **SafeBuy** — segnali spiegabili e livelli di attenzione, senza falso punteggio di precisione.
+## Regole di stato
+
+- `STABLE`, `BETA`, `MVP`: app utilizzabile con `path` reale;
+- `MERGED`: funzione consolidata in un prodotto principale; il vecchio percorso può restare come redirect;
+- `PLANNED`: idea futura, non presentata come funzione disponibile.
+
+Una voce attiva senza `path`, una voce `PLANNED` con percorso pubblico o un `MERGED` senza destinazione valida è considerata incoerente.
 
 ## Architettura
-- `apps.json` è la fonte centrale per homepage, categorie e stato delle app.
-- Le app possono essere `PLANNED`, `MVP`, `BETA` o `STABLE`.
-- Solo MVP/BETA/STABLE con percorso reale vengono mostrate come utilizzabili.
-- `assets/webinsolito-core.js` contiene funzioni comuni leggere.
-- `docs/github-audit.md` documenta l’audit GitHub-first.
+
+- `apps.json` è la fonte centrale per homepage, categorie e stato delle app;
+- la navigazione principale segue `Home → Categoria → App`;
+- ogni macro-categoria ha un URL reale: `/auto/`, `/food/`, `/soldi/`, `/eventi/`, `/documenti/`, `/casa/`, `/viaggi/`, `/persona/`, `/shopping/`, `/territorio/`, `/business/`, `/studio/`;
+- `categorie.html` reindirizza alla Home;
+- `assets/webinsolito-core.js` contiene funzioni comuni leggere;
+- `docs/github-audit.md` documenta l’audit GitHub-first;
 - `docs/reuse-register.md` registra dipendenze, licenze e pattern riutilizzati.
 
 ## Dipendenze e fonti
-- **Tesseract.js**: Apache-2.0, usato per lettura testo da immagini.
-- **OpenStreetMap**: usato da ParkMemo per la mappa.
-- **MIMIT**: dati ufficiali carburanti per FuelGo, IODL 2.0.
-- **BresciaGo**: fonti pubbliche selezionate con URL originale conservato.
+
+- **Tesseract.js**: Apache-2.0, usato per lettura testo da immagini;
+- **OpenStreetMap**: usato da ParkMemo per la mappa;
+- **MIMIT**: dati ufficiali carburanti per FuelGo, IODL 2.0;
+- **BresciaGo**: fonti pubbliche selezionate con URL originale conservato;
 - **Web Crypto nativo**: AES-GCM + PBKDF2 per copie protette di DocPocket.
 
 ## Automazioni
+
+I workflow periodici non devono essere riattivati automaticamente. Restano manuali (`workflow_dispatch`) finché non viene deciso esplicitamente diversamente.
+
 ### BresciaGo
 - workflow: `.github/workflows/bresciago-events.yml`;
 - collector: `automation/bresciago/update_events.py`;
@@ -92,19 +112,28 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 - collector: `automation/fuelgo/update_fuel.py`;
 - feed diviso per provincia in `fuelgo/data/provinces/`.
 
+## QA
+
+GitHub Pages pubblicato non equivale a QA superato.
+
+Il test `tests/e2e/quality-final.spec.js` verifica, tra le altre cose:
+
+- Home e ricerca;
+- percorsi categoria;
+- app ricostruite;
+- redirect delle app consolidate;
+- stato reale del catalogo;
+- qualità mobile a 360 / 390 / 430 px;
+- budget prestazionali per gli asset statici.
+
 ## Limiti reali
+
 - nessuna sincronizzazione cloud/account;
 - lettura testo può richiedere rete al primo caricamento;
-- lo storage browser può essere cancellato dal sistema: DocPocket offre backup e richiesta di storage persistente;
+- lo storage browser può essere cancellato dal sistema;
+- DocPocket offre backup e richiesta di storage persistente;
 - le funzioni che richiederebbero servizi a pagamento non vengono simulate.
 
-## Rollback
-- `rollback/pre-ecosystem-expansion-2026-09-18`
-- `rollback/pre-cross-category-batch-01-2026-09-18`
+## Ambito
 
-## Candidate
-- `candidate/ecosystem-phase1-2026-09-18`
-- `candidate/cross-category-batch-01-2026-09-18`
-
-## Pagine categoria
-La navigazione principale segue `Home → Categoria → App`. Ogni macro-categoria ha un URL reale (`/auto/`, `/food/`, `/soldi/`, `/eventi/`, `/documenti/`, `/casa/`, `/viaggi/`, `/persona/`, `/shopping/`, `/territorio/`, `/business/`, `/studio/`). `categorie.html` non è più un catalogo generale: reindirizza alla home.
+Questo README descrive **solo Webinsolito**. Eventuali cartelle o commit relativi ad altri progetti presenti nello stesso repository non fanno parte del catalogo Webinsolito e non devono alterarne conteggi o decisioni di prodotto.
