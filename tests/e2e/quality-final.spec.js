@@ -122,7 +122,7 @@ test('BusinessCard creates preview and local contact QR',async({page})=>{
 });
 
 test('merged duplicates point users to the stronger app',async({page})=>{
- const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket','bollo-check':'autobuddy','revisione-memo':'autobuddy','tyre-memo':'autobuddy' };
+ const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket','bollo-check':'autobuddy','revisione-memo':'autobuddy','tyre-memo':'autobuddy','service-book':'autobuddy' };
  for(const [id,target] of Object.entries(merges)){
   await page.goto('/'+id+'/',{waitUntil:'domcontentloaded'});
   await expect.poll(()=>new URL(page.url()).pathname,{message:id,timeout:6000}).toBe('/'+target+'/');
@@ -130,11 +130,11 @@ test('merged duplicates point users to the stronger app',async({page})=>{
  }
 });
 
-test('catalog has 192 active apps and eight documented merges',async({request})=>{
+test('catalog has 191 active apps and nine documented merges',async({request})=>{
  const d=await (await request.get('/apps.json')).json();
  const active=d.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
- expect(active).toHaveLength(192);
- expect(d.apps.filter(a=>a.status==='MERGED')).toHaveLength(8);
+ expect(active).toHaveLength(191);
+ expect(d.apps.filter(a=>a.status==='MERGED')).toHaveLength(9);
 });
 
 test('mobile quality at 360, 390 and 430 for Home and 20 rebuilt apps',async({page},testInfo)=>{
