@@ -8,8 +8,8 @@ Stato verificato su `apps.json` il 21 settembre 2026:
 
 - elementi totali registrati: **218**;
 - categorie: **12**;
-- app attive con percorso reale (`MVP`, `BETA`, `STABLE`): **187**;
-- app consolidate in prodotti più forti (`MERGED`): **13**;
+- app attive con percorso reale (`MVP`, `BETA`, `STABLE`): **180**;
+- app consolidate in prodotti più forti (`MERGED`): **20**;
 - idee future non pubblicate (`PLANNED`): **18**;
 - hosting: GitHub Pages;
 - costo ricorrente: €0;
@@ -25,16 +25,16 @@ Stato verificato su `apps.json` il 21 settembre 2026:
 | Auto & mobilità | 12 |
 | Food & spesa | 15 |
 | Soldi & risparmio | 16 |
-| Eventi & tempo libero | 20 |
+| Eventi & tempo libero | 19 |
 | Documenti & organizzazione | 16 |
 | Casa | 19 |
-| Viaggi | 19 |
+| Viaggi | 14 |
 | Persona & stile | 14 |
 | Shopping & sicurezza | 16 |
 | Territorio & ambiente | 3 |
 | Lavoro & business | 19 |
-| Studio & produttività | 18 |
-| **Totale** | **187** |
+| Studio & produttività | 17 |
+| **Totale** | **180** |
 
 ## Prodotti principali
 
@@ -71,6 +71,13 @@ Le app `MERGED` restano registrate per compatibilità, redirect e migrazione dat
 - `home-docs` → `docpocket`
 - `car-docs` → `docpocket`
 - `booking-lite` → `appointment`
+- `today-nearby` → `tonight`
+- `quick-quiz` → `flashcards`
+- `road-trip` → `trip-planner`
+- `route-day` → `trip-planner`
+- `trip-share` → `trip-planner`
+- `hotel-notes` → `trip-planner`
+- `places-saver` → `trip-planner`
 
 ## Regole di stato
 
