@@ -122,7 +122,7 @@ test('BusinessCard creates preview and local contact QR',async({page})=>{
 });
 
 test('merged duplicates point users to the stronger app',async({page})=>{
- const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket','bollo-check':'autobuddy','revisione-memo':'autobuddy','tyre-memo':'autobuddy','service-book':'autobuddy','expiry-food':'pantry','freezer-memo':'pantry','daily-spend':'home-budget','budget-lite':'home-budget' };
+ const merges={ 'damage-log':'accident-kit','car-docs':'docpocket','home-docs':'docpocket','booking-lite':'appointment','receipt-box':'receipt-pocket','bollo-check':'autobuddy','revisione-memo':'autobuddy','tyre-memo':'autobuddy','service-book':'autobuddy','expiry-food':'pantry','freezer-memo':'pantry','daily-spend':'home-budget','budget-lite':'home-budget','today-nearby':'tonight','quick-quiz':'flashcards','road-trip':'trip-planner','route-day':'trip-planner','trip-share':'trip-planner','hotel-notes':'trip-planner','places-saver':'trip-planner' };
  for(const [id,target] of Object.entries(merges)){
   await page.goto('/'+id+'/',{waitUntil:'domcontentloaded'});
   await expect.poll(()=>new URL(page.url()).pathname,{message:id,timeout:6000}).toBe('/'+target+'/');
@@ -138,8 +138,8 @@ test('catalog truth stays internally coherent',async({request})=>{
  const planned=d.apps.filter(a=>a.status==='PLANNED');
  expect(d.categories).toHaveLength(12);
  expect(d.apps).toHaveLength(218);
- expect(active).toHaveLength(187);
- expect(merged).toHaveLength(13);
+ expect(active).toHaveLength(180);
+ expect(merged).toHaveLength(20);
  expect(planned).toHaveLength(18);
 
  const byCategory=Object.fromEntries(d.categories.map(c=>[
@@ -147,8 +147,8 @@ test('catalog truth stays internally coherent',async({request})=>{
   active.filter(a=>a.category===c.id).length
  ]));
  expect(byCategory).toEqual({
-  auto:12,food:15,money:16,events:20,docs:16,home:19,
-  travel:19,style:14,shopping:16,territory:3,business:19,study:18
+  auto:12,food:15,money:16,events:19,docs:16,home:19,
+  travel:14,style:14,shopping:16,territory:3,business:19,study:17
  });
 
  expect(d.apps.filter(a=>liveStatus.has(a.status)&&!a.path)).toEqual([]);
@@ -168,7 +168,7 @@ test('sitemap contains only indexable live routes',async({request})=>{
  const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
  const merged=d.apps.filter(a=>a.status==='MERGED'&&a.path);
  const planned=d.apps.filter(a=>a.status==='PLANNED'&&a.path);
- expect(urls).toHaveLength(200);
+ expect(urls).toHaveLength(193);
  for(const a of merged)expect(urls,a.id).not.toContain('https://webinsolito.github.io/webinsolito/'+a.path);
  for(const a of planned)expect(urls,a.id).not.toContain('https://webinsolito.github.io/webinsolito/'+a.path);
  for(const a of d.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path)){
