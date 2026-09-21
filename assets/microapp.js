@@ -2,6 +2,8 @@
   const d=window.WI_DEF||(window.WI_DEFS||{})[document.body.dataset.tool];
   const $=s=>document.querySelector(s);
   const esc=s=>(s??'').toString().replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+  const safeExternal=s=>{try{const u=new URL((s||"").trim(),location.href);return /^(https?:)$/.test(u.protocol)?u.href:""}catch{return""}};
+  const safeName=s=>(s||"download").replace(/[^a-z0-9._-]+/gi,"-").replace(/^-+|-+$/g,"").slice(0,80)||"download";
   const slugs={auto:"auto",food:"food",money:"soldi",events:"eventi",docs:"documenti",home:"casa",travel:"viaggi",style:"persona",shopping:"shopping",territory:"territorio",business:"business",study:"studio"};
   if(!d){document.body.innerHTML='<main class="tool"><h1>App non disponibile</h1><a href="../">Home</a></main>';return}
   document.title=d.name+" — Webinsolito";
@@ -15,8 +17,8 @@
   const save=v=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}};
   const field=f=>{
     const id="f_"+f[0],type=f[2]||"text";
-    if(type==="textarea") return `<div class="field"><label for="${id}">${esc(f[1])}</label><textarea class="f" id="${id}"></textarea></div>`;
-    return `<div class="field"><label for="${id}">${esc(f[1])}</label><input class="f" id="${id}" type="${esc(type)}"${f[3]?` step="${f[3]}"`:""}></div>`;
+    if(type==="textarea") return `<div class="field"><label for="${id}">${esc(f[1])}</label><textarea class="f" id="${id}" maxlength="2000"></textarea></div>`;
+    return `<div class="field"><label for="${id}">${esc(f[1])}</label><input class="f" id="${id}" type="${esc(type)}"${f[3]?` step="${f[3]}"`:""}${type==="text"||type==="url"||type==="email"?' maxlength="300"':""}></div>`;
   };
   const val=k=>{
     const e=$("#f_"+k);
@@ -27,7 +29,7 @@
   const num=n=>Number(n).toLocaleString("it-IT",{maximumFractionDigits:2});
   const download=(name,obj)=>{
     const a=document.createElement("a"),u=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}));
-    a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1200);
+    a.href=u;a.download=safeName(name);a.rel="noopener";a.click();setTimeout(()=>URL.revokeObjectURL(u),1200);
   };
 
   function calculate(k,v){
@@ -111,19 +113,19 @@
   }
 
   function renderCalc(){
-    work.innerHTML=`<div class="grid"><section class="card"><h2>Dati</h2>${d.fields.map(field).join("")}<div class="actions"><button class="btn primary" id="go">Calcola</button><button class="btn" id="reset">Reset</button></div></section><section class="card"><h2>Risultato</h2><div id="out" class="result">Inserisci i dati.</div><p class="muted">Calcolo indicativo: verifica i dati ufficiali quando la decisione è importante.</p></section></div>`;
-    $("#go").onclick=()=>{const v={};d.fields.forEach(f=>v[f[0]]=val(f[0]));$("#out").textContent=calculate(d.calc,v)};
+    work.innerHTML=`<div class="grid"><section class="card"><h2>Dati</h2>${d.fields.map(field).join("")}<div class="actions"><button class="btn primary" id="go">Calcola</button><button class="btn" id="reset">Reset</button></div><p id="feedback" class="muted" role="status" aria-live="polite"></p></section><section class="card"><h2>Risultato</h2><div id="out" class="result" role="status" aria-live="polite">Inserisci i dati.</div><p class="muted">Calcolo indicativo: verifica i dati ufficiali quando la decisione è importante.</p></section></div>`;
+    $("#go").onclick=()=>{const v={};d.fields.forEach(f=>v[f[0]]=val(f[0]));const has=Object.values(v).some(x=>x!==""&&x!==null&&x!==undefined);if(!has){$("#feedback").textContent="Inserisci almeno un dato.";d.fields.length&&$("#f_"+d.fields[0][0])?.focus();return}$("#feedback").textContent="";$("#out").textContent=calculate(d.calc,v)};
     $("#reset").onclick=()=>{d.fields.forEach(f=>$("#f_"+f[0]).value="");$("#out").textContent="Inserisci i dati."};
   }
 
   function renderRecords(){
     let S=load({items:[]});
-    work.innerHTML=`<div class="grid"><section class="card"><h2>Aggiungi</h2>${d.fields.map(field).join("")}<div class="actions"><button class="btn primary" id="add">Salva</button><button class="btn" id="export">Esporta</button></div></section><section class="card"><h2>Salvati</h2><div id="list"></div></section></div>`;
+    work.innerHTML=`<div class="grid"><section class="card"><h2>Aggiungi</h2>${d.fields.map(field).join("")}<div class="actions"><button class="btn primary" id="add">Salva</button><button class="btn" id="export">Esporta</button></div><p id="feedback" class="muted" role="status" aria-live="polite"></p></section><section class="card"><h2>Salvati</h2><div id="list"></div></section></div>`;
     const draw=()=>{
       const list=$("#list");
       list.innerHTML=S.items.length?S.items.map((x,i)=>`<div class="row"><div>${d.fields.filter(f=>x[f[0]]!==""&&x[f[0]]!=null).map((f,j)=>`${j?"<span>":"<b>"}${esc(f[1]+": "+x[f[0]])}${j?"</span>":"</b>"}`).join("")}</div><button class="btn danger" data-i="${i}">Togli</button></div>`).join(""):'<p class="muted">Nessun elemento salvato.</p>';
     };
-    $("#add").onclick=()=>{const x={};d.fields.forEach(f=>x[f[0]]=val(f[0]));if(!Object.values(x).some(Boolean))return;S.items.unshift(x);S.items=S.items.slice(0,250);save(S);d.fields.forEach(f=>$("#f_"+f[0]).value="");draw()};
+    $("#add").onclick=()=>{const x={};d.fields.forEach(f=>x[f[0]]=val(f[0]));const first=d.fields[0]?.[0];if(first&&String(x[first]??"").trim()===""){$("#feedback").textContent="Compila almeno "+(d.fields[0]?.[1]||"il primo campo")+". ";$("#f_"+first)?.focus();return}if(!Object.values(x).some(v=>v!==""&&v!==null&&v!==undefined&&v!==0)){$("#feedback").textContent="Inserisci almeno un dato.";return}$("#feedback").textContent="";S.items.unshift(x);S.items=S.items.slice(0,250);save(S);d.fields.forEach(f=>$("#f_"+f[0]).value="");draw()};
     $("#list").onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;S.items.splice(+b.dataset.i,1);save(S);draw()};
     $("#export").onclick=()=>download(d.id+".json",S);
     draw();
@@ -211,7 +213,7 @@
     work.innerHTML='<section class="card"><h2>Risultati</h2><p class="muted">Dati dal feed Webinsolito/BresciaGo.</p><div id="events">Caricamento…</div></section>';
     try{
       const r=await fetch("../bresciago/data/events.json",{cache:"no-store"}),j=await r.json(),a=j.events.filter(e=>eventOk(e,d.mode)).slice(0,40);
-      $("#events").innerHTML=a.length?a.map(e=>`<article class="event"><h3>${esc(e.title)}</h3><p>${esc(e.date+(e.end_date&&e.end_date!==e.date?" → "+e.end_date:""))} · ${esc(e.place||"")}</p><p>${esc(e.cat||"")}</p><a href="${esc(e.url)}" target="_blank" rel="noopener">Dettagli fonte →</a></article>`).join(""):"Nessun evento corrispondente nel feed attuale.";
+      $("#events").innerHTML=a.length?a.map(e=>{const u=safeExternal(e.url);return `<article class="event"><h3>${esc(e.title)}</h3><p>${esc(e.date+(e.end_date&&e.end_date!==e.date?" → "+e.end_date:""))} · ${esc(e.place||"")}</p><p>${esc(e.cat||"")}</p>${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Dettagli fonte →</a>`:"<span class=\"muted\">Fonte non valida</span>"}</article>`}).join(""):"Nessun evento corrispondente nel feed attuale.";
     }catch{$("#events").textContent="Feed eventi non disponibile in questo momento."}
   }
 
