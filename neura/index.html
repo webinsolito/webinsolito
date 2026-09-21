@@ -104,6 +104,30 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
   color:#bba987;font-size:8px;font-weight:900;letter-spacing:.16em;backdrop-filter:blur(10px)
 }
 .hud-dot{width:6px;height:6px;border-radius:50%;background:#b78d54;box-shadow:0 0 12px rgba(183,141,84,.65)}
+.hud-sep{width:1px;height:11px;background:rgba(190,155,102,.22)}
+.viewer-tools{position:absolute;right:12px;top:12px;display:flex;gap:6px;z-index:5}
+.viewer-tools button{
+  min-width:34px;height:30px;border-radius:10px;border:1px solid rgba(190,155,102,.18);
+  background:rgba(7,10,13,.62);color:#bba987;cursor:pointer;font-size:9px;font-weight:900;letter-spacing:.08em;
+  backdrop-filter:blur(10px)
+}
+.viewer-tools #explodeToggle{padding:0 10px;min-width:72px}
+.viewer-tools button:hover{border-color:rgba(190,155,102,.42);color:#e3d0ae}
+.part-label{
+  position:absolute;z-index:4;pointer-events:none;opacity:0;transform:translateY(6px);
+  transition:opacity .2s ease,transform .2s ease;padding:7px 9px;border-left:1px solid rgba(190,155,102,.32);
+  background:linear-gradient(90deg,rgba(7,10,13,.58),transparent);text-align:left
+}
+.part-label b{display:block;font-size:8px;letter-spacing:.14em;color:#d0b98f}
+.part-label span{display:block;margin-top:3px;font-size:7px;color:#708196;white-space:nowrap}
+.viewer-shell.exploded .part-label{opacity:1;transform:none}
+.part-memory{left:12px;bottom:29%}.part-planning{left:12px;top:49%}.part-security{right:12px;top:39%;text-align:right;border-left:0;border-right:1px solid rgba(190,155,102,.32);background:linear-gradient(270deg,rgba(7,10,13,.58),transparent)}
+.part-tools{right:12px;top:24%;text-align:right;border-left:0;border-right:1px solid rgba(190,155,102,.32);background:linear-gradient(270deg,rgba(7,10,13,.58),transparent)}
+.part-evolution{left:12px;top:14%}
+@media(max-width:720px){
+  .part-label span{display:none}.part-label b{font-size:7px}.part-label{padding:5px 6px}
+  .viewer-tools{top:auto;bottom:42px;right:50%;transform:translateX(50%)}
+}
 .viewer-help{
   position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap;
   color:#657386;font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
@@ -194,8 +218,20 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
     <div class="viewer-hud">
       <span class="hud-dot"></span>
       <span id="capoMode">IDLE</span>
+      <span class="hud-sep"></span>
+      <span id="explodePct">CHIUSO</span>
     </div>
-    <div class="viewer-help">TRASCINA · RUOTA 360° &nbsp; / &nbsp; ROTELLA · ZOOM</div>
+    <div class="viewer-tools">
+      <button type="button" id="zoomOut" aria-label="Riduci zoom">−</button>
+      <button type="button" id="explodeToggle">ESPLODI</button>
+      <button type="button" id="zoomIn" aria-label="Aumenta zoom">+</button>
+    </div>
+    <div class="part-label part-memory"><b>MEMORIA</b><span>contesto persistente</span></div>
+    <div class="part-label part-planning"><b>PLANNING</b><span>selezione e priorità</span></div>
+    <div class="part-label part-security"><b>SICUREZZA</b><span>protezione del core</span></div>
+    <div class="part-label part-tools"><b>TOOLS</b><span>interfaccia operativa</span></div>
+    <div class="part-label part-evolution"><b>EVOLUTION</b><span>candidate e adattamento</span></div>
+    <div class="viewer-help">TRASCINA · RUOTA 360° &nbsp; / &nbsp; ROTELLA · EXPLODED VIEW</div>
   </div>
           <h1>Dimmi cosa devo fare.</h1>
           <p>CAPO coordina memoria, modelli, strumenti e azioni Windows. In questa preview web il core locale non è collegato: nessuna operazione sul PC viene simulata come completata.</p>
@@ -428,6 +464,14 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
   let targetY=.42,targetX=-.08,zoom=7.4;
   let drag=false,lastX=0,lastY=0,thinking=false;
   let idlePhase=0;
+  let targetExplode=0, explode=0;
+
+  const parts={
+    baseRing,baseCore,baseLight,memoryGroup,planning,planningInner,shutters,chamber,chamberTop,chamberBottom,
+    toolRing,crownLower,crown,crownAccent
+  };
+  Object.values(parts).forEach(obj=>obj.userData.closedY=obj.position.y);
+  const posts=capo.children.filter(x=>x.geometry && x.geometry.type==='CylinderGeometry' && Math.abs(x.position.x)>1.0 && Math.abs(x.position.z)>1.0);
 
   function resize(){
     const r=host.getBoundingClientRect();
@@ -446,8 +490,16 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
   host.addEventListener('pointerup',()=>drag=false);
   host.addEventListener('pointercancel',()=>drag=false);
   host.addEventListener('wheel',e=>{
-    e.preventDefault();zoom=Math.max(5.25,Math.min(10.2,zoom+e.deltaY*.006));
+    e.preventDefault();
+    targetExplode=Math.max(0,Math.min(1,targetExplode+e.deltaY*.00145));
   },{passive:false});
+
+  document.getElementById('zoomOut').addEventListener('click',()=>{zoom=Math.min(10.2,zoom+.55)});
+  document.getElementById('zoomIn').addEventListener('click',()=>{zoom=Math.max(5.25,zoom-.55)});
+  document.getElementById('explodeToggle').addEventListener('click',()=>{
+    targetExplode=targetExplode>.5?0:1;
+  });
+  host.addEventListener('dblclick',()=>{targetExplode=0;zoom=7.4;targetX=-.08});
 
   window.setCapoThinking=function(on){
     thinking=!!on;
@@ -462,7 +514,7 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
     if(!drag) targetY += thinking ? .0033 : .00085;
     capo.rotation.y += (targetY-capo.rotation.y)*.07;
     capo.rotation.x += (targetX-capo.rotation.x)*.07;
-    camera.position.z += (zoom-camera.position.z)*.08;
+    // Zoom is resolved together with exploded-view framing below.
 
     const pulse=thinking ? 1.35+Math.sin(t*.010)*.45 : .34+Math.sin(t*.0022)*.06;
     cyanMat.emissiveIntensity=pulse;
@@ -475,10 +527,41 @@ document.getElementById('commandForm').addEventListener('submit',e=>{
 
     shutters.children.forEach((p,i)=>{
       if(!p.userData.angle && p.userData.angle!==0)return;
-      const spread=thinking ? 1.15+Math.sin(t*.004+i)*.025 : 1.02;
+      const baseSpread=1.02 + explode*.34;
+      const spread=thinking ? baseSpread+.13+Math.sin(t*.004+i)*.025 : baseSpread;
       p.position.x=Math.cos(p.userData.angle)*spread;
       p.position.z=Math.sin(p.userData.angle)*spread;
     });
+
+    // Functional exploded view: each subsystem separates along the assembly axis.
+    explode += (targetExplode-explode)*.075;
+    parts.baseRing.position.y=parts.baseRing.userData.closedY-explode*.12;
+    parts.baseCore.position.y=parts.baseCore.userData.closedY-explode*.34;
+    parts.baseLight.position.y=parts.baseLight.userData.closedY-explode*.46;
+
+    parts.memoryGroup.position.y=parts.memoryGroup.userData.closedY-explode*.72;
+    parts.planning.position.y=parts.planning.userData.closedY-explode*.12;
+    parts.planningInner.position.y=parts.planningInner.userData.closedY-explode*.12;
+
+    parts.shutters.position.y=parts.shutters.userData.closedY+explode*.42;
+    parts.chamber.position.y=parts.chamber.userData.closedY+explode*.42;
+    parts.chamberTop.position.y=parts.chamberTop.userData.closedY+explode*.58;
+    parts.chamberBottom.position.y=parts.chamberBottom.userData.closedY+explode*.28;
+
+    parts.toolRing.position.y=parts.toolRing.userData.closedY+explode*.95;
+    parts.crownLower.position.y=parts.crownLower.userData.closedY+explode*1.20;
+    parts.crown.position.y=parts.crown.userData.closedY+explode*1.48;
+    parts.crownAccent.position.y=parts.crownAccent.userData.closedY+explode*1.70;
+
+    posts.forEach(p=>{p.scale.y=1+explode*.42;p.position.y=-.02+explode*.28});
+
+    const explodeZoom=zoom+explode*1.55;
+    camera.position.z += (explodeZoom-camera.position.z)*.08;
+
+    const pct=Math.round(explode*100);
+    document.getElementById('explodePct').textContent=pct<4?'CHIUSO':pct>96?'ESPLOSO':pct+'%';
+    document.getElementById('explodeToggle').textContent=targetExplode>.5?'RICOMPONI':'ESPLODI';
+    host.classList.toggle('exploded',explode>.22);
 
     renderer.render(scene,camera);
   }
