@@ -130,11 +130,36 @@ test('merged duplicates point users to the stronger app',async({page})=>{
  }
 });
 
-test('catalog has 187 active apps and thirteen documented merges',async({request})=>{
+test('catalog truth stays internally coherent',async({request})=>{
  const d=await (await request.get('/apps.json')).json();
- const active=d.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+ const liveStatus=new Set(['MVP','BETA','STABLE']);
+ const active=d.apps.filter(a=>liveStatus.has(a.status)&&a.path);
+ const merged=d.apps.filter(a=>a.status==='MERGED');
+ const planned=d.apps.filter(a=>a.status==='PLANNED');
+ expect(d.categories).toHaveLength(12);
+ expect(d.apps).toHaveLength(218);
  expect(active).toHaveLength(187);
- expect(d.apps.filter(a=>a.status==='MERGED')).toHaveLength(13);
+ expect(merged).toHaveLength(13);
+ expect(planned).toHaveLength(18);
+
+ const byCategory=Object.fromEntries(d.categories.map(c=>[
+  c.id,
+  active.filter(a=>a.category===c.id).length
+ ]));
+ expect(byCategory).toEqual({
+  auto:12,food:15,money:16,events:20,docs:16,home:19,
+  travel:19,style:14,shopping:16,territory:3,business:19,study:18
+ });
+
+ expect(d.apps.filter(a=>liveStatus.has(a.status)&&!a.path)).toEqual([]);
+ expect(planned.filter(a=>a.path)).toEqual([]);
+
+ const activeIds=new Set(active.map(a=>a.id));
+ for(const app of merged){
+  expect(app.path,app.id+' keeps a compatibility route').toBeTruthy();
+  expect(app.merged_into,app.id+' declares its destination').toBeTruthy();
+  expect(activeIds.has(app.merged_into),app.id+' targets a live app').toBeTruthy();
+ }
 });
 
 test('mobile quality at 360, 390 and 430 for Home and 20 rebuilt apps',async({page},testInfo)=>{
