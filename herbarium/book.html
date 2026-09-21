@@ -7,23 +7,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
   <title>Volume I — HERBARIUM</title>
-  <link rel="stylesheet" href="./styles.css?v=633be37d">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 <main class="shell">
-  <div class="preview-ribbon" role="status">CANDIDATE PREVIEW · 633be37d</div>
-  <header class="app-header">
-    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home"><small>HERBARIUM</small><strong>The Living Atlas</strong></a>
-    <span id="network" class="status-pill">offline-first</span>
-  </header>
+  <header class="app-header"><a class="brand-link" href="./index.html" aria-label="HERBARIUM Home"><small>HERBARIUM</small><strong>The Living Atlas</strong></a><span id="network" class="status-pill">offline-first</span></header>
   <section class="page-panel" aria-labelledby="bookTitle">
-    <div class="page-toolbar">
-      <a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a>
-      <div><p class="eyebrow">Bibliotheca personalis</p><h1 id="bookTitle">Herbarium — Volume I</h1></div>
-      <span class="privacy-badge">Solo dati reali</span>
-    </div>
+    <div class="page-toolbar"><a class="back-button" href="./index.html" aria-label="Torna alla Home">←</a><div><p class="eyebrow">Bibliotheca personalis</p><h1 id="bookTitle">Herbarium — Volume I</h1></div><span class="privacy-badge">Solo dati reali</span></div>
     <article class="book-cover"><small>HERBARIUM</small><h2>Flora Observata</h2><p>Volumen Primum</p><strong id="bookCount">0 osservazioni</strong></article>
-    <p class="notice"><strong>Nessuna certezza inventata.</strong> Le osservazioni UNKNOWN restano in attesa.</p>
+    <p class="notice"><strong>Nessuna certezza inventata.</strong> Le osservazioni UNKNOWN restano in attesa e non generano una tavola botanica.</p>
+    <section class="book-section" aria-labelledby="platesTitle"><div class="section-head"><div><p class="eyebrow">Tabulae botanicae</p><h2 id="platesTitle">Schede botaniche validate</h2></div><span id="verifiedPlateCount" class="unknown-badge">0</span></div><p class="lead">Quando una determinazione dispone di dati botanici validati, il Libro la compone come tavola editoriale: nomenclatura, famiglia, caratteri osservabili e note disponibili. I campi mancanti vengono omessi, mai inventati.</p><div id="verifiedPlates" class="botanical-plates"></div></section>
     <section class="book-section"><div class="section-head"><div><p class="eyebrow">Specimina incerta</p><h2>Osservazioni in attesa</h2></div><span id="pendingCount" class="unknown-badge">0</span></div><div id="pendingList" class="pending-list"></div></section>
   </section>
-</main><script src="./app.js?v=633be37d"></script></body></html>
+</main><script src="./app.js"></script><script src="./book-plates.js"></script></body></html>
