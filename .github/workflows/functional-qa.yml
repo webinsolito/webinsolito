@@ -21,7 +21,7 @@ jobs:
           node-version: "22"
       - run: npm install
       - run: npx playwright install --with-deps chromium webkit
-      - name: Build 200-app structural audit
+      - name: Build live-catalog structural audit
         run: node scripts/quality-audit.mjs
       - name: Measure rebuilt static assets
         run: node scripts/performance-after.mjs
