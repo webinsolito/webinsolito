@@ -24,6 +24,20 @@ test('natural-language intents prefer canonical active products',async({page})=>
   }
 });
 
+test('search never exposes merged or planned catalog entries',async({page})=>{
+  await page.goto('/');
+  const q=page.locator('#globalSearch');
+  const catalog=await page.request.get('/apps.json').then(r=>r.json());
+  const hiddenIds=new Set(catalog.filter(app=>app.status==='MERGED'||app.status==='PLANNED').map(app=>app.id));
+  expect(hiddenIds.size).toBeGreaterThan(0);
+
+  for(const query of ['revisione auto','scadenze macchina','budget casa','documenti auto','app','lista','viaggio','spese']){
+    await q.fill(query);
+    const ids=await page.locator('#searchResults .res[data-app-id]').evaluateAll(nodes=>nodes.map(n=>n.dataset.appId));
+    expect(ids.filter(id=>hiddenIds.has(id)),query).toEqual([]);
+  }
+});
+
 test('intent results do not send users through merged compatibility routes',async({page})=>{
   await page.goto('/');
   const q=page.locator('#globalSearch');
