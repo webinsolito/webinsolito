@@ -54,5 +54,5 @@ function collect(){return{plate:plate.value,make:make.value,model:model.value,tr
 function saveDraft(){localStorage.setItem(STORAGE,JSON.stringify(collect()))}
 function restore(){try{const s=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!s)return;for(const [k,v] of Object.entries(s)){const el=document.getElementById(k);if(el&&v!==undefined&&v!==null)el.value=v}}catch{}}
 function resetAll(){if(!confirm('Cancellare la bozza SellMyCar?'))return;localStorage.removeItem(STORAGE);document.querySelectorAll('input,textarea').forEach(x=>x.value='');fuel.selectedIndex=gear.selectedIndex=condition.selectedIndex=platform.selectedIndex=showPlate.selectedIndex=seller.selectedIndex=0;titleOut.value=output.value='';error.hidden=true;plateStatus.className='status';plateStatus.textContent='Inserisci la targa. SellMyCar la copierà e aprirà KMSicuro in una nuova scheda.'}
-restore();if(make.value&&model.value&&year.value)generate();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
+restore();const q=new URLSearchParams(location.search),suggestedPrice=Number(q.get('price'));if(suggestedPrice>0&&!price.value)price.value=Math.round(suggestedPrice);if(make.value&&model.value&&year.value)generate();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
 </script></body></html>
