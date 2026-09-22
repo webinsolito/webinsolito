@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 const hardenedApps = [
-  ['screensort', 12, 5],
+  ['screensort', 12, null],
   ['frigochef', 12, 5],
   ['parkmemo', 12, null],
   ['dealerflow', 12, 5],
