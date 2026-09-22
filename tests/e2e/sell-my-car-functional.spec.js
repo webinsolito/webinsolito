@@ -9,23 +9,23 @@ test.describe('SellMyCar useful workflow', () => {
     await page.goto('/sell-my-car/');
   });
 
-  test('validates plate and opens official ACI helper safely', async ({ page }) => {
+  test('validates plate and opens KMSicuro safely', async ({ page }) => {
     await page.locator('#plate').fill('A1');
-    await page.getByRole('button', { name: 'Apri InfoTarga ACI' }).click();
+    await page.getByRole('button', { name: 'Apri KMSicuro' }).click();
     await expect(page.locator('#plateStatus')).toContainText('Controlla la targa');
 
     await page.locator('#plate').fill('ab123cd');
-    await page.getByRole('button', { name: 'Apri InfoTarga ACI' }).click();
+    await page.getByRole('button', { name: 'Apri KMSicuro' }).click();
     await expect(page.locator('#plate')).toHaveValue('AB123CD');
     await expect(page.locator('#plateStatus')).toContainText('copiata');
     const opened = await page.evaluate(() => window.__opened);
-    expect(opened[0]).toBe('https://auto3d.aci.it/');
+    expect(opened[0]).toBe('https://www.kmsicuro.it/');
     expect(opened[2]).toContain('noopener');
     expect(opened[2]).toContain('noreferrer');
   });
 
   test('imports copied vehicle data into the form', async ({ page }) => {
-    await page.locator('#aciText').fill(
+    await page.locator('#kmsText').fill(
       'Marca: FIAT\nModello: PANDA\nImmatricolazione: 2021\nPotenza: 51 kW\nCilindrata: 999 cm³'
     );
     await page.getByRole('button', { name: 'Compila dati automaticamente' }).click();
@@ -58,6 +58,10 @@ test.describe('SellMyCar useful workflow', () => {
     await expect(page.locator('#output')).toContainText('DIFETTI / DA SEGNALARE');
     await expect(page.locator('#output')).not.toContainText('AB123CD');
     await expect(page.locator('#checklist')).toContainText('12.000');
+    await page.locator('#kmsUrl').fill('https://www.kmsicuro.it/share/TEST123');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#output')).toContainText('Scheda KMSicuro: https://www.kmsicuro.it/share/TEST123');
+    await expect(page.locator('#checklist')).toContainText('Trasparenza');
 
     await page.locator('#showPlate').selectOption('yes');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
