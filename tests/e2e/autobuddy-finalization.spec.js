@@ -36,6 +36,35 @@ test.describe('AutoBuddy finalization', () => {
     await expect(page.locator('#importFile')).toHaveAttribute('accept', '.json,application/json');
   });
 
+  test('navigation returns to Auto category and external map uses safe blank target', async ({ page }) => {
+    await expect(page.locator('a.back')).toHaveAttribute('href', '../auto/');
+    await page.evaluate(() => { pkNote.value='P1'; saveParking(false); });
+    const map = page.locator('#parkingCard a[target="_blank"]');
+    await expect(map).toHaveAttribute('href', /https:\/\/maps\.apple\.com\//);
+    await expect(map).toHaveAttribute('rel', /noopener/);
+    await expect(map).toHaveAttribute('rel', /noreferrer/);
+  });
+
+  test('odometer cannot decrease or exceed supported range', async ({ page }) => {
+    const dialogs = [];
+    page.on('dialog', async d => { dialogs.push(d.message()); await d.accept(); });
+    await createVehicle(page, { km:'12000' });
+
+    await page.evaluate(() => { window.prompt=()=> '11000'; quickKm(); });
+    expect(dialogs.at(-1)).toContain('non può diminuire');
+    let stored = await page.evaluate(() => JSON.parse(localStorage.getItem('autobuddy.v2')));
+    expect(stored.vehicles[0].km).toBe(12000);
+
+    await page.evaluate(() => { window.prompt=()=> '6000000'; quickKm(); });
+    expect(dialogs.at(-1)).toContain('chilometraggio valido');
+    stored = await page.evaluate(() => JSON.parse(localStorage.getItem('autobuddy.v2')));
+    expect(stored.vehicles[0].km).toBe(12000);
+
+    await page.evaluate(() => { window.prompt=()=> '12500'; quickKm(); });
+    stored = await page.evaluate(() => JSON.parse(localStorage.getItem('autobuddy.v2')));
+    expect(stored.vehicles[0].km).toBe(12500);
+  });
+
   test('vehicle validation rejects invalid plate, year and kilometres', async ({ page }) => {
     const dialogs = [];
     page.on('dialog', async d => { dialogs.push(d.message()); await d.accept(); });
