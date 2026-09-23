@@ -100,6 +100,11 @@ test.describe('SellMyCar useful workflow', () => {
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
     await expect(page.locator('#output')).not.toContainText('evil.example');
     await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
+
+    await page.locator('#kmsUrl').fill('http://www.kmsicuro.it/share/TEST123');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#output')).not.toContainText('http://www.kmsicuro.it');
+    await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
   });
 
   test('saves and restores a draft locally', async ({ page }) => {
