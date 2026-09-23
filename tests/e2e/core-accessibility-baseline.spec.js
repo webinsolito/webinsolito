@@ -10,3 +10,29 @@ test('shared core stylesheet keeps keyboard focus and reduced-motion safeguards'
   expect(css).toContain('animation-duration:.01ms!important');
   expect(css).toContain('.wi-app-install{min-height:44px');
 });
+
+test('shared focus treatment is visible at runtime', async ({ page }) => {
+  await page.goto('/');
+  const focusable = page.locator('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])').first();
+  await expect(focusable).toBeVisible();
+  await focusable.focus();
+  await expect(focusable).toBeFocused();
+  const outline = await focusable.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { width: style.outlineWidth, style: style.outlineStyle, offset: style.outlineOffset };
+  });
+  expect(outline.style).not.toBe('none');
+  expect(parseFloat(outline.width)).toBeGreaterThanOrEqual(3);
+  expect(parseFloat(outline.offset)).toBeGreaterThanOrEqual(2);
+});
+
+test('install control respects the 44px touch target when present', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const install = page.locator('.wi-app-install');
+  if (await install.count()) {
+    const box = await install.first().boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+});
