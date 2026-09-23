@@ -4,7 +4,7 @@ Portale gratuito di strumenti digitali quotidiani pubblicato su GitHub Pages.
 
 ## Stato reale del catalogo
 
-Stato verificato su `apps.json` il 21 settembre 2026:
+Stato verificato su `apps.json` il 23 settembre 2026:
 
 - elementi totali registrati: **218**;
 - categorie: **12**;
