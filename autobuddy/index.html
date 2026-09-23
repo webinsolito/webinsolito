@@ -25,7 +25,19 @@ const KEY='autobuddy.v2';const NAV=[['home','Oggi'],['garage','Auto'],['deadline
 function emptyState(){return{version:2,vehicles:[],deadlines:[],expenses:[],maintenance:[],documents:[],parking:null,activeVehicle:null,kmLog:[]}}
 function safeImageData(v){return typeof v==='string'&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=\r\n]+$/i.test(v)?v:''}
 function safeDocData(v){return typeof v==='string'&&/^data:(?:image\/(?:jpeg|png|webp)|application\/pdf);base64,[A-Za-z0-9+/=\r\n]+$/i.test(v)?v:''}
-function normalizeState(x){const b=emptyState();if(!x||typeof x!=='object')return b;for(const k of ['vehicles','deadlines','expenses','maintenance','documents','kmLog'])b[k]=Array.isArray(x[k])?x[k].slice(0,1000):[];b.vehicles=b.vehicles.map(v=>({...v,photo:safeImageData(v?.photo)}));b.documents=b.documents.map(d=>({...d,data:safeDocData(d?.data)}));b.parking=x.parking&&typeof x.parking==='object'?x.parking:null;b.activeVehicle=x.activeVehicle??null;return b}
+function safeText(v,max=200){return typeof v==='string'?v.slice(0,max):''}
+function safeId(v){const n=Number(v);return Number.isSafeInteger(n)&&n>0?n:null}
+function safeNum(v,min=0,max=1e12){const n=Number(v);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):0}
+function safeDate(v){const s=safeText(v,32);return /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{3}Z?)?)?)?$/.test(s)?s:''}
+function normalizeState(x){const b=emptyState();if(!x||typeof x!=='object')return b;const arr=k=>Array.isArray(x[k])?x[k].slice(0,1000):[];
+b.vehicles=arr('vehicles').filter(v=>v&&safeId(v.id)).map(v=>({id:safeId(v.id),plate:safeText(v.plate,8).toUpperCase().replace(/[^A-Z0-9]/g,''),model:safeText(v.model,120),year:safeText(v.year,4),fuel:safeText(v.fuel,24),km:safeNum(v.km,0,5000000),photo:safeImageData(v.photo)}));
+const ids=new Set(b.vehicles.map(v=>v.id)), linked=v=>v&&safeId(v.id)&&safeId(v.veh)&&ids.has(safeId(v.veh));
+b.deadlines=arr('deadlines').filter(linked).map(v=>({id:safeId(v.id),veh:safeId(v.veh),type:safeText(v.type,80),date:safeDate(v.date),note:safeText(v.note,200)}));
+b.expenses=arr('expenses').filter(linked).map(v=>({id:safeId(v.id),veh:safeId(v.veh),cat:safeText(v.cat,80),amt:safeNum(v.amt,0,10000000),km:safeNum(v.km,0,5000000),date:safeDate(v.date),note:safeText(v.note,200)}));
+b.maintenance=arr('maintenance').filter(linked).map(v=>({id:safeId(v.id),veh:safeId(v.veh),type:safeText(v.type,160),km:safeNum(v.km,0,5000000),date:safeDate(v.date),cost:safeNum(v.cost,0,10000000),shop:safeText(v.shop,160),nextDate:safeDate(v.nextDate),nextKm:safeNum(v.nextKm,0,5000000)}));
+b.documents=arr('documents').filter(linked).map(v=>({id:safeId(v.id),veh:safeId(v.veh),name:safeText(v.name,160),expiry:safeDate(v.expiry),data:safeDocData(v.data),mime:safeText(v.mime,80),fileName:safeText(v.fileName,180)}));
+b.kmLog=arr('kmLog').filter(linked).map(v=>({id:safeId(v.id),veh:safeId(v.veh),km:safeNum(v.km,0,5000000),date:safeDate(v.date)}));
+if(x.parking&&typeof x.parking==='object'){const lat=Number(x.parking.lat),lng=Number(x.parking.lng);b.parking={lat:Number.isFinite(lat)&&lat>=-90&&lat<=90?lat:null,lng:Number.isFinite(lng)&&lng>=-180&&lng<=180?lng:null,note:safeText(x.parking.note,200),until:safeDate(x.parking.until),at:safeDate(x.parking.at)}}const activeId=safeId(x.activeVehicle);b.activeVehicle=activeId&&ids.has(activeId)?activeId:(b.vehicles[0]?.id??null);return b}
 function fail(message,field){alert(message);field?.focus();return false}
 let S=load();
 function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.version===2)return normalizeState(x)}catch{}return emptyState()}
