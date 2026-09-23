@@ -68,6 +68,45 @@ test.describe('SellMyCar useful workflow', () => {
     await expect(page.locator('#output')).toContainText('Targa: AB123CD');
   });
 
+
+  test('rejects missing plate, invalid year and inconsistent minimum price', async ({ page }) => {
+    await page.locator('#make').fill('FIAT');
+    await page.locator('#model').fill('Panda');
+    await page.locator('#year').fill('2021');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#error')).toContainText('targa valida');
+    await expect(page.locator('#plate')).toBeFocused();
+
+    await page.locator('#plate').fill('AB123CD');
+    await page.locator('#year').fill('2200');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#error')).toContainText('anno valido');
+    await expect(page.locator('#year')).toBeFocused();
+
+    await page.locator('#year').fill('2021');
+    await page.locator('#price').fill('10000');
+    await page.locator('#minPrice').fill('15000');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#error')).toContainText('prezzo minimo');
+    await expect(page.locator('#minPrice')).toBeFocused();
+  });
+
+  test('does not publish untrusted KMSicuro-like URLs', async ({ page }) => {
+    await page.locator('#plate').fill('AB123CD');
+    await page.locator('#make').fill('FIAT');
+    await page.locator('#model').fill('Panda');
+    await page.locator('#year').fill('2021');
+    await page.locator('#kmsUrl').fill('https://evil.example/?next=https://www.kmsicuro.it/share/TEST123');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#output')).not.toContainText('evil.example');
+    await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
+
+    await page.locator('#kmsUrl').fill('http://www.kmsicuro.it/share/TEST123');
+    await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
+    await expect(page.locator('#output')).not.toContainText('http://www.kmsicuro.it');
+    await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
+  });
+
   test('saves and restores a draft locally', async ({ page }) => {
     await page.locator('#make').fill('Toyota');
     await page.locator('#model').fill('Yaris');
