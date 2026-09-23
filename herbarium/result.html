@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f3efe4">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Risultato — HERBARIUM</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="result-page">
+<main id="resultPage" class="shell">
+  <header class="app-header">
+    <a class="brand-link" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span class="brand-copy"><small>HERBARIUM</small><strong>Living Atlas</strong></span>
+    </a>
+    <span id="network" class="status-pill">dati locali</span>
+  </header>
+
+  <section class="result-screen">
+    <div class="page-toolbar simple-toolbar">
+      <a class="back-button" href="./collection.html" aria-label="Torna alla raccolta">←</a>
+      <div><p class="eyebrow">Risultato</p><h1>Esito dell’osservazione</h1></div>
+    </div>
+
+    <article class="result-detail-card">
+      <div id="resultMedia" class="result-detail-media"></div>
+      <div class="result-detail-body">
+        <span id="resultBadge" class="human-status pending">...</span>
+        <h2 id="resultMainTitle">Caricamento…</h2>
+        <p id="resultCopy">Sto leggendo i dati salvati sul dispositivo.</p>
+        <p id="resultMeta" class="result-meta"></p>
+        <div class="result-actions">
+          <a href="./collection.html">Vai alla raccolta</a>
+          <a id="result3d" href="./species-bellis-demo.html">Demo 3D Bellis</a>
+          <button id="resultDelete" type="button">Elimina osservazione</button>
+        </div>
+        <p class="result-note"><strong>Nessuna specie viene inventata.</strong> Se non esiste un motore validato, il risultato resta UNKNOWN o REJECT.</p>
+      </div>
+    </article>
+  </section>
+
+  <nav class="mobile-tabbar" aria-label="Navigazione principale">
+    <a href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
+    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Osserva</small></a>
+    <a href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
+    <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+  </nav>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

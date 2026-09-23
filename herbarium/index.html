@@ -1,8 +1,59 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08110d"><title>HERBARIUM — Natural Atlas 3D</title><link rel="stylesheet" href="./immersive.css"></head>
-<body><div class="candidate-preview-badge" role="status">CANDIDATE PREVIEW · 197e6864</div><main class="immersive-app"><section class="immersive-stage" data-viewer="home"><canvas id="plantCanvas" class="plant-canvas" aria-label="Modello botanico 3D interattivo"></canvas><div class="scene-grid"></div><div class="scene-vignette"></div><div id="fallback2d" class="fallback-2d"><div><strong>HERBARIUM</strong><span>La vista 3D non è disponibile su questo dispositivo. Le funzioni base restano utilizzabili.</span></div></div>
-<header class="brand-bar"><a class="brand" href="./index.html"><span class="brand-mark">H</span><span class="brand-copy"><strong>HERBARIUM</strong><small>Natural Atlas 3D</small></span></a><nav class="top-nav"><a href="./observe.html">Osserva</a><a href="./collection.html">Raccolta</a><a href="./atlas.html">Atlante</a><a href="./book.html">Libro</a><a href="./academy.html">Academy</a></nav></header>
-<div class="demo-chip">Scena 3D reale · modello procedurale demo</div>
-<section class="hero-copy"><p class="kicker">Esplora. Ruota. Entra nei dettagli.</p><h1>Scopri cosa hai davanti.</h1><p>Fotografa una pianta e costruisci la tua osservazione. Il 3D è un catalogo separato: non fingiamo un’identificazione quando il motore non ha prove sufficienti.</p></section>
-<div class="hero-actions"><a class="cta-primary" href="./observe.html">◉ Scatta foto</a><a class="cta-secondary" href="./observe.html">↑ Carica foto</a></div>
-<nav class="hud"><a class="hud-link" href="./observe.html"><strong>01 · Osserva</strong><span>Foto e prove</span></a><a class="hud-link" href="./collection.html"><strong>02 · Raccolta</strong><span>Le tue osservazioni</span></a><a class="hud-link" href="./species-bellis.html"><strong>03 · Demo 3D</strong><span>Bellis perennis</span></a><a class="hud-link" href="./atlas.html"><strong>04 · Atlante</strong><span>Luoghi salvati</span></a><a class="hud-link" href="./book.html"><strong>05 · Libro</strong><span>Erbario personale</span></a></nav>
-<div class="scene-caption">Interazione <b>trascina · pinch/rotella · tap</b></div><span id="network" style="display:none">dati locali</span><span id="observationCount" style="display:none">0</span><span id="speciesCount" style="display:none">0</span></section></main><script src="./app.js"></script><script src="./plant3d.js"></script><script>Herbarium3D.mount(document.getElementById('plantCanvas'),{mode:'home',autoRotate:true});</script></body></html>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f2e7">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Herbarium">
+  <title>HERBARIUM — Scopri la natura intorno a te</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="home-page fidelity-home">
+<main class="shell home-shell fidelity-shell">
+  <header class="fidelity-header">
+    <a class="fidelity-brand" href="./index.html" aria-label="HERBARIUM Home">
+      <span class="fidelity-leaf" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M12 51C20 31 31 17 52 9c-1 20-9 35-27 44"/><path d="M16 46c12-8 23-17 32-29"/><path d="M30 31c-1-8 1-15 5-21"/><path d="M37 24c7 0 12 2 17 5"/></svg></span>
+      <span class="fidelity-brand-copy"><strong>HERBARIUM</strong><small>Piante · Natura · Conoscenza</small></span>
+    </a>
+    <span id="network" class="visually-hidden">dati locali</span>
+  </header>
+  <section class="fidelity-hero" aria-labelledby="homeTitle">
+    <img class="fidelity-hero-photo" src="./assets/hero-approved.webp" alt="Fiore bianco e foglie verdi">
+    <div class="fidelity-hero-shade" aria-hidden="true"></div>
+    <div class="fidelity-hero-copy">
+      <p class="fidelity-kicker">Un mondo di piante a portata di mano</p>
+      <h1 id="homeTitle">Scopri<br>la natura<br>intorno a te.</h1>
+      <p class="fidelity-intro">Scatta una foto, documenta ciò che incontri e costruisci il tuo erbario personale. Se le prove non bastano, HERBARIUM non forza mai un nome.</p>
+      <a class="fidelity-camera-cta" href="./observe.html">
+        <span class="fidelity-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8.5h3l1.6-2h6.8l1.6 2h3A1.5 1.5 0 0 1 21.5 10v8A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18v-8A1.5 1.5 0 0 1 4 8.5Z"/><circle cx="12" cy="14" r="3.2"/></svg></span>
+        <span><strong>Scatta una foto</strong><small>Nuova osservazione</small></span><b aria-hidden="true">→</b>
+      </a>
+      <div class="fidelity-trust"><span>◌ Privato</span><span>⌁ Offline-first</span><span>✓ Prudente</span></div>
+    </div>
+  </section>
+  <nav class="fidelity-cards" aria-label="Esplora HERBARIUM">
+    <a class="fidelity-card fidelity-library" href="./observe.html"><span class="fidelity-card-image" aria-hidden="true"></span><span class="fidelity-card-body"><strong>Scegli dalla libreria</strong><small>Usa una foto esistente</small><b>→</b></span></a>
+    <a class="fidelity-card fidelity-observations" href="./collection.html"><span class="fidelity-card-image" aria-hidden="true"></span><span class="fidelity-card-body"><strong>Le mie osservazioni</strong><small>Il tuo diario botanico</small><b>→</b></span></a>
+    <a class="fidelity-card fidelity-book" href="./book.html"><span class="fidelity-card-image" aria-hidden="true"></span><span class="fidelity-card-body"><strong>Il libro botanico</strong><small>Il tuo erbario personale</small><b>→</b></span></a>
+  </nav>
+  <section class="fidelity-banner">
+    <div class="fidelity-banner-art" aria-hidden="true"></div>
+    <div class="fidelity-banner-copy"><small>Piccoli gesti · Grande rispetto</small><h2>Un futuro più verde inizia dalla conoscenza.</h2><a href="./academy.html">Scopri di più <span>→</span></a></div>
+  </section>
+  <section class="fidelity-local-summary" aria-label="Riepilogo locale">
+    <div><b id="observationCount">0</b><span>osservazioni</span></div>
+    <div><b id="speciesCount">0</b><span>specie verificate</span></div>
+    <a href="./atlas.html"><b>Atlante</b><span>Esplora i luoghi</span></a>
+  </section>
+  <nav class="mobile-tabbar fidelity-tabbar" aria-label="Navigazione principale">
+    <a class="active" href="./index.html"><span aria-hidden="true">⌂</span><small>Home</small></a>
+    <a href="./observe.html"><span aria-hidden="true">＋</span><small>Nuova</small></a>
+    <a href="./collection.html"><span aria-hidden="true">◫</span><small>Raccolta</small></a>
+    <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
+  </nav>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

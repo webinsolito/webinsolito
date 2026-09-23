@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f3efe4">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herbarium">
   <title>Osserva — HERBARIUM</title>
@@ -91,6 +92,6 @@
     <a href="./book.html"><span aria-hidden="true">▤</span><small>Libro</small></a>
   </nav>
 </main>
-<script src="./app.js"></script>
+<script type="module" src="./app.js"></script>
 </body>
 </html>
