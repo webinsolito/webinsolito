@@ -95,8 +95,15 @@ test.describe('AutoBuddy finalization', () => {
     page.on('dialog', async d => { await d.accept(); });
     const backup = {
       version:2,
-      vehicles:[{ id:1, plate:'AB123CD', model:'Panda', photo:'javascript:alert(1)' }],
-      documents:[{ id:2, veh:1, name:'Bad', data:'javascript:alert(2)' }]
+      vehicles:[
+        { id:1, plate:'AB123CD', model:'Panda', photo:'javascript:alert(1)' },
+        { id:'1);window.__xss=1;//', plate:'ZZ999ZZ', model:'Injected' }
+      ],
+      documents:[
+        { id:2, veh:1, name:'Bad', data:'javascript:alert(2)' },
+        { id:'2);window.__xss=1;//', veh:1, name:'Injected', data:'' }
+      ],
+      parking:{ lat:'\" onclick=\"window.__xss=1', lng:9.1, note:'<img src=x onerror=window.__xss=1>' }
     };
     await page.locator('#importFile').setInputFiles({
       name:'backup.json',
@@ -113,6 +120,10 @@ test.describe('AutoBuddy finalization', () => {
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('autobuddy.v2')));
     expect(stored.vehicles[0].photo).toBe('');
     expect(stored.documents[0].data).toBe('');
+    expect(stored.vehicles).toHaveLength(1);
+    expect(stored.documents).toHaveLength(1);
+    expect(stored.parking.lat).toBeNull();
+    expect(await page.evaluate(() => window.__xss || 0)).toBe(0);
     expect(Array.isArray(stored.deadlines)).toBeTruthy();
     expect(Array.isArray(stored.expenses)).toBeTruthy();
     expect(Array.isArray(stored.maintenance)).toBeTruthy();
