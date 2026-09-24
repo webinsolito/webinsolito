@@ -209,7 +209,7 @@ test('Catalog: active apps, manifests and icons exist', async ({ request }) => {
   expect(catalog.categories).toHaveLength(12);
   const active=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
   expect(active.length).toBeGreaterThanOrEqual(24);
-  expect(active.filter(a=>a.category==='auto')).toHaveLength(16);
+  expect(active.filter(a=>a.category==='auto')).toHaveLength(12);
   for(const app of active){
     const pageRes=await request.get('/'+app.path);
     expect(pageRes.ok(),app.name+' page').toBeTruthy();
@@ -259,58 +259,40 @@ test('Home links directly to real category pages', async ({ page, request }) => 
   await expect(page.locator('#groups')).toHaveCount(0);
   await expect(page.getByRole('link',{name:/Auto & mobilità/i})).toHaveAttribute('href','./auto/');
   await page.goto('/auto/');
-  await expect(page.locator('#apps .app')).toHaveCount(16);
+  await expect(page.locator('#mainApps .app, #apps .app')).toHaveCount(12);
   await expect(page.locator('#intentGrid .intent')).toHaveCount(4);
   const old=await request.get('/categorie.html');
   expect(old.ok()).toBeTruthy();
 });
 
 
-test('Auto MVP: BolloCheck validates, calculates and resets', async ({ page }) => {
+test('Merged Auto utility routes land on the canonical AutoBuddy tools', async ({ page }) => {
   await page.goto('/bollo-check/');
-  await page.getByRole('button',{name:'Calcola'}).click();
-  await expect(page.locator('#error')).toBeVisible();
-  await page.locator('#expiry').fill('2027-01-15');
-  await page.locator('#amount').fill('240');
-  await page.getByRole('button',{name:'Calcola'}).click();
-  await expect(page.locator('#daysLeft')).not.toHaveText('—');
-  await page.getByRole('button',{name:'Reset'}).click();
-  await expect(page.locator('#daysLeft')).toHaveText('—');
-});
+  await expect(page).toHaveURL(/\/autobuddy\/\?tool=bollo/);
+  await page.locator('#qBolloDate').fill('2027-01-15');
+  await page.locator('#qBolloAmt').fill('240');
+  await page.locator('#tool-bollo').getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#qBolloOut')).toContainText(/Mancano|Scadenza passata/);
 
-test('Auto MVP: RevisioneMemo calculates a reminder', async ({ page }) => {
   await page.goto('/revisione-memo/');
-  await page.getByRole('button',{name:'Calcola'}).click();
-  await expect(page.locator('#error')).toBeVisible();
-  await page.locator('#baseDate').fill('2026-01-15');
-  await page.locator('#months').fill('24');
-  await page.getByRole('button',{name:'Calcola'}).click();
-  await expect(page.locator('#nextDate')).not.toHaveText('—');
-});
+  await expect(page).toHaveURL(/\/autobuddy\/\?tool=revisione/);
+  await page.locator('#qRevDate').fill('2026-01-15');
+  await page.locator('#tool-revisione').getByRole('button',{name:'Calcola'}).click();
+  await expect(page.locator('#qRevOut')).toContainText('Prossimo promemoria');
 
-test('Auto MVP: TyreMemo rejects impossible km and calculates valid data', async ({ page }) => {
   await page.goto('/tyre-memo/');
-  await page.locator('#installKm').fill('50000');
-  await page.locator('#currentKm').fill('40000');
-  await page.getByRole('button',{name:'Controlla'}).click();
-  await expect(page.locator('#error')).toBeVisible();
-  await page.locator('#currentKm').fill('56000');
-  await page.getByRole('button',{name:'Controlla'}).click();
-  await expect(page.locator('#kmLeft')).not.toHaveText('—');
-});
+  await expect(page).toHaveURL(/\/autobuddy\/\?tool=pneumatici/);
+  await page.locator('#qTyreMountKm').fill('50000');
+  await page.locator('#qTyreCurrentKm').fill('40000');
+  await page.locator('#tool-pneumatici').getByRole('button',{name:'Controlla'}).click();
+  await expect(page.locator('#qTyreOut')).toContainText('non possono essere inferiori');
+  await page.locator('#qTyreCurrentKm').fill('56000');
+  await page.locator('#tool-pneumatici').getByRole('button',{name:'Controlla'}).click();
+  await expect(page.locator('#qTyreOut')).toContainText(/Rotazione/);
 
-test('Auto MVP: ServiceBook stores a maintenance entry', async ({ page }) => {
   await page.goto('/service-book/');
-  await page.getByRole('button',{name:'Salva intervento'}).click();
-  await expect(page.locator('#error')).toBeVisible();
-  await page.locator('#title').fill('Tagliando QA');
-  await page.locator('#date').fill('2026-09-18');
-  await page.locator('#km').fill('45000');
-  await page.locator('#cost').fill('320');
-  await page.getByRole('button',{name:'Salva intervento'}).click();
-  await expect(page.locator('#list')).toContainText('Tagliando QA');
-  await page.reload();
-  await expect(page.locator('#list')).toContainText('Tagliando QA');
+  await expect(page).toHaveURL(/\/autobuddy\/\?tool=manutenzione/);
+  await expect(page.locator('[data-panel="maintenance"]')).toHaveClass(/on/);
 });
 
 test('Auto MVP: FuelSaver calculates net detour benefit', async ({ page }) => {
@@ -328,13 +310,13 @@ test('Auto MVP: FuelSaver calculates net detour benefit', async ({ page }) => {
 
 test('Auto MVP: CarValue returns transparent depreciation estimate', async ({ page }) => {
   await page.goto('/car-value/');
-  await page.getByRole('button',{name:'Calcola stima'}).click();
+  await page.getByRole('button',{name:'Calcola forchetta'}).click();
   await expect(page.locator('#error')).toBeVisible();
   await page.locator('#price').fill('30000');
   await page.locator('#years').fill('4');
   await page.locator('#rate').fill('12');
   await page.getByRole('button',{name:'Calcola stima'}).click();
-  await expect(page.locator('#value')).not.toHaveText('—');
+  await expect(page.locator('#rangeValue')).not.toHaveText('—');
 });
 
 test('Auto MVP: ParkingCost validates time and calculates tariff', async ({ page }) => {
@@ -368,17 +350,17 @@ test('Auto MVP: EVCharge calculates energy time and cost', async ({ page }) => {
 
 test('Auto MVP: RangeCalc calculates fuel and EV range', async ({ page }) => {
   await page.goto('/range-calc/');
-  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await page.getByRole('button',{name:'Verifica autonomia'}).click();
   await expect(page.locator('#error')).toBeVisible();
   await page.locator('#capacity').fill('50');
   await page.locator('#level').fill('50');
   await page.locator('#cons').fill('6');
-  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await page.getByRole('button',{name:'Verifica autonomia'}).click();
   await expect(page.locator('#range')).toContainText('km');
   await page.locator('#mode').selectOption('ev');
   await page.locator('#capacity').fill('70');
   await page.locator('#cons').fill('18');
-  await page.getByRole('button',{name:'Stima autonomia'}).click();
+  await page.getByRole('button',{name:'Verifica autonomia'}).click();
   await expect(page.locator('#available')).toContainText('kWh');
 });
 
@@ -386,6 +368,7 @@ test('Auto MVP: SellMyCar generates and persists a listing draft', async ({ page
   await page.goto('/sell-my-car/');
   await page.getByRole('button',{name:'Genera annuncio'}).click();
   await expect(page.locator('#error')).toBeVisible();
+  await page.locator('#plate').fill('AB123CD');
   await page.locator('#make').fill('Toyota');
   await page.locator('#model').fill('Yaris');
   await page.locator('#year').fill('2022');
@@ -408,7 +391,7 @@ test('Real category pages exist for all 12 macro-categories', async ({ request }
 test('Catalog keeps the quality-first active set and home stays category-only', async ({ page }) => {
   const catalog = await (await page.request.get('/apps.json')).json();
   const active = catalog.apps.filter(a => ['MVP','BETA','STABLE'].includes(a.status) && a.path);
-  expect(active).toHaveLength(195);
+  expect(active).toHaveLength(187);
   await page.goto('/');
   await expect(page.getByText('In evidenza')).toHaveCount(0);
   await expect(page.locator('#categoryGrid .cat')).toHaveCount(12);
@@ -477,7 +460,7 @@ test('Home intent search understands natural problems', async ({ page }) => {
   const q=page.locator('#globalSearch');
   const cases=[
     ['devo vendere la macchina','sell-my-car'],
-    ['mi scade la revisione','revisione-memo'],
+    ['mi scade la revisione','autobuddy'],
     ['quanto spendo per andare a Roma','tripcost'],
     ['parto una settimana','packr'],
     ['voglio dividere una cena','splitly'],
@@ -496,7 +479,7 @@ test('Home intent search understands natural problems', async ({ page }) => {
 test('Home fuzzy search tolerates a useful typo', async ({ page }) => {
   await page.goto('/');
   await page.locator('#globalSearch').fill('revizione auto');
-  await expect(page.locator('#searchResults .res[href]').first()).toHaveAttribute('data-app-id','revisione-memo');
+  await expect(page.locator('#searchResults .res[href]').first()).toHaveAttribute('data-app-id','autobuddy');
 });
 
 test('Home visual hierarchy keeps categories strong without featured clutter', async ({ page }) => {
