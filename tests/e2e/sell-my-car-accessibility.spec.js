@@ -31,7 +31,7 @@ test.describe('SellMyCar accessibility and semantic validation', () => {
   test('invalid generation focuses the first missing critical field', async ({ page }) => {
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
     await expect(page.locator('#error')).toBeVisible();
-    await expect(page.locator('#error')).toContainText('marca');
-    await expect(page.locator('#make')).toBeFocused();
+    await expect(page.locator('#error')).toContainText('targa');
+    await expect(page.locator('#plate')).toBeFocused();
   });
 });
