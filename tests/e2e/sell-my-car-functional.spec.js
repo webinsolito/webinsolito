@@ -53,21 +53,21 @@ test.describe('SellMyCar useful workflow', () => {
     await page.locator('#defects').fill('Piccolo segno sul paraurti');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
 
-    // titleOut is a readonly textarea: assert its value, not textContent.
+    // Generated outputs are readonly textareas: assert their values, not textContent.
     await expect(page.locator('#titleOut')).toHaveValue(/FIAT/);
     await expect(page.locator('#titleOut')).toHaveValue(/Panda/);
-    await expect(page.locator('#output')).toContainText('45.000 km');
-    await expect(page.locator('#output')).toContainText('DIFETTI / DA SEGNALARE');
-    await expect(page.locator('#output')).not.toContainText('AB123CD');
+    await expect(page.locator('#output')).toHaveValue(/45\.000 km/);
+    await expect(page.locator('#output')).toHaveValue(/DIFETTI \/ DA SEGNALARE/);
+    await expect(page.locator('#output')).not.toHaveValue(/AB123CD/);
     await expect(page.locator('#checklist')).toContainText('12.000');
     await page.locator('#kmsUrl').fill('https://www.kmsicuro.it/share/TEST123');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).toContainText('Scheda KMSicuro: https://www.kmsicuro.it/share/TEST123');
+    await expect(page.locator('#output')).toHaveValue(/Scheda KMSicuro: https:\/\/www\.kmsicuro\.it\/share\/TEST123/);
     await expect(page.locator('#checklist')).toContainText('Trasparenza');
 
     await page.locator('#showPlate').selectOption('yes');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).toContainText('Targa: AB123CD');
+    await expect(page.locator('#output')).toHaveValue(/Targa: AB123CD/);
   });
 
   test('rejects missing plate, invalid year and inconsistent minimum price', async ({ page }) => {
@@ -93,7 +93,7 @@ test.describe('SellMyCar useful workflow', () => {
     await page.locator('#price').fill('12900');
     await page.locator('#kmsUrl').fill('javascript:alert(1)');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).not.toContainText('javascript:');
+    await expect(page.locator('#output')).not.toHaveValue(/javascript:/);
   });
 
   test('saves and restores a draft locally', async ({ page }) => {
