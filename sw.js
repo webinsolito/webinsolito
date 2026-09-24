@@ -1,4 +1,4 @@
-const CACHE='webinsolito-v19';
+const CACHE='webinsolito-v20';
 const CORE=['./index.html','./apps.json','./manifest.webmanifest','./assets/webinsolito-logo.svg','./assets/webinsolito-core.css','./assets/webinsolito-core.js','./assets/home-search.js','./assets/category-page.css','./assets/category-page.js','./assets/microapp.css','./assets/microapp.js','./assets/microapp-defs.js','./assets/microapp-pro.css','./assets/microapp-pro-defs.js','./assets/microapp-pro.js','./assets/categories-v2/auto.svg','./assets/categories-v2/food.svg','./assets/categories-v2/money.svg','./assets/categories-v2/events.svg','./assets/categories-v2/docs.svg','./assets/categories-v2/home.svg','./assets/categories-v2/travel.svg','./assets/categories-v2/travel-premium.webp','./assets/categories-v2/travel-transparent.webp','./assets/categories-v2/style.svg','./assets/categories-v2/shopping.svg','./assets/categories-v2/territory.svg','./assets/categories-v2/business.svg','./assets/categories-v2/study.svg'];
 
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -27,6 +27,7 @@ function cacheable(request,response){
   if(!response||!response.ok||response.type!=='basic')return false;
   const url=new URL(request.url);
   if(url.origin!==self.location.origin)return false;
+  if(url.search||url.hash)return false;
   if(request.headers.has('range'))return false;
   const policy=(response.headers.get('cache-control')||'').toLowerCase();
   return !policy.includes('no-store')&&!policy.includes('private');
