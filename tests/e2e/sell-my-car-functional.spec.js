@@ -52,20 +52,20 @@ test.describe('SellMyCar useful workflow', () => {
     await page.locator('#defects').fill('Piccolo segno sul paraurti');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
 
-    await expect(page.locator('#titleOut')).toContainText('FIAT');
-    await expect(page.locator('#titleOut')).toContainText('Panda');
-    await expect(page.locator('#output')).toContainText('45.000 km');
-    await expect(page.locator('#output')).toContainText('DIFETTI / DA SEGNALARE');
-    await expect(page.locator('#output')).not.toContainText('AB123CD');
+    await expect(page.locator('#titleOut')).toHaveValue('FIAT');
+    await expect(page.locator('#titleOut')).toHaveValue('Panda');
+    await expect(page.locator('#output')).toHaveValue('45.000 km');
+    await expect(page.locator('#output')).toHaveValue('DIFETTI / DA SEGNALARE');
+    await expect(page.locator('#output')).not.toHaveValue('AB123CD');
     await expect(page.locator('#checklist')).toContainText('12.000');
     await page.locator('#kmsUrl').fill('https://www.kmsicuro.it/share/TEST123');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).toContainText('Scheda KMSicuro: https://www.kmsicuro.it/share/TEST123');
+    await expect(page.locator('#output')).toHaveValue('Scheda KMSicuro: https://www.kmsicuro.it/share/TEST123');
     await expect(page.locator('#checklist')).toContainText('Trasparenza');
 
     await page.locator('#showPlate').selectOption('yes');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).toContainText('Targa: AB123CD');
+    await expect(page.locator('#output')).toHaveValue('Targa: AB123CD');
   });
 
 
@@ -98,12 +98,12 @@ test.describe('SellMyCar useful workflow', () => {
     await page.locator('#year').fill('2021');
     await page.locator('#kmsUrl').fill('https://evil.example/?next=https://www.kmsicuro.it/share/TEST123');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).not.toContainText('evil.example');
+    await expect(page.locator('#output')).not.toHaveValue('evil.example');
     await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
 
     await page.locator('#kmsUrl').fill('http://www.kmsicuro.it/share/TEST123');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
-    await expect(page.locator('#output')).not.toContainText('http://www.kmsicuro.it');
+    await expect(page.locator('#output')).not.toHaveValue('http://www.kmsicuro.it');
     await expect(page.locator('#checklist')).not.toContainText('Trasparenza');
   });
 
