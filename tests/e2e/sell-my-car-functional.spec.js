@@ -53,8 +53,9 @@ test.describe('SellMyCar useful workflow', () => {
     await page.locator('#defects').fill('Piccolo segno sul paraurti');
     await page.getByRole('button', { name: 'Genera annuncio completo' }).click();
 
-    await expect(page.locator('#titleOut')).toContainText('FIAT');
-    await expect(page.locator('#titleOut')).toContainText('Panda');
+    // titleOut is a readonly textarea: assert its value, not textContent.
+    await expect(page.locator('#titleOut')).toHaveValue(/FIAT/);
+    await expect(page.locator('#titleOut')).toHaveValue(/Panda/);
     await expect(page.locator('#output')).toContainText('45.000 km');
     await expect(page.locator('#output')).toContainText('DIFETTI / DA SEGNALARE');
     await expect(page.locator('#output')).not.toContainText('AB123CD');
