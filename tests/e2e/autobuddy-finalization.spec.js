@@ -87,6 +87,7 @@ test.describe('AutoBuddy finalization', () => {
   });
 
   test('valid vehicle persists and user text is escaped', async ({ page }) => {
+    await page.addInitScript(() => { window.__xss = 0; });
     await page.evaluate(() => { window.__xss = 0; });
     await createVehicle(page, { model:'<img src=x onerror="window.__xss=1">', year:'2021', km:'12000' });
     await expect(page.locator('#garageGrid')).toContainText('<img src=x');
