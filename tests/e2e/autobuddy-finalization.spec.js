@@ -38,7 +38,7 @@ test.describe('AutoBuddy finalization', () => {
 
   test('navigation returns to Auto category and external map uses safe blank target', async ({ page }) => {
     await expect(page.locator('a.back')).toHaveAttribute('href', '../auto/');
-    await page.evaluate(() => { pkNote.value='P1'; saveParking(false); });
+    await page.evaluate(() => { S.parking={lat:45.5416,lng:10.2118,note:'P1',until:'',at:new Date().toISOString()}; save(); });
     const map = page.locator('#parkingCard a[target="_blank"]');
     await expect(map).toHaveAttribute('href', /https:\/\/maps\.apple\.com\//);
     await expect(map).toHaveAttribute('rel', /noopener/);
@@ -87,7 +87,7 @@ test.describe('AutoBuddy finalization', () => {
   });
 
   test('valid vehicle persists and user text is escaped', async ({ page }) => {
-    await page.addInitScript(() => { window.__xss = 0; });
+    await page.evaluate(() => { window.__xss = 0; });
     await createVehicle(page, { model:'<img src=x onerror="window.__xss=1">', year:'2021', km:'12000' });
     await expect(page.locator('#garageGrid')).toContainText('<img src=x');
     expect(await page.evaluate(() => window.__xss)).toBe(0);
