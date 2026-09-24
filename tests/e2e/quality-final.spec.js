@@ -28,7 +28,7 @@ test('mandatory intent queries produce sensible first results',async({page})=>{
   ['devo cambiare casa','moving-list'],
   ['devo organizzare i documenti','docpocket'],
   ['devo dividere una cena','splitly'],
-  ['mi scade la revisione','revisione-memo'],
+  ['mi scade la revisione','autobuddy'],
   ['quanto spendo per un viaggio','tripcost']
  ];
  for(const [query,id] of cases){
