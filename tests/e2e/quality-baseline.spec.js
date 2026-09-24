@@ -23,21 +23,29 @@ test('quality baseline category screenshots', async ({page},testInfo)=>{
   }
 });
 
-const audit=JSON.parse(fs.readFileSync(path.join(process.cwd(),'quality-artifacts/quality-audit.json'),'utf8'));
-const catalog=JSON.parse(fs.readFileSync(path.join(process.cwd(),'apps.json'),'utf8'));
-for(const [category,ids] of Object.entries(audit.visualSelection)){
-  test('visual audit '+category+': 3 weakest apps desktop/mobile', async ({page},testInfo)=>{
-    test.setTimeout(60000);
-    const dir='test-results/quality-baseline/apps';
-    fs.mkdirSync(dir,{recursive:true});
-    for(const id of ids){
-      const app=catalog.apps.find(a=>a.id===id);
-      expect(app).toBeTruthy();
-      await page.goto('/'+app.path,{waitUntil:'domcontentloaded'});
-      await page.waitForTimeout(200);
-      await expect(page.locator('body')).not.toBeEmpty();
-      await page.screenshot({path:`${dir}/${category}__${id}__${testInfo.project.name}.png`,fullPage:true});
-    }
+const auditPath=path.join(process.cwd(),'quality-artifacts/quality-audit.json');
+const catalogPath=path.join(process.cwd(),'apps.json');
+const audit=fs.existsSync(auditPath) ? JSON.parse(fs.readFileSync(auditPath,'utf8')) : null;
+const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
+
+if(audit && audit.visualSelection){
+  for(const [category,ids] of Object.entries(audit.visualSelection)){
+    test('visual audit '+category+': 3 weakest apps desktop/mobile', async ({page},testInfo)=>{
+      test.setTimeout(60000);
+      const dir='test-results/quality-baseline/apps';
+      fs.mkdirSync(dir,{recursive:true});
+      for(const id of ids){
+        const app=catalog.apps.find(a=>a.id===id);
+        expect(app).toBeTruthy();
+        await page.goto('/'+app.path,{waitUntil:'domcontentloaded'});
+        await page.waitForTimeout(200);
+        await expect(page.locator('body')).not.toBeEmpty();
+        await page.screenshot({path:`${dir}/${category}__${id}__${testInfo.project.name}.png`,fullPage:true});
+      }
+    });
+  }
+}else{
+  test('visual audit selection is optional in clean CI checkout', async ()=>{
+    expect(fs.existsSync(catalogPath)).toBeTruthy();
   });
 }
-
