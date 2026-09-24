@@ -84,7 +84,7 @@ test.describe('FrigoChef finalization', () => {
       cooked:[{id:0,at:'2026-09-23T12:00:00.000Z'},{id:999,at:'bad'}],
       shopping:["');window.__xss=1;//",'olio']
     };
-    await page.addInitScript(()=>{window.__xss=0});
+    await page.evaluate(()=>{window.__xss=0});
     page.on('dialog',async d=>{await d.accept()});
     await page.evaluate(()=>go('settings'));
     await page.locator('#importFile').setInputFiles({
