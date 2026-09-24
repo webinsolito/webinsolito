@@ -28,7 +28,7 @@ test('search never exposes merged or planned catalog entries',async({page})=>{
   await page.goto('/');
   const q=page.locator('#globalSearch');
   const catalog=await page.request.get('/apps.json').then(r=>r.json());
-  const hiddenIds=new Set(catalog.filter(app=>app.status==='MERGED'||app.status==='PLANNED').map(app=>app.id));
+  const hiddenIds=new Set(catalog.apps.filter(app=>app.status==='MERGED'||app.status==='PLANNED').map(app=>app.id));
   expect(hiddenIds.size).toBeGreaterThan(0);
 
   for(const query of ['revisione auto','scadenze macchina','budget casa','documenti auto','app','lista','viaggio','spese']){
