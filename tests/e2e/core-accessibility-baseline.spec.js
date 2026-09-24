@@ -13,11 +13,14 @@ test('shared core stylesheet keeps keyboard focus and reduced-motion safeguards'
 
 test('shared focus treatment is visible at runtime', async ({ page }) => {
   await page.goto('/');
-  const focusable = page.locator('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])').first();
-  await expect(focusable).toBeVisible();
-  await focusable.focus();
-  await expect(focusable).toBeFocused();
-  const outline = await focusable.evaluate((el) => {
+  // :focus-visible is intentionally modality-aware. Exercise the real keyboard
+  // path instead of programmatic focus(), which Chromium may not match as
+  // focus-visible and produced a false regression in CI.
+  await page.keyboard.press('Tab');
+  const focused = page.locator(':focus');
+  await expect(focused).toBeVisible();
+  await expect(focused).toBeFocused();
+  const outline = await focused.evaluate((el) => {
     const style = getComputedStyle(el);
     return { width: style.outlineWidth, style: style.outlineStyle, offset: style.outlineOffset };
   });
