@@ -37,6 +37,16 @@ jobs:
           done
           cat /tmp/webinsolito-http.log
           exit 1
+      - name: Run Home premium visual preflight
+        run: npx playwright test tests/e2e/home-visual-preflight.spec.js --project=desktop-chromium
+      - name: Upload Home visual preflight screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-visual-preflight
+          path: test-results/home-visual-preflight/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Run FrigoChef mobile preflight
         run: npx playwright test tests/e2e/frigochef-finalization.spec.js --project=iphone --grep "mobile has no horizontal overflow"
       - name: Run Splitly backup preflight
