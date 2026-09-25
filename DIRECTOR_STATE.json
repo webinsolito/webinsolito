@@ -1,23 +1,21 @@
 {
-  "current_area": "Home premium visual recovery",
-  "start_sha": "54c861512117a10435730a46e30d2498f3bca2f6",
-  "end_sha": "c25c31005040c604b415871f53da8de2088616fb",
-  "last_good_commit": "8086697a4d09774a5b790030babd786bb0151199",
+  "current_area": "Category shell + Auto category premium visual pass",
+  "start_sha": "f68feae1e82e0ea682ded62e4a4c5c4b1187086e",
+  "end_sha": "1aa1f017ac055b1241297c84cb8c28c422f505b3",
+  "last_good_commit": "f68feae1e82e0ea682ded62e4a4c5c4b1187086e",
   "visual_quality_score": 62,
-  "runtime_files_changed": [
-    "assets/home-premium-20260925.css",
-    "assets/home-premium-pass2-20260925.css",
-    "sw.js"
-  ],
+  "runtime_files_changed": ["assets/category-page.css","auto/index.html","sw.js"],
   "tests": {
-    "runtime_delta": "PASS: 4 commits ahead of prior state; two coordinated Home CSS passes plus SW delivery layer",
-    "delivery_logic": "PASS by source inspection: SW v22 precaches both premium CSS assets and injects them into Home navigation responses",
-    "responsive_css": "PASS by source inspection: dedicated <=820 and <=560 rules preserve hierarchy, card sizing and reduced motion behavior",
-    "pages_run_344": "PENDING at report time for runtime HEAD c25c31005040c604b415871f53da8de2088616fb; do not claim public success until green",
-    "public_visual": "NOT YET ACCEPTED: external public browser verification unavailable in this run"
+    "previous_pages": "PASS: Pages run #345 completed success for prior state commit f68feae1e82e0ea682ded62e4a4c5c4b1187086e; prior #344 was superseded/cancelled.",
+    "runtime_delta": "PASS: compare f68feae..1aa1f01 = ahead by 3 commits, 0 behind; shared category shell, Auto hub and cache delivery changed.",
+    "responsive_390_430_desktop": "PASS by source inspection: desktop 3-column/2-column hierarchy plus <=820, <=560 and <=400 breakpoints cover desktop, 430px and 390px layouts; mobile cards become single-row compact cards.",
+    "delivery": "PASS by source inspection: Auto uses cache-busted category-page.css?v=20260925b and SW cache bumped v22 -> v23.",
+    "pages_run_348": "PENDING at state write for runtime HEAD 1aa1f017ac055b1241297c84cb8c28c422f505b3; public success not claimed yet.",
+    "public_visual": "NOT ACCEPTED: external public browser fetch was unavailable in this run; visual score intentionally unchanged."
   },
-  "blocker": "GitHub Pages run #344 for runtime HEAD is still pending/serialized. Public visual success cannot be claimed yet.",
-  "previous_debt": "PARTIALLY CLOSED: changed approach from subtle runtime polish to two explicit premium CSS layers and SW-forced delivery; final closure still requires green Pages + real public visual confirmation.",
-  "next_action": "Priority 1 next run: verify Pages #344/current HEAD and public Home. If the new premium layer is visibly live, close prior debt and move to the highest-impact category-card/page polish; if not, keep Home and integrate the premium CSS directly into index rather than relying on SW injection.",
-  "home_visual_status": "INCOMPLETE_PENDING_PUBLIC_VERIFICATION"
+  "blocker": "Public visual browser verification is unavailable and Pages #348 is still pending; do not raise visual score until published result is actually confirmed.",
+  "previous_debt": "PARTIALLY CLOSED: prior Home package is now on a successful Pages deployment (#345), but direct public visual confirmation remains unavailable. No claim that the perceptual gate is closed.",
+  "next_action": "Priority 1: verify Pages #348 and real public rendering. If Auto/category shell is visibly live, keep the same macro-area and propagate/refine the premium category system across the remaining category pages, starting with the highest-traffic/most inconsistent category. If not visibly live, fix delivery before any further visual expansion.",
+  "home_visual_status": "DEPLOYED_PREVIOUS_PACKAGE_VISUAL_CONFIRMATION_PENDING",
+  "category_visual_status": "INCOMPLETE_PENDING_PUBLIC_VERIFICATION"
 }
