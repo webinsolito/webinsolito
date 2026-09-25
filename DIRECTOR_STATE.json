@@ -1,20 +1,20 @@
 {
-  "current_area": "Viaggi — layered depth/material polish",
-  "start_sha": "eb02f558cd23dd7eb1fb311ba93248fd6803d146",
-  "end_sha": "b804e4b76c45d8e0277558da2e8ddca789ef3f91",
-  "last_good_commit": "eb02f558cd23dd7eb1fb311ba93248fd6803d146",
+  "current_area": "Home — coordinated category icon material pass",
+  "start_sha": "ef53ab52fbce5206f87b5ff32564d03bb4c90597",
+  "end_sha": "8c2eeb6b7aa92db340fe9cffcb017fa36697ff23",
+  "last_good_commit": "ef53ab52fbce5206f87b5ff32564d03bb4c90597",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/travel-depth.css", "viaggi/index.html"],
+  "runtime_files_changed": ["assets/categories-v2/study.svg", "assets/categories-v2/style.svg", "assets/categories-v2/territory.svg"],
   "tests": {
-    "previous_debt": "PASS: Viaggi Pages deployment run 36183500142 completed successfully for eb02f558.",
-    "pass_1": "PASS source: Viaggi gained category-specific sky accent, deeper hero material, elevated icon object and richer summary surfaces.",
-    "pass_2": "PASS source: coordinated proof tiles, app-card lighting/contact shadows and icon depth were added in the same macro-area.",
-    "pass_3": "PASS source: desktop pointer micro-interactions plus reduced-motion and <=560 mobile shadow treatments included.",
-    "deploy": "PENDING: Pages deployment for b804e4b must complete before public visual certification."
+    "previous_debt": "PASS: Pages deployment run 36189435619 completed successfully for ef53ab52.",
+    "pass_1": "PASS source: Studio & Lavoro rebuilt with stronger navy/ivory material separation, book edge depth, specular highlights and deeper contact shadow.",
+    "pass_2": "PASS source: Persona & Stile simplified/sculpted with cleaner garment volume, restrained gold badge and coordinated highlights/shadows.",
+    "pass_3": "PASS source: Ambiente/Territorio desaturated and deepened with folded-map material, layered pin shadow and controlled glass highlight.",
+    "deploy": "PENDING: new Pages deployment must complete before public visual certification."
   },
-  "blocker": "GitHub Pages URL remains inaccessible to the external page renderer in this runtime; deployment can be verified through GitHub Actions but screenshot-level public certification cannot be invented.",
-  "previous_debt": "CLOSED: prior Viaggi deployment completed successfully.",
-  "next_action": "Verify b804e4b Pages success first. Then inspect/upgrade the weakest remaining generic category shell, preserving Home and approved icon family.",
-  "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED",
-  "category_visual_status": "Viaggi premium shell now has dedicated layered-depth/material pass; deploy verification pending."
+  "blocker": "Public Pages renderer remains inaccessible from this runtime; deployment success can be checked through GitHub Actions, but screenshot-level certification cannot be invented.",
+  "previous_debt": "CLOSED: Viaggi layered-depth deployment ef53ab52 is green.",
+  "next_action": "Verify this icon pass Pages success first. Then continue with the weakest remaining Home category icons or mobile card polish, preserving approved layout and icon family.",
+  "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED_ICON_PASS_PENDING",
+  "category_visual_status": "Three Home category icons received one coordinated material/depth pass; deployment verification pending."
 }
