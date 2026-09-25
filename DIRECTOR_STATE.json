@@ -1,12 +1,13 @@
 {
-  "current_area": "Category pages",
+  "current_area": "Home delivery verification",
   "start_sha": "fe2e1caf8dfe49c676e33e990f12bcabe9077cf2",
-  "end_sha": "156f632b5b0f4d6fcbd4c2c0e46ef1a95f2047c0",
-  "last_good_commit": "156f632b5b0f4d6fcbd4c2c0e46ef1a95f2047c0",
+  "end_sha": "8086697a4d09774a5b790030babd786bb0151199",
+  "last_good_commit": "8086697a4d09774a5b790030babd786bb0151199",
   "visual_quality_score": 62,
   "runtime_files_changed": [
     "index.html",
-    "assets/home-search.js"
+    "sw.js",
+    "assets/home-search-20260925.js"
   ],
   "tests": {
     "responsive_render": "PASS: Chromium set_content harness at 1440/390/430; search dropdown open; 12 cards; horizontal overflow 0 at all widths",
@@ -15,10 +16,13 @@
     "source_integrity": "PASS: V5 styles, live search surface helper, original WebinsolitoSearch logic, card touch feedback and hero depth all present on main",
     "visual_inspection": "PASS: desktop and 390 screenshots inspected; search hierarchy, dropdown density and mobile readability are balanced",
     "github_pages": "PASS: Pages build/deploy run #335 for runtime HEAD 156f632b5b0f4d6fcbd4c2c0e46ef1a95f2047c0",
-    "public_home": "PASS: public Home responds with Hero, search input and category section after deploy"
+    "public_home": "PASS: public Home responds with Hero, search input and category section after deploy",
+    "pages_artifact_339": "PASS: artifact root index contains homePremiumV5 and fresh home-search-20260925.js; sw.js contains webinsolito-v20",
+    "github_pages_339": "PASS: build and deploy completed successfully for HEAD 8086697a4d09774a5b790030babd786bb0151199",
+    "public_readback": "STALE via external crawler: still returns older Home copy, so visible-public verification is not yet accepted"
   },
-  "blocker": "No blocker in final Home visual pass.",
-  "previous_debt": "CLOSED: Home search box/results dropdown and final 1440/390/430 vertical rhythm refined and verified.",
-  "next_action": "Move to category pages: refine the Auto category page end-to-end—hero/header hierarchy, app-card materials, spacing, mobile 390/430 density and hover/touch feedback—without changing app functionality or category artwork.",
+  "blocker": "Public readback/cache discrepancy: GitHub Pages artifact and deploy are current, but an external public fetch still returns older Home markup. Do not move to Auto category until Home visibility is confirmed from a real user/browser.",
+  "previous_debt": "OPEN: earlier visual-success claims were overstated because verification used a simplified harness and did not prove the real public Home changed.",
+  "next_action": "Stay on Home: confirm the public browser is serving the fresh Home after SW v20/fresh asset rollout; if still visually unchanged, make the Home delta unmistakable in index.html itself and verify against the real published artifact before moving to categories.",
   "home_visual_status": "COMPLETE_FOR_CURRENT_PHASE"
 }
