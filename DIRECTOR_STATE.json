@@ -1,28 +1,23 @@
 {
-  "current_area": "Home delivery verification",
-  "start_sha": "fe2e1caf8dfe49c676e33e990f12bcabe9077cf2",
-  "end_sha": "8086697a4d09774a5b790030babd786bb0151199",
+  "current_area": "Home premium visual recovery",
+  "start_sha": "54c861512117a10435730a46e30d2498f3bca2f6",
+  "end_sha": "c25c31005040c604b415871f53da8de2088616fb",
   "last_good_commit": "8086697a4d09774a5b790030babd786bb0151199",
   "visual_quality_score": 62,
   "runtime_files_changed": [
-    "index.html",
-    "sw.js",
-    "assets/home-search-20260925.js"
+    "assets/home-premium-20260925.css",
+    "assets/home-premium-pass2-20260925.css",
+    "sw.js"
   ],
   "tests": {
-    "responsive_render": "PASS: Chromium set_content harness at 1440/390/430; search dropdown open; 12 cards; horizontal overflow 0 at all widths",
-    "search_surface": "PASS: results-open state joins field/dropdown; opacity 1 and visible after transition; result width remains inside viewport at 1440/390/430",
-    "vertical_rhythm": "PASS: category panel begins after Hero at all three tested widths; mobile menu remains readable at 390/430",
-    "source_integrity": "PASS: V5 styles, live search surface helper, original WebinsolitoSearch logic, card touch feedback and hero depth all present on main",
-    "visual_inspection": "PASS: desktop and 390 screenshots inspected; search hierarchy, dropdown density and mobile readability are balanced",
-    "github_pages": "PASS: Pages build/deploy run #335 for runtime HEAD 156f632b5b0f4d6fcbd4c2c0e46ef1a95f2047c0",
-    "public_home": "PASS: public Home responds with Hero, search input and category section after deploy",
-    "pages_artifact_339": "PASS: artifact root index contains homePremiumV5 and fresh home-search-20260925.js; sw.js contains webinsolito-v20",
-    "github_pages_339": "PASS: build and deploy completed successfully for HEAD 8086697a4d09774a5b790030babd786bb0151199",
-    "public_readback": "STALE via external crawler: still returns older Home copy, so visible-public verification is not yet accepted"
+    "runtime_delta": "PASS: 4 commits ahead of prior state; two coordinated Home CSS passes plus SW delivery layer",
+    "delivery_logic": "PASS by source inspection: SW v22 precaches both premium CSS assets and injects them into Home navigation responses",
+    "responsive_css": "PASS by source inspection: dedicated <=820 and <=560 rules preserve hierarchy, card sizing and reduced motion behavior",
+    "pages_run_344": "PENDING at report time for runtime HEAD c25c31005040c604b415871f53da8de2088616fb; do not claim public success until green",
+    "public_visual": "NOT YET ACCEPTED: external public browser verification unavailable in this run"
   },
-  "blocker": "Public readback/cache discrepancy: GitHub Pages artifact and deploy are current, but an external public fetch still returns older Home markup. Do not move to Auto category until Home visibility is confirmed from a real user/browser.",
-  "previous_debt": "OPEN: earlier visual-success claims were overstated because verification used a simplified harness and did not prove the real public Home changed.",
-  "next_action": "Stay on Home: confirm the public browser is serving the fresh Home after SW v20/fresh asset rollout; if still visually unchanged, make the Home delta unmistakable in index.html itself and verify against the real published artifact before moving to categories.",
-  "home_visual_status": "COMPLETE_FOR_CURRENT_PHASE"
+  "blocker": "GitHub Pages run #344 for runtime HEAD is still pending/serialized. Public visual success cannot be claimed yet.",
+  "previous_debt": "PARTIALLY CLOSED: changed approach from subtle runtime polish to two explicit premium CSS layers and SW-forced delivery; final closure still requires green Pages + real public visual confirmation.",
+  "next_action": "Priority 1 next run: verify Pages #344/current HEAD and public Home. If the new premium layer is visibly live, close prior debt and move to the highest-impact category-card/page polish; if not, keep Home and integrate the premium CSS directly into index rather than relying on SW injection.",
+  "home_visual_status": "INCOMPLETE_PENDING_PUBLIC_VERIFICATION"
 }
