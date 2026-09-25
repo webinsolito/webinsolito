@@ -1,5 +1,6 @@
-const CACHE='webinsolito-v20';
-const CORE=['./index.html','./apps.json','./manifest.webmanifest','./assets/webinsolito-logo.svg','./assets/webinsolito-core.css','./assets/webinsolito-core.js','./assets/home-search-20260925.js','./assets/category-page.css','./assets/category-page.js','./assets/microapp.css','./assets/microapp.js','./assets/microapp-defs.js','./assets/microapp-pro.css','./assets/microapp-pro-defs.js','./assets/microapp-pro.js','./assets/categories-v2/auto.svg','./assets/categories-v2/food.svg','./assets/categories-v2/money.svg','./assets/categories-v2/events.svg','./assets/categories-v2/docs.svg','./assets/categories-v2/home.svg','./assets/categories-v2/travel.svg','./assets/categories-v2/travel-premium.webp','./assets/categories-v2/travel-transparent.webp','./assets/categories-v2/style.svg','./assets/categories-v2/shopping.svg','./assets/categories-v2/territory.svg','./assets/categories-v2/business.svg','./assets/categories-v2/study.svg'];
+const CACHE='webinsolito-v21';
+const CORE=['./index.html','./apps.json','./manifest.webmanifest','./assets/webinsolito-logo.svg','./assets/webinsolito-core.css','./assets/webinsolito-core.js','./assets/home-search-20260925.js','./assets/home-premium-20260925.css','./assets/category-page.css','./assets/category-page.js','./assets/microapp.css','./assets/microapp.js','./assets/microapp-defs.js','./assets/microapp-pro.css','./assets/microapp-pro-defs.js','./assets/microapp-pro.js','./assets/categories-v2/auto.svg','./assets/categories-v2/food.svg','./assets/categories-v2/money.svg','./assets/categories-v2/events.svg','./assets/categories-v2/docs.svg','./assets/categories-v2/home.svg','./assets/categories-v2/travel.svg','./assets/categories-v2/travel-premium.webp','./assets/categories-v2/travel-transparent.webp','./assets/categories-v2/style.svg','./assets/categories-v2/shopping.svg','./assets/categories-v2/territory.svg','./assets/categories-v2/business.svg','./assets/categories-v2/study.svg'];
+const HOME_CSS='<link rel="stylesheet" href="./assets/home-premium-20260925.css">';
 
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
@@ -16,56 +17,44 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   await self.clients.claim();
 })()));
 
-function cacheKey(request){
-  const url=new URL(request.url);
-  url.search='';
-  url.hash='';
-  return url.href;
-}
-
+function cacheKey(request){const url=new URL(request.url);url.search='';url.hash='';return url.href}
 function cacheable(request,response){
   if(!response||!response.ok||response.type!=='basic')return false;
-  const url=new URL(request.url);
-  if(url.origin!==self.location.origin)return false;
-  if(request.headers.has('range'))return false;
-  const policy=(response.headers.get('cache-control')||'').toLowerCase();
-  return !policy.includes('no-store')&&!policy.includes('private');
+  const url=new URL(request.url);if(url.origin!==self.location.origin)return false;if(request.headers.has('range'))return false;
+  const policy=(response.headers.get('cache-control')||'').toLowerCase();return !policy.includes('no-store')&&!policy.includes('private');
 }
-
+function isHomeNavigation(request){
+  if(request.mode!=='navigate')return false;
+  const p=new URL(request.url).pathname.replace(/\/+$/,'/');
+  const scope=new URL(self.registration.scope).pathname.replace(/\/+$/,'/');
+  return p===scope||p===scope+'index.html';
+}
+async function withHomeVisual(response,request){
+  if(!isHomeNavigation(request)||!response||!response.ok)return response;
+  const type=(response.headers.get('content-type')||'').toLowerCase();if(!type.includes('text/html'))return response;
+  let html=await response.text();if(!html.includes('home-premium-20260925.css'))html=html.replace('</head>',HOME_CSS+'</head>');
+  const headers=new Headers(response.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-cache');
+  return new Response(html,{status:response.status,statusText:response.statusText,headers});
+}
 async function onlineFirst(request){
   const cache=await caches.open(CACHE);
   try{
-    const response=await fetch(request,{cache:'no-store',credentials:'same-origin'});
+    const raw=await fetch(request,{cache:'no-store',credentials:'same-origin'});
+    const response=await withHomeVisual(raw,request);
     if(cacheable(request,response))await cache.put(cacheKey(request),response.clone());
     return response;
   }catch{
-    const hit=await cache.match(cacheKey(request));
-    if(hit)return hit;
+    const hit=await cache.match(cacheKey(request));if(hit)return withHomeVisual(hit,request);
     return new Response(request.mode==='navigate'?'Questa pagina non è ancora disponibile offline. Riconnettiti e aprila una volta per salvarla.':'Webinsolito non disponibile offline.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
   }
 }
-
 async function assetFirst(request){
-  const cache=await caches.open(CACHE);
-  const key=cacheKey(request);
-  const hit=await cache.match(key);
-  if(hit){
-    fetch(request,{cache:'no-cache',credentials:'same-origin'}).then(response=>{
-      if(cacheable(request,response))return cache.put(key,response.clone());
-    }).catch(()=>{});
-    return hit;
-  }
-  const response=await fetch(request,{cache:'no-cache',credentials:'same-origin'});
-  if(cacheable(request,response))await cache.put(key,response.clone());
-  return response;
+  const cache=await caches.open(CACHE),key=cacheKey(request),hit=await cache.match(key);
+  if(hit){fetch(request,{cache:'no-cache',credentials:'same-origin'}).then(response=>{if(cacheable(request,response))return cache.put(key,response.clone())}).catch(()=>{});return hit}
+  const response=await fetch(request,{cache:'no-cache',credentials:'same-origin'});if(cacheable(request,response))await cache.put(key,response.clone());return response;
 }
-
 self.addEventListener('fetch',event=>{
-  const request=event.request;
-  if(request.method!=='GET'||request.headers.has('range'))return;
-  const url=new URL(request.url);
-  if(url.protocol!=='https:'&&url.protocol!=='http:')return;
-  if(url.origin!==self.location.origin)return;
-  const fresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');
-  event.respondWith(fresh?onlineFirst(request):assetFirst(request));
+  const request=event.request;if(request.method!=='GET'||request.headers.has('range'))return;
+  const url=new URL(request.url);if((url.protocol!=='https:'&&url.protocol!=='http:')||url.origin!==self.location.origin)return;
+  const fresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');event.respondWith(fresh?onlineFirst(request):assetFirst(request));
 });
