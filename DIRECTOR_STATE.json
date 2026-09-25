@@ -3,7 +3,7 @@
   "last_good_commit": "4ba862b82a4b830548730943fe7f3d4d3060549e",
   "rollback_commit": "558066274ebcd075264fe25b17a415a96aeed407",
   "current_gate": "K Test principali PASS",
-  "current_app_or_area": "ScreenSort Chromium forged-image dialog synchronization",
+  "current_app_or_area": "ScreenSort forged-image cross-browser certification",
   "completion_score": 71,
   "verification_score": 99,
   "gate_weights": {"A Home stabile":7,"B Categorie funzionanti":5,"C Routing funzionante":8,"D App core complete":18,"E App secondarie sufficientemente complete":12,"F Duplicati eliminati/consolidati":8,"G Catalogo coerente":5,"H Mobile funzionante":8,"I Design system coerente":6,"J Grafica premium":6,"K Test principali PASS":8,"L Nessuna regressione bloccante":4,"M Build pubblicabile":3,"N Release":2},
@@ -13,13 +13,13 @@
     "result": "DOCPOCKET_PREFLIGHT_PASS_FULL_SUITE_STILL_FAIL",
     "previous_full_suite": {"run_id":36103969346,"passed":328,"failed":11,"skipped":3},
     "docpocket_preflight": "PASS on Chromium and iPhone/WebKit for forged PDF rejection and safe async document opening.",
-    "screensort_change": "Forged-image assertion changed from an immediate dialogs-array read to page.waitForEvent('dialog'), while retaining the invalid-signature rejection and zero-import assertion.",
-    "pending": "Commit bb803d873ccc6045d5e8dc7ec096ad1acde3b07f requires CI certification before ScreenSort is marked closed."
+    "screensort_change": "Forged-image assertion is event-driven and still requires invalid-signature rejection plus zero imported files.",
+    "screensort_preflight": "Dedicated Chromium+iPhone/WebKit preflight added to candidate-functional-qa workflow at commit f064acae389823cb80dd03aafb0e384932a9435d; CI run not yet observable, so ScreenSort is not marked closed."
   },
   "blockers": [
-    "ScreenSort event-driven forged-image security assertion committed; awaiting CI certification",
+    "ScreenSort dedicated cross-browser preflight committed; awaiting CI execution/certification",
     "Home payload 22071 B exceeds 16000 B budget",
     "Legacy aggregate QA contracts still create false/time-consuming failures"
   ],
-  "next_action": "Certify ScreenSort forged-image security assertion on Chromium and iPhone/WebKit; if PASS, close ScreenSort and reduce the Home payload below the fixed 16000 B performance budget without redesigning Home or changing approved iconography."
+  "next_action": "Read the CI result for the dedicated ScreenSort forged-image preflight; if PASS, close ScreenSort and immediately reduce the Home payload below the fixed 16000 B performance budget without redesigning Home or changing approved iconography."
 }
