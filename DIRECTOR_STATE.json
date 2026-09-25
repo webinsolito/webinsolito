@@ -6,53 +6,20 @@
   "current_app_or_area": "DocPocket Chromium PDF validation/opening synchronization",
   "completion_score": 71,
   "verification_score": 98,
-  "gate_weights": {
-    "A Home stabile": 7,
-    "B Categorie funzionanti": 5,
-    "C Routing funzionante": 8,
-    "D App core complete": 18,
-    "E App secondarie sufficientemente complete": 12,
-    "F Duplicati eliminati/consolidati": 8,
-    "G Catalogo coerente": 5,
-    "H Mobile funzionante": 8,
-    "I Design system coerente": 6,
-    "J Grafica premium": 6,
-    "K Test principali PASS": 8,
-    "L Nessuna regressione bloccante": 4,
-    "M Build pubblicabile": 3,
-    "N Release": 2
-  },
+  "gate_weights": {"A Home stabile":7,"B Categorie funzionanti":5,"C Routing funzionante":8,"D App core complete":18,"E App secondarie sufficientemente complete":12,"F Duplicati eliminati/consolidati":8,"G Catalogo coerente":5,"H Mobile funzionante":8,"I Design system coerente":6,"J Grafica premium":6,"K Test principali PASS":8,"L Nessuna regressione bloccante":4,"M Build pubblicabile":3,"N Release":2},
   "last_tests": {
-    "workflow": "Candidate Functional QA #33",
-    "run_id": 36103969346,
-    "result": "FAIL",
-    "passed": 328,
-    "failed": 11,
-    "skipped": 3,
-    "verified_pass": [
-      "FrigoChef mobile WebKit 360/390/430 preflight: 3/3 PASS",
-      "Splitly malicious-backup desktop Chromium + iPhone/WebKit preflight: 2/2 PASS",
-      "Splitly full finalization desktop + iPhone including backup and 360/390/430 overflow",
-      "Accessibility baseline Chromium/WebKit",
-      "Pantry current dedicated contract",
-      "AutoBuddy and Auto utility sprint",
-      "search canonicalization and sitemap"
-    ],
-    "verified_fail": [
-      "DocPocket desktop Chromium forged-PDF dialog synchronization",
-      "DocPocket desktop Chromium safe-open observation synchronization",
-      "ScreenSort desktop Chromium forged-image dialog synchronization",
-      "Home payload 22071 B exceeds 16000 B budget",
-      "Legacy aggregate Pantry selector contract #f_item/#f_qty/#list",
-      "Legacy quality contracts #run and #work"
-    ],
-    "splitly_result": "CLOSED: targeted preflight passed on desktop Chromium and iPhone/WebKit, and the same malicious-backup test passed again inside the full suite on both projects."
+    "workflow": "Candidate Functional QA #36",
+    "run_id": 36114115989,
+    "result": "IN_PROGRESS",
+    "previous_full_suite": {"run_id":36103969346,"passed":328,"failed":11,"skipped":3},
+    "docpocket_diagnosis": "The two Chromium failures observe asynchronous security operations too early: dialog is asserted before async signature validation emits it, and window.open is read before async IndexedDB/blob opening completes. Equivalent iPhone/WebKit tests pass.",
+    "change": "Added deterministic DocPocket async-security preflight for desktop Chromium and iPhone/WebKit and wired it before the full regression suite."
   },
   "blockers": [
-    "DocPocket Chromium-only PDF validation/opening observation failures; equivalent iPhone tests PASS",
+    "DocPocket legacy finalization assertions on main still observe async validation/opening too early; candidate preflight #36 is running",
     "ScreenSort Chromium-only forged-image dialog observation failure; equivalent iPhone test PASS",
     "Home payload 22071 B exceeds 16000 B budget",
     "Legacy aggregate QA contracts still create false/time-consuming failures"
   ],
-  "next_action": "Fix DocPocket Chromium-only forged-PDF validation and safe-open synchronization without weakening signature validation or safe _blank protections; add a targeted DocPocket desktop+iphone preflight, verify both browsers, then update state."
+  "next_action": "Certify Candidate Functional QA #36 DocPocket async-security preflight; if PASS, replace the legacy DocPocket finalization assertions with the same event/poll synchronization and close the DocPocket Chromium gate."
 }
