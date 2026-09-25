@@ -1,28 +1,20 @@
 {
-  "current_area": "Category premium propagation — Shopping + Food",
-  "start_sha": "40189f5977a68307f8cfc1667c42f3edec67e8e7",
-  "end_sha": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
+  "current_area": "Category premium propagation — Documenti + Eventi",
+  "start_sha": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
+  "end_sha": "568b5b77d683217b612f27648db047673ed67b96",
   "last_good_commit": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
   "visual_quality_score": 68,
-  "runtime_files_changed": [
-    "assets/category-page.css",
-    "shopping/index.html",
-    "food/index.html",
-    "sw.js"
-  ],
+  "runtime_files_changed": ["documenti/index.html","eventi/index.html"],
   "tests": {
-    "previous_pages_debt": "PASS: prior category batch reached successful Pages deployment #349; debt no longer blocked on deployment.",
-    "runtime_delta": "PASS: compare 40189f5..403f39a = 6 commits ahead, 0 behind; shared category system, Shopping, Food and delivery cache changed.",
-    "source_integrity": "PASS: all Shopping/Food referenced app IDs resolve to active apps; service worker v25; cache-busted category CSS present.",
-    "responsive_browser": "PASS on exact Pages #355 artifact rendered in Chromium at 1440, 430 and 390: no horizontal overflow; Shopping summary 2->1 cols, primary 2->1, specific 3->1; Food summary 2->1, lead 2->1, specific 3->1.",
-    "mobile_residual_fix": "PASS: 390/430 quick-action chips are fully visible after wrap fix; empty-search message hidden by default and appears only after unmatched query.",
-    "visual_inspection": "PASS: deployed artifact screenshots inspected for Shopping desktop/390 and Food desktop/390; hierarchy, depth, spacing and mobile card rhythm visibly improved.",
-    "github_pages_355": "PASS: pages build and deployment run #355 completed successfully for runtime HEAD 403f39a5bab04a31b9556c7b4435f0c8e2e1f491.",
-    "deployed_artifact_355": "PASS: github-pages artifact contains Shopping rebuild, Food summary layer, CATEGORY_PREMIUM_FIX_20260925_D and webinsolito-v25."
+    "previous_debt": "PASS: prior Shopping/Food batch was already deployed and verified.",
+    "pass_1": "PASS: Documenti replaced generic shell with premium hero, search context, summary/proof layer, primary/specific hierarchy and dynamic active-app rendering.",
+    "pass_2": "PASS: Eventi replaced generic shell with the same coordinated premium system and category-specific hierarchy/content.",
+    "source_integrity": "PASS: both pages render only MVP/BETA/STABLE apps with valid paths from apps.json; no new apps added.",
+    "deploy": "PENDING: GitHub Pages run 36171455365 started for runtime HEAD 568b5b77d683217b612f27648db047673ed67b96; public visual verification must complete next."
   },
-  "blocker": "None for this batch. Direct external crawler cannot open category subpaths, so verification used the exact successful GitHub Pages deployment artifact plus Chromium renders.",
-  "previous_debt": "CHIUSO: prior category deploy gate is green and this run additionally verified the exact deployed artifact visually/responsively.",
-  "next_action": "Stay in the same macro-area. Upgrade the remaining generic category shells end-to-end, starting with Documenti and Eventi (both still ~1.3 KB generic pages), then continue only after desktop/430/390 artifact verification.",
+  "blocker": "Transient deploy propagation: Pages run still pending at end of this execution; direct external crawler cannot open category subpaths.",
+  "previous_debt": "CLOSED: Documenti and Eventi generic-shell debt implemented; deployment verification remains open.",
+  "next_action": "Priority 1: verify Pages deployment and exact public artifact for Documenti/Eventi at desktop, 430 and 390. If green, continue premium propagation to the next two weakest generic category shells without touching approved Home.",
   "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED",
-  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food and Shopping upgraded; remaining generic category pages still pending."
+  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food, Shopping upgraded and deployed; Documenti/Eventi upgraded with deploy verification pending."
 }
