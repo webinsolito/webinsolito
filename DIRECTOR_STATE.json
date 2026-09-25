@@ -1,20 +1,20 @@
 {
-  "current_area": "Home — coordinated category icon material pass",
-  "start_sha": "ef53ab52fbce5206f87b5ff32564d03bb4c90597",
-  "end_sha": "8c2eeb6b7aa92db340fe9cffcb017fa36697ff23",
-  "last_good_commit": "ef53ab52fbce5206f87b5ff32564d03bb4c90597",
+  "current_area": "Home — second coordinated category icon material pass",
+  "start_sha": "27bba02cd130a19e9ae161291cd86ba059dfb9b1",
+  "end_sha": "7015143e2086da63f87ae79a91047d18ab6e5a82",
+  "last_good_commit": "27bba02cd130a19e9ae161291cd86ba059dfb9b1",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/study.svg", "assets/categories-v2/style.svg", "assets/categories-v2/territory.svg"],
+  "runtime_files_changed": ["assets/categories-v2/docs.svg", "assets/categories-v2/events.svg", "assets/categories-v2/food.svg"],
   "tests": {
-    "previous_debt": "PASS: Pages deployment run 36189435619 completed successfully for ef53ab52.",
-    "pass_1": "PASS source: Studio & Lavoro rebuilt with stronger navy/ivory material separation, book edge depth, specular highlights and deeper contact shadow.",
-    "pass_2": "PASS source: Persona & Stile simplified/sculpted with cleaner garment volume, restrained gold badge and coordinated highlights/shadows.",
-    "pass_3": "PASS source: Ambiente/Territorio desaturated and deepened with folded-map material, layered pin shadow and controlled glass highlight.",
+    "previous_debt": "PASS: Pages deployment run 36195128041 completed successfully for 27bba02c.",
+    "pass_1": "PASS source: Documenti rebuilt with navy/blue folder depth, ivory paper material, contact layers and restrained gold verification accent.",
+    "pass_2": "PASS source: Eventi rebuilt from saturated pink/purple into controlled navy/violet material with physical calendar depth and restrained warm-gold completion badge.",
+    "pass_3": "PASS source: Food rebuilt with dimensional ivory plate, subdued natural food materials, stronger contact shadow and controlled highlights.",
     "deploy": "PENDING: new Pages deployment must complete before public visual certification."
   },
-  "blocker": "Public Pages renderer remains inaccessible from this runtime; deployment success can be checked through GitHub Actions, but screenshot-level certification cannot be invented.",
-  "previous_debt": "CLOSED: Viaggi layered-depth deployment ef53ab52 is green.",
-  "next_action": "Verify this icon pass Pages success first. Then continue with the weakest remaining Home category icons or mobile card polish, preserving approved layout and icon family.",
-  "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED_ICON_PASS_PENDING",
-  "category_visual_status": "Three Home category icons received one coordinated material/depth pass; deployment verification pending."
+  "blocker": "Public Pages renderer remains inaccessible from this runtime; screenshot-level desktop/430/390 certification cannot be invented.",
+  "previous_debt": "CLOSED: first coordinated Home icon pass 27bba02c is green on Pages.",
+  "next_action": "Verify this second icon pass Pages success first. Then continue with remaining weak Home icon(s) or coordinated 390/430 card polish without redesigning the approved Home.",
+  "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED_SECOND_ICON_PASS_PENDING",
+  "category_visual_status": "Documenti, Eventi and Food received one coordinated material/depth pass; deployment verification pending."
 }
