@@ -80,3 +80,24 @@ function move(e){if(!fine.matches||reduced.matches)return reset();const r=hero.g
 hero.addEventListener('pointermove',move,{passive:true});hero.addEventListener('pointerleave',reset);fine.addEventListener?.('change',reset);reduced.addEventListener?.('change',reset);
 window.webinsolitoHeroDepth={reset};
 })();
+
+
+/* Category card touch feedback — mirrors desktop material response on coarse pointers */
+(()=>{const grid=document.getElementById('categoryGrid');if(!grid)return;
+ const coarse=matchMedia('(hover:none), (pointer:coarse)');
+ const style=document.createElement('style');style.id='webinsolito-card-touch-feedback';style.textContent=`
+ @media(hover:none),(pointer:coarse){
+  .homePremiumV4 .categoryPanel .cat{transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+  .homePremiumV4 .categoryPanel .cat.is-touching{transform:scale(.982);border-color:color-mix(in srgb,var(--a) 56%,rgba(232,189,120,.32));box-shadow:0 18px 38px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.10)}
+  .homePremiumV4 .categoryPanel .cat.is-touching .catArt{transform:translate3d(-50%,-47%,18px) scale(.985)!important;filter:drop-shadow(0 14px 17px rgba(0,0,0,.34))}
+  .homePremiumV4 .categoryPanel .cat.is-touching strong{background:linear-gradient(180deg,rgba(8,24,39,.10),rgba(3,12,21,.88))}
+ }
+ @media(prefers-reduced-motion:reduce){.homePremiumV4 .categoryPanel .cat.is-touching,.homePremiumV4 .categoryPanel .cat.is-touching .catArt{transition:none!important}}
+ `;document.head.appendChild(style);
+ function bind(){grid.querySelectorAll('.cat:not([data-touch-bound])').forEach(card=>{card.dataset.touchBound='1';
+  card.addEventListener('pointerdown',()=>{if(coarse.matches)card.classList.add('is-touching')},{passive:true});
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>card.addEventListener(ev,()=>card.classList.remove('is-touching'),{passive:true}));
+ })}
+ bind();new MutationObserver(bind).observe(grid,{childList:true});
+ window.webinsolitoCardTouchFeedback={bind};
+})();
