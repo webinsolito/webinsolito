@@ -1,17 +1,21 @@
 {
   "current_area": "Home",
-  "start_sha": "be918fba80e36aec44a585956a5d7a0b89abfabc",
-  "end_sha": "c6a092c9d06db20a27f265232f873ef67e08e74b",
-  "last_good_commit": "be918fba80e36aec44a585956a5d7a0b89abfabc",
-  "visual_quality_score": 50,
-  "runtime_files_changed": ["assets/home-search.js"],
+  "start_sha": "c5aa9f3509542df46e33400b84b9d2b0547033bc",
+  "end_sha": "ec7d2f7692a96605f95533a1de369b0eab77e3a8",
+  "last_good_commit": "ec7d2f7692a96605f95533a1de369b0eab77e3a8",
+  "visual_quality_score": 54,
+  "runtime_files_changed": [
+    "index.html",
+    "assets/home-search.js"
+  ],
   "tests": {
-    "source_integrity": "PASS: existing search logic preserved; visual layer remains isolated in injected style",
-    "responsive_contract": "PASS: explicit <=820, <=560 and <=410 rules plus coarse-pointer/reduced-motion fallbacks",
-    "public_home_smoke": "PASS: public Home loads, hero copy/search/category section present",
-    "github_pages": "IN_PROGRESS on runtime commit c6a092c9d06db20a27f265232f873ef67e08e74b at state write time"
+    "source_integrity": "PASS: v3 visual scope, category routes, touch/reduced-motion guards and hero-depth runtime present on main",
+    "responsive_render": "PASS: local Chromium render harness derived from current Home runtime CSS/DOM at 1440, 390 and 430 px; horizontal overflow = 0 at all three widths; 12 category cards rendered",
+    "mobile_geometry": "PASS: 390px stage width 320; 430px stage width 360; featured full-width cards and regular two-column cards remain inside viewport",
+    "visual_inspection": "PASS: desktop/390/430 screenshots inspected; hero stage, search, category transition and featured-card rhythm remain readable and balanced",
+    "github_pages": "PASS: Pages build/deploy run #329 for runtime HEAD ec7d2f7692a96605f95533a1de369b0eab77e3a8"
   },
-  "blocker": "No blocking defect. Exact screenshot-level 390/430 visual verification is still due after Pages deploy completes.",
-  "previous_debt": "CLOSED: previous NEXT_ACTION requested Home hero + typography/spacing mobile refinement; runtime package now implements it.",
-  "next_action": "Stay on Home: verify deployed hero/card composition at 390/430, then refine the heroStage/orbit composition and category section transition as one coordinated visual pass."
+  "blocker": "No blocker in the Home hero-stage/category-transition package. Public crawler cache may lag the successful Pages deploy, so deployment status is authoritative for this run.",
+  "previous_debt": "CLOSED: exact 390/430 render verification completed with Chromium; both widths show zero horizontal overflow.",
+  "next_action": "Stay on Home: refine the category cards themselves end-to-end—icon pedestal/material consistency, title baseline/spacing, hover/touch feedback and 390/430 density—without changing category artwork or adding content."
 }
