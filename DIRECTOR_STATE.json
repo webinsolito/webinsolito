@@ -1,21 +1,21 @@
 {
   "current_area": "Home",
-  "start_sha": "c5aa9f3509542df46e33400b84b9d2b0547033bc",
-  "end_sha": "ec7d2f7692a96605f95533a1de369b0eab77e3a8",
-  "last_good_commit": "ec7d2f7692a96605f95533a1de369b0eab77e3a8",
-  "visual_quality_score": 54,
+  "start_sha": "4d57579dc23ca56b86d49595e2785dd6363a75c4",
+  "end_sha": "d2c1bb1717477e948734f8ae9fdb8bce0564c750",
+  "last_good_commit": "d2c1bb1717477e948734f8ae9fdb8bce0564c750",
+  "visual_quality_score": 58,
   "runtime_files_changed": [
     "index.html",
     "assets/home-search.js"
   ],
   "tests": {
-    "source_integrity": "PASS: v3 visual scope, category routes, touch/reduced-motion guards and hero-depth runtime present on main",
-    "responsive_render": "PASS: local Chromium render harness derived from current Home runtime CSS/DOM at 1440, 390 and 430 px; horizontal overflow = 0 at all three widths; 12 category cards rendered",
-    "mobile_geometry": "PASS: 390px stage width 320; 430px stage width 360; featured full-width cards and regular two-column cards remain inside viewport",
-    "visual_inspection": "PASS: desktop/390/430 screenshots inspected; hero stage, search, category transition and featured-card rhythm remain readable and balanced",
-    "github_pages": "PASS: Pages build/deploy run #329 for runtime HEAD ec7d2f7692a96605f95533a1de369b0eab77e3a8"
+    "responsive_render": "PASS: Chromium render harness at 1440/390/430; 12 cards; horizontal overflow 0 at all widths",
+    "card_geometry": "PASS: 390 featured 342x224, regular 166x188; 430 featured 382x224, regular 186x188",
+    "visual_inspection": "PASS: desktop and 390 screenshots inspected; pedestal, inner frame, title baseline and featured hierarchy are balanced and readable",
+    "touch_feedback": "PASS: emulated coarse pointer at 390/430 adds is-touching, scales card to 0.982, then clears state; overflow remains 0",
+    "github_pages": "PASS: Pages build/deploy run #332 for runtime HEAD d2c1bb1717477e948734f8ae9fdb8bce0564c750"
   },
-  "blocker": "No blocker in the Home hero-stage/category-transition package. Public crawler cache may lag the successful Pages deploy, so deployment status is authoritative for this run.",
-  "previous_debt": "CLOSED: exact 390/430 render verification completed with Chromium; both widths show zero horizontal overflow.",
-  "next_action": "Stay on Home: refine the category cards themselves end-to-end—icon pedestal/material consistency, title baseline/spacing, hover/touch feedback and 390/430 density—without changing category artwork or adding content."
+  "blocker": "No blocker in category-card package.",
+  "previous_debt": "CLOSED: category cards refined end-to-end with physical pedestal/materials, title baseline, hover/touch feedback and verified 390/430 density.",
+  "next_action": "Finish Home: refine the search box/results dropdown and final vertical rhythm at 1440/390/430; if green, mark Home visual pass complete and move to category pages next run."
 }
