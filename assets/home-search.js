@@ -64,3 +64,19 @@ window.WebinsolitoSearch={search(q,apps,categories,limit=10){const nq=strip(q);i
 `;
  document.head.appendChild(style);
 })();
+
+
+/* Home hero depth — subtle desktop-only parallax, disabled on touch/reduced motion */
+(()=>{const hero=document.querySelector('.hero'),stage=document.querySelector('.heroStage');if(!hero||!stage)return;
+const fine=matchMedia('(hover:hover) and (pointer:fine)'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
+const center=stage.querySelector('.stageCenter'),ring=stage.querySelector('.stageRing'),glow=stage.querySelector('.stageGlow'),orbits=[...stage.querySelectorAll('.orbit')];
+function reset(){[center,ring,glow,...orbits].forEach(el=>{if(el){el.style.translate='';el.style.rotate=''}})}
+function move(e){if(!fine.matches||reduced.matches)return reset();const r=hero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+ if(center){center.style.translate=(x*7).toFixed(1)+'px '+(y*5).toFixed(1)+'px';center.style.rotate=(-y*1.2).toFixed(2)+'deg '+(x*1.2).toFixed(2)+'deg'}
+ if(ring)ring.style.translate=(x*3).toFixed(1)+'px '+(y*2).toFixed(1)+'px';
+ if(glow)glow.style.translate=(x*-5).toFixed(1)+'px '+(y*-4).toFixed(1)+'px';
+ orbits.forEach((el,i)=>{const dir=i%2?1:-1,depth=5+i*1.3;el.style.translate=(x*depth*dir).toFixed(1)+'px '+(y*depth).toFixed(1)+'px'});
+}
+hero.addEventListener('pointermove',move,{passive:true});hero.addEventListener('pointerleave',reset);fine.addEventListener?.('change',reset);reduced.addEventListener?.('change',reset);
+window.webinsolitoHeroDepth={reset};
+})();
