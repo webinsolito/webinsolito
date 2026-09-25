@@ -1,11 +1,11 @@
 {
   "branch": "candidate/global-core-ux-baseline-2026-09-24",
-  "last_good_commit": "e8a838074c030e68e81bae1d7a901a49474dd79f",
-  "rollback_commit": "e8a838074c030e68e81bae1d7a901a49474dd79f",
-  "current_gate": "H Mobile",
-  "current_app_or_area": "FrigoChef WebKit responsive overflow",
-  "completion_score": 69,
-  "verification_score": 95,
+  "last_good_commit": "c6316b370bc006bba884e856837cb1bcc837a0b5",
+  "rollback_commit": "46d5de9c552a87a27f6118bdece4d95117d20fcd",
+  "current_gate": "K Test principali PASS",
+  "current_app_or_area": "Splitly backup normalization/hardening",
+  "completion_score": 70,
+  "verification_score": 96,
   "gate_weights": {
     "A Home stabile": 7,
     "B Categorie funzionanti": 5,
@@ -23,38 +23,24 @@
     "N Release": 2
   },
   "last_tests": {
-    "workflow": "Candidate Functional QA #26",
-    "run_id": 36085540426,
-    "result": "FAIL",
-    "passed": 324,
-    "failed": 15,
-    "skipped": 3,
-    "verified_pass": [
-      "Accessibility baseline Chromium/WebKit",
-      "Pantry v3 desktop/iPhone",
-      "CarValue current contract",
-      "SellMyCar",
-      "AutoBuddy",
-      "canonical search",
-      "sitemap",
-      "catalog truth"
-    ],
-    "verified_fail": [
-      "FrigoChef WebKit overflow 360/390",
-      "Home performance budget",
-      "legacy aggregate QA contracts",
-      "Splitly backup",
-      "DocPocket Chromium",
-      "ScreenSort Chromium"
-    ]
+    "workflow": "Candidate Functional QA #29",
+    "run_id": 36101155262,
+    "result": "PARTIAL_PASS",
+    "targeted_gate": "FrigoChef mobile preflight PASS on iPhone/WebKit at 360/390/430",
+    "full_regression": "in progress before final state commit; final state-only commit will retrigger CI",
+    "previous_full_suite": {
+      "run_id": 36085540426,
+      "passed": 324,
+      "failed": 15,
+      "skipped": 3
+    }
   },
   "blockers": [
-    "FrigoChef WebKit horizontal overflow: +33px at 360px, +3px at 390px; 430px passes",
+    "Splitly malicious backup normalization/invalid expense handling",
     "Home payload 22071 B exceeds 16000 B budget",
     "Legacy aggregate QA contracts still create false/time-consuming failures",
-    "Splitly backup hardening failure",
     "DocPocket Chromium-only failures",
     "ScreenSort Chromium-only failure"
   ],
-  "next_action": "Fix FrigoChef WebKit horizontal overflow at 360px and 390px without regressing desktop or 430px; run targeted FrigoChef/mobile regression; update this state."
+  "next_action": "Fix Splitly malicious backup normalization so invalid expenses are dropped, preserve current UI, then run targeted Splitly finalization on desktop Chromium and iPhone/WebKit."
 }
