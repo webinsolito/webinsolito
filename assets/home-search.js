@@ -21,21 +21,7 @@ const INTENTS=[
  {phrases:["documenti auto","scadenze auto","organizzare documenti macchina"],targets:["autobuddy","docpocket"],label:"organizzare i documenti auto"}
 ];
 const SYNONYMS=[
- ["auto","macchina","automobile","veicolo"],
- ["benzina","carburante","diesel","gasolio"],
- ["viaggio","trasferta","vacanza","partenza"],
- ["spesa","costo","prezzo","soldi"],
- ["valore","valutare","vale","stima","stimare"],
- ["risparmiare","risparmio","accantonare"],
- ["valigia","bagaglio","bagagli"],
- ["casa","abitazione","appartamento"],
- ["documento","documenti","carta","carte"],
- ["scadenza","scade","scadere","rinnovo"],
- ["studiare","studio","esame","ripasso"],
- ["cucinare","cucino","ricetta","mangiare"],
- ["vendere","vendo","vendita","annuncio"],
- ["garanzia","warranty"],
- ["conto","cena","rimborso","dividere"]
+ ["auto","macchina","automobile","veicolo"],["benzina","carburante","diesel","gasolio"],["viaggio","trasferta","vacanza","partenza"],["spesa","costo","prezzo","soldi"],["valore","valutare","vale","stima","stimare"],["risparmiare","risparmio","accantonare"],["valigia","bagaglio","bagagli"],["casa","abitazione","appartamento"],["documento","documenti","carta","carte"],["scadenza","scade","scadere","rinnovo"],["studiare","studio","esame","ripasso"],["cucinare","cucino","ricetta","mangiare"],["vendere","vendo","vendita","annuncio"],["garanzia","warranty"],["conto","cena","rimborso","dividere"]
 ];
 const STOP=new Set(["devo","voglio","vorrei","mi","mia","mio","mie","miei","serve","per","il","lo","la","i","gli","le","un","una","uno","di","da","a","in","con","e","o","che","come","fare","faccio","posso","quanto"]);
 const strip=s=>(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
@@ -43,74 +29,38 @@ const tokens=s=>strip(s).split(" ").filter(x=>x&&!STOP.has(x));
 function distance(a,b){if(a===b)return 0;if(!a.length)return b.length;if(!b.length)return a.length;let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur}return prev[b.length]}
 function fuzzy(a,b){if(!a||!b)return 0;if(a===b)return 1;if(a.includes(b)||b.includes(a))return .82;const d=distance(a,b),m=Math.max(a.length,b.length);return m?Math.max(0,1-d/m):0}
 const synonymSet=t=>{const out=new Set([t]);for(const g of SYNONYMS)if(g.includes(t)||g.some(x=>t.length>=4&&fuzzy(t,x)>=.78))g.forEach(x=>out.add(x));return out};
-function intentScore(q,intent){
- const qt=tokens(q),ps=intent.phrases.map(strip);let best=0;
- for(const p of ps){
-  if(strip(q).includes(p)||p.includes(strip(q)))best=Math.max(best,.96);
-  const pt=tokens(p);if(!pt.length)continue;
-  let hit=0;
-  for(const x of qt){let bx=0;for(const y of pt){for(const sx of synonymSet(x))bx=Math.max(bx,fuzzy(sx,y))}if(bx>=.72)hit+=bx}
-  best=Math.max(best,hit/Math.max(pt.length,qt.length));
- }
- return best;
-}
-function rankApp(app,q,intentBoost){
- const nq=strip(q),qt=tokens(q),name=strip(app.name),desc=strip(app.description),cat=strip(app.category),hay=name+" "+desc+" "+cat,nameTokens=name.split(" "),descTokens=desc.split(" ");
- let s=0;
- if(name===nq)s+=40;
- if(name.startsWith(nq)&&nq.length>1)s+=18;
- if(hay.includes(nq)&&nq.length>2)s+=12;
- for(const t of qt){
-  const syn=synonymSet(t);let best=0;
-  for(const x of syn){
-   if(name.includes(x))best=Math.max(best,7);
-   else if(desc.includes(x))best=Math.max(best,4);
-   else if(cat.includes(x))best=Math.max(best,2);
-   for(const nt of nameTokens)if(x.length>=4)best=Math.max(best,fuzzy(x,nt)*4.5);for(const dt of descTokens)if(x.length>=4)best=Math.max(best,fuzzy(x,dt)*3.4);
-  }
-  s+=best;
- }
- s+=intentBoost||0;
- return s;
-}
-window.WebinsolitoSearch={
- search(q,apps,categories,limit=10){
-  const nq=strip(q);if(!nq)return[];
-  const boosts=new Map(),reasons=new Map();
-  for(const intent of INTENTS){
-   const m=intentScore(nq,intent);
-   if(m>=.52)for(let i=0;i<intent.targets.length;i++){
-    const id=intent.targets[i],b=42*m-(i*8);
-    if(b>(boosts.get(id)||0)){boosts.set(id,b);reasons.set(id,intent.label)}
-   }
-  }
-  const appResults=apps.map(app=>({type:"app",app,score:rankApp(app,nq,boosts.get(app.id)||0),reason:reasons.get(app.id)||""})).filter(x=>x.score>=4);
-  const catResults=(categories||[]).map(c=>{
-   const h=strip(c.name+" "+c.tagline),qt=tokens(nq);let score=0;
-   for(const t of qt)for(const x of synonymSet(t)){if(h.includes(x))score=Math.max(score,6)}
-   return{type:"category",category:c,score};
-  }).filter(x=>x.score>0);
-  return appResults.concat(catResults).sort((a,b)=>b.score-a.score).slice(0,limit);
- },
- normalize:strip
-};
+function intentScore(q,intent){const qt=tokens(q),ps=intent.phrases.map(strip);let best=0;for(const p of ps){if(strip(q).includes(p)||p.includes(strip(q)))best=Math.max(best,.96);const pt=tokens(p);if(!pt.length)continue;let hit=0;for(const x of qt){let bx=0;for(const y of pt){for(const sx of synonymSet(x))bx=Math.max(bx,fuzzy(sx,y))}if(bx>=.72)hit+=bx}best=Math.max(best,hit/Math.max(pt.length,qt.length))}return best}
+function rankApp(app,q,intentBoost){const nq=strip(q),qt=tokens(q),name=strip(app.name),desc=strip(app.description),cat=strip(app.category),hay=name+" "+desc+" "+cat,nameTokens=name.split(" "),descTokens=desc.split(" ");let s=0;if(name===nq)s+=40;if(name.startsWith(nq)&&nq.length>1)s+=18;if(hay.includes(nq)&&nq.length>2)s+=12;for(const t of qt){const syn=synonymSet(t);let best=0;for(const x of syn){if(name.includes(x))best=Math.max(best,7);else if(desc.includes(x))best=Math.max(best,4);else if(cat.includes(x))best=Math.max(best,2);for(const nt of nameTokens)if(x.length>=4)best=Math.max(best,fuzzy(x,nt)*4.5);for(const dt of descTokens)if(x.length>=4)best=Math.max(best,fuzzy(x,dt)*3.4)}s+=best}s+=intentBoost||0;return s}
+window.WebinsolitoSearch={search(q,apps,categories,limit=10){const nq=strip(q);if(!nq)return[];const boosts=new Map(),reasons=new Map();for(const intent of INTENTS){const m=intentScore(nq,intent);if(m>=.52)for(let i=0;i<intent.targets.length;i++){const id=intent.targets[i],b=42*m-(i*8);if(b>(boosts.get(id)||0)){boosts.set(id,b);reasons.set(id,intent.label)}}}const appResults=apps.map(app=>({type:"app",app,score:rankApp(app,nq,boosts.get(app.id)||0),reason:reasons.get(app.id)||""})).filter(x=>x.score>=4);const catResults=(categories||[]).map(c=>{const h=strip(c.name+" "+c.tagline),qt=tokens(nq);let score=0;for(const t of qt)for(const x of synonymSet(t)){if(h.includes(x))score=Math.max(score,6)}return{type:"category",category:c,score}}).filter(x=>x.score>0);return appResults.concat(catResults).sort((a,b)=>b.score-a.score).slice(0,limit)},normalize:strip};
 })();
 
-/* Home visual runtime polish: category depth + mobile hierarchy */
+/* Home visual runtime polish — premium hero + category hierarchy */
 (()=>{
  const style=document.createElement('style');
  style.id='webinsolito-home-runtime-polish';
  style.textContent=`
-.categoryPanel{isolation:isolate}
-.categoryPanel:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.025),transparent 28%,transparent 72%,rgba(227,181,107,.025));border-radius:inherit}
+.top{position:relative;z-index:20;margin-top:4px;padding:7px 12px;border:1px solid rgba(151,180,208,.10);border-radius:18px;background:linear-gradient(180deg,rgba(14,31,49,.58),rgba(7,19,31,.38));box-shadow:inset 0 1px rgba(255,255,255,.045),0 14px 34px rgba(0,0,0,.12);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hero{border-color:rgba(151,181,210,.24);background:radial-gradient(620px 420px at 78% 44%,rgba(76,128,184,.12),transparent 62%),linear-gradient(145deg,rgba(25,50,76,.96),rgba(7,22,36,.99) 64%);box-shadow:0 48px 130px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.085),inset 0 -1px rgba(0,0,0,.28)}
+.heroEyebrow{padding:8px 12px 8px 10px;border:1px solid rgba(227,181,107,.18);border-radius:999px;background:linear-gradient(180deg,rgba(227,181,107,.08),rgba(255,255,255,.018));box-shadow:inset 0 1px rgba(255,255,255,.055)}
+.hero h1{text-shadow:0 8px 34px rgba(0,0,0,.26)}
+.heroLead{text-shadow:0 8px 28px rgba(0,0,0,.22)}
+.searchShell{border-color:rgba(174,199,222,.46);box-shadow:0 28px 70px rgba(0,0,0,.37),inset 0 1px rgba(255,255,255,.09),inset 0 -1px rgba(0,0,0,.34)}
+.heroStage:before{content:"";position:absolute;left:50%;top:55%;width:78%;height:44%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.42),transparent 68%);filter:blur(18px)}
+.stageCenter{box-shadow:0 38px 82px rgba(0,0,0,.46),inset 0 1px rgba(255,255,255,.11),0 0 88px rgba(227,181,107,.075)}
+.gridHead{position:relative;padding:0 2px 14px;border-bottom:1px solid rgba(255,255,255,.075)}
+.gridHead:after{content:"";position:absolute;left:0;bottom:-1px;width:84px;height:1px;background:linear-gradient(90deg,#d9aa62,transparent)}
+.cats{gap:18px}
+.cat{border-color:rgba(143,170,197,.30);box-shadow:var(--sx) var(--sy) 54px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.08)}
 .cat strong{margin:0 -9px -7px;padding:16px 10px 10px;min-height:48px;border-top:1px solid rgba(255,255,255,.10);border-radius:0 0 22px 22px;background:linear-gradient(180deg,rgba(4,14,24,0),rgba(4,14,24,.66));backdrop-filter:blur(10px) saturate(1.08);-webkit-backdrop-filter:blur(10px) saturate(1.08)}
-.cat:nth-child(1),.cat:nth-child(6){border-color:rgba(227,181,107,.20);background:linear-gradient(150deg,rgba(38,68,98,.99),rgba(8,22,36,.995) 68%);box-shadow:0 34px 78px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.095)}
+.cat:nth-child(1),.cat:nth-child(6){border-color:rgba(227,181,107,.20);background:linear-gradient(150deg,rgba(38,68,98,.99),rgba(8,22,36,.995) 68%);box-shadow:0 36px 84px rgba(0,0,0,.40),inset 0 1px rgba(255,255,255,.10)}
 .cat:nth-child(1):before,.cat:nth-child(6):before{background:radial-gradient(circle at 72% 20%,color-mix(in srgb,var(--a) 34%,transparent),transparent 44%),radial-gradient(circle at 12% 100%,rgba(227,181,107,.08),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.05),transparent 56%)}
 .cat:hover .catArt{transform:translate3d(calc(-50% + var(--ix)),calc(-54% + var(--iy)),32px) scale(1.035);filter:drop-shadow(calc(var(--sx) * .35) 24px 25px rgba(0,0,0,.36))}
 .cat[data-category="auto"]:hover .catArt{transform:translate3d(calc(-50% + var(--ix)),calc(-54% + var(--iy)),32px) scale(.975)}
-@media(max-width:820px){.cat:nth-child(1),.cat:nth-child(6){grid-column:span 2;min-height:244px}.cat:nth-child(1) .catArt,.cat:nth-child(6) .catArt{width:176px;height:176px;top:41%}.cat:nth-child(1) strong,.cat:nth-child(6) strong{font-size:21px}}
-@media(max-width:560px){.categoryPanel{padding:22px 12px 20px}.cats{gap:11px}.cat,.cat:nth-child(n+7){min-height:184px}.cat:nth-child(1),.cat:nth-child(6){grid-column:span 2;min-height:224px;border-radius:25px}.catArt,.cat:nth-child(n+7) .catArt{width:118px;height:118px;top:39%}.cat:nth-child(1) .catArt,.cat:nth-child(6) .catArt{width:158px;height:158px;top:40%}.cat strong{font-size:15.5px;min-height:40px;padding:12px 8px 8px}.cat:nth-child(1) strong,.cat:nth-child(6) strong{font-size:18px;min-height:44px}.gridHead{margin-bottom:14px}.gridHead h2{font-size:31px}}
-@media(prefers-reduced-motion:reduce){.cat,.catArt{transition:none!important}}
+@media(max-width:820px){.hero{padding-top:46px}.heroCopy{max-width:620px}.heroEyebrow{margin-bottom:15px}.cat:nth-child(1),.cat:nth-child(6){grid-column:span 2;min-height:244px}.cat:nth-child(1) .catArt,.cat:nth-child(6) .catArt{width:176px;height:176px;top:41%}.cat:nth-child(1) strong,.cat:nth-child(6) strong{font-size:21px}}
+@media(max-width:560px){.wrap{padding-left:12px;padding-right:12px}.top{margin-top:0;padding:5px 8px;border-radius:15px}.hero{margin-top:12px;margin-bottom:30px;padding:32px 18px 26px;border-radius:30px}.heroEyebrow{padding:6px 9px 6px 8px;margin-bottom:13px}.hero h1{line-height:.91}.heroLead{margin-top:12px;line-height:1.04}.hero p{margin-top:15px;line-height:1.55}.searchBox{margin-top:23px}.searchShell{height:60px;border-radius:19px}.heroStage{margin-top:10px}.gridHead{margin-bottom:16px;padding-bottom:12px}.gridHead h2{font-size:29px;line-height:1}.cats{gap:11px}.cat,.cat:nth-child(n+7){min-height:184px}.cat:nth-child(1),.cat:nth-child(6){grid-column:span 2;min-height:224px;border-radius:25px}.catArt,.cat:nth-child(n+7) .catArt{width:118px;height:118px;top:39%}.cat:nth-child(1) .catArt,.cat:nth-child(6) .catArt{width:158px;height:158px;top:40%}.cat strong{font-size:15.5px;min-height:40px;padding:12px 8px 8px}.cat:nth-child(1) strong,.cat:nth-child(6) strong{font-size:18px;min-height:44px}}
+@media(max-width:410px){.hero{padding-left:15px;padding-right:15px}.hero h1{font-size:clamp(40px,12.7vw,52px)}.heroLead{font-size:clamp(23px,7.5vw,31px)}.cats{gap:9px}.cat{padding-left:12px;padding-right:12px}.cat strong{font-size:15px}}
+@media(hover:none){.cat:active{--lift:-3px;border-color:rgba(227,181,107,.32)}.searchShell:focus-within{transform:none}}
+@media(prefers-reduced-motion:reduce){.cat,.catArt,.searchShell{transition:none!important}}
 `;
  document.head.appendChild(style);
 })();
