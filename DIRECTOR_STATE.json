@@ -1,21 +1,28 @@
 {
-  "current_area": "Category shell + Auto category premium visual pass",
-  "start_sha": "f68feae1e82e0ea682ded62e4a4c5c4b1187086e",
-  "end_sha": "1aa1f017ac055b1241297c84cb8c28c422f505b3",
-  "last_good_commit": "f68feae1e82e0ea682ded62e4a4c5c4b1187086e",
-  "visual_quality_score": 62,
-  "runtime_files_changed": ["assets/category-page.css","auto/index.html","sw.js"],
+  "current_area": "Category premium propagation — Shopping + Food",
+  "start_sha": "40189f5977a68307f8cfc1667c42f3edec67e8e7",
+  "end_sha": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
+  "last_good_commit": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
+  "visual_quality_score": 68,
+  "runtime_files_changed": [
+    "assets/category-page.css",
+    "shopping/index.html",
+    "food/index.html",
+    "sw.js"
+  ],
   "tests": {
-    "previous_pages": "PASS: Pages run #345 completed success for prior state commit f68feae1e82e0ea682ded62e4a4c5c4b1187086e; prior #344 was superseded/cancelled.",
-    "runtime_delta": "PASS: compare f68feae..1aa1f01 = ahead by 3 commits, 0 behind; shared category shell, Auto hub and cache delivery changed.",
-    "responsive_390_430_desktop": "PASS by source inspection: desktop 3-column/2-column hierarchy plus <=820, <=560 and <=400 breakpoints cover desktop, 430px and 390px layouts; mobile cards become single-row compact cards.",
-    "delivery": "PASS by source inspection: Auto uses cache-busted category-page.css?v=20260925b and SW cache bumped v22 -> v23.",
-    "pages_run_348": "PENDING at state write for runtime HEAD 1aa1f017ac055b1241297c84cb8c28c422f505b3; public success not claimed yet.",
-    "public_visual": "NOT ACCEPTED: external public browser fetch was unavailable in this run; visual score intentionally unchanged."
+    "previous_pages_debt": "PASS: prior category batch reached successful Pages deployment #349; debt no longer blocked on deployment.",
+    "runtime_delta": "PASS: compare 40189f5..403f39a = 6 commits ahead, 0 behind; shared category system, Shopping, Food and delivery cache changed.",
+    "source_integrity": "PASS: all Shopping/Food referenced app IDs resolve to active apps; service worker v25; cache-busted category CSS present.",
+    "responsive_browser": "PASS on exact Pages #355 artifact rendered in Chromium at 1440, 430 and 390: no horizontal overflow; Shopping summary 2->1 cols, primary 2->1, specific 3->1; Food summary 2->1, lead 2->1, specific 3->1.",
+    "mobile_residual_fix": "PASS: 390/430 quick-action chips are fully visible after wrap fix; empty-search message hidden by default and appears only after unmatched query.",
+    "visual_inspection": "PASS: deployed artifact screenshots inspected for Shopping desktop/390 and Food desktop/390; hierarchy, depth, spacing and mobile card rhythm visibly improved.",
+    "github_pages_355": "PASS: pages build and deployment run #355 completed successfully for runtime HEAD 403f39a5bab04a31b9556c7b4435f0c8e2e1f491.",
+    "deployed_artifact_355": "PASS: github-pages artifact contains Shopping rebuild, Food summary layer, CATEGORY_PREMIUM_FIX_20260925_D and webinsolito-v25."
   },
-  "blocker": "Public visual browser verification is unavailable and Pages #348 is still pending; do not raise visual score until published result is actually confirmed.",
-  "previous_debt": "PARTIALLY CLOSED: prior Home package is now on a successful Pages deployment (#345), but direct public visual confirmation remains unavailable. No claim that the perceptual gate is closed.",
-  "next_action": "Priority 1: verify Pages #348 and real public rendering. If Auto/category shell is visibly live, keep the same macro-area and propagate/refine the premium category system across the remaining category pages, starting with the highest-traffic/most inconsistent category. If not visibly live, fix delivery before any further visual expansion.",
-  "home_visual_status": "DEPLOYED_PREVIOUS_PACKAGE_VISUAL_CONFIRMATION_PENDING",
-  "category_visual_status": "INCOMPLETE_PENDING_PUBLIC_VERIFICATION"
+  "blocker": "None for this batch. Direct external crawler cannot open category subpaths, so verification used the exact successful GitHub Pages deployment artifact plus Chromium renders.",
+  "previous_debt": "CHIUSO: prior category deploy gate is green and this run additionally verified the exact deployed artifact visually/responsively.",
+  "next_action": "Stay in the same macro-area. Upgrade the remaining generic category shells end-to-end, starting with Documenti and Eventi (both still ~1.3 KB generic pages), then continue only after desktop/430/390 artifact verification.",
+  "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED",
+  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food and Shopping upgraded; remaining generic category pages still pending."
 }
