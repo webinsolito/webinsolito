@@ -5,26 +5,55 @@
   "current_gate": "J Grafica premium",
   "current_app_or_area": "Home visual refinement",
   "current_area": "Home",
-  "current_visual_mission": "Premium layered depth pass on header, hero, search and category cards while preserving structure and approved iconography",
-  "visual_run_counter": 1,
+  "current_visual_mission": "Strengthen category-card composition and mobile hierarchy while preserving approved icon artwork and Home content.",
+  "visual_run_counter": 2,
   "completion_score": 71,
   "verification_score": 99,
   "visual_quality_score": 48,
   "visual_quality_baseline_note": "Visual KPI introduced in this phase; 48 is the first persisted baseline after the Home premium pass, not an increase from a previously stored score.",
-  "gate_weights": {"A Home stabile":7,"B Categorie funzionanti":5,"C Routing funzionante":8,"D App core complete":18,"E App secondarie sufficientemente complete":12,"F Duplicati eliminati/consolidati":8,"G Catalogo coerente":5,"H Mobile funzionante":8,"I Design system coerente":6,"J Grafica premium":6,"K Test principali PASS":8,"L Nessuna regressione bloccante":4,"M Build pubblicabile":3,"N Release":2},
-  "last_runtime_files_changed": ["assets/webinsolito-core.css"],
+  "gate_weights": {
+    "A Home stabile": 7,
+    "B Categorie funzionanti": 5,
+    "C Routing funzionante": 8,
+    "D App core complete": 18,
+    "E App secondarie sufficientemente complete": 12,
+    "F Duplicati eliminati/consolidati": 8,
+    "G Catalogo coerente": 5,
+    "H Mobile funzionante": 8,
+    "I Design system coerente": 6,
+    "J Grafica premium": 6,
+    "K Test principali PASS": 8,
+    "L Nessuna regressione bloccante": 4,
+    "M Build pubblicabile": 3,
+    "N Release": 2
+  },
+  "last_runtime_files_changed": [
+    "index.html",
+    "assets/webinsolito-core.css"
+  ],
   "last_tests": {
-    "status": "CI_PENDING_FOR_NEW_HEAD",
-    "previous_workflow": "Candidate Functional QA #37",
-    "previous_run_id": 36114152628,
-    "previous_result": "FAIL",
-    "previous_full_suite": {"run_id":36103969346,"passed":328,"failed":11,"skipped":3},
-    "current_visual_change": "Runtime CSS committed; no workflow run observable yet for commit 6fa18df2234bca6bd859d951099ceddb096bd821, so no PASS is claimed."
+    "status": "INCOMPLETE_BROWSER_VERIFICATION",
+    "source_contract_checks": "PASS",
+    "checks": [
+      "featured Auto/Travel span two mobile columns",
+      "regular mobile cards remain compact",
+      "premium title surface present",
+      "premium pass 2 material rules present",
+      "Auto/Viaggi routes preserved"
+    ],
+    "playwright_local": "BLOCKED: container cannot resolve github.com, so candidate could not be cloned for local Playwright",
+    "github_actions": "BLOCKED: no workflow run/status was created for current GitHub App-authored HEAD despite PR reopen attempt",
+    "public_preview": "BLOCKED: raw.githack/htmlpreview/jsDelivr candidate preview not accessible through available web browser",
+    "current_runtime_head": "6acc140059a8c55d6fdb16bb48f8ff618fde90b2"
   },
   "blockers": [
-    "Current Home visual commit requires CI/render verification before promotion",
+    "Current Home visual pass lacks browser/Playwright verification on its exact HEAD because Actions did not start and the local runner has no GitHub network access",
     "Home payload performance budget remains a known blocker",
     "Legacy aggregate QA contracts still create false/time-consuming failures"
   ],
-  "next_action": "Continue Home visual refinement: verify the current Home pass on desktop and 390/430 mobile when CI/render evidence is available, then refine category-card composition and mobile hierarchy in the same Home macro-area without changing approved icon artwork or adding features."
+  "next_action": "Stay on Home: obtain a real browser/Playwright pass for the current Home visual runtime head, then in the same run refine mobile category-card typography/spacing only if the preflight is green.",
+  "current_run": 2,
+  "start_sha": "29e216268ab17e7b07aca468f5080d282fe4ebe9",
+  "end_sha": "6acc140059a8c55d6fdb16bb48f8ff618fde90b2",
+  "publish_status": "not published: candidate visual runtime changed but browser/Playwright verification on the current HEAD could not be completed safely"
 }
