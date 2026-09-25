@@ -1,20 +1,21 @@
 {
-  "current_area": "Category premium propagation — Documenti + Eventi",
-  "start_sha": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
-  "end_sha": "568b5b77d683217b612f27648db047673ed67b96",
-  "last_good_commit": "403f39a5bab04a31b9556c7b4435f0c8e2e1f491",
+  "current_area": "Category premium propagation — Viaggi",
+  "start_sha": "7c51021dfff5269bcee16ad7551a456e57336591",
+  "end_sha": "7466704c8a48a8ccfd9109cbd9a2a896ae162045",
+  "last_good_commit": "7c51021dfff5269bcee16ad7551a456e57336591",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["documenti/index.html","eventi/index.html"],
+  "runtime_files_changed": ["viaggi/index.html"],
   "tests": {
-    "previous_debt": "PASS: prior Shopping/Food batch was already deployed and verified.",
-    "pass_1": "PASS: Documenti replaced generic shell with premium hero, search context, summary/proof layer, primary/specific hierarchy and dynamic active-app rendering.",
-    "pass_2": "PASS: Eventi replaced generic shell with the same coordinated premium system and category-specific hierarchy/content.",
-    "source_integrity": "PASS: both pages render only MVP/BETA/STABLE apps with valid paths from apps.json; no new apps added.",
-    "deploy": "PENDING: GitHub Pages run 36171455365 started for runtime HEAD 568b5b77d683217b612f27648db047673ed67b96; public visual verification must complete next."
+    "previous_debt": "PASS: Casa Pages deployment run 36177729824 completed successfully for 7c51021d.",
+    "pass_1": "PASS: Viaggi replaced generic category shell with premium hero/copy, contextual search and four intent routes.",
+    "pass_2": "PASS: added coordinated summary/proof layer plus primary/specific tool hierarchy using the existing premium category system.",
+    "responsive_source": "PASS: premium category CSS already contains <=820, <=560 and <=400 responsive treatments; Viaggi uses those shared primitives.",
+    "source_integrity": "PASS: dynamic renderer is restricted to category travel and MVP/BETA/STABLE apps with valid paths; no new apps added.",
+    "deploy": "PENDING: new Pages deployment for Viaggi must complete and public artifact must be visually certified."
   },
-  "blocker": "Transient deploy propagation: Pages run still pending at end of this execution; direct external crawler cannot open category subpaths.",
-  "previous_debt": "CLOSED: Documenti and Eventi generic-shell debt implemented; deployment verification remains open.",
-  "next_action": "Priority 1: verify Pages deployment and exact public artifact for Documenti/Eventi at desktop, 430 and 390. If green, continue premium propagation to the next two weakest generic category shells without touching approved Home.",
+  "blocker": "Direct external crawler cannot open GitHub Pages category subpaths, so public screenshot-level certification remains unavailable from this runtime.",
+  "previous_debt": "CLOSED: Casa deployment confirmed successful through GitHub Pages.",
+  "next_action": "Priority 1: verify Viaggi Pages deployment/public artifact. Then continue premium propagation to the weakest remaining generic category shell; preserve approved Home and icon family.",
   "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED",
-  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food, Shopping upgraded and deployed; Documenti/Eventi upgraded with deploy verification pending."
+  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food, Shopping, Documenti, Eventi and Casa upgraded; Viaggi upgraded with deploy verification pending."
 }
