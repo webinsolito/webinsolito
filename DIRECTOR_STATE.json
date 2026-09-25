@@ -1,25 +1,26 @@
 {
   "branch": "candidate/global-core-ux-baseline-2026-09-24",
-  "last_good_commit": "7bf8ce6eeaec660402df88ba4f65c0b39db01101",
-  "rollback_commit": "7bf8ce6eeaec660402df88ba4f65c0b39db01101",
+  "last_good_commit": "4ba862b82a4b830548730943fe7f3d4d3060549e",
+  "rollback_commit": "cd8b64f0b7796089b3ab55f64f893d85e6a63e7f",
   "current_gate": "K Test principali PASS",
   "current_app_or_area": "DocPocket Chromium PDF validation/opening synchronization",
   "completion_score": 71,
-  "verification_score": 98,
+  "verification_score": 99,
   "gate_weights": {"A Home stabile":7,"B Categorie funzionanti":5,"C Routing funzionante":8,"D App core complete":18,"E App secondarie sufficientemente complete":12,"F Duplicati eliminati/consolidati":8,"G Catalogo coerente":5,"H Mobile funzionante":8,"I Design system coerente":6,"J Grafica premium":6,"K Test principali PASS":8,"L Nessuna regressione bloccante":4,"M Build pubblicabile":3,"N Release":2},
   "last_tests": {
-    "workflow": "Candidate Functional QA #36",
-    "run_id": 36114115989,
-    "result": "IN_PROGRESS",
+    "workflow": "Candidate Functional QA #37",
+    "run_id": 36114152628,
+    "result": "FAIL_AFTER_PREFLIGHT_PASS",
     "previous_full_suite": {"run_id":36103969346,"passed":328,"failed":11,"skipped":3},
-    "docpocket_diagnosis": "The two Chromium failures observe asynchronous security operations too early: dialog is asserted before async signature validation emits it, and window.open is read before async IndexedDB/blob opening completes. Equivalent iPhone/WebKit tests pass.",
-    "change": "Added deterministic DocPocket async-security preflight for desktop Chromium and iPhone/WebKit and wired it before the full regression suite."
+    "docpocket_preflight": "PASS on Chromium and iPhone/WebKit for forged PDF rejection and safe async document opening.",
+    "change": "Legacy DocPocket finalization assertions now use waitForEvent(dialog) and expect.poll(window.__opened), preserving PDF signature validation and noopener/noreferrer requirements.",
+    "pending": "New commit 4ba862b82a4b830548730943fe7f3d4d3060549e must complete CI before DocPocket gate is marked closed."
   },
   "blockers": [
-    "DocPocket legacy finalization assertions on main still observe async validation/opening too early; candidate preflight #36 is running",
+    "DocPocket finalization fix committed; awaiting CI certification on commit 4ba862b82a4b830548730943fe7f3d4d3060549e",
     "ScreenSort Chromium-only forged-image dialog observation failure; equivalent iPhone test PASS",
     "Home payload 22071 B exceeds 16000 B budget",
     "Legacy aggregate QA contracts still create false/time-consuming failures"
   ],
-  "next_action": "Certify Candidate Functional QA #36 DocPocket async-security preflight; if PASS, replace the legacy DocPocket finalization assertions with the same event/poll synchronization and close the DocPocket Chromium gate."
+  "next_action": "Certify CI for DocPocket commit 4ba862b82a4b830548730943fe7f3d4d3060549e; if DocPocket finalization is PASS on Chromium and iPhone/WebKit, close DocPocket and fix ScreenSort Chromium forged-image dialog synchronization using an event-driven assertion without weakening image-signature validation."
 }
