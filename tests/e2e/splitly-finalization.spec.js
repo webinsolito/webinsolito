@@ -104,14 +104,17 @@ test.describe('Splitly finalization', () => {
         {id:2,desc:'Wrong sum',amt:10,payer:'Alice',cat:'Cibo',shares:[{name:'Alice',amount:2},{name:'Bob',amount:2}]}
       ]
     };
-    await page.addInitScript(()=>{window.__xss=0});
     page.on('dialog',async d=>{await d.accept()});
     await page.evaluate(()=>go('settings'));
     await page.locator('#importFile').setInputFiles({name:'splitly.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+    await expect.poll(async()=>page.evaluate(()=>{
+      const s=JSON.parse(localStorage.getItem('splitly.v2')||'null');
+      return s&&{people:s.people,expenses:s.expenses.length};
+    }).catch(()=>null),{timeout:5000}).toEqual({people:['Alice','Bob'],expenses:1});
+    await expect(page.locator('#heroGroup')).toContainText('<img src=x onerror="window.__xss=1">');
+    await expect(page.locator('#heroGroup img')).toHaveCount(0);
     const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('splitly.v2')));
-    expect(stored.people).toEqual(['Alice','Bob']);
-    expect(stored.expenses).toHaveLength(1);
-    expect(await page.evaluate(()=>window.__xss)).toBe(0);
+    expect(stored.expenses[0].desc).toBe('Cena');
   });
 
   for(const width of [360,390,430]){
