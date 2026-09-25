@@ -32,12 +32,13 @@ test.describe('ScreenSort finalization', () => {
   });
 
   test('forged image MIME is rejected by signature validation', async ({ page }) => {
-    const dialogs=[];
-    page.on('dialog',async d=>{dialogs.push(d.message());await d.accept()});
     await page.locator('button[data-go="import"]:visible').click();
     await page.locator('#files').setInputFiles({name:'fake.png',mimeType:'image/png',buffer:Buffer.from('<script>alert(1)</script>')});
+    const dialogPromise=page.waitForEvent('dialog');
     await page.getByRole('button',{name:'Importa screenshot'}).click();
-    expect(dialogs.at(-1)).toContain('non è un’immagine valida');
+    const dialog=await dialogPromise;
+    expect(dialog.message()).toContain('non è un’immagine valida');
+    await dialog.accept();
     await page.evaluate(()=>go('inbox'));
     await expect(page.locator('#grid .shot')).toHaveCount(0);
   });
