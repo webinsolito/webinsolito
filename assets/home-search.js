@@ -101,3 +101,20 @@ window.webinsolitoHeroDepth={reset};
  bind();new MutationObserver(bind).observe(grid,{childList:true});
  window.webinsolitoCardTouchFeedback={bind};
 })();
+
+
+/* Premium search surface state — visually joins field + results and keeps active rows in view */
+(()=>{const box=document.querySelector('.searchBox'),shell=document.querySelector('.searchShell'),results=document.getElementById('searchResults'),input=document.getElementById('globalSearch');if(!box||!shell||!results||!input)return;
+ const style=document.createElement('style');style.id='webinsolito-search-surface-state';style.textContent=`
+ .homePremiumV5 .searchBox.results-open .searchShell{border-color:rgba(232,189,120,.60);box-shadow:0 34px 84px rgba(0,0,0,.44),0 0 0 4px rgba(217,170,98,.055),inset 0 1px rgba(255,255,255,.12)}
+ .homePremiumV5 .searchBox.results-open:after{content:"";position:absolute;z-index:91;left:30px;right:30px;top:79px;height:14px;background:linear-gradient(180deg,rgba(16,35,54,.98),rgba(8,21,35,.86));filter:blur(4px);pointer-events:none}
+ .homePremiumV5 .searchBox.results-open .results{border-color:rgba(232,189,120,.21)}
+ @media(max-width:640px){.homePremiumV5 .searchBox.results-open:after{left:22px;right:22px;top:64px;height:11px}}
+ `;document.head.appendChild(style);
+ function sync(){const open=results.classList.contains('on')&&results.children.length>0;box.classList.toggle('results-open',open);if(open){const active=results.querySelector('.res.active');active?.scrollIntoView({block:'nearest',inline:'nearest'})}}
+ new MutationObserver(sync).observe(results,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+ input.addEventListener('keydown',()=>requestAnimationFrame(sync));
+ input.addEventListener('input',()=>requestAnimationFrame(sync));
+ document.addEventListener('click',()=>requestAnimationFrame(sync));
+ sync();window.webinsolitoSearchSurface={sync};
+})();
