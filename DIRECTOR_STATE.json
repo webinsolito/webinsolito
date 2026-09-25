@@ -1,0 +1,60 @@
+{
+  "branch": "candidate/global-core-ux-baseline-2026-09-24",
+  "last_good_commit": "e8a838074c030e68e81bae1d7a901a49474dd79f",
+  "rollback_commit": "e8a838074c030e68e81bae1d7a901a49474dd79f",
+  "current_gate": "H Mobile",
+  "current_app_or_area": "FrigoChef WebKit responsive overflow",
+  "completion_score": 69,
+  "verification_score": 95,
+  "gate_weights": {
+    "A Home stabile": 7,
+    "B Categorie funzionanti": 5,
+    "C Routing funzionante": 8,
+    "D App core complete": 18,
+    "E App secondarie sufficientemente complete": 12,
+    "F Duplicati eliminati/consolidati": 8,
+    "G Catalogo coerente": 5,
+    "H Mobile funzionante": 8,
+    "I Design system coerente": 6,
+    "J Grafica premium": 6,
+    "K Test principali PASS": 8,
+    "L Nessuna regressione bloccante": 4,
+    "M Build pubblicabile": 3,
+    "N Release": 2
+  },
+  "last_tests": {
+    "workflow": "Candidate Functional QA #26",
+    "run_id": 36085540426,
+    "result": "FAIL",
+    "passed": 324,
+    "failed": 15,
+    "skipped": 3,
+    "verified_pass": [
+      "Accessibility baseline Chromium/WebKit",
+      "Pantry v3 desktop/iPhone",
+      "CarValue current contract",
+      "SellMyCar",
+      "AutoBuddy",
+      "canonical search",
+      "sitemap",
+      "catalog truth"
+    ],
+    "verified_fail": [
+      "FrigoChef WebKit overflow 360/390",
+      "Home performance budget",
+      "legacy aggregate QA contracts",
+      "Splitly backup",
+      "DocPocket Chromium",
+      "ScreenSort Chromium"
+    ]
+  },
+  "blockers": [
+    "FrigoChef WebKit horizontal overflow: +33px at 360px, +3px at 390px; 430px passes",
+    "Home payload 22071 B exceeds 16000 B budget",
+    "Legacy aggregate QA contracts still create false/time-consuming failures",
+    "Splitly backup hardening failure",
+    "DocPocket Chromium-only failures",
+    "ScreenSort Chromium-only failure"
+  ],
+  "next_action": "Fix FrigoChef WebKit horizontal overflow at 360px and 390px without regressing desktop or 430px; run targeted FrigoChef/mobile regression; update this state."
+}
