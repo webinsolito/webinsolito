@@ -1,11 +1,11 @@
 {
   "branch": "candidate/global-core-ux-baseline-2026-09-24",
-  "last_good_commit": "c6316b370bc006bba884e856837cb1bcc837a0b5",
-  "rollback_commit": "0ffb27a47ed30259ce3dc9274b9e224ca0d912d1",
+  "last_good_commit": "7bf8ce6eeaec660402df88ba4f65c0b39db01101",
+  "rollback_commit": "7bf8ce6eeaec660402df88ba4f65c0b39db01101",
   "current_gate": "K Test principali PASS",
-  "current_app_or_area": "Splitly backup normalization/hardening",
-  "completion_score": 70,
-  "verification_score": 97,
+  "current_app_or_area": "DocPocket Chromium PDF validation/opening synchronization",
+  "completion_score": 71,
+  "verification_score": 98,
   "gate_weights": {
     "A Home stabile": 7,
     "B Categorie funzionanti": 5,
@@ -23,29 +23,36 @@
     "N Release": 2
   },
   "last_tests": {
-    "workflow": "Candidate Functional QA #30",
-    "run_id": 36101362012,
+    "workflow": "Candidate Functional QA #33",
+    "run_id": 36103969346,
     "result": "FAIL",
-    "passed": 326,
-    "failed": 13,
+    "passed": 328,
+    "failed": 11,
     "skipped": 3,
     "verified_pass": [
-      "FrigoChef mobile WebKit 360/390/430",
-      "Splitly core calculations and mobile overflow",
+      "FrigoChef mobile WebKit 360/390/430 preflight: 3/3 PASS",
+      "Splitly malicious-backup desktop Chromium + iPhone/WebKit preflight: 2/2 PASS",
+      "Splitly full finalization desktop + iPhone including backup and 360/390/430 overflow",
       "Accessibility baseline Chromium/WebKit",
-      "Pantry current contract",
+      "Pantry current dedicated contract",
       "AutoBuddy and Auto utility sprint",
       "search canonicalization and sitemap"
     ],
-    "splitly_failure_diagnosis": "Backup normalization itself produced people Alice/Bob and exactly one valid expense; FAIL came from the test reading during location.reload and from a page-global XSS sentinel being reset/undefined across reload.",
-    "current_candidate_change": "Splitly backup test now polls persisted normalized state across reload and verifies malicious group name renders as text with zero injected img nodes; workflow has a desktop+iphone Splitly backup preflight."
+    "verified_fail": [
+      "DocPocket desktop Chromium forged-PDF dialog synchronization",
+      "DocPocket desktop Chromium safe-open observation synchronization",
+      "ScreenSort desktop Chromium forged-image dialog synchronization",
+      "Home payload 22071 B exceeds 16000 B budget",
+      "Legacy aggregate Pantry selector contract #f_item/#f_qty/#list",
+      "Legacy quality contracts #run and #work"
+    ],
+    "splitly_result": "CLOSED: targeted preflight passed on desktop Chromium and iPhone/WebKit, and the same malicious-backup test passed again inside the full suite on both projects."
   },
   "blockers": [
-    "Splitly backup preflight on the revised reload-safe contract not yet completed",
+    "DocPocket Chromium-only PDF validation/opening observation failures; equivalent iPhone tests PASS",
+    "ScreenSort Chromium-only forged-image dialog observation failure; equivalent iPhone test PASS",
     "Home payload 22071 B exceeds 16000 B budget",
-    "Legacy aggregate QA contracts still create false/time-consuming failures",
-    "DocPocket Chromium-only failures",
-    "ScreenSort Chromium-only failure"
+    "Legacy aggregate QA contracts still create false/time-consuming failures"
   ],
-  "next_action": "Verify the new Splitly malicious-backup preflight on desktop Chromium and iPhone/WebKit; if it passes, mark Splitly backup gate closed and move immediately to the DocPocket Chromium PDF/opening failures without changing Splitly further."
+  "next_action": "Fix DocPocket Chromium-only forged-PDF validation and safe-open synchronization without weakening signature validation or safe _blank protections; add a targeted DocPocket desktop+iphone preflight, verify both browsers, then update state."
 }
