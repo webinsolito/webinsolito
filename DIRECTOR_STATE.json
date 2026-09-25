@@ -1,21 +1,20 @@
 {
-  "current_area": "Category premium propagation — Viaggi",
-  "start_sha": "7c51021dfff5269bcee16ad7551a456e57336591",
-  "end_sha": "7466704c8a48a8ccfd9109cbd9a2a896ae162045",
-  "last_good_commit": "7c51021dfff5269bcee16ad7551a456e57336591",
+  "current_area": "Viaggi — layered depth/material polish",
+  "start_sha": "eb02f558cd23dd7eb1fb311ba93248fd6803d146",
+  "end_sha": "b804e4b76c45d8e0277558da2e8ddca789ef3f91",
+  "last_good_commit": "eb02f558cd23dd7eb1fb311ba93248fd6803d146",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["viaggi/index.html"],
+  "runtime_files_changed": ["assets/travel-depth.css", "viaggi/index.html"],
   "tests": {
-    "previous_debt": "PASS: Casa Pages deployment run 36177729824 completed successfully for 7c51021d.",
-    "pass_1": "PASS: Viaggi replaced generic category shell with premium hero/copy, contextual search and four intent routes.",
-    "pass_2": "PASS: added coordinated summary/proof layer plus primary/specific tool hierarchy using the existing premium category system.",
-    "responsive_source": "PASS: premium category CSS already contains <=820, <=560 and <=400 responsive treatments; Viaggi uses those shared primitives.",
-    "source_integrity": "PASS: dynamic renderer is restricted to category travel and MVP/BETA/STABLE apps with valid paths; no new apps added.",
-    "deploy": "PENDING: new Pages deployment for Viaggi must complete and public artifact must be visually certified."
+    "previous_debt": "PASS: Viaggi Pages deployment run 36183500142 completed successfully for eb02f558.",
+    "pass_1": "PASS source: Viaggi gained category-specific sky accent, deeper hero material, elevated icon object and richer summary surfaces.",
+    "pass_2": "PASS source: coordinated proof tiles, app-card lighting/contact shadows and icon depth were added in the same macro-area.",
+    "pass_3": "PASS source: desktop pointer micro-interactions plus reduced-motion and <=560 mobile shadow treatments included.",
+    "deploy": "PENDING: Pages deployment for b804e4b must complete before public visual certification."
   },
-  "blocker": "Direct external crawler cannot open GitHub Pages category subpaths, so public screenshot-level certification remains unavailable from this runtime.",
-  "previous_debt": "CLOSED: Casa deployment confirmed successful through GitHub Pages.",
-  "next_action": "Priority 1: verify Viaggi Pages deployment/public artifact. Then continue premium propagation to the weakest remaining generic category shell; preserve approved Home and icon family.",
+  "blocker": "GitHub Pages URL remains inaccessible to the external page renderer in this runtime; deployment can be verified through GitHub Actions but screenshot-level public certification cannot be invented.",
+  "previous_debt": "CLOSED: prior Viaggi deployment completed successfully.",
+  "next_action": "Verify b804e4b Pages success first. Then inspect/upgrade the weakest remaining generic category shell, preserving Home and approved icon family.",
   "home_visual_status": "PREMIUM_PACKAGE_DEPLOYED",
-  "category_visual_status": "PARTIAL_SITE_COMPLETE: Auto, Food, Shopping, Documenti, Eventi and Casa upgraded; Viaggi upgraded with deploy verification pending."
+  "category_visual_status": "Viaggi premium shell now has dedicated layered-depth/material pass; deploy verification pending."
 }
