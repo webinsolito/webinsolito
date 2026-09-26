@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — hero orbit material coherence",
-  "start_sha": "52da35e5bdcde6a0347b58626dcff0e79f626b9f",
-  "end_sha": "384df03d077d35f3c74070890af4452a47f80075",
+  "current_area": "Home — Travel orbit material coherence",
+  "start_sha": "7da63ac9f5e923ad74dd37d1927bb10df638db4c",
+  "end_sha": "dae402004e68ed49dcf80052c3781f7e06a04fb2",
   "last_good_commit": "52da35e5bdcde6a0347b58626dcff0e79f626b9f",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/auto.svg", "assets/categories-v2/food.svg", "assets/categories-v2/money.svg"],
+  "runtime_files_changed": ["assets/categories-v2/travel.svg"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 413 for 52da35e5 completed successfully; premium brand mark is deployed.",
-    "pass_1": "Hero Auto material deepened with stronger ivory body falloff, richer glass, controlled paint specular, wheel highlights and firmer ground contact.",
-    "pass_2": "Hero Food material deepened with layered ceramic rim, restrained natural food palette, ceramic specular response and more physical plate edge/contact.",
-    "pass_3": "Hero Money material deepened with richer navy leather, restrained warm-gold coin, clasp highlight, side-plane separation and firmer contact shadow.",
-    "responsive": "Same SVG assets scale natively in desktop hero and Home category cards without layout changes; no new app or route introduced.",
-    "deploy": "PENDING: certify Pages for final state commit and reopen public Home before increasing visual score."
+    "previous_debt": "OPEN: Pages run 416 for 384df03d was cancelled, so the prior Auto/Food/Money package is not certified as public.",
+    "pass_1": "Travel luggage shell rebuilt with stronger navy depth gradient, brighter controlled top-plane response and a distinct dark side plane.",
+    "pass_2": "Passport/map insert gained ivory material falloff, edge shading and restrained blue relief; handle received layered highlight and socket separation.",
+    "pass_3": "Warm-gold aircraft gained richer metallic falloff/specular edges while ground contact, case edge light and hardware details were strengthened without increasing gold area.",
+    "responsive": "Travel SVG retains the same 180x180 viewBox and therefore preserves existing hero/category responsive geometry at desktop, 430px and 390px.",
+    "deploy": "PENDING: new main commit created; Pages must complete successfully before visual quality score can increase."
   },
-  "blocker": "Public URL could not be rendered through the available web renderer in this run; deployment must therefore be certified through Pages status and public visual score remains unchanged until visible verification.",
-  "previous_debt": "CLOSED: brand/hero mark deployment is successful.",
-  "next_action": "Certify this deploy. Then continue hero stage depth/micro-interaction response without reworking Auto/Food/Money again; prioritize stage motion/material response or Travel orbit coherence.",
-  "home_visual_status": "HERO_ORBIT_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved family preserved; three hero/category assets refined, no new apps."
+  "blocker": "Available web renderer cannot open the public GitHub Pages URL; visual certification is therefore gated on Pages success and a later public reopen.",
+  "previous_debt": "OPEN: prior material package deploy was cancelled; this run changed technical/visual approach by finishing the remaining Travel orbit coherence instead of repeating Auto/Food/Money.",
+  "next_action": "Certify Pages for the new head. Then implement coordinated hero-stage micro-interaction/depth response in the shared Home stage without touching Auto/Food/Money/Travel assets again.",
+  "home_visual_status": "TRAVEL_ORBIT_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved family preserved; Travel refined only, no new apps or layout redesign."
 }
