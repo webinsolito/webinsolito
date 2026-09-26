@@ -1,20 +1,29 @@
 {
-  "current_area": "Home — mobile hero to category transition polish",
+  "current_area": "Home — public visual delivery",
   "start_sha": "aa90171ef2c8cd3e9b37f3ddf6fd12c79f39b799",
-  "end_sha": "bc6376d7e9882490bd9d5abe1bf7737ec326508a",
-  "last_good_commit": "aa90171ef2c8cd3e9b37f3ddf6fd12c79f39b799",
+  "end_sha": "a68ef64efa3ea5e1d2032422a6663b31c4283b26",
+  "last_good_commit": "a68ef64efa3ea5e1d2032422a6663b31c4283b26",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/home-mobile-polish-20260926.css", "sw.js"],
+  "runtime_files_changed": [
+    "index.html",
+    "assets/home-search.js",
+    "assets/home-search-20260925.js",
+    "sw.js",
+    "home-v6.html"
+  ],
   "tests": {
     "previous_debt": "CLOSED: Pages run 36216743066 for aa90171e completed successfully.",
     "pass_1": "PASS source: mobile hero vertical rhythm, typography, search shell and stage proportions tightened as one system.",
     "pass_2": "PASS source: 430px hero-to-grid transition gains controlled spacing, divider material and hierarchy continuity.",
     "pass_3": "PASS source: 400/390px stage, orbit scale, heading balance and category entrance rhythm refined without changing approved structure.",
-    "deploy": "PENDING: new head Pages deployment must complete before public visual certification."
+    "deploy": "PENDING: new head Pages deployment must complete before public visual certification.",
+    "pages_406": "PASS: GitHub Pages build and deploy completed successfully for a68ef64efa3ea5e1d2032422a6663b31c4283b26",
+    "root_cause": "CLOSED: service worker legacy CSS injection removed; it was loading three older Home styles after the new visual system",
+    "visual_delta": "IMPLEMENTED: ivory search + ivory category canvas + deep navy 3D cards in index and both Home runtimes"
   },
-  "blocker": "Public site URL cannot be screenshot-rendered by the available web runtime; desktop/430/390 screenshot certification cannot be invented.",
-  "previous_debt": "CLOSED: mobile card polish is publicly deployed. Hero/category transition is now the active deploy debt.",
-  "next_action": "Certify the new Pages deployment; if stable, continue with desktop Home depth/micro-interaction polish or fix any deployment regression first.",
+  "blocker": "Do not claim visual success until the user confirms the live browser now shows the ivory/navy Home. No category work until that happens.",
+  "previous_debt": "CLOSED technically: legacy CSS override removed and cache invalidated. User-visible confirmation still required.",
+  "next_action": "Stay on Home: verify that the live browser visibly shows the ivory search/category canvas. If not, investigate the GitHub Pages root target/CDN rather than adding more CSS.",
   "home_visual_status": "MOBILE_HERO_CATEGORY_TRANSITION_IMPLEMENTED_DEPLOY_PENDING",
   "category_visual_status": "No new apps and no icon-family redesign; approved Home structure preserved."
 }
