@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — Travel orbit material coherence",
-  "start_sha": "7da63ac9f5e923ad74dd37d1927bb10df638db4c",
-  "end_sha": "dae402004e68ed49dcf80052c3781f7e06a04fb2",
-  "last_good_commit": "52da35e5bdcde6a0347b58626dcff0e79f626b9f",
-  "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/travel.svg"],
+  "current_area": "Home — coordinated category material depth",
+  "start_sha": "84a49acb213c98e5aa85c59615672f2fa6ca410c",
+  "end_sha": "a23dc26a3c070770dfc25c9543143e521974ff7f",
+  "last_good_commit": "84a49acb213c98e5aa85c59615672f2fa6ca410c",
+  "visual_quality_score": 69,
+  "runtime_files_changed": ["assets/categories-v2/business.svg", "assets/categories-v2/study.svg", "assets/categories-v2/territory.svg"],
   "tests": {
-    "previous_debt": "OPEN: Pages run 416 for 384df03d was cancelled, so the prior Auto/Food/Money package is not certified as public.",
-    "pass_1": "Travel luggage shell rebuilt with stronger navy depth gradient, brighter controlled top-plane response and a distinct dark side plane.",
-    "pass_2": "Passport/map insert gained ivory material falloff, edge shading and restrained blue relief; handle received layered highlight and socket separation.",
-    "pass_3": "Warm-gold aircraft gained richer metallic falloff/specular edges while ground contact, case edge light and hardware details were strengthened without increasing gold area.",
-    "responsive": "Travel SVG retains the same 180x180 viewBox and therefore preserves existing hero/category responsive geometry at desktop, 430px and 390px.",
-    "deploy": "PENDING: new main commit created; Pages must complete successfully before visual quality score can increase."
+    "previous_debt": "CLOSED: Pages run 419 for 84a49acb completed successfully, certifying the Travel orbit recovery as public.",
+    "pass_1": "Business briefcase gained stronger shell/side-plane separation, darker physical lower edge, recessed clasp housing and more controlled specular response.",
+    "pass_2": "Study book gained thicker page block, stronger gutter occlusion, layered page-edge highlights and deeper badge contact shadow.",
+    "pass_3": "Territory map gained a real folded lower edge, stronger crease occlusion, differentiated paper planes and deeper pin contact while remaining deliberately desaturated.",
+    "responsive": "All three assets preserve the 180x180 viewBox and existing Home/category geometry at desktop, 430px and 390px.",
+    "deploy": "PENDING: final state commit must complete Pages before the new visual score is considered public."
   },
-  "blocker": "Available web renderer cannot open the public GitHub Pages URL; visual certification is therefore gated on Pages success and a later public reopen.",
-  "previous_debt": "OPEN: prior material package deploy was cancelled; this run changed technical/visual approach by finishing the remaining Travel orbit coherence instead of repeating Auto/Food/Money.",
-  "next_action": "Certify Pages for the new head. Then implement coordinated hero-stage micro-interaction/depth response in the shared Home stage without touching Auto/Food/Money/Travel assets again.",
-  "home_visual_status": "TRAVEL_ORBIT_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved family preserved; Travel refined only, no new apps or layout redesign."
+  "blocker": "Public browser renderer was unavailable in this run; Pages success is used as deploy gate, with public visual reopen still required when renderer access returns.",
+  "previous_debt": "CLOSED: 84a49acb Pages success confirmed.",
+  "next_action": "Certify Pages for the new head. Then implement shared Hero stage micro-interaction/depth response, without retouching Business/Study/Territory again.",
+  "home_visual_status": "COORDINATED_CATEGORY_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved family preserved; Business, Study and Territory refined as one coordinated physical-material tranche; no new apps or layout redesign."
 }
