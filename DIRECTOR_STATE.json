@@ -1,20 +1,20 @@
 {
-  "current_area": "Home — fourth coordinated category material pass",
-  "start_sha": "1476fdfd6bfb3153112dfc92313cfee75289b3c3",
-  "end_sha": "8dbdc20a91852cefd79480f7c2b1140dc4b0eb71",
-  "last_good_commit": "1476fdfd6bfb3153112dfc92313cfee75289b3c3",
+  "current_area": "Home — fifth coordinated category material pass",
+  "start_sha": "bdd3908d5c4396f142717cf2c1d08432105208fa",
+  "end_sha": "9b0d73e4a2eab3cddff860ee8398fa8467cde813",
+  "last_good_commit": "bdd3908d5c4396f142717cf2c1d08432105208fa",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/home.svg", "assets/categories-v2/business.svg", "assets/categories-v2/travel.svg"],
+  "runtime_files_changed": ["assets/categories-v2/style.svg", "assets/categories-v2/study.svg", "assets/categories-v2/territory.svg"],
   "tests": {
-    "previous_debt": "PASS DEPLOY: Pages run 36203708066 completed successfully for 1476fdfd; previous deployment debt recovered.",
-    "pass_1": "PASS source: Home rebuilt with stronger ivory wall volume, darker navy roof, side plane, dimensional glazing, controlled gold door and contact depth.",
-    "pass_2": "PASS source: Business refined with deeper navy briefcase material, side plane, handle layering, restrained gold clasp and richer surface highlights.",
-    "pass_3": "PASS source: Travel SVG aligned to navy/ivory/warm-gold premium material system with side depth, physical handle, inset panel and contact shadow.",
-    "deploy": "PENDING: current head Pages deployment must complete before public visual certification."
+    "previous_debt": "PASS DEPLOY: Pages run 36207235826 completed successfully for bdd3908d; previous deployment debt recovered.",
+    "pass_1": "PASS source: Persona & Stile gained a physical lower plinth, deeper ivory textile side plane, darker navy collar and restrained gold badge.",
+    "pass_2": "PASS source: Studio & Lavoro gained real page-stack thickness, stronger navy-to-ivory material contrast, deeper center binding and controlled verification medallion.",
+    "pass_3": "PASS source: Ambiente/Territorio gained a distinct third folded-map plane, stronger fold separation, desaturated natural material and more restrained physical pin.",
+    "deploy": "PENDING: new head Pages deployment must complete before public visual certification."
   },
   "blocker": "Public site URL cannot be rendered by the available web runtime, so screenshot-level desktop/430/390 certification cannot be invented.",
-  "previous_debt": "CLOSED: 1476fdfd is green on Pages; third coordinated icon pass is deployed.",
-  "next_action": "Certify the new Pages head first; then prioritize coordinated 390/430 Home card polish if a writable full index representation is available, otherwise continue only on clearly visible weak Home assets.",
-  "home_visual_status": "FOURTH_ICON_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Home, Business and Travel SVG received coordinated material/depth upgrades; no new apps or Home redesign."
+  "previous_debt": "CLOSED: bdd3908d is green on Pages; fourth coordinated icon pass is deployed.",
+  "next_action": "Certify the new Pages head first; then prioritize coordinated 390/430 Home card polish if full-index safe editing is available, otherwise improve only clearly weak Home assets without redesign.",
+  "home_visual_status": "FIFTH_ICON_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Persona & Stile, Studio & Lavoro and Ambiente/Territorio received coordinated material/depth upgrades; no new apps or Home redesign."
 }
