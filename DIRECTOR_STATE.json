@@ -1,21 +1,21 @@
 {
-  "current_area": "Category shell — Food premium depth propagation",
-  "start_sha": "4a6900f257b523734edfda3a75d347f500852938",
-  "end_sha": "30ff665c7831ea1ae285949d3d0fa10bab74b66c",
-  "last_good_commit": "e972f12464ccf83f78542f3ae05a6b3171348602",
-  "visual_quality_score": 70,
-  "runtime_files_changed": ["food/index.html"],
+  "current_area": "Category shell — Money premium depth propagation",
+  "start_sha": "9fa9142e159d9db7a30d750520087a59ae0f0a70",
+  "end_sha": "5dafc4463616c544ecf2defe9bcbd99d84095bc5",
+  "last_good_commit": "9fa9142e159d9db7a30d750520087a59ae0f0a70",
+  "visual_quality_score": 71,
+  "runtime_files_changed": ["soldi/index.html"],
   "tests": {
-    "previous_debt": "OPEN: Auto premium shell Pages run 433 was cancelled; its code remains in main and is carried forward by this head.",
-    "pass_1": "Propagated the shared premium category shell to Food so hero, app cards and search inherit the layered navy material, contact shadows and Z separation.",
-    "pass_2": "Added a Food-specific restrained natural-green shell accent and rebuilt the summary cards into the same physical material/light language while keeping warm gold secondary.",
-    "pass_3": "Aligned intent cards, typography contrast and principal/specific app hierarchy with the premium shell without regenerating any approved icon assets.",
-    "responsive": "Existing Food 760/520 responsive geometry preserved; shared shell keeps <=560px static/light and reduced-motion authoritative.",
-    "deploy": "PENDING: Pages has not started yet for runtime commit 30ff665c; public visual score remains uncertified."
+    "previous_debt": "CLOSED: Food premium shell state commit 9fa9142e completed Pages successfully in run 436.",
+    "pass_1": "Propagated shared premium category shell to Money: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
+    "pass_2": "Added restrained warm-gold Money accent with lower saturation/coverage than primary navy and rebuilt summary surfaces in the same material language.",
+    "pass_3": "Added decision-oriented summary/proof hierarchy and aligned intents/section hierarchy without regenerating approved category/app icons.",
+    "responsive": "Existing Money 760/520 grid geometry preserved; shared shell retains <=560px static/light behavior and reduced-motion authority.",
+    "deploy": "PENDING: runtime commit 5dafc446 written; Pages success required before public score certification."
   },
-  "blocker": "Public browser renderer is unavailable to this executor; Pages success remains the deploy verification gate.",
-  "previous_debt": "OPEN: Auto deploy cancellation is recovered into the current main head but still requires a green Pages deployment.",
-  "next_action": "Certify Pages for current head; if green, propagate the same premium shell to the next weakest category page without changing content or approved icons.",
+  "blocker": "Public browser renderer remains unavailable to this executor; GitHub Pages success plus public URL is the deploy verification gate.",
+  "previous_debt": "CLOSED: Food shell is public green; current Money package now awaits deployment.",
+  "next_action": "Certify Pages for Money; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
   "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
-  "category_visual_status": "AUTO_AND_FOOD_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
+  "category_visual_status": "AUTO_FOOD_PUBLIC_GREEN_MONEY_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
 }
