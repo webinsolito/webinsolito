@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — shared Hero stage depth and micro-interaction",
-  "start_sha": "2a1889e2bd6d23ba3ccaab3039a83e809097f186",
-  "end_sha": "37e6b992f055be548763409a6daf1dfe514a2b85",
-  "last_good_commit": "2a1889e2bd6d23ba3ccaab3039a83e809097f186",
+  "current_area": "Home — Hero to Categories vertical rhythm and responsive polish",
+  "start_sha": "ca90c0e267cf931df2657db71a6be71d9ce37fcf",
+  "end_sha": "598f336ff097594afcf7f9aa809cdb957e2dd602",
+  "last_good_commit": "ca90c0e267cf931df2657db71a6be71d9ce37fcf",
   "visual_quality_score": 69,
-  "runtime_files_changed": ["assets/home-search-20260925.js"],
+  "runtime_files_changed": ["assets/home-mobile-polish-20260926.css"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 423 for 2a1889e2 completed successfully, certifying the Business/Study/Territory material tranche as public.",
-    "pass_1": "Shared Hero stage gained stronger physical depth: center and orbit tiles now use coordinated recessed lower shading, stronger contact shadows and restrained specular material response.",
-    "pass_2": "Lighting was unified across glow, center and all four orbit tiles through a shared pointer-relative highlight, making the stage read as one lit physical scene rather than separate floating cards.",
-    "pass_3": "Existing subtle desktop parallax was preserved and complemented with active-stage depth response; touch/mobile receives the static material upgrade and reduced-motion disables motion transitions.",
-    "responsive": "No Hero geometry or breakpoints were changed; mobile 390/430 keeps existing layout while receiving lighter static shadows/materials.",
-    "deploy": "PENDING: final state commit must complete Pages before the visual score is considered public."
+    "previous_debt": "CLOSED: Pages run 425 for ca90c0e2 completed successfully.",
+    "pass_1": "Reduced the dead vertical gap between Hero and category entry while preserving the approved Hero composition.",
+    "pass_2": "Added a controlled gold-to-blue transition rule and luminous bridge so the category system reads as the physical continuation of the Hero rather than a disconnected block.",
+    "pass_3": "Balanced 390/400/430 and desktop spacing independently; category card dimensions and approved icon family remain unchanged.",
+    "responsive": "390/400/430 retain the existing two-column card geometry and touch states; desktop gains only rhythm/material hand-off, not a redesign.",
+    "deploy": "PENDING: final state commit must complete Pages before public visual score changes."
   },
-  "blocker": "Public browser renderer remains unavailable to this executor; Pages success is the deploy gate and public visual reopen remains required when renderer access returns.",
-  "previous_debt": "CLOSED: 2a1889e2 Pages success confirmed.",
-  "next_action": "Certify Pages for the shared Hero stage pass. Then refine the Home Hero-to-category vertical rhythm and desktop/mobile polish without retouching the same orbit assets.",
-  "home_visual_status": "SHARED_HERO_STAGE_DEPTH_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved family preserved; no category icon was regenerated or retouched in this run."
+  "blocker": "Public browser renderer remains unavailable to this executor; Pages success is the deploy gate.",
+  "previous_debt": "CLOSED: ca90c0e2 Pages success confirmed.",
+  "next_action": "Certify Pages for this rhythm pass, then improve the Home category card material consistency as one coordinated system without regenerating icons.",
+  "home_visual_status": "HERO_CATEGORY_RHYTHM_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved family preserved; no category icon regenerated in this run."
 }
