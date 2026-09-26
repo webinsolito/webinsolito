@@ -1,20 +1,20 @@
 {
-  "current_area": "Home — category icon material coherence",
-  "start_sha": "01f47b73ebb25276c70212476c372af5f5762396",
-  "end_sha": "97924b31ca7790a6b001a9630b13b8e7ddc29d5f",
-  "last_good_commit": "01f47b73ebb25276c70212476c372af5f5762396",
+  "current_area": "Home — brand/hero identity depth",
+  "start_sha": "bd03126cd66f5d1a4501f01897458850aa3ef7b8",
+  "end_sha": "86617c975bd1771058053e6c859900048405f1a6",
+  "last_good_commit": "bd03126cd66f5d1a4501f01897458850aa3ef7b8",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/money.svg","assets/categories-v2/shopping.svg","assets/categories-v2/auto.svg"],
+  "runtime_files_changed": ["assets/webinsolito-logo.svg"],
   "tests": {
-    "previous_debt": "CLOSED technically: Pages run 407 for 01f47b73 completed successfully after legacy CSS override removal.",
-    "pass_1": "Money icon rebuilt within the approved family: deeper wallet side plane, ivory insert, restrained gold coin, stronger contact shadow and specular hierarchy.",
-    "pass_2": "Shopping icon aligned to the same physical-material language: thicker bag side plane, handle depth, shield layering, restrained gold and stronger floor contact.",
-    "pass_3": "Auto icon aligned to the same family: richer glass/body gradients, bumper plane, wheel highlights, controlled blue trim and stronger contact shadow.",
-    "deploy": "PENDING: Pages deployment for the new head must complete before public visual certification."
+    "previous_debt": "CLOSED: Pages run 411 for bd03126 completed successfully, superseding the cancelled direct asset run.",
+    "pass_1": "Brand shell rebuilt from flat near-black tile to layered navy material with physical edge and controlled ambient shadow.",
+    "pass_2": "Three ivory modules gained inset navy faces, bevel-like highlights and coherent material hierarchy without changing the approved mark geometry.",
+    "pass_3": "Leaf accent moved from neon green/blue to restrained warm gold with specular vein, floor contact and subtle top highlight; this improves both header mark and hero stage center.",
+    "deploy": "PENDING: certify Pages for the new head and reopen public Home before increasing visual score."
   },
-  "blocker": "Do not claim public visual success until Pages for the new head completes and the public site exposes the assets.",
-  "previous_debt": "CLOSED: previous Home runtime deployment is green; this run returned to a coordinated three-icon Home material pass rather than micro-fixing one asset.",
-  "next_action": "Certify the new Pages deployment. Then continue Home desktop depth/micro-interaction polish as a coordinated system; do not keep cycling these same three icons.",
-  "home_visual_status": "COORDINATED_ICON_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "No new apps; approved icon family preserved and progressively normalized."
+  "blocker": "Do not claim public visual success until Pages for the new head completes and the public site exposes the updated mark.",
+  "previous_debt": "CLOSED: previous coordinated icon material pass is on a successful Pages head.",
+  "next_action": "Certify this deploy. Then continue Home desktop depth/micro-interaction polish as a coordinated system, prioritizing hero stage motion/material response rather than reworking the same icons.",
+  "home_visual_status": "PREMIUM_BRAND_DEPTH_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "No new apps; approved category family preserved."
 }
