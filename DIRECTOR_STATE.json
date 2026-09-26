@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — coordinated category material depth",
-  "start_sha": "84a49acb213c98e5aa85c59615672f2fa6ca410c",
-  "end_sha": "a23dc26a3c070770dfc25c9543143e521974ff7f",
-  "last_good_commit": "84a49acb213c98e5aa85c59615672f2fa6ca410c",
+  "current_area": "Home — shared Hero stage depth and micro-interaction",
+  "start_sha": "2a1889e2bd6d23ba3ccaab3039a83e809097f186",
+  "end_sha": "37e6b992f055be548763409a6daf1dfe514a2b85",
+  "last_good_commit": "2a1889e2bd6d23ba3ccaab3039a83e809097f186",
   "visual_quality_score": 69,
-  "runtime_files_changed": ["assets/categories-v2/business.svg", "assets/categories-v2/study.svg", "assets/categories-v2/territory.svg"],
+  "runtime_files_changed": ["assets/home-search-20260925.js"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 419 for 84a49acb completed successfully, certifying the Travel orbit recovery as public.",
-    "pass_1": "Business briefcase gained stronger shell/side-plane separation, darker physical lower edge, recessed clasp housing and more controlled specular response.",
-    "pass_2": "Study book gained thicker page block, stronger gutter occlusion, layered page-edge highlights and deeper badge contact shadow.",
-    "pass_3": "Territory map gained a real folded lower edge, stronger crease occlusion, differentiated paper planes and deeper pin contact while remaining deliberately desaturated.",
-    "responsive": "All three assets preserve the 180x180 viewBox and existing Home/category geometry at desktop, 430px and 390px.",
-    "deploy": "PENDING: final state commit must complete Pages before the new visual score is considered public."
+    "previous_debt": "CLOSED: Pages run 423 for 2a1889e2 completed successfully, certifying the Business/Study/Territory material tranche as public.",
+    "pass_1": "Shared Hero stage gained stronger physical depth: center and orbit tiles now use coordinated recessed lower shading, stronger contact shadows and restrained specular material response.",
+    "pass_2": "Lighting was unified across glow, center and all four orbit tiles through a shared pointer-relative highlight, making the stage read as one lit physical scene rather than separate floating cards.",
+    "pass_3": "Existing subtle desktop parallax was preserved and complemented with active-stage depth response; touch/mobile receives the static material upgrade and reduced-motion disables motion transitions.",
+    "responsive": "No Hero geometry or breakpoints were changed; mobile 390/430 keeps existing layout while receiving lighter static shadows/materials.",
+    "deploy": "PENDING: final state commit must complete Pages before the visual score is considered public."
   },
-  "blocker": "Public browser renderer was unavailable in this run; Pages success is used as deploy gate, with public visual reopen still required when renderer access returns.",
-  "previous_debt": "CLOSED: 84a49acb Pages success confirmed.",
-  "next_action": "Certify Pages for the new head. Then implement shared Hero stage micro-interaction/depth response, without retouching Business/Study/Territory again.",
-  "home_visual_status": "COORDINATED_CATEGORY_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved family preserved; Business, Study and Territory refined as one coordinated physical-material tranche; no new apps or layout redesign."
+  "blocker": "Public browser renderer remains unavailable to this executor; Pages success is the deploy gate and public visual reopen remains required when renderer access returns.",
+  "previous_debt": "CLOSED: 2a1889e2 Pages success confirmed.",
+  "next_action": "Certify Pages for the shared Hero stage pass. Then refine the Home Hero-to-category vertical rhythm and desktop/mobile polish without retouching the same orbit assets.",
+  "home_visual_status": "SHARED_HERO_STAGE_DEPTH_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved family preserved; no category icon was regenerated or retouched in this run."
 }
