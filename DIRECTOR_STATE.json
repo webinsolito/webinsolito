@@ -1,29 +1,20 @@
 {
-  "current_area": "Home — public visual delivery",
-  "start_sha": "aa90171ef2c8cd3e9b37f3ddf6fd12c79f39b799",
-  "end_sha": "a68ef64efa3ea5e1d2032422a6663b31c4283b26",
-  "last_good_commit": "a68ef64efa3ea5e1d2032422a6663b31c4283b26",
+  "current_area": "Home — category icon material coherence",
+  "start_sha": "01f47b73ebb25276c70212476c372af5f5762396",
+  "end_sha": "97924b31ca7790a6b001a9630b13b8e7ddc29d5f",
+  "last_good_commit": "01f47b73ebb25276c70212476c372af5f5762396",
   "visual_quality_score": 68,
-  "runtime_files_changed": [
-    "index.html",
-    "assets/home-search.js",
-    "assets/home-search-20260925.js",
-    "sw.js",
-    "home-v6.html"
-  ],
+  "runtime_files_changed": ["assets/categories-v2/money.svg","assets/categories-v2/shopping.svg","assets/categories-v2/auto.svg"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 36216743066 for aa90171e completed successfully.",
-    "pass_1": "PASS source: mobile hero vertical rhythm, typography, search shell and stage proportions tightened as one system.",
-    "pass_2": "PASS source: 430px hero-to-grid transition gains controlled spacing, divider material and hierarchy continuity.",
-    "pass_3": "PASS source: 400/390px stage, orbit scale, heading balance and category entrance rhythm refined without changing approved structure.",
-    "deploy": "PENDING: new head Pages deployment must complete before public visual certification.",
-    "pages_406": "PASS: GitHub Pages build and deploy completed successfully for a68ef64efa3ea5e1d2032422a6663b31c4283b26",
-    "root_cause": "CLOSED: service worker legacy CSS injection removed; it was loading three older Home styles after the new visual system",
-    "visual_delta": "IMPLEMENTED: ivory search + ivory category canvas + deep navy 3D cards in index and both Home runtimes"
+    "previous_debt": "CLOSED technically: Pages run 407 for 01f47b73 completed successfully after legacy CSS override removal.",
+    "pass_1": "Money icon rebuilt within the approved family: deeper wallet side plane, ivory insert, restrained gold coin, stronger contact shadow and specular hierarchy.",
+    "pass_2": "Shopping icon aligned to the same physical-material language: thicker bag side plane, handle depth, shield layering, restrained gold and stronger floor contact.",
+    "pass_3": "Auto icon aligned to the same family: richer glass/body gradients, bumper plane, wheel highlights, controlled blue trim and stronger contact shadow.",
+    "deploy": "PENDING: Pages deployment for the new head must complete before public visual certification."
   },
-  "blocker": "Do not claim visual success until the user confirms the live browser now shows the ivory/navy Home. No category work until that happens.",
-  "previous_debt": "CLOSED technically: legacy CSS override removed and cache invalidated. User-visible confirmation still required.",
-  "next_action": "Stay on Home: verify that the live browser visibly shows the ivory search/category canvas. If not, investigate the GitHub Pages root target/CDN rather than adding more CSS.",
-  "home_visual_status": "MOBILE_HERO_CATEGORY_TRANSITION_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "No new apps and no icon-family redesign; approved Home structure preserved."
+  "blocker": "Do not claim public visual success until Pages for the new head completes and the public site exposes the assets.",
+  "previous_debt": "CLOSED: previous Home runtime deployment is green; this run returned to a coordinated three-icon Home material pass rather than micro-fixing one asset.",
+  "next_action": "Certify the new Pages deployment. Then continue Home desktop depth/micro-interaction polish as a coordinated system; do not keep cycling these same three icons.",
+  "home_visual_status": "COORDINATED_ICON_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "No new apps; approved icon family preserved and progressively normalized."
 }
