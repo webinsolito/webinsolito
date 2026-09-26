@@ -1,21 +1,21 @@
 {
-  "current_area": "Category shell — Money premium depth propagation",
-  "start_sha": "9fa9142e159d9db7a30d750520087a59ae0f0a70",
-  "end_sha": "5dafc4463616c544ecf2defe9bcbd99d84095bc5",
+  "current_area": "Category shell — Events premium depth propagation",
+  "start_sha": "5dafc4463616c544ecf2defe9bcbd99d84095bc5",
+  "end_sha": "85cd662c6ea4ea9b460d53d248411373ef809669",
   "last_good_commit": "9fa9142e159d9db7a30d750520087a59ae0f0a70",
   "visual_quality_score": 71,
-  "runtime_files_changed": ["soldi/index.html"],
+  "runtime_files_changed": ["eventi/index.html"],
   "tests": {
-    "previous_debt": "CLOSED: Food premium shell state commit 9fa9142e completed Pages successfully in run 436.",
-    "pass_1": "Propagated shared premium category shell to Money: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
-    "pass_2": "Added restrained warm-gold Money accent with lower saturation/coverage than primary navy and rebuilt summary surfaces in the same material language.",
-    "pass_3": "Added decision-oriented summary/proof hierarchy and aligned intents/section hierarchy without regenerating approved category/app icons.",
-    "responsive": "Existing Money 760/520 grid geometry preserved; shared shell retains <=560px static/light behavior and reduced-motion authority.",
-    "deploy": "PENDING: runtime commit 5dafc446 written; Pages success required before public score certification."
+    "previous_debt": "Money runtime commit 5dafc446 Pages was CANCELLED; its code remains in main and is carried by the new head.",
+    "pass_1": "Propagated shared premium category shell to Events: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
+    "pass_2": "Added restrained violet-blue Events ambient accent, layered summary materials and stronger primary-card hierarchy without neon or excess gold.",
+    "pass_3": "Aligned section hierarchy, featured card scale and physical depth while preserving approved category/app icons and content.",
+    "responsive": "Existing category geometry preserved; <=560px primary cards are compact/static and shared shell reduced-motion behavior remains authoritative.",
+    "deploy": "PENDING: runtime commit 85cd662c written; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer remains unavailable to this executor; GitHub Pages success plus public URL is the deploy verification gate.",
-  "previous_debt": "CLOSED: Food shell is public green; current Money package now awaits deployment.",
-  "next_action": "Certify Pages for Money; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
+  "previous_debt": "Money cancelled deploy is recovered in the new main head; current Events package awaits deployment.",
+  "next_action": "Certify Pages for Events and recovered Money; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
   "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
-  "category_visual_status": "AUTO_FOOD_PUBLIC_GREEN_MONEY_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
+  "category_visual_status": "AUTO_FOOD_PUBLIC_GREEN_MONEY_RECOVERED_EVENTS_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
 }
