@@ -1,21 +1,21 @@
 {
-  "current_area": "Category shell — Events premium depth propagation",
-  "start_sha": "5dafc4463616c544ecf2defe9bcbd99d84095bc5",
-  "end_sha": "85cd662c6ea4ea9b460d53d248411373ef809669",
-  "last_good_commit": "9fa9142e159d9db7a30d750520087a59ae0f0a70",
-  "visual_quality_score": 71,
-  "runtime_files_changed": ["eventi/index.html"],
+  "current_area": "Category shell — Documents premium depth propagation",
+  "start_sha": "8ed10941e68d6e6c7371473d530eada7b1d262ad",
+  "end_sha": "0662a75d7654afa6fef3eeba121ef854cc6c70c4",
+  "last_good_commit": "8ed10941e68d6e6c7371473d530eada7b1d262ad",
+  "visual_quality_score": 72,
+  "runtime_files_changed": ["documenti/index.html"],
   "tests": {
-    "previous_debt": "Money runtime commit 5dafc446 Pages was CANCELLED; its code remains in main and is carried by the new head.",
-    "pass_1": "Propagated shared premium category shell to Events: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
-    "pass_2": "Added restrained violet-blue Events ambient accent, layered summary materials and stronger primary-card hierarchy without neon or excess gold.",
-    "pass_3": "Aligned section hierarchy, featured card scale and physical depth while preserving approved category/app icons and content.",
-    "responsive": "Existing category geometry preserved; <=560px primary cards are compact/static and shared shell reduced-motion behavior remains authoritative.",
-    "deploy": "PENDING: runtime commit 85cd662c written; Pages success required before public score certification."
+    "previous_debt": "Events runtime/state head 8ed10941 Pages completed SUCCESS; Events and recovered Money are public green.",
+    "pass_1": "Propagated shared premium category shell to Documents: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
+    "pass_2": "Added restrained paper-blue/ivory ambient material response, layered summary surfaces and stronger primary-card hierarchy without excess gold.",
+    "pass_3": "Aligned section hierarchy, featured card scale and depth with the established Auto/Food/Money/Events system while preserving approved icons and content.",
+    "responsive": "Existing category geometry preserved; <=560px primary cards remain compact/static and shared shell reduced-motion behavior remains authoritative.",
+    "deploy": "PENDING: runtime commit 0662a75d written; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer remains unavailable to this executor; GitHub Pages success plus public URL is the deploy verification gate.",
-  "previous_debt": "Money cancelled deploy is recovered in the new main head; current Events package awaits deployment.",
-  "next_action": "Certify Pages for Events and recovered Money; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
+  "previous_debt": "Events deploy is certified green; current Documents package awaits deployment.",
+  "next_action": "Certify Pages for Documents; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
   "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
-  "category_visual_status": "AUTO_FOOD_PUBLIC_GREEN_MONEY_RECOVERED_EVENTS_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
+  "category_visual_status": "AUTO_FOOD_MONEY_EVENTS_PUBLIC_GREEN_DOCUMENTS_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
 }
