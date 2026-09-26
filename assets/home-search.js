@@ -118,3 +118,19 @@ window.webinsolitoHeroDepth={reset};
  document.addEventListener('click',()=>requestAnimationFrame(sync));
  sync();window.webinsolitoSearchSurface={sync};
 })();
+
+
+/* Delivery fallback: force the high-contrast premium Home even on older cached index markup */
+(()=>{const root=document.querySelector('main.wrap');if(!root)return;root.classList.add('homePremiumV6Fallback');
+ const style=document.createElement('style');style.id='webinsolitoIvoryFallback';style.textContent=`
+ .homePremiumV6Fallback .searchShell{background:linear-gradient(180deg,#fff9ed,#f2e7d5)!important;border-color:rgba(79,61,35,.16)!important;box-shadow:0 28px 72px rgba(0,0,0,.36),inset 0 1px #fff!important}
+ .homePremiumV6Fallback .search{color:#102538!important;font-weight:750}.homePremiumV6Fallback .search::placeholder{color:#68798a!important}
+ .homePremiumV6Fallback .searchIcon{background:linear-gradient(145deg,#f8eedf,#eadbc4)!important;border-color:rgba(15,38,58,.14)!important}
+ .homePremiumV6Fallback .searchIcon:before{border-color:#173653!important}.homePremiumV6Fallback .searchIcon:after{background:#b8833e!important}
+ .homePremiumV6Fallback .categoryPanel{padding:42px 34px 38px!important;border:1px solid rgba(92,68,39,.16)!important;border-radius:42px!important;background:radial-gradient(760px 300px at 0% 0%,rgba(255,255,255,.82),transparent 58%),radial-gradient(620px 300px at 100% 0%,rgba(217,170,98,.16),transparent 64%),linear-gradient(180deg,#f6eddf,#eadbc5)!important;box-shadow:0 42px 120px rgba(0,0,0,.30),inset 0 1px #fff!important}
+ .homePremiumV6Fallback .categoryKicker{color:#9a6b31!important}.homePremiumV6Fallback .gridHead h2{color:#11283c!important;text-shadow:none!important}.homePremiumV6Fallback .gridHead span{color:#657789!important}
+ .homePremiumV6Fallback .categoryPanel .cat{border-color:rgba(117,151,181,.34)!important;background:radial-gradient(circle at 74% 16%,color-mix(in srgb,var(--a) 24%,transparent),transparent 38%),linear-gradient(158deg,#244969,#0d2a43 58%,#081b2d)!important;box-shadow:0 28px 60px rgba(25,43,59,.22),inset 0 1px rgba(255,255,255,.11)!important}
+ .homePremiumV6Fallback .categoryPanel .cat strong{color:#fff8ec!important}
+ @media(max-width:640px){.homePremiumV6Fallback .categoryPanel{padding:28px 12px 20px!important;border-radius:30px!important}.homePremiumV6Fallback .searchShell{height:64px!important}}
+ `;document.head.appendChild(style);
+})();
