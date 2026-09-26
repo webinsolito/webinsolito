@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — Hero to Categories vertical rhythm and responsive polish",
-  "start_sha": "ca90c0e267cf931df2657db71a6be71d9ce37fcf",
-  "end_sha": "598f336ff097594afcf7f9aa809cdb957e2dd602",
-  "last_good_commit": "ca90c0e267cf931df2657db71a6be71d9ce37fcf",
+  "current_area": "Home — coordinated category card material system",
+  "start_sha": "067cb9e992bd6db2acb11216129e604054b43a5f",
+  "end_sha": "ff885cb7d03054b86f8b5e01b17ccc5cae8c6919",
+  "last_good_commit": "067cb9e992bd6db2acb11216129e604054b43a5f",
   "visual_quality_score": 69,
   "runtime_files_changed": ["assets/home-mobile-polish-20260926.css"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 425 for ca90c0e2 completed successfully.",
-    "pass_1": "Reduced the dead vertical gap between Hero and category entry while preserving the approved Hero composition.",
-    "pass_2": "Added a controlled gold-to-blue transition rule and luminous bridge so the category system reads as the physical continuation of the Hero rather than a disconnected block.",
-    "pass_3": "Balanced 390/400/430 and desktop spacing independently; category card dimensions and approved icon family remain unchanged.",
-    "responsive": "390/400/430 retain the existing two-column card geometry and touch states; desktop gains only rhythm/material hand-off, not a redesign.",
-    "deploy": "PENDING: final state commit must complete Pages before public visual score changes."
+    "previous_debt": "CLOSED: Pages run 427 for 067cb9e9 completed successfully.",
+    "pass_1": "Unified desktop/tablet category cards with a shared navy physical material, controlled category tint, stronger contact shadow and restrained inner highlight.",
+    "pass_2": "Rebuilt the icon pedestal/material relationship so artwork reads seated in the card rather than floating independently; added coordinated lower title scrim and occlusion.",
+    "pass_3": "Added fine-pointer premium lift with card and artwork moving at different depth rates; touch layout remains static and reduced-motion explicitly disables transforms.",
+    "responsive": "Existing <=430 mobile geometry remains untouched; new material system starts at 431px and pointer hover only at >=760px.",
+    "deploy": "PENDING: ff885cb7 must complete Pages before public visual score changes."
   },
-  "blocker": "Public browser renderer remains unavailable to this executor; Pages success is the deploy gate.",
-  "previous_debt": "CLOSED: ca90c0e2 Pages success confirmed.",
-  "next_action": "Certify Pages for this rhythm pass, then improve the Home category card material consistency as one coordinated system without regenerating icons.",
-  "home_visual_status": "HERO_CATEGORY_RHYTHM_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved family preserved; no category icon regenerated in this run."
+  "blocker": "Public browser renderer is unavailable to this executor; Pages success remains the deploy verification gate.",
+  "previous_debt": "CLOSED: 067cb9e9 Pages success confirmed.",
+  "next_action": "Certify Pages for ff885cb7, then improve Home category card hierarchy/featured-card balance or move to category-page shell if the Home system is visually coherent.",
+  "home_visual_status": "CATEGORY_MATERIAL_SYSTEM_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved icon family preserved; material, pedestal, occlusion and desktop depth interaction improved without regenerating icons."
 }
