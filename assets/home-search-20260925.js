@@ -65,7 +65,6 @@ window.WebinsolitoSearch={search(q,apps,categories,limit=10){const nq=strip(q);i
  document.head.appendChild(style);
 })();
 
-
 /* Home hero depth — subtle desktop-only parallax, disabled on touch/reduced motion */
 (()=>{const hero=document.querySelector('.hero'),stage=document.querySelector('.heroStage');if(!hero||!stage)return;
 const fine=matchMedia('(hover:hover) and (pointer:fine)'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
@@ -80,7 +79,6 @@ function move(e){if(!fine.matches||reduced.matches)return reset();const r=hero.g
 hero.addEventListener('pointermove',move,{passive:true});hero.addEventListener('pointerleave',reset);fine.addEventListener?.('change',reset);reduced.addEventListener?.('change',reset);
 window.webinsolitoHeroDepth={reset};
 })();
-
 
 /* Category card touch feedback — mirrors desktop material response on coarse pointers */
 (()=>{const grid=document.getElementById('categoryGrid');if(!grid)return;
@@ -102,7 +100,6 @@ window.webinsolitoHeroDepth={reset};
  window.webinsolitoCardTouchFeedback={bind};
 })();
 
-
 /* Premium search surface state — visually joins field + results and keeps active rows in view */
 (()=>{const box=document.querySelector('.searchBox'),shell=document.querySelector('.searchShell'),results=document.getElementById('searchResults'),input=document.getElementById('globalSearch');if(!box||!shell||!results||!input)return;
  const style=document.createElement('style');style.id='webinsolito-search-surface-state';style.textContent=`
@@ -119,7 +116,6 @@ window.webinsolitoHeroDepth={reset};
  sync();window.webinsolitoSearchSurface={sync};
 })();
 
-
 /* Delivery fallback: force the high-contrast premium Home even on older cached index markup */
 (()=>{const root=document.querySelector('main.wrap');if(!root)return;root.classList.add('homePremiumV6Fallback');
  const style=document.createElement('style');style.id='webinsolitoIvoryFallback';style.textContent=`
@@ -133,4 +129,27 @@ window.webinsolitoHeroDepth={reset};
  .homePremiumV6Fallback .categoryPanel .cat strong{color:#fff8ec!important}
  @media(max-width:640px){.homePremiumV6Fallback .categoryPanel{padding:28px 12px 20px!important;border-radius:30px!important}.homePremiumV6Fallback .searchShell{height:64px!important}}
  `;document.head.appendChild(style);
+})();
+
+/* Shared Hero stage v7 — coordinated depth, material light and restrained parallax */
+(()=>{const hero=document.querySelector('.hero'),stage=document.querySelector('.heroStage');if(!hero||!stage)return;
+ const style=document.createElement('style');style.id='webinsolito-hero-stage-v7';style.textContent=`
+ .heroStage{--px:0px;--py:0px;--lightX:50%;--lightY:24%;transform-style:preserve-3d}
+ .heroStage:after{box-shadow:0 22px 48px rgba(0,0,0,.30);transition:opacity .28s ease,transform .28s ease}
+ .heroStage .stageGlow{background:radial-gradient(circle at var(--lightX) var(--lightY),rgba(255,248,230,.12),transparent 17%),radial-gradient(circle,rgba(87,145,202,.25),rgba(217,170,98,.09) 37%,rgba(53,101,150,.04) 56%,transparent 72%);filter:blur(3px);transition:filter .25s ease}
+ .heroStage .stageRing{border-color:rgba(191,216,236,.34);box-shadow:0 0 130px rgba(72,128,185,.14),inset 0 0 76px rgba(217,170,98,.055),0 22px 48px rgba(0,0,0,.20)}
+ .heroStage .stageCenter{transform-style:preserve-3d;border-color:rgba(238,198,132,.46);background:radial-gradient(circle at var(--lightX) var(--lightY),rgba(255,255,255,.16),transparent 26%),linear-gradient(145deg,rgba(42,78,111,.99),rgba(8,23,38,.995));box-shadow:0 52px 105px rgba(0,0,0,.54),inset 0 1px rgba(255,255,255,.16),inset 0 -8px 18px rgba(0,0,0,.16),0 0 105px rgba(217,170,98,.11);transition:box-shadow .24s ease}
+ .heroStage .stageCenter img{transform:translateZ(22px);filter:drop-shadow(0 21px 24px rgba(0,0,0,.40))}
+ .heroStage .orbit{transform-style:preserve-3d;border-color:rgba(190,215,235,.34);background:radial-gradient(circle at var(--lightX) var(--lightY),rgba(255,255,255,.13),transparent 27%),linear-gradient(145deg,rgba(37,70,101,.99),rgba(8,22,36,.998));box-shadow:0 38px 84px rgba(0,0,0,.47),inset 0 1px rgba(255,255,255,.13),inset 0 -7px 15px rgba(0,0,0,.14);transition:box-shadow .24s ease,border-color .24s ease}
+ .heroStage .orbit img{transform:translateZ(18px);filter:drop-shadow(0 19px 21px rgba(0,0,0,.38))}
+ .heroStage.stage-active .stageCenter{box-shadow:0 58px 118px rgba(0,0,0,.57),inset 0 1px rgba(255,255,255,.17),inset 0 -8px 18px rgba(0,0,0,.17),0 0 120px rgba(217,170,98,.13)}
+ .heroStage.stage-active .orbit{border-color:rgba(204,225,242,.39);box-shadow:0 43px 92px rgba(0,0,0,.49),inset 0 1px rgba(255,255,255,.14),inset 0 -7px 15px rgba(0,0,0,.15)}
+ @media(max-width:640px){.heroStage .stageGlow{filter:blur(2px)}.heroStage .stageCenter{box-shadow:0 38px 78px rgba(0,0,0,.49),inset 0 1px rgba(255,255,255,.14),0 0 76px rgba(217,170,98,.09)}.heroStage .orbit{box-shadow:0 27px 58px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.12)}}
+ @media(prefers-reduced-motion:reduce){.heroStage .stageCenter,.heroStage .orbit,.heroStage:after{transition:none!important}}
+ `;document.head.appendChild(style);
+ const fine=matchMedia('(hover:hover) and (pointer:fine)'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
+ function visual(e){if(!fine.matches||reduced.matches)return;const r=stage.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));stage.style.setProperty('--lightX',(30+x*40).toFixed(1)+'%');stage.style.setProperty('--lightY',(14+y*30).toFixed(1)+'%');stage.classList.add('stage-active')}
+ function reset(){stage.style.removeProperty('--lightX');stage.style.removeProperty('--lightY');stage.classList.remove('stage-active')}
+ hero.addEventListener('pointermove',visual,{passive:true});hero.addEventListener('pointerleave',reset,{passive:true});reduced.addEventListener?.('change',reset);fine.addEventListener?.('change',reset);
+ window.webinsolitoHeroStageV7={reset};
 })();
