@@ -1,21 +1,21 @@
 {
-  "current_area": "Category shell — Casa premium depth propagation",
-  "start_sha": "b297f6502db3000afddda814574cc3805ab226bd",
-  "end_sha": "91497ccb70ccdd853a41cb0e185cdcb5f8411cbb",
-  "last_good_commit": "b297f6502db3000afddda814574cc3805ab226bd",
+  "current_area": "Category shell — Viaggi premium depth propagation",
+  "start_sha": "013dfa68a8de55307ebcc710ba0890c429e3bd5b",
+  "end_sha": "fe4c2be04459f3813b51d87dabb701090cfa9818",
+  "last_good_commit": "013dfa68a8de55307ebcc710ba0890c429e3bd5b",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["casa/index.html"],
+  "runtime_files_changed": ["viaggi/index.html"],
   "tests": {
-    "previous_debt": "Documents head b297f650 Pages completed SUCCESS and is the public green base.",
-    "pass_1": "Propagated shared premium category shell to Casa: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
-    "pass_2": "Added restrained warm ivory/home ambient response, layered summary surfaces and stronger primary-card hierarchy without excess gold.",
-    "pass_3": "Aligned section hierarchy, featured card scale and depth with the established category system while preserving approved Casa icon and content.",
-    "responsive": "Existing category geometry preserved; <=560px primary cards remain compact/static and shared shell reduced-motion behavior remains authoritative.",
-    "deploy": "PENDING: runtime commit 91497ccb written; Pages success required before public score certification."
+    "previous_debt": "Casa package is certified public green through state head 013dfa68; Pages completed SUCCESS.",
+    "pass_1": "Propagated shared premium category shell to Viaggi: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
+    "pass_2": "Added restrained sky-blue travel ambient response, layered summary surfaces, proof accents and stronger primary-card hierarchy.",
+    "pass_3": "Aligned section hierarchy, featured card scale, icon depth and responsive polish with the established premium category system while preserving approved Travel icon/content.",
+    "responsive": "Existing 760/560 geometry preserved; <=560px primary cards compact, shared shell static behavior retained, reduced-motion explicitly suppresses icon transforms.",
+    "deploy": "PENDING: runtime commit fe4c2be written; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer remains unavailable to this executor; GitHub Pages success plus public URL is the deploy verification gate.",
-  "previous_debt": "Documents deploy is certified green; current Casa package awaits deployment.",
-  "next_action": "Certify Pages for Casa; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
+  "previous_debt": "Casa is certified green; current Viaggi package awaits deployment.",
+  "next_action": "Certify Pages for Viaggi; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
   "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
-  "category_visual_status": "AUTO_FOOD_MONEY_EVENTS_DOCUMENTS_PUBLIC_GREEN_CASA_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
+  "category_visual_status": "AUTO_FOOD_MONEY_EVENTS_DOCUMENTS_CASA_PUBLIC_GREEN_VIAGGI_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
 }
