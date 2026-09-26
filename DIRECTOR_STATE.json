@@ -1,20 +1,20 @@
 {
-  "current_area": "Home — fifth coordinated category material pass",
-  "start_sha": "bdd3908d5c4396f142717cf2c1d08432105208fa",
-  "end_sha": "9b0d73e4a2eab3cddff860ee8398fa8467cde813",
+  "current_area": "Home — sixth coordinated category material pass",
+  "start_sha": "9b0d73e4a2eab3cddff860ee8398fa8467cde813",
+  "end_sha": "94fd9550c78786387fd18ed82a6f5a0edb95816a",
   "last_good_commit": "bdd3908d5c4396f142717cf2c1d08432105208fa",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/categories-v2/style.svg", "assets/categories-v2/study.svg", "assets/categories-v2/territory.svg"],
+  "runtime_files_changed": ["assets/categories-v2/docs.svg", "assets/categories-v2/events.svg", "assets/categories-v2/food.svg"],
   "tests": {
-    "previous_debt": "PASS DEPLOY: Pages run 36207235826 completed successfully for bdd3908d; previous deployment debt recovered.",
-    "pass_1": "PASS source: Persona & Stile gained a physical lower plinth, deeper ivory textile side plane, darker navy collar and restrained gold badge.",
-    "pass_2": "PASS source: Studio & Lavoro gained real page-stack thickness, stronger navy-to-ivory material contrast, deeper center binding and controlled verification medallion.",
-    "pass_3": "PASS source: Ambiente/Territorio gained a distinct third folded-map plane, stronger fold separation, desaturated natural material and more restrained physical pin.",
+    "previous_debt": "OPEN DEPLOY: Pages run 36210666731 for 9b0d73e4 was cancelled; do not certify that pass publicly.",
+    "pass_1": "PASS source: Documenti now has layered paper stack, folder side plane, stronger contact shadow and restrained gold verification medallion.",
+    "pass_2": "PASS source: Eventi now has a physical calendar side shell, deeper header/body separation, tactile date cells and restrained gold verification medallion.",
+    "pass_3": "PASS source: Food now has multi-layer ceramic plate thickness, deeper food material highlights, controlled natural saturation and stronger table contact shadow.",
     "deploy": "PENDING: new head Pages deployment must complete before public visual certification."
   },
-  "blocker": "Public site URL cannot be rendered by the available web runtime, so screenshot-level desktop/430/390 certification cannot be invented.",
-  "previous_debt": "CLOSED: bdd3908d is green on Pages; fourth coordinated icon pass is deployed.",
-  "next_action": "Certify the new Pages head first; then prioritize coordinated 390/430 Home card polish if full-index safe editing is available, otherwise improve only clearly weak Home assets without redesign.",
-  "home_visual_status": "FIFTH_ICON_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Persona & Stile, Studio & Lavoro and Ambiente/Territorio received coordinated material/depth upgrades; no new apps or Home redesign."
+  "blocker": "Public site URL cannot be rendered by the available web runtime; screenshot-level desktop/430/390 certification cannot be invented.",
+  "previous_debt": "OPEN: fifth icon pass deploy was cancelled; sixth pass creates a fresh deploy opportunity while adding a substantial visual delta.",
+  "next_action": "Certify the latest Pages head first; then perform coordinated 390/430 Home card polish once safe full-index editing is available, rather than repeatedly reworking the same icons.",
+  "home_visual_status": "SIXTH_ICON_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Documenti, Eventi and Food received coordinated physical-material/depth upgrades; no new apps or Home redesign."
 }
