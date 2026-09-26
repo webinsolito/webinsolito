@@ -1,20 +1,21 @@
 {
-  "current_area": "Home — brand/hero identity depth",
-  "start_sha": "bd03126cd66f5d1a4501f01897458850aa3ef7b8",
-  "end_sha": "86617c975bd1771058053e6c859900048405f1a6",
-  "last_good_commit": "bd03126cd66f5d1a4501f01897458850aa3ef7b8",
+  "current_area": "Home — hero orbit material coherence",
+  "start_sha": "52da35e5bdcde6a0347b58626dcff0e79f626b9f",
+  "end_sha": "384df03d077d35f3c74070890af4452a47f80075",
+  "last_good_commit": "52da35e5bdcde6a0347b58626dcff0e79f626b9f",
   "visual_quality_score": 68,
-  "runtime_files_changed": ["assets/webinsolito-logo.svg"],
+  "runtime_files_changed": ["assets/categories-v2/auto.svg", "assets/categories-v2/food.svg", "assets/categories-v2/money.svg"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 411 for bd03126 completed successfully, superseding the cancelled direct asset run.",
-    "pass_1": "Brand shell rebuilt from flat near-black tile to layered navy material with physical edge and controlled ambient shadow.",
-    "pass_2": "Three ivory modules gained inset navy faces, bevel-like highlights and coherent material hierarchy without changing the approved mark geometry.",
-    "pass_3": "Leaf accent moved from neon green/blue to restrained warm gold with specular vein, floor contact and subtle top highlight; this improves both header mark and hero stage center.",
-    "deploy": "PENDING: certify Pages for the new head and reopen public Home before increasing visual score."
+    "previous_debt": "CLOSED: Pages run 413 for 52da35e5 completed successfully; premium brand mark is deployed.",
+    "pass_1": "Hero Auto material deepened with stronger ivory body falloff, richer glass, controlled paint specular, wheel highlights and firmer ground contact.",
+    "pass_2": "Hero Food material deepened with layered ceramic rim, restrained natural food palette, ceramic specular response and more physical plate edge/contact.",
+    "pass_3": "Hero Money material deepened with richer navy leather, restrained warm-gold coin, clasp highlight, side-plane separation and firmer contact shadow.",
+    "responsive": "Same SVG assets scale natively in desktop hero and Home category cards without layout changes; no new app or route introduced.",
+    "deploy": "PENDING: certify Pages for final state commit and reopen public Home before increasing visual score."
   },
-  "blocker": "Do not claim public visual success until Pages for the new head completes and the public site exposes the updated mark.",
-  "previous_debt": "CLOSED: previous coordinated icon material pass is on a successful Pages head.",
-  "next_action": "Certify this deploy. Then continue Home desktop depth/micro-interaction polish as a coordinated system, prioritizing hero stage motion/material response rather than reworking the same icons.",
-  "home_visual_status": "PREMIUM_BRAND_DEPTH_PASS_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "No new apps; approved category family preserved."
+  "blocker": "Public URL could not be rendered through the available web renderer in this run; deployment must therefore be certified through Pages status and public visual score remains unchanged until visible verification.",
+  "previous_debt": "CLOSED: brand/hero mark deployment is successful.",
+  "next_action": "Certify this deploy. Then continue hero stage depth/micro-interaction response without reworking Auto/Food/Money again; prioritize stage motion/material response or Travel orbit coherence.",
+  "home_visual_status": "HERO_ORBIT_MATERIAL_PASS_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "Approved family preserved; three hero/category assets refined, no new apps."
 }
