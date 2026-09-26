@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — featured category hierarchy and focal depth",
-  "start_sha": "ff885cb7d03054b86f8b5e01b17ccc5cae8c6919",
-  "end_sha": "4d65665f2aabd1165482a1799e1c891f9a4fe859",
-  "last_good_commit": "067cb9e992bd6db2acb11216129e604054b43a5f",
-  "visual_quality_score": 69,
-  "runtime_files_changed": ["assets/home-mobile-polish-20260926.css"],
+  "current_area": "Category shell — Auto premium depth pilot",
+  "start_sha": "e972f12464ccf83f78542f3ae05a6b3171348602",
+  "end_sha": "4a6900f257b523734edfda3a75d347f500852938",
+  "last_good_commit": "e972f12464ccf83f78542f3ae05a6b3171348602",
+  "visual_quality_score": 70,
+  "runtime_files_changed": ["assets/category-shell-premium-20260926.css", "auto/index.html"],
   "tests": {
-    "previous_debt": "OPEN: Pages run 428 for ff885cb7 was cancelled; this run republishes the material system together with a larger visible hierarchy package.",
-    "pass_1": "Raised the two existing featured category anchors into a distinct premium material tier with deeper navy layering, restrained warm-gold bounce and stronger contact shadow.",
-    "pass_2": "Enlarged featured artwork and rebuilt its pedestal as a wider physical support plane with stronger occlusion, while leaving the approved icon assets untouched.",
-    "pass_3": "Strengthened featured typography and fine-pointer depth response so focal cards separate clearly from standard cards without changing the Home information architecture.",
-    "responsive": "Featured hierarchy activates from 760px; existing 390/400/430 mobile geometry and touch behavior remain unchanged; reduced-motion rule remains authoritative.",
-    "deploy": "PENDING: final state commit must complete Pages before visual score changes."
+    "previous_debt": "CLOSED: Pages run 431 for e972f124 completed successfully.",
+    "pass_1": "Rebuilt the Auto category hero as a layered physical shell with category-tinted ambient light, stronger navy material separation, deeper contact shadow and restrained specular highlight.",
+    "pass_2": "Unified search, summary panels and app cards under the same material/light system; icons gain depth separation without regenerating approved assets.",
+    "pass_3": "Added fine-pointer hero tilt and two-plane card/icon depth response while keeping mobile static and reduced-motion authoritative.",
+    "responsive": "Desktop interaction only above 820px with fine pointer; <=560px receives static lighter depth treatment and no transformed content planes.",
+    "deploy": "PENDING: final state commit must complete Pages before public visual score is certified."
   },
   "blocker": "Public browser renderer is unavailable to this executor; Pages success remains the deploy verification gate.",
-  "previous_debt": "OPEN: ff885cb7 Pages was cancelled; included unchanged material-system code in current main and republished through this run.",
-  "next_action": "Certify Pages for the final head; if green, move to category-page shell visual coherence rather than repeatedly polishing Home cards.",
-  "home_visual_status": "FEATURED_HIERARCHY_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "Approved icon family preserved; Home focal hierarchy improved without regenerating icon assets."
+  "previous_debt": "CLOSED: e972f124 Pages success confirmed.",
+  "next_action": "Certify Pages for the Auto shell pilot; if green, propagate the same premium shell system to Food and the remaining category pages without redesigning their content.",
+  "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
+  "category_visual_status": "AUTO_PREMIUM_SHELL_IMPLEMENTED_DEPLOY_PENDING"
 }
