@@ -1,20 +1,20 @@
 {
-  "current_area": "Home — coordinated 390/430 mobile card polish",
-  "start_sha": "71d762e0a0c8f47537ba05398f52fc57a15f2bd4",
-  "end_sha": "53dab15a11d61dde56e5534960cf457b5acb1126",
-  "last_good_commit": "71d762e0a0c8f47537ba05398f52fc57a15f2bd4",
+  "current_area": "Home — mobile hero to category transition polish",
+  "start_sha": "aa90171ef2c8cd3e9b37f3ddf6fd12c79f39b799",
+  "end_sha": "bc6376d7e9882490bd9d5abe1bf7737ec326508a",
+  "last_good_commit": "aa90171ef2c8cd3e9b37f3ddf6fd12c79f39b799",
   "visual_quality_score": 68,
   "runtime_files_changed": ["assets/home-mobile-polish-20260926.css", "sw.js"],
   "tests": {
-    "previous_debt": "CLOSED: Pages run 36213920742 for 71d762e0 completed successfully.",
-    "pass_1": "PASS source: 430px cards receive coordinated spacing, premium material, depth and touch hierarchy adjustments.",
-    "pass_2": "PASS source: 400/390px refinement tightens grid rhythm, art scale and typography without changing the approved Home structure.",
-    "pass_3": "PASS source: featured cards, icon pedestals, contact shadows and active-state tactile feedback are coordinated as one mobile system.",
+    "previous_debt": "CLOSED: Pages run 36216743066 for aa90171e completed successfully.",
+    "pass_1": "PASS source: mobile hero vertical rhythm, typography, search shell and stage proportions tightened as one system.",
+    "pass_2": "PASS source: 430px hero-to-grid transition gains controlled spacing, divider material and hierarchy continuity.",
+    "pass_3": "PASS source: 400/390px stage, orbit scale, heading balance and category entrance rhythm refined without changing approved structure.",
     "deploy": "PENDING: new head Pages deployment must complete before public visual certification."
   },
   "blocker": "Public site URL cannot be screenshot-rendered by the available web runtime; desktop/430/390 screenshot certification cannot be invented.",
-  "previous_debt": "CLOSED: sixth icon pass is publicly deployed. Mobile card polish is now the active deploy debt.",
-  "next_action": "Certify the 53dab15a Pages deployment; then continue with mobile hero/category transition polish only if the public delta is stable, otherwise fix this mobile card layer first.",
-  "home_visual_status": "MOBILE_390_430_CARD_POLISH_IMPLEMENTED_DEPLOY_PENDING",
-  "category_visual_status": "No new apps and no icon-family redesign; Home card system received coordinated mobile-only polish."
+  "previous_debt": "CLOSED: mobile card polish is publicly deployed. Hero/category transition is now the active deploy debt.",
+  "next_action": "Certify the new Pages deployment; if stable, continue with desktop Home depth/micro-interaction polish or fix any deployment regression first.",
+  "home_visual_status": "MOBILE_HERO_CATEGORY_TRANSITION_IMPLEMENTED_DEPLOY_PENDING",
+  "category_visual_status": "No new apps and no icon-family redesign; approved Home structure preserved."
 }
