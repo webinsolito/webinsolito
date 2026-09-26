@@ -1,0 +1,17 @@
+/* Category shell premium depth pass — 2026-09-26 */
+body[data-category]{--shellAccent:var(--catAccent,#78aee0)}
+body[data-category] .hero{transform-style:preserve-3d;background:radial-gradient(520px 280px at 12% 42%,color-mix(in srgb,var(--shellAccent) 14%,transparent),transparent 70%),linear-gradient(145deg,rgba(29,55,81,.97),rgba(7,21,35,.99) 68%);box-shadow:0 44px 110px rgba(0,0,0,.38),0 18px 48px color-mix(in srgb,var(--shellAccent) 7%,transparent),inset 0 1px rgba(255,255,255,.08),inset 0 -34px 70px rgba(0,0,0,.12)}
+body[data-category] .hero:before{background:radial-gradient(circle at 13% 46%,color-mix(in srgb,var(--shellAccent) 19%,transparent),transparent 29%),linear-gradient(112deg,transparent 14%,rgba(255,255,255,.055) 42%,transparent 59%)}
+body[data-category] .hero>img{transform:translateZ(30px) rotate(-2deg);border-color:color-mix(in srgb,var(--shellAccent) 30%,rgba(158,188,215,.18));background:linear-gradient(145deg,rgba(38,68,96,.9),rgba(8,24,39,.97));box-shadow:0 34px 72px rgba(0,0,0,.43),0 14px 38px color-mix(in srgb,var(--shellAccent) 12%,transparent),inset 0 1px rgba(255,255,255,.11),inset -12px -18px 28px rgba(0,0,0,.14)}
+body[data-category] .hero>img:where(img){filter:drop-shadow(0 19px 22px rgba(0,0,0,.34))}
+body[data-category] .heroCopy{transform:translateZ(18px)}
+body[data-category] .hubKicker{color:color-mix(in srgb,var(--shellAccent) 64%,#e3b56b)}
+body[data-category] .search{border-color:color-mix(in srgb,var(--shellAccent) 28%,rgba(151,183,213,.38));box-shadow:0 24px 56px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.075),inset 0 -12px 28px rgba(0,0,0,.1)}
+body[data-category] .hubMessage,body[data-category] .inside{border-color:color-mix(in srgb,var(--shellAccent) 20%,rgba(142,174,204,.2));background:radial-gradient(260px 170px at 88% 8%,color-mix(in srgb,var(--shellAccent) 9%,transparent),transparent 70%),linear-gradient(145deg,rgba(29,55,81,.95),rgba(7,22,36,.985));box-shadow:0 30px 68px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.075),inset 0 -24px 50px rgba(0,0,0,.1)}
+body[data-category] .app{transform-style:preserve-3d;box-shadow:0 28px 64px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.075),inset 0 -30px 58px rgba(0,0,0,.11)}
+body[data-category] .app img{transform:translateZ(18px);filter:drop-shadow(0 18px 22px rgba(0,0,0,.4))}
+body[data-category] .app h3{transform:translateZ(11px)}
+body[data-category] .app p,body[data-category] .appBadge{transform:translateZ(6px)}
+@media(hover:hover) and (pointer:fine) and (min-width:821px){body[data-category] .hero{transition:transform .24s ease,box-shadow .24s ease}body[data-category] .hero:hover{transform:perspective(1400px) rotateX(.7deg) rotateY(-.8deg) translateY(-2px);box-shadow:0 50px 125px rgba(0,0,0,.42),0 20px 54px color-mix(in srgb,var(--shellAccent) 9%,transparent),inset 0 1px rgba(255,255,255,.085)}body[data-category] .app:hover img{transform:translate3d(0,-6px,26px) rotate(-1deg) scale(1.045)}}
+@media(max-width:560px){body[data-category] .hero{box-shadow:0 26px 68px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.075)}body[data-category] .hero>img{transform:rotate(-1.5deg);box-shadow:0 20px 44px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.09)}body[data-category] .heroCopy,body[data-category] .app img,body[data-category] .app h3,body[data-category] .app p,body[data-category] .appBadge{transform:none}}
+@media(prefers-reduced-motion:reduce){body[data-category] .hero,body[data-category] .app,body[data-category] .app img{transition:none!important;transform:none!important}}
