@@ -1,22 +1,23 @@
 {
-  "current_area": "Common app shell — V3 result hierarchy + mobile density",
-  "start_sha": "911e73cc95638590c9c4fedd345639d5eafd89bb",
-  "end_sha": "065d554a83de40eb5042cc4f6bb9cb0aaf98515e",
-  "last_good_commit": "911e73cc95638590c9c4fedd345639d5eafd89bb",
+  "current_area": "Cross-app mobile polish — V4 390/430 tactile depth",
+  "start_sha": "239460eece4c103f012cef9dcd263383d6967aa8",
+  "end_sha": "f187388f63de42b00ae2a1c24f986b3bc712fc12",
+  "last_good_commit": "239460eece4c103f012cef9dcd263383d6967aa8",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["assets/microapp.css"],
+  "runtime_files_changed": ["assets/microapp-mobile-v4.css", "bbqplanner/index.html", "appointment/index.html", "beauty-expiry/index.html", "appliance-memo/index.html", "beach-list/index.html"],
   "tests": {
-    "previous_debt": "Shared microapp V2 is Pages SUCCESS via state head 911e73cc; V2 is public green.",
-    "pass_1": "Result surfaces promoted into physical layered panels with directional ivory/gold sheen and stronger separation from input cards.",
-    "pass_2": "Rows, checks, events, refs, metrics and action buttons unified with material depth, spacing and restrained desktop interaction.",
-    "pass_3": "430/390 mobile density tightened: card/result padding, headings, fields and full-width adaptive actions balanced without changing app logic.",
-    "responsive": "700/430/390 breakpoints preserved; pointer-only row hover; reduced-motion extended to rows.",
-    "deploy": "PENDING: runtime head 065d554a; Pages success required before public score certification."
+    "previous_debt": "Microapp V3 runtime commit was cancelled only because the following state commit superseded it; state head 239460ee deployed Pages SUCCESS and includes V3 runtime.",
+    "pass_1": "New shared mobile V4 layer establishes denser 390/430 hierarchy: compact topbar, deeper hero, balanced typography and safe-area spacing.",
+    "pass_2": "Cards, fields and results gain coordinated tactile depth, directional ivory/gold light, contact shadows and stronger surface separation.",
+    "pass_3": "Mobile actions become full-width 47px targets; inputs use 16px text to avoid iOS zoom; rows/checks/results tightened for thumb-first use.",
+    "coverage": "V4 activated on five representative shared-shell apps across Food, Business, Persona, Casa and Viaggi.",
+    "responsive": "560/400 breakpoints; 390/430 covered; reduced-motion disables transforms/transitions.",
+    "deploy": "PENDING: latest head after V4 activation requires Pages SUCCESS before score increase."
   },
   "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "Microapp V2 deploy certified green before PASS 2.",
-  "next_action": "Certify Pages for V3; if green, inspect shared app shell for one remaining high-impact inconsistency, otherwise move to cross-app mobile polish without app-specific redesign.",
+  "previous_debt": "V3 public certification recovered through successful state-head Pages deploy.",
+  "next_action": "Certify latest V4 Pages deploy; if green, expand the same V4 shared mobile layer to the next batch of shared-shell apps rather than redesigning individual apps.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
   "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_DEPLOY_PENDING"
+  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH1_DEPLOY_PENDING"
 }
