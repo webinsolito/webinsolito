@@ -1,23 +1,22 @@
 {
-  "current_area": "Cross-app mobile polish — V4 390/430 tactile depth",
-  "start_sha": "239460eece4c103f012cef9dcd263383d6967aa8",
-  "end_sha": "f187388f63de42b00ae2a1c24f986b3bc712fc12",
-  "last_good_commit": "239460eece4c103f012cef9dcd263383d6967aa8",
-  "visual_quality_score": 72,
-  "runtime_files_changed": ["assets/microapp-mobile-v4.css", "bbqplanner/index.html", "appointment/index.html", "beauty-expiry/index.html", "appliance-memo/index.html", "beach-list/index.html"],
+  "current_area": "Cross-app mobile polish — V4 batch 2",
+  "start_sha": "4ec73ef97cd191d237aee1b0e2568e09df213c56",
+  "end_sha": "a5b0a8b20f61a4725f41f973e5de702ff99db47d",
+  "last_good_commit": "4ec73ef97cd191d237aee1b0e2568e09df213c56",
+  "visual_quality_score": 73,
+  "runtime_files_changed": ["archive-box/index.html", "accident-kit/index.html", "business-card/index.html", "currency-pocket/index.html", "cost-per-wear/index.html"],
   "tests": {
-    "previous_debt": "Microapp V3 runtime commit was cancelled only because the following state commit superseded it; state head 239460ee deployed Pages SUCCESS and includes V3 runtime.",
-    "pass_1": "New shared mobile V4 layer establishes denser 390/430 hierarchy: compact topbar, deeper hero, balanced typography and safe-area spacing.",
-    "pass_2": "Cards, fields and results gain coordinated tactile depth, directional ivory/gold light, contact shadows and stronger surface separation.",
-    "pass_3": "Mobile actions become full-width 47px targets; inputs use 16px text to avoid iOS zoom; rows/checks/results tightened for thumb-first use.",
-    "coverage": "V4 activated on five representative shared-shell apps across Food, Business, Persona, Casa and Viaggi.",
-    "responsive": "560/400 breakpoints; 390/430 covered; reduced-motion disables transforms/transitions.",
-    "deploy": "PENDING: latest head after V4 activation requires Pages SUCCESS before score increase."
+    "previous_debt": "Mobile V4 batch 1 state head 4ec73ef9 deployed Pages SUCCESS.",
+    "pass_1": "Extended the already-tested V4 shared mobile layer to ArchiveBox and AccidentKit, covering standard and pro shells.",
+    "pass_2": "Extended the same tactile-depth system to BusinessCard and CurrencyPocket, preserving their existing runtime logic and category navigation.",
+    "pass_3": "Extended V4 to CostPerWear; batch now spans Docs, Auto, Business, Travel and Persona with one coherent 390/430 treatment.",
+    "responsive": "Shared V4 keeps 560/400 breakpoints, 390/430 coverage, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
+    "deploy": "PENDING: batch 2/state head requires Pages SUCCESS before final public certification."
   },
   "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "V3 public certification recovered through successful state-head Pages deploy.",
-  "next_action": "Certify latest V4 Pages deploy; if green, expand the same V4 shared mobile layer to the next batch of shared-shell apps rather than redesigning individual apps.",
+  "previous_debt": "Batch 1 deploy certified green before expansion.",
+  "next_action": "Certify batch 2 Pages deploy; then continue the same V4 shared mobile system only on compatible shared-shell apps, avoiding bespoke apps and redesign drift.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
   "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH1_DEPLOY_PENDING"
+  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH1_GREEN_BATCH2_PENDING"
 }
