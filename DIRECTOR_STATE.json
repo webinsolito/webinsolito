@@ -1,21 +1,21 @@
 {
-  "current_area": "Cross-app mobile polish — V4 batch 3",
-  "start_sha": "1d544188ba825a8b28d1ce64f123d759eb4168d8",
-  "end_sha": "8767045c517e4eec3f9a8d98ba88f0072e3dcec6",
-  "last_good_commit": "1d544188ba825a8b28d1ce64f123d759eb4168d8",
-  "visual_quality_score": 73,
-  "runtime_files_changed": ["date-calc/index.html", "fake-shop/index.html", "fuel-budget/index.html", "fuel-trip/index.html"],
+  "current_area": "Cross-app mobile polish — V4 batch 4",
+  "start_sha": "ab1d559a068f7da6c9e698cc541d3419ff6ba41c",
+  "end_sha": "FINAL_HEAD",
+  "last_good_commit": "ab1d559a068f7da6c9e698cc541d3419ff6ba41c",
+  "visual_quality_score": 74,
+  "runtime_files_changed": ["leftover-chef/index.html", "loan-compare/index.html", "margin-calc/index.html"],
   "tests": {
-    "previous_debt": "Mobile V4 batch 2 state head 1d544188 deployed Pages SUCCESS.",
-    "pass_1": "Extended the tested V4 shared mobile layer to DateCalc and FakeShop, both pro-shell apps.",
-    "pass_2": "Extended the same tactile-depth system to FuelBudget and FuelTrip, preserving runtime scripts and category navigation.",
-    "responsive": "Shared V4 keeps 560/400 breakpoints covering 430/390, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
-    "deploy": "PENDING: batch 3/state head requires Pages SUCCESS before public certification."
+    "previous_debt": "Mobile V4 batch 3 state head ab1d559a deployed Pages SUCCESS.",
+    "pass_1": "Extended the shared 390/430 V4 depth layer to LeftoverChef and LoanCompare, preserving their pro-shell runtime.",
+    "pass_2": "Extended the same V4 system to MarginCalc, keeping category navigation and runtime scripts unchanged.",
+    "responsive": "Shared V4 provides 560/400 breakpoints covering 430/390, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
+    "deploy": "FINAL_HEAD requires Pages SUCCESS before public certification."
   },
   "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "Batch 2 deploy certified green before expansion.",
-  "next_action": "Certify batch 3 Pages deploy; then continue V4 only on compatible shared-shell apps or, if coverage is sufficient, return to a high-impact icon/depth consistency pass rather than bespoke-app drift.",
+  "previous_debt": "Batch 3 deploy certified green before expansion.",
+  "next_action": "Certify batch 4 Pages deploy; then stop broad shared-shell expansion and perform a high-impact icon/depth consistency pass on the weakest visible category/app surfaces.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
   "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH2_GREEN_BATCH3_PENDING"
+  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH3_GREEN_BATCH4_PENDING"
 }
