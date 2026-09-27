@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — hero to category hierarchy + 390/430 depth rhythm",
-  "start_sha": "aa633dcfb24edbfecf89b3f18ddcd9bd568e713f",
-  "end_sha": "f4071ecfa2ae5a597e4a6a632e10eb19baac7b15",
-  "last_good_commit": "aa633dcfb24edbfecf89b3f18ddcd9bd568e713f",
+  "current_area": "Category pages — shared shell V2 material + hierarchy + mobile depth",
+  "start_sha": "76a42400c2528c56c26e1799b14a33a3c4903e15",
+  "end_sha": "4253e0f0255684a0b1b6f09cb0c5a79490136ee6",
+  "last_good_commit": "76a42400c2528c56c26e1799b14a33a3c4903e15",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["assets/home-mobile-depth-v7.css"],
+  "runtime_files_changed": ["assets/category-shell-premium-20260926.css"],
   "tests": {
-    "previous_debt": "aa633dcf Home card depth/icon grounding is certified Pages SUCCESS.",
-    "pass_1": "Hero-to-category vertical rhythm tightened on desktop and mobile so the two premium surfaces read as one composition.",
-    "pass_2": "Grid heading gained restrained gold/ivory separator, stronger typographic hierarchy and panel spacing alignment.",
-    "pass_3": "390/430 received dedicated heading/meta sizing and tighter panel rhythm while retaining card/icon depth.",
-    "responsive": "Desktop min-width 641 and mobile 640/430/400 remain isolated; touch active and reduced-motion protections retained.",
-    "deploy": "PENDING: runtime head f4071ecf; Pages success required before public score certification."
+    "previous_debt": "Home hierarchy runtime is deployed through the state commit 76a42400 with Pages SUCCESS; category shell is now the active visual priority.",
+    "pass_1": "Shared category hero/search material system deepened with controlled directional sheen, stronger physical border/light separation and focus depth.",
+    "pass_2": "Summary surfaces and section hierarchy unified with layered highlights, contact depth and restrained accent separators.",
+    "pass_3": "App cards gained shared material highlight, grounded Z layering and dedicated mobile 560px rhythm/depth treatment.",
+    "responsive": "Desktop hover remains pointer-gated; mobile <=560 receives reduced depth and tighter rhythm; reduced-motion protections retained.",
+    "deploy": "PENDING: runtime head 4253e0f0; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer is unavailable to this executor; GitHub Pages success is the deploy verification gate.",
-  "previous_debt": "aa633dcf is public green; this run addresses the promised hero-category panel hierarchy/depth residual.",
-  "next_action": "Certify Pages for f4071ecf; then if Home is green move to category-page shared shell rather than further isolated icon tweaks.",
-  "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_DEPLOY_PENDING",
-  "category_visual_status": "PREMIUM_CATEGORY_SHELLS_PRESERVED"
+  "previous_debt": "Home hierarchy pass is public green; isolated Home micro-passes stopped as promised.",
+  "next_action": "Certify Pages for category shell V2; then continue the same shared category macro-area only if a high-impact inconsistency remains, otherwise move to common app shell.",
+  "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
+  "category_visual_status": "CATEGORY_SHELL_V2_DEPLOY_PENDING"
 }
