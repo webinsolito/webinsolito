@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — structural card/layout desktop + 390/430 polish",
-  "start_sha": "cb2b6cf1353b3088fbcea78b52698db2caec7aad",
-  "end_sha": "cd20491029bb8a48ed72cf8cfd1a4a8b0959e825",
-  "last_good_commit": "cb2b6cf1353b3088fbcea78b52698db2caec7aad",
+  "current_area": "Home — hero to category hierarchy + 390/430 depth rhythm",
+  "start_sha": "aa633dcfb24edbfecf89b3f18ddcd9bd568e713f",
+  "end_sha": "f4071ecfa2ae5a597e4a6a632e10eb19baac7b15",
+  "last_good_commit": "aa633dcfb24edbfecf89b3f18ddcd9bd568e713f",
   "visual_quality_score": 72,
   "runtime_files_changed": ["assets/home-mobile-depth-v7.css"],
   "tests": {
-    "previous_debt": "cb2b6cf1 Home V7 mobile structural pass is certified Pages SUCCESS.",
-    "pass_1": "Desktop Hero and category panel gained coordinated layered material lighting, ambient/contact depth and controlled ivory/gold reflection.",
-    "pass_2": "Desktop category cards gained physical lift, preserve-3d icon separation, deeper contact shadows and restrained hover depth.",
-    "pass_3": "390/430 hierarchy refined with tighter heading tracking, lead rhythm, centered readable copy and mobile material shadow continuity.",
-    "responsive": "Desktop rules isolated at min-width 641; existing 640/430/400 sizing retained; touch active state retained; reduced-motion now neutralizes card and icon transforms.",
-    "deploy": "PENDING: runtime head cd204910; Pages success required before public score certification."
+    "previous_debt": "aa633dcf Home card depth/icon grounding is certified Pages SUCCESS.",
+    "pass_1": "Hero-to-category vertical rhythm tightened on desktop and mobile so the two premium surfaces read as one composition.",
+    "pass_2": "Grid heading gained restrained gold/ivory separator, stronger typographic hierarchy and panel spacing alignment.",
+    "pass_3": "390/430 received dedicated heading/meta sizing and tighter panel rhythm while retaining card/icon depth.",
+    "responsive": "Desktop min-width 641 and mobile 640/430/400 remain isolated; touch active and reduced-motion protections retained.",
+    "deploy": "PENDING: runtime head f4071ecf; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer is unavailable to this executor; GitHub Pages success is the deploy verification gate.",
-  "previous_debt": "Previous Home V7 mobile head cb2b6cf1 is public green; current desktop+mobile coordinated depth pass awaits deployment.",
-  "next_action": "Certify Pages for cd204910; then inspect the shared Home card system for residual hierarchy/material inconsistency before moving to category pages.",
-  "home_visual_status": "HOME_V7_DESKTOP_MOBILE_DEPTH_PASS_DEPLOY_PENDING",
+  "previous_debt": "aa633dcf is public green; this run addresses the promised hero-category panel hierarchy/depth residual.",
+  "next_action": "Certify Pages for f4071ecf; then if Home is green move to category-page shared shell rather than further isolated icon tweaks.",
+  "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_DEPLOY_PENDING",
   "category_visual_status": "PREMIUM_CATEGORY_SHELLS_PRESERVED"
 }
