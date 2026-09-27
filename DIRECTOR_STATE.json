@@ -1,22 +1,21 @@
 {
-  "current_area": "Cross-app mobile polish — V4 batch 2",
-  "start_sha": "4ec73ef97cd191d237aee1b0e2568e09df213c56",
-  "end_sha": "a5b0a8b20f61a4725f41f973e5de702ff99db47d",
-  "last_good_commit": "4ec73ef97cd191d237aee1b0e2568e09df213c56",
+  "current_area": "Cross-app mobile polish — V4 batch 3",
+  "start_sha": "1d544188ba825a8b28d1ce64f123d759eb4168d8",
+  "end_sha": "8767045c517e4eec3f9a8d98ba88f0072e3dcec6",
+  "last_good_commit": "1d544188ba825a8b28d1ce64f123d759eb4168d8",
   "visual_quality_score": 73,
-  "runtime_files_changed": ["archive-box/index.html", "accident-kit/index.html", "business-card/index.html", "currency-pocket/index.html", "cost-per-wear/index.html"],
+  "runtime_files_changed": ["date-calc/index.html", "fake-shop/index.html", "fuel-budget/index.html", "fuel-trip/index.html"],
   "tests": {
-    "previous_debt": "Mobile V4 batch 1 state head 4ec73ef9 deployed Pages SUCCESS.",
-    "pass_1": "Extended the already-tested V4 shared mobile layer to ArchiveBox and AccidentKit, covering standard and pro shells.",
-    "pass_2": "Extended the same tactile-depth system to BusinessCard and CurrencyPocket, preserving their existing runtime logic and category navigation.",
-    "pass_3": "Extended V4 to CostPerWear; batch now spans Docs, Auto, Business, Travel and Persona with one coherent 390/430 treatment.",
-    "responsive": "Shared V4 keeps 560/400 breakpoints, 390/430 coverage, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
-    "deploy": "PENDING: batch 2/state head requires Pages SUCCESS before final public certification."
+    "previous_debt": "Mobile V4 batch 2 state head 1d544188 deployed Pages SUCCESS.",
+    "pass_1": "Extended the tested V4 shared mobile layer to DateCalc and FakeShop, both pro-shell apps.",
+    "pass_2": "Extended the same tactile-depth system to FuelBudget and FuelTrip, preserving runtime scripts and category navigation.",
+    "responsive": "Shared V4 keeps 560/400 breakpoints covering 430/390, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
+    "deploy": "PENDING: batch 3/state head requires Pages SUCCESS before public certification."
   },
   "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "Batch 1 deploy certified green before expansion.",
-  "next_action": "Certify batch 2 Pages deploy; then continue the same V4 shared mobile system only on compatible shared-shell apps, avoiding bespoke apps and redesign drift.",
+  "previous_debt": "Batch 2 deploy certified green before expansion.",
+  "next_action": "Certify batch 3 Pages deploy; then continue V4 only on compatible shared-shell apps or, if coverage is sufficient, return to a high-impact icon/depth consistency pass rather than bespoke-app drift.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
   "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH1_GREEN_BATCH2_PENDING"
+  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH2_GREEN_BATCH3_PENDING"
 }
