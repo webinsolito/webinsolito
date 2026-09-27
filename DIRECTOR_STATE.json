@@ -1,21 +1,21 @@
 {
-  "current_area": "Home — coordinated icon material/depth polish",
-  "start_sha": "eb3b8afac6f5ae0b104a8ed4e5efb1587c639cec",
-  "end_sha": "3e9ad27c2a9c98cb6564ccfda3c63786a6549f83",
-  "last_good_commit": "eb3b8afac6f5ae0b104a8ed4e5efb1587c639cec",
+  "current_area": "Home — structural card/layout desktop + 390/430 polish",
+  "start_sha": "cb2b6cf1353b3088fbcea78b52698db2caec7aad",
+  "end_sha": "cd20491029bb8a48ed72cf8cfd1a4a8b0959e825",
+  "last_good_commit": "cb2b6cf1353b3088fbcea78b52698db2caec7aad",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["assets/categories-v2/auto.svg", "assets/categories-v2/food.svg", "assets/categories-v2/money.svg"],
+  "runtime_files_changed": ["assets/home-mobile-depth-v7.css"],
   "tests": {
-    "previous_debt": "eb3b8afa Travel/logo/business package is certified Pages SUCCESS.",
-    "pass_1": "Auto: increased glass/rim-light separation, added restrained ground bounce and stronger body highlight without changing approved silhouette.",
-    "pass_2": "Food: strengthened ceramic specular response, plate edge separation and ingredient highlights while keeping natural green accent restrained.",
-    "pass_3": "Money: sharpened wallet edge light, coin highlight, clasp contrast and warm contact bounce while keeping gold controlled.",
-    "responsive": "All three assets preserve the 180x180 viewBox and existing Home sizing rules; no layout or content changes.",
-    "deploy": "PENDING: runtime head 3e9ad27c written; Pages success required before public score certification."
+    "previous_debt": "cb2b6cf1 Home V7 mobile structural pass is certified Pages SUCCESS.",
+    "pass_1": "Desktop Hero and category panel gained coordinated layered material lighting, ambient/contact depth and controlled ivory/gold reflection.",
+    "pass_2": "Desktop category cards gained physical lift, preserve-3d icon separation, deeper contact shadows and restrained hover depth.",
+    "pass_3": "390/430 hierarchy refined with tighter heading tracking, lead rhythm, centered readable copy and mobile material shadow continuity.",
+    "responsive": "Desktop rules isolated at min-width 641; existing 640/430/400 sizing retained; touch active state retained; reduced-motion now neutralizes card and icon transforms.",
+    "deploy": "PENDING: runtime head cd204910; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer is unavailable to this executor; GitHub Pages success is the deploy verification gate.",
-  "previous_debt": "Previous head eb3b8afa is public green; current three-icon Home package awaits deployment.",
-  "next_action": "Certify Pages for 3e9ad27c; then execute the promised Home card/layout + 390/430 polish using the shared runtime styling path, not another isolated icon pass.",
-  "home_visual_status": "THREE_ICON_MATERIAL_PASS_IN_HEAD_DEPLOY_PENDING",
+  "previous_debt": "Previous Home V7 mobile head cb2b6cf1 is public green; current desktop+mobile coordinated depth pass awaits deployment.",
+  "next_action": "Certify Pages for cd204910; then inspect the shared Home card system for residual hierarchy/material inconsistency before moving to category pages.",
+  "home_visual_status": "HOME_V7_DESKTOP_MOBILE_DEPTH_PASS_DEPLOY_PENDING",
   "category_visual_status": "PREMIUM_CATEGORY_SHELLS_PRESERVED"
 }
