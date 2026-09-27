@@ -1,21 +1,22 @@
 {
-  "current_area": "Category pages — shared shell V2 material + hierarchy + mobile depth",
-  "start_sha": "76a42400c2528c56c26e1799b14a33a3c4903e15",
-  "end_sha": "4253e0f0255684a0b1b6f09cb0c5a79490136ee6",
-  "last_good_commit": "76a42400c2528c56c26e1799b14a33a3c4903e15",
+  "current_area": "Common app shell — Soft Premium V2 depth + material + responsive polish",
+  "start_sha": "52673b0e354833a84303a5cbe0a79f5efdc07511",
+  "end_sha": "af56601399d0a7a49ae991e7c6d86fb2b0d26f44",
+  "last_good_commit": "52673b0e354833a84303a5cbe0a79f5efdc07511",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["assets/category-shell-premium-20260926.css"],
+  "runtime_files_changed": ["assets/microapp.css"],
   "tests": {
-    "previous_debt": "Home hierarchy runtime is deployed through the state commit 76a42400 with Pages SUCCESS; category shell is now the active visual priority.",
-    "pass_1": "Shared category hero/search material system deepened with controlled directional sheen, stronger physical border/light separation and focus depth.",
-    "pass_2": "Summary surfaces and section hierarchy unified with layered highlights, contact depth and restrained accent separators.",
-    "pass_3": "App cards gained shared material highlight, grounded Z layering and dedicated mobile 560px rhythm/depth treatment.",
-    "responsive": "Desktop hover remains pointer-gated; mobile <=560 receives reduced depth and tighter rhythm; reduced-motion protections retained.",
-    "deploy": "PENDING: runtime head 4253e0f0; Pages success required before public score certification."
+    "previous_debt": "Category shell V3 runtime 52673b0e is Pages SUCCESS; category hierarchy/depth is certified and common app shell becomes the next priority.",
+    "pass_1": "Shared app chrome rebuilt as layered navy/ivory material system: atmospheric page background, physical top rail and substantial hero surface.",
+    "pass_2": "Shared cards, inputs, buttons and result surfaces unified with contact depth, directional sheen, controlled warm-gold primary actions and Z-aware desktop interaction.",
+    "pass_3": "Responsive shell receives dedicated 700/430/390 rhythm, reduced mobile depth, touch-safe sizing and reduced-motion protections.",
+    "responsive": "Desktop effects remain pointer-gated; 430px and 390px receive dedicated hero/topbar scale and spacing; no app logic changed.",
+    "deploy": "PENDING: runtime head af566013; Pages success required before public score certification."
   },
   "blocker": "Public browser renderer is unavailable to this executor; GitHub Pages success is the deploy verification gate.",
-  "previous_debt": "Home hierarchy pass is public green; isolated Home micro-passes stopped as promised.",
-  "next_action": "Certify Pages for category shell V2; then continue the same shared category macro-area only if a high-impact inconsistency remains, otherwise move to common app shell.",
+  "previous_debt": "Category V3 deploy certified green before moving macro-area.",
+  "next_action": "Certify Pages for af566013; then PASS 2 on shared microapp shell, focusing on pro-card/result hierarchy and any remaining mobile density mismatch before touching individual apps.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
-  "category_visual_status": "CATEGORY_SHELL_V2_DEPLOY_PENDING"
+  "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
+  "app_shell_visual_status": "MICROAPP_SHELL_V2_DEPLOY_PENDING"
 }
