@@ -1,21 +1,21 @@
 {
-  "current_area": "Category shell — Viaggi premium depth propagation",
-  "start_sha": "013dfa68a8de55307ebcc710ba0890c429e3bd5b",
-  "end_sha": "fe4c2be04459f3813b51d87dabb701090cfa9818",
-  "last_good_commit": "013dfa68a8de55307ebcc710ba0890c429e3bd5b",
+  "current_area": "Home — coordinated icon material/depth polish",
+  "start_sha": "eb3b8afac6f5ae0b104a8ed4e5efb1587c639cec",
+  "end_sha": "3e9ad27c2a9c98cb6564ccfda3c63786a6549f83",
+  "last_good_commit": "eb3b8afac6f5ae0b104a8ed4e5efb1587c639cec",
   "visual_quality_score": 72,
-  "runtime_files_changed": ["viaggi/index.html"],
+  "runtime_files_changed": ["assets/categories-v2/auto.svg", "assets/categories-v2/food.svg", "assets/categories-v2/money.svg"],
   "tests": {
-    "previous_debt": "Casa package is certified public green through state head 013dfa68; Pages completed SUCCESS.",
-    "pass_1": "Propagated shared premium category shell to Viaggi: layered navy hero, physical search surface, app-card Z separation and contact shadows.",
-    "pass_2": "Added restrained sky-blue travel ambient response, layered summary surfaces, proof accents and stronger primary-card hierarchy.",
-    "pass_3": "Aligned section hierarchy, featured card scale, icon depth and responsive polish with the established premium category system while preserving approved Travel icon/content.",
-    "responsive": "Existing 760/560 geometry preserved; <=560px primary cards compact, shared shell static behavior retained, reduced-motion explicitly suppresses icon transforms.",
-    "deploy": "PENDING: runtime commit fe4c2be written; Pages success required before public score certification."
+    "previous_debt": "eb3b8afa Travel/logo/business package is certified Pages SUCCESS.",
+    "pass_1": "Auto: increased glass/rim-light separation, added restrained ground bounce and stronger body highlight without changing approved silhouette.",
+    "pass_2": "Food: strengthened ceramic specular response, plate edge separation and ingredient highlights while keeping natural green accent restrained.",
+    "pass_3": "Money: sharpened wallet edge light, coin highlight, clasp contrast and warm contact bounce while keeping gold controlled.",
+    "responsive": "All three assets preserve the 180x180 viewBox and existing Home sizing rules; no layout or content changes.",
+    "deploy": "PENDING: runtime head 3e9ad27c written; Pages success required before public score certification."
   },
-  "blocker": "Public browser renderer remains unavailable to this executor; GitHub Pages success plus public URL is the deploy verification gate.",
-  "previous_debt": "Casa is certified green; current Viaggi package awaits deployment.",
-  "next_action": "Certify Pages for Viaggi; if green, propagate premium shell to the next visually weakest category while preserving content and approved icons.",
-  "home_visual_status": "FEATURED_HIERARCHY_PUBLIC_GREEN",
-  "category_visual_status": "AUTO_FOOD_MONEY_EVENTS_DOCUMENTS_CASA_PUBLIC_GREEN_VIAGGI_PREMIUM_SHELL_IN_HEAD_DEPLOY_PENDING"
+  "blocker": "Public browser renderer is unavailable to this executor; GitHub Pages success is the deploy verification gate.",
+  "previous_debt": "Previous head eb3b8afa is public green; current three-icon Home package awaits deployment.",
+  "next_action": "Certify Pages for 3e9ad27c; then execute the promised Home card/layout + 390/430 polish using the shared runtime styling path, not another isolated icon pass.",
+  "home_visual_status": "THREE_ICON_MATERIAL_PASS_IN_HEAD_DEPLOY_PENDING",
+  "category_visual_status": "PREMIUM_CATEGORY_SHELLS_PRESERVED"
 }
