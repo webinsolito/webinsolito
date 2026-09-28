@@ -1,21 +1,28 @@
 {
-  "current_area": "Home visible premium depth recovery",
-  "start_sha": "c8fe36f4e1fb1613926687827e3f95cfc7dc277a",
+  "current_area": "Home V8 visible recovery — user-reported zero-delta debt",
+  "start_sha": "0e897cc116efb3fe2a379df86d93a0a19e064a66",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "c8fe36f4e1fb1613926687827e3f95cfc7dc277a",
+  "last_good_commit": "0e897cc116efb3fe2a379df86d93a0a19e064a66",
   "visual_quality_score": 74,
-  "runtime_files_changed": ["assets/home-search-20260925.js"],
+  "runtime_files_changed": [
+    "index.html",
+    "assets/home-visual-v8.css",
+    "assets/home-search-20260925.js",
+    "sw.js"
+  ],
   "tests": {
-    "previous_debt": "User reported zero perceptible visual change; recent category-only passes did not materially change the Home they judge.",
-    "pass_1": "Rebuilt Home hero hierarchy with stronger navy/ivory lighting, larger 3D stage and deeper orbit plinths.",
-    "pass_2": "Rebuilt Home category presentation with a material panel, larger icon plinths, stronger Z hierarchy and coordinated shadows.",
-    "pass_3": "Added explicit mobile depth treatment for 390/430-class widths and preserved reduced-motion behavior.",
-    "deploy": "FINAL_HEAD requires Pages SUCCESS before public certification."
+    "previous_debt": "User reported the public Home looked graphically unchanged; category-only passes were not satisfying the visible gate.",
+    "regression_fix": "Restored the full pre-reset home-search-20260925.js from c8fe36f4 so the visual recovery does not simplify or regress intent search.",
+    "pass_1": "Hero V8: substantially larger physical stage, stronger layered light, material orbit cards and deeper logo plinth.",
+    "pass_2": "Category V8: warm ivory gallery, dark sculpted category objects, explicit 3D icon plinths and cream physical title slabs.",
+    "pass_3": "Mobile 390/430: Auto and Travel become full-width anchor cards while remaining categories stay two-column; dedicated depth reductions preserve readability.",
+    "cache": "New home-visual-v8.css filename plus service-worker cache v30 prevents stale V7 from being the first visible result.",
+    "deploy": "FINAL_HEAD requires Pages SUCCESS and public marker check."
   },
-  "blocker": "None at implementation time; public certification depends on Pages FINAL_HEAD.",
-  "previous_debt": "Closed operationally by moving the visual intervention back to Home instead of continuing category-only polish.",
-  "next_action": "Verify FINAL_HEAD Pages and inspect Home publicly; then fix only the Home assets that remain visibly weak.",
-  "home_visual_status": "HOME_V8_VISIBLE_DEPTH_RECOVERY_IMPLEMENTED",
-  "category_visual_status": "CATEGORY_SHELL_EXISTING_PASSES_PRESERVED",
+  "blocker": "System Chromium cannot access the public site due environment network policy; deployment is verified with GitHub Pages and public HTML/CSS fetch, while the user's eyes remain the authoritative visual gate.",
+  "previous_debt": "OPEN: zero visible Home delta reported by user; this run changes Home itself instead of only category subpages.",
+  "next_action": "Certify FINAL_HEAD on Pages and confirm the public Home exposes homePremiumV8 + home-visual-v8.css. If the user still sees insufficient visual jump, next run remains on Home and changes composition/assets rather than micro-CSS.",
+  "home_visual_status": "HOME_V8_MAJOR_VISIBLE_REDRAW_PENDING_PUBLIC_CERT",
+  "category_visual_status": "CATEGORY_PASSES_PRESERVED",
   "app_shell_visual_status": "UNCHANGED"
 }
