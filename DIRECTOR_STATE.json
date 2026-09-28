@@ -1,13 +1,47 @@
 {
-  "current_area":"SPRINT DELIVERY — Home V12 contrast/density + icon direction proposal",
-  "start_sha":"1765906bd8cb2b7051b7d61228ba38cf3c209306",
-  "end_sha":"FINAL_HEAD",
-  "last_good_commit":"1765906bd8cb2b7051b7d61228ba38cf3c209306",
-  "runtime_files_changed":["assets/home-visual-v12.css","assets/home-icon-preview-v12.js","assets/categories-v3/auto.svg","assets/categories-v3/food.svg","assets/categories-v3/home.svg","sw.js"],
-  "finished_checklist":{"category_name_contrast":{"status":"IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY","proof":"V12 forces dark navy labels on ivory slabs including hover/focus."},"card_density":{"status":"IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY","proof":"V12 reduces card heights/gaps and increases icon-to-card mass on desktop/640/430."},"icon_direction_auto_food_home":{"status":"IMPLEMENTED_AS_PROPOSAL_PENDING_USER_APPROVAL","proof":"Three new categories-v3 assets are swapped only on Home by home-icon-preview-v12.js; remaining nine stay unchanged."},"search_routing":{"status":"UNCHANGED_REQUIRES_FINAL_PUBLIC_SMOKE","proof":"No search/apps/category routing source modified."},"cache_delivery":{"status":"IMPLEMENTED","proof":"SW cache v34 precaches/injects V12 CSS+JS and v3 proposal assets."}},
-  "visual_verification":{"before":"User-observed Chrome 28/09 ~13:50: low-contrast category labels, oversized cards/empty space, inconsistent Travel asset.","local_browser_attempt":"Chromium/Playwright discovered but outbound navigation is blocked by administrator in this runtime.","after":"NOT YET PUBLICLY CERTIFIED — requires Pages deployment and same-viewport screenshot."},
-  "blocker":"Public screenshot capture from this runtime is network-blocked; do not increase visual score without external/public visual proof.",
-  "next_action":"Verify FINAL_HEAD Pages deployment; then public desktop + 430/390 smoke/screenshot. Ask user to approve Auto/Food/Casa direction before extending it to remaining nine; after approval harmonize Travel first.",
-  "home_visual_status":"HOME_V12_IMPLEMENTED_PENDING_PUBLIC_VISUAL_CERT_AND_ICON_APPROVAL",
-  "category_visual_status":"SUBPAGES_FROZEN_DURING_HOME_LOCK"
+  "current_area": "SPRINT DELIVERY — Home V12 direct delivery + isolated Auto/Food/Casa preview",
+  "start_sha": "bc98a9a54a99690a5a2d3d767caa1eba472541b9",
+  "end_sha": "FINAL_HEAD",
+  "last_good_commit": "bc98a9a54a99690a5a2d3d767caa1eba472541b9",
+  "runtime_files_changed": [
+    "index.html",
+    "assets/home-icon-preview-v12.js",
+    "sw.js",
+    "DIRECTOR_STATE.json"
+  ],
+  "finished_checklist": {
+    "category_name_contrast": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "V12 forces dark navy labels on ivory slabs including hover/focus."
+    },
+    "card_density": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "V12 reduces card heights/gaps and increases icon-to-card mass on desktop/640/430."
+    },
+    "icon_direction_auto_food_home": {
+      "status": "IMPLEMENTED_AS_ISOLATED_PREVIEW_PENDING_USER_APPROVAL",
+      "proof": "Auto/Food/Casa v3 assets activate only with ?iconPreview=v12; normal Home keeps the existing production icon family until approval."
+    },
+    "search_routing": {
+      "status": "UNCHANGED_REQUIRES_FINAL_PUBLIC_SMOKE",
+      "proof": "No search/apps/category routing source modified."
+    },
+    "cache_delivery": {
+      "status": "IMPLEMENTED",
+      "proof": "Service worker bumped to v35; legacy cached Home navigation still receives V12 while fresh index directly loads it."
+    },
+    "direct_home_delivery": {
+      "status": "IMPLEMENTED",
+      "proof": "index.html now directly loads Home V10/V11/V12 CSS on first navigation; no service-worker-controlled second load is required."
+    }
+  },
+  "visual_verification": {
+    "before": "User-observed Chrome 28/09 ~13:50: low-contrast category labels, oversized cards/empty space, inconsistent Travel asset.",
+    "implementation": "V12 contrast/density CSS is now first-load direct in index; icon proposal is isolated behind ?iconPreview=v12.",
+    "after": "PUBLIC DEPLOY/ROUTING TO VERIFY; public screenshot capture remains unavailable from the current browser runtime."
+  },
+  "blocker": "Direct public screenshot capture is unavailable in the current browser runtime; do not claim visual certification from source alone.",
+  "next_action": "Verify Pages success on FINAL_HEAD and public Home response/routing. User to inspect normal Home contrast/density and the ?iconPreview=v12 Auto/Food/Casa proposal; extend icon family only after explicit approval.",
+  "home_visual_status": "HOME_V12_DIRECT_DELIVERY_PENDING_PUBLIC_VISUAL_CERT_AND_ICON_APPROVAL",
+  "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK"
 }
