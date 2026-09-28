@@ -1,23 +1,23 @@
 {
-  "current_area": "HOME LOCK — V10 tactile 3D gallery",
-  "start_sha": "e68e8324112f7f416ffed730d64c6381b9140a68",
+  "current_area": "HOME LOCK — V11 icon art direction and optical alignment",
+  "start_sha": "2246612b789804ed0a420910b82f4fc287e66d77",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "e68e8324112f7f416ffed730d64c6381b9140a68",
-  "visual_quality_score": 78,
-  "runtime_files_changed": ["assets/home-visual-v10.css", "sw.js"],
+  "last_good_commit": "2246612b789804ed0a420910b82f4fc287e66d77",
+  "visual_quality_score": 81,
+  "runtime_files_changed": ["assets/home-visual-v11.css", "sw.js"],
   "tests": {
-    "previous_debt": "HOME LOCK remains active; V9 composition is preserved while the next visible weakness is flatness/inconsistent physicality of icon staging.",
-    "pass_1": "Hero stage rebuilt visually as a physical desk/display: stronger elliptical base, double ring, inset center object, framed orbit objects and deeper contact shadows.",
-    "pass_2": "Home category cards receive coordinated accent lighting, sculpted rectangular icon plinths, stronger contact shadows, layered ivory title slabs and more material separation.",
-    "pass_3": "390/430 mobile gets deliberate compact stage, horizontal trust chips, stronger anchor-card depth and tighter physical title treatment.",
-    "regression": "Search JS, apps data and category href generation are untouched; V10 is CSS-only on top of V9.",
-    "cache": "Service worker cache v32 precaches V10 and injects its versioned stylesheet on Home navigation to avoid stale V9-only delivery.",
-    "deploy": "FINAL_HEAD must reach GitHub Pages success before public certification."
+    "previous_debt": "V10 made the staging physical; next promised Home debt was inconsistent apparent mass, scale and alignment among category icon assets.",
+    "pass_1": "Applied per-category optical scale/alignment corrections across all twelve Home icons while preserving the approved icon family and source assets.",
+    "pass_2": "Unified hero center/orbit icon material language with the category gallery: inset surfaces, controlled highlight, contact depth and individual optical scale.",
+    "pass_3": "Strengthened bento anchor hierarchy and added dedicated 640/430 mobile icon-plinth reductions so the treatment remains physical rather than crowded.",
+    "regression": "Search JS, apps.json, category href generation and category subpages untouched; V11 is Home visual CSS only.",
+    "cache": "Service worker cache v33 precaches and injects home-visual-v11.css on Home navigation, preserving v9/v10 layers and preventing stale V10-only delivery.",
+    "deploy": "FINAL_HEAD requires GitHub Pages success before public certification."
   },
   "blocker": "No executable screenshot browser is available in this connector runtime; source/deploy markers are verifiable, final visual acceptance remains user-authoritative.",
-  "previous_debt": "ACTIVE HOME LOCK: every run must change Home until explicit user approval.",
-  "next_action": "Keep Home locked. Next run should inspect public V10 delivery and, if still not approved, focus on the weakest category icon assets and their per-category scale/alignment rather than more global shadows.",
-  "home_visual_status": "HOME_V10_TACTILE_3D_PENDING_PUBLIC_CERT",
+  "previous_debt": "ACTIVE HOME LOCK: every run changes Home until explicit user approval.",
+  "next_action": "Keep Home locked. After V11 public certification, target the remaining weakest visible Home composition/asset mismatch; avoid global shadow-only polish and do not move to subpages.",
+  "home_visual_status": "HOME_V11_ICON_ART_DIRECTION_PENDING_PUBLIC_CERT",
   "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
   "app_shell_visual_status": "FROZEN_DURING_HOME_LOCK"
 }
