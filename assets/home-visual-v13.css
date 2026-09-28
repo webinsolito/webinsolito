@@ -1,0 +1,194 @@
+/* WEBINSOLITO HOME V13 — visible composition reset, 2026-09-28
+   Goal: unmistakable delta without changing search or routing. */
+:root{--wi-v13-ink:#0a2237;--wi-v13-ink2:#102f4a;--wi-v13-ivory:#f6eddf;--wi-v13-ivory2:#eadac4;--wi-v13-gold:#c9954f}
+body{
+  background:
+    radial-gradient(1000px 640px at -8% -4%,rgba(82,139,197,.24),transparent 58%),
+    radial-gradient(780px 560px at 104% 4%,rgba(201,149,79,.14),transparent 62%),
+    linear-gradient(180deg,#091725 0%,#06111d 58%,#040b12 100%)!important
+}
+main.wrap{max-width:1460px!important;padding-top:22px!important}
+main.homePremiumV9 .top{
+  min-height:60px!important;border-radius:18px!important;background:rgba(10,28,44,.72)!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.05)!important
+}
+
+/* PASS 1 — hero becomes a tighter editorial/product composition */
+main.homePremiumV9 .hero{
+  grid-template-columns:minmax(0,1.18fr) minmax(360px,.82fr)!important;
+  min-height:488px!important;margin:18px 0 28px!important;padding:52px 54px!important;
+  border-radius:36px!important;border-color:rgba(177,203,226,.22)!important;overflow:hidden!important;
+  background:
+    radial-gradient(600px 360px at 18% 16%,rgba(107,162,218,.16),transparent 60%),
+    radial-gradient(420px 320px at 86% 24%,rgba(201,149,79,.10),transparent 64%),
+    linear-gradient(145deg,#16344f 0%,#0a2237 52%,#071827 100%)!important;
+  box-shadow:0 42px 118px rgba(0,0,0,.40),inset 0 1px rgba(255,255,255,.08)!important
+}
+main.homePremiumV9 .heroCopy{max-width:760px!important}
+main.homePremiumV9 .heroEyebrow{margin-bottom:16px!important}
+main.homePremiumV9 .hero h1{
+  max-width:760px!important;font-size:clamp(58px,5.6vw,88px)!important;line-height:.90!important;
+  letter-spacing:-.054em!important
+}
+main.homePremiumV9 .heroLead{margin-top:12px!important;font-size:clamp(27px,2.6vw,40px)!important}
+main.homePremiumV9 .hero p{margin-top:16px!important;max-width:610px!important}
+main.homePremiumV9 .heroTrust{margin-top:20px!important}
+main.homePremiumV9 .searchBox{margin-top:24px!important}
+main.homePremiumV9 .searchShell{height:66px!important;border-radius:20px!important}
+main.homePremiumV9 .heroStage{
+  height:350px!important;align-self:center!important;border-radius:44px!important;
+  background:
+    radial-gradient(ellipse at 50% 55%,rgba(126,171,211,.14),transparent 58%),
+    linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008))!important;
+  border:1px solid rgba(180,204,225,.10)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.05),0 30px 90px rgba(0,0,0,.20)!important
+}
+main.homePremiumV9 .heroStage:before{
+  width:78%!important;height:42%!important;top:69%!important;background:radial-gradient(ellipse,rgba(0,0,0,.46),transparent 66%)!important
+}
+main.homePremiumV9 .stageGlow{width:320px!important;height:320px!important}
+main.homePremiumV9 .stageRing{width:276px!important;height:276px!important}
+main.homePremiumV9 .stageCenter{width:126px!important;height:126px!important;border-radius:30px!important}
+main.homePremiumV9 .stageCenter img{width:84px!important;height:84px!important}
+main.homePremiumV9 .orbit{width:94px!important;height:94px!important;border-radius:24px!important}
+main.homePremiumV9 .orbit img{width:70px!important;height:70px!important}
+main.homePremiumV9 .o1{left:8%!important;top:12%!important}
+main.homePremiumV9 .o2{right:8%!important;top:10%!important}
+main.homePremiumV9 .o3{left:12%!important;bottom:7%!important}
+main.homePremiumV9 .o4{right:10%!important;bottom:8%!important}
+
+/* PASS 2 — categories are now a compact product shelf, not tall dark tiles */
+main.homePremiumV9 .categoryPanel{
+  margin-top:0!important;padding:30px!important;border-radius:34px!important;
+  border:1px solid rgba(174,199,222,.16)!important;
+  background:
+    radial-gradient(700px 260px at 10% 0%,rgba(104,158,211,.12),transparent 62%),
+    linear-gradient(180deg,rgba(10,29,46,.96),rgba(5,17,29,.98))!important;
+  box-shadow:0 34px 96px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.05)!important
+}
+main.homePremiumV9 .categoryKicker{margin-bottom:8px!important}
+main.homePremiumV9 .gridHead{margin-bottom:18px!important;padding-bottom:14px!important}
+main.homePremiumV9 .gridHead h2{color:#fff8ec!important;font-size:34px!important}
+main.homePremiumV9 .gridHead span{color:#9fb2c3!important}
+main.homePremiumV9 .categoryPanel .cats{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important
+}
+main.homePremiumV9 .categoryPanel .cat,
+main.homePremiumV9 .categoryPanel .cat:nth-child(1),
+main.homePremiumV9 .categoryPanel .cat:nth-child(6),
+main.homePremiumV9 .categoryPanel .cat:nth-child(n+7){
+  grid-column:auto!important;min-height:188px!important;padding:0!important;border-radius:24px!important;overflow:hidden!important;
+  border:1px solid rgba(93,71,45,.15)!important;
+  background:linear-gradient(155deg,#fffaf0 0%,#f1e5d3 58%,#e4d2ba 100%)!important;
+  box-shadow:0 22px 48px rgba(0,0,0,.24),inset 0 1px #fff!important;
+  transform:perspective(1000px) translateY(var(--lift)) rotateX(var(--rx)) rotateY(var(--ry))!important
+}
+main.homePremiumV9 .categoryPanel .cat:before{
+  inset:10px 10px 54px!important;border-radius:18px!important;
+  background:
+    radial-gradient(circle at 74% 14%,color-mix(in srgb,var(--a) 26%,transparent),transparent 38%),
+    linear-gradient(150deg,#173b59,#0c2942 62%,#071b2c)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),inset 0 -18px 34px rgba(0,0,0,.16)!important
+}
+main.homePremiumV9 .categoryPanel .cat:after{
+  inset:10px 10px 54px!important;border-radius:18px!important;
+  background:linear-gradient(125deg,rgba(255,255,255,.09),transparent 36%,transparent 70%,rgba(201,149,79,.04))!important;
+  mix-blend-mode:normal!important;opacity:1!important
+}
+main.homePremiumV9 .categoryPanel .catArt,
+main.homePremiumV9 .categoryPanel .cat:nth-child(1) .catArt,
+main.homePremiumV9 .categoryPanel .cat:nth-child(6) .catArt,
+main.homePremiumV9 .categoryPanel .cat:nth-child(n+7) .catArt{
+  top:39%!important;width:148px!important;height:116px!important;
+  filter:drop-shadow(0 18px 15px rgba(0,0,0,.34))!important
+}
+main.homePremiumV9 .categoryPanel .catArt:before{
+  width:78%!important;height:20px!important;top:auto!important;bottom:-8px!important;border-radius:50%!important;
+  background:rgba(0,0,0,.30)!important;filter:blur(8px)!important;opacity:.82!important
+}
+main.homePremiumV9 .categoryPanel .catArt:after{display:none!important}
+main.homePremiumV9 .categoryPanel .catArt img{
+  width:100%!important;height:100%!important;object-fit:contain!important;
+  filter:drop-shadow(0 13px 10px rgba(0,0,0,.26)) saturate(.96) contrast(1.035)!important
+}
+main.homePremiumV9 .categoryPanel .cat strong,
+main.homePremiumV9 .categoryPanel .cat:nth-child(1) strong,
+main.homePremiumV9 .categoryPanel .cat:nth-child(6) strong{
+  position:absolute!important;left:14px!important;right:14px!important;bottom:11px!important;
+  display:flex!important;align-items:center!important;min-height:32px!important;margin:0!important;padding:0 2px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;color:#0b2940!important;
+  font-family:Georgia,"Times New Roman",serif!important;font-size:18px!important;font-weight:800!important;
+  line-height:1!important;text-shadow:none!important;letter-spacing:-.025em!important
+}
+main.homePremiumV9 .categoryPanel .cat:hover,
+main.homePremiumV9 .categoryPanel .cat:focus-visible{
+  --lift:-8px!important;border-color:rgba(201,149,79,.34)!important;
+  box-shadow:0 30px 64px rgba(0,0,0,.31),0 0 0 1px rgba(201,149,79,.08),inset 0 1px #fff!important
+}
+main.homePremiumV9 .categoryPanel .cat:hover strong,
+main.homePremiumV9 .categoryPanel .cat:focus-visible strong{color:#071a2b!important;background:transparent!important}
+main.homePremiumV9 .categoryPanel .cat:hover .catArt{
+  transform:translate3d(calc(-50% + var(--ix)),calc(-54% + var(--iy)),32px) scale(1.04)!important
+}
+main.homePremiumV9 .cat[data-category="auto"] .catArt img{transform:scale(1.08)!important}
+main.homePremiumV9 .cat[data-category="food"] .catArt img{transform:scale(1.02)!important}
+main.homePremiumV9 .cat[data-category="travel"] .catArt{width:170px!important;height:112px!important}
+main.homePremiumV9 .cat[data-category="travel"] .catArt img{transform:scale(.94)!important}
+main.homePremiumV9 .cat[data-category="territory"] .catArt img{transform:scale(.95)!important}
+
+/* PASS 3 — deliberate tablet/mobile proportions */
+@media(max-width:1040px){
+  main.homePremiumV9 .hero{grid-template-columns:1fr .72fr!important;padding:44px 38px!important}
+  main.homePremiumV9 .heroStage{height:320px!important}
+  main.homePremiumV9 .categoryPanel .cats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:820px){
+  main.homePremiumV9 .hero{grid-template-columns:1fr!important;padding:38px 26px 28px!important}
+  main.homePremiumV9 .heroCopy{text-align:center!important;align-items:center!important}
+  main.homePremiumV9 .heroStage{height:250px!important;margin-top:8px!important}
+  main.homePremiumV9 .stageRing{width:210px!important;height:210px!important}
+  main.homePremiumV9 .stageCenter{width:96px!important;height:96px!important}
+  main.homePremiumV9 .stageCenter img{width:64px!important;height:64px!important}
+  main.homePremiumV9 .orbit{width:68px!important;height:68px!important;border-radius:18px!important}
+  main.homePremiumV9 .orbit img{width:50px!important;height:50px!important}
+}
+@media(max-width:640px){
+  main.wrap{padding-left:11px!important;padding-right:11px!important}
+  main.homePremiumV9 .hero{margin-top:10px!important;margin-bottom:18px!important;padding:30px 16px 22px!important;border-radius:28px!important}
+  main.homePremiumV9 .hero h1{font-size:clamp(42px,12.4vw,54px)!important}
+  main.homePremiumV9 .heroLead{font-size:clamp(24px,7.4vw,31px)!important}
+  main.homePremiumV9 .heroStage{height:218px!important;border-radius:28px!important}
+  main.homePremiumV9 .categoryPanel{padding:20px 10px 16px!important;border-radius:28px!important}
+  main.homePremiumV9 .gridHead{margin-bottom:14px!important}
+  main.homePremiumV9 .gridHead h2{font-size:27px!important}
+  main.homePremiumV9 .categoryPanel .cats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  main.homePremiumV9 .categoryPanel .cat,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(1),
+  main.homePremiumV9 .categoryPanel .cat:nth-child(6),
+  main.homePremiumV9 .categoryPanel .cat:nth-child(n+7){min-height:164px!important;border-radius:19px!important}
+  main.homePremiumV9 .categoryPanel .cat:before,
+  main.homePremiumV9 .categoryPanel .cat:after{inset:8px 8px 47px!important;border-radius:14px!important}
+  main.homePremiumV9 .categoryPanel .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(1) .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(6) .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(n+7) .catArt{width:126px!important;height:96px!important;top:38%!important}
+  main.homePremiumV9 .categoryPanel .cat strong,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(1) strong,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(6) strong{left:11px!important;right:11px!important;bottom:9px!important;font-size:16px!important;min-height:27px!important}
+  main.homePremiumV9 .cat[data-category="travel"] .catArt{width:136px!important;height:92px!important}
+}
+@media(max-width:430px){
+  main.homePremiumV9 .hero{padding-left:14px!important;padding-right:14px!important}
+  main.homePremiumV9 .categoryPanel .cat,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(1),
+  main.homePremiumV9 .categoryPanel .cat:nth-child(6),
+  main.homePremiumV9 .categoryPanel .cat:nth-child(n+7){min-height:156px!important}
+  main.homePremiumV9 .categoryPanel .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(1) .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(6) .catArt,
+  main.homePremiumV9 .categoryPanel .cat:nth-child(n+7) .catArt{width:118px!important;height:90px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  main.homePremiumV9 .categoryPanel .cat,
+  main.homePremiumV9 .categoryPanel .catArt{transition:none!important}
+}

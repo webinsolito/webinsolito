@@ -1,11 +1,11 @@
 {
-  "current_area": "SPRINT DELIVERY — Home V12 direct delivery + isolated Auto/Food/Casa preview",
-  "start_sha": "bc98a9a54a99690a5a2d3d767caa1eba472541b9",
+  "current_area": "SPRINT DELIVERY — Home V13 visible composition reset",
+  "start_sha": "0017199d3b5c778cbdb7b00445680bd9884e5e6e",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "bc98a9a54a99690a5a2d3d767caa1eba472541b9",
+  "last_good_commit": "0017199d3b5c778cbdb7b00445680bd9884e5e6e",
   "runtime_files_changed": [
     "index.html",
-    "assets/home-icon-preview-v12.js",
+    "assets/home-visual-v13.css",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
@@ -23,25 +23,38 @@
       "proof": "Auto/Food/Casa v3 assets activate only with ?iconPreview=v12; normal Home keeps the existing production icon family until approval."
     },
     "search_routing": {
-      "status": "UNCHANGED_REQUIRES_FINAL_PUBLIC_SMOKE",
-      "proof": "No search/apps/category routing source modified."
+      "status": "SOURCE_UNCHANGED_REQUIRES_PUBLIC_SMOKE",
+      "proof": "Search JS, apps.json and category href generation are untouched by V13."
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "Service worker bumped to v35; legacy cached Home navigation still receives V12 while fresh index directly loads it."
+      "proof": "V13 is directly linked by index and precached/injected by service worker v36."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
       "proof": "index.html now directly loads Home V10/V11/V12 CSS on first navigation; no service-worker-controlled second load is required."
+    },
+    "home_composition_v13": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Hero geometry/height, product-stage proportions and category gallery composition are structurally different from V12."
+    },
+    "category_cards_v13": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "12-card gallery changed to compact 4/3/2-column product-shelf system with ivory cards, navy inset stages, larger objects and dark navy labels."
+    },
+    "mobile_390_430_v13": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Dedicated <=640 and <=430 rules reduce cards to 164/156px and preserve 2-column density."
     }
   },
   "visual_verification": {
-    "before": "User-observed Chrome 28/09 ~13:50: low-contrast category labels, oversized cards/empty space, inconsistent Travel asset.",
-    "implementation": "V12 contrast/density CSS is now first-load direct in index; icon proposal is isolated behind ?iconPreview=v12.",
-    "after": "PUBLIC DEPLOY/ROUTING TO VERIFY; public screenshot capture remains unavailable from the current browser runtime."
+    "before": "User explicitly reported V12 looked unchanged.",
+    "implementation": "V13 changes composition, gallery material system, card proportions, icon mass and mobile density rather than tuning shadows.",
+    "after": "NOT YET PUBLICLY CERTIFIED — verify Pages FINAL_HEAD and public markers; user visual judgment remains required."
   },
-  "blocker": "Direct public screenshot capture is unavailable in the current browser runtime; do not claim visual certification from source alone.",
-  "next_action": "Verify Pages success on FINAL_HEAD and public Home response/routing. User to inspect normal Home contrast/density and the ?iconPreview=v12 Auto/Food/Casa proposal; extend icon family only after explicit approval.",
-  "home_visual_status": "HOME_V12_DIRECT_DELIVERY_PENDING_PUBLIC_VISUAL_CERT_AND_ICON_APPROVAL",
-  "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK"
+  "blocker": "Public screenshot capture is not available in the current browser runtime; do not claim visual certification from source alone.",
+  "next_action": "Verify FINAL_HEAD Pages success and public delivery. Then ask user to judge the visibly different normal Home. Keep Auto/Food/Casa v3 asset proposal isolated until explicit approval.",
+  "home_visual_status": "HOME_V13_VISIBLE_RESET_PENDING_PUBLIC_VISUAL_CERT",
+  "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
+  "previous_debt": "USER VISUAL FAIL: user reported no visible improvement after V12; previous micro-polish gets no visual credit."
 }
