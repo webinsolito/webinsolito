@@ -1,27 +1,23 @@
 {
-  "current_area": "HOME LOCK — V9 composition + bento depth",
-  "start_sha": "9a94bffcdf032e2ed3ebbd06235b395145c77576",
+  "current_area": "HOME LOCK — V10 tactile 3D gallery",
+  "start_sha": "e68e8324112f7f416ffed730d64c6381b9140a68",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "9a94bffcdf032e2ed3ebbd06235b395145c77576",
-  "visual_quality_score": 74,
-  "runtime_files_changed": [
-    "index.html",
-    "assets/home-visual-v9.css",
-    "sw.js"
-  ],
+  "last_good_commit": "e68e8324112f7f416ffed730d64c6381b9140a68",
+  "visual_quality_score": 78,
+  "runtime_files_changed": ["assets/home-visual-v10.css", "sw.js"],
   "tests": {
-    "previous_debt": "User explicitly requested Home improvement and noted prior improvement streams did not visibly modify Home.",
-    "pass_1": "Hero composition changed substantially: floating premium header, larger asymmetric hero, ivory search control, larger 3D display cabinet on the right.",
-    "pass_2": "Category Home grid changed from prior repeated layout to a new bento composition with 7/5, 4/4/4, 8/4 and 6/6 spans, physical icon plinths and ivory title slabs.",
-    "pass_3": "Mobile 390/430 makes Auto, Food and Travel full-width anchors with remaining categories in two columns; dedicated compact search and stage dimensions.",
-    "regression": "Search engine JS untouched; category href generation untouched; only Home styling + cache delivery changed.",
-    "cache": "New home-visual-v9.css filename and service worker cache v31 prevent stale V8-only delivery.",
-    "deploy": "FINAL_HEAD must reach Pages SUCCESS; public visual sign-off remains user-authoritative."
+    "previous_debt": "HOME LOCK remains active; V9 composition is preserved while the next visible weakness is flatness/inconsistent physicality of icon staging.",
+    "pass_1": "Hero stage rebuilt visually as a physical desk/display: stronger elliptical base, double ring, inset center object, framed orbit objects and deeper contact shadows.",
+    "pass_2": "Home category cards receive coordinated accent lighting, sculpted rectangular icon plinths, stronger contact shadows, layered ivory title slabs and more material separation.",
+    "pass_3": "390/430 mobile gets deliberate compact stage, horizontal trust chips, stronger anchor-card depth and tighter physical title treatment.",
+    "regression": "Search JS, apps data and category href generation are untouched; V10 is CSS-only on top of V9.",
+    "cache": "Service worker cache v32 precaches V10 and injects its versioned stylesheet on Home navigation to avoid stale V9-only delivery.",
+    "deploy": "FINAL_HEAD must reach GitHub Pages success before public certification."
   },
-  "blocker": "No executable public-browser renderer in current environment; GitHub Pages deployment and source markers are verifiable, visual acceptance remains user-authoritative.",
-  "previous_debt": "ACTIVE HOME LOCK: Home must visibly change every run until user explicitly approves it.",
-  "next_action": "After FINAL_HEAD is public, keep work on Home only. If user still sees insufficient change, next run alters icon asset treatment/composition rather than adding more shadow-only polish.",
-  "home_visual_status": "HOME_V9_COMPOSITION_BENTO_PENDING_PUBLIC_CERT",
+  "blocker": "No executable screenshot browser is available in this connector runtime; source/deploy markers are verifiable, final visual acceptance remains user-authoritative.",
+  "previous_debt": "ACTIVE HOME LOCK: every run must change Home until explicit user approval.",
+  "next_action": "Keep Home locked. Next run should inspect public V10 delivery and, if still not approved, focus on the weakest category icon assets and their per-category scale/alignment rather than more global shadows.",
+  "home_visual_status": "HOME_V10_TACTILE_3D_PENDING_PUBLIC_CERT",
   "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
   "app_shell_visual_status": "FROZEN_DURING_HOME_LOCK"
 }
