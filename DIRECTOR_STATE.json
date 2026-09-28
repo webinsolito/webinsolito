@@ -1,23 +1,13 @@
 {
-  "current_area": "HOME LOCK — V11 icon art direction and optical alignment",
-  "start_sha": "2246612b789804ed0a420910b82f4fc287e66d77",
-  "end_sha": "FINAL_HEAD",
-  "last_good_commit": "2246612b789804ed0a420910b82f4fc287e66d77",
-  "visual_quality_score": 81,
-  "runtime_files_changed": ["assets/home-visual-v11.css", "sw.js"],
-  "tests": {
-    "previous_debt": "V10 made the staging physical; next promised Home debt was inconsistent apparent mass, scale and alignment among category icon assets.",
-    "pass_1": "Applied per-category optical scale/alignment corrections across all twelve Home icons while preserving the approved icon family and source assets.",
-    "pass_2": "Unified hero center/orbit icon material language with the category gallery: inset surfaces, controlled highlight, contact depth and individual optical scale.",
-    "pass_3": "Strengthened bento anchor hierarchy and added dedicated 640/430 mobile icon-plinth reductions so the treatment remains physical rather than crowded.",
-    "regression": "Search JS, apps.json, category href generation and category subpages untouched; V11 is Home visual CSS only.",
-    "cache": "Service worker cache v33 precaches and injects home-visual-v11.css on Home navigation, preserving v9/v10 layers and preventing stale V10-only delivery.",
-    "deploy": "FINAL_HEAD requires GitHub Pages success before public certification."
-  },
-  "blocker": "No executable screenshot browser is available in this connector runtime; source/deploy markers are verifiable, final visual acceptance remains user-authoritative.",
-  "previous_debt": "ACTIVE HOME LOCK: every run changes Home until explicit user approval.",
-  "next_action": "Keep Home locked. After V11 public certification, target the remaining weakest visible Home composition/asset mismatch; avoid global shadow-only polish and do not move to subpages.",
-  "home_visual_status": "HOME_V11_ICON_ART_DIRECTION_PENDING_PUBLIC_CERT",
-  "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
-  "app_shell_visual_status": "FROZEN_DURING_HOME_LOCK"
+  "current_area":"SPRINT DELIVERY — Home V12 contrast/density + icon direction proposal",
+  "start_sha":"1765906bd8cb2b7051b7d61228ba38cf3c209306",
+  "end_sha":"FINAL_HEAD",
+  "last_good_commit":"1765906bd8cb2b7051b7d61228ba38cf3c209306",
+  "runtime_files_changed":["assets/home-visual-v12.css","assets/home-icon-preview-v12.js","assets/categories-v3/auto.svg","assets/categories-v3/food.svg","assets/categories-v3/home.svg","sw.js"],
+  "finished_checklist":{"category_name_contrast":{"status":"IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY","proof":"V12 forces dark navy labels on ivory slabs including hover/focus."},"card_density":{"status":"IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY","proof":"V12 reduces card heights/gaps and increases icon-to-card mass on desktop/640/430."},"icon_direction_auto_food_home":{"status":"IMPLEMENTED_AS_PROPOSAL_PENDING_USER_APPROVAL","proof":"Three new categories-v3 assets are swapped only on Home by home-icon-preview-v12.js; remaining nine stay unchanged."},"search_routing":{"status":"UNCHANGED_REQUIRES_FINAL_PUBLIC_SMOKE","proof":"No search/apps/category routing source modified."},"cache_delivery":{"status":"IMPLEMENTED","proof":"SW cache v34 precaches/injects V12 CSS+JS and v3 proposal assets."}},
+  "visual_verification":{"before":"User-observed Chrome 28/09 ~13:50: low-contrast category labels, oversized cards/empty space, inconsistent Travel asset.","local_browser_attempt":"Chromium/Playwright discovered but outbound navigation is blocked by administrator in this runtime.","after":"NOT YET PUBLICLY CERTIFIED — requires Pages deployment and same-viewport screenshot."},
+  "blocker":"Public screenshot capture from this runtime is network-blocked; do not increase visual score without external/public visual proof.",
+  "next_action":"Verify FINAL_HEAD Pages deployment; then public desktop + 430/390 smoke/screenshot. Ask user to approve Auto/Food/Casa direction before extending it to remaining nine; after approval harmonize Travel first.",
+  "home_visual_status":"HOME_V12_IMPLEMENTED_PENDING_PUBLIC_VISUAL_CERT_AND_ICON_APPROVAL",
+  "category_visual_status":"SUBPAGES_FROZEN_DURING_HOME_LOCK"
 }
