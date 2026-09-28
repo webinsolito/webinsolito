@@ -1,0 +1,102 @@
+/* WEBINSOLITO HOME V16 — clean premium home, categories moved out */
+:root{--navy:#071522;--navy2:#0b2941;--navy3:#163b59;--ivory:#f7efe2;--ivory2:#eadcc7;--gold:#c7924b;--ink:#0a263d}
+*{box-sizing:border-box}
+body{background:radial-gradient(920px 560px at 0% 0%,rgba(78,133,190,.19),transparent 62%),radial-gradient(760px 520px at 100% 5%,rgba(199,148,76,.11),transparent 64%),linear-gradient(180deg,#091725 0%,#06111c 62%,#040b12 100%)!important}
+main.homeV16{max-width:1400px!important;margin:auto!important;padding:18px 28px 56px!important}
+main.homeV16 .top{min-height:58px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:4px 4px 12px!important;margin:0 0 12px!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+main.homeV16 .brand{font-size:13px!important;letter-spacing:.1em!important}
+main.homeV16 .brand img{width:44px!important;height:44px!important}
+main.homeV16 .topCategories{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 15px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#d9e4ec;text-decoration:none;font-size:11px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.025);transition:.18s ease}
+main.homeV16 .topCategories:hover{border-color:rgba(199,146,75,.42);color:#f0c98d;transform:translateY(-1px)}
+
+main.homeV16 .hero{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1.14fr) minmax(380px,.86fr)!important;gap:44px!important;align-items:center!important;min-height:590px!important;margin:0!important;padding:58px 60px!important;border:1px solid rgba(175,201,223,.18)!important;border-radius:40px!important;background:radial-gradient(660px 400px at 18% 12%,rgba(105,160,216,.17),transparent 62%),radial-gradient(440px 340px at 88% 22%,rgba(199,148,76,.10),transparent 64%),linear-gradient(145deg,#153650 0%,#0a263d 54%,#071827 100%)!important;box-shadow:0 44px 120px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.07)!important;overflow:hidden!important}
+main.homeV16 .hero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,transparent 18%,rgba(255,255,255,.035) 42%,transparent 62%)}
+main.homeV16 .heroCopy{position:relative;z-index:3;max-width:760px!important}
+main.homeV16 .heroEyebrow{display:inline-flex!important;align-items:center!important;gap:10px!important;margin:0 0 18px!important;color:#b7c7d5!important;font-size:10px!important;font-weight:900!important;letter-spacing:.16em!important}
+main.homeV16 .heroEyebrow:before{content:"";width:34px;height:1px;background:linear-gradient(90deg,var(--gold),#edcf9d)}
+main.homeV16 .hero h1{max-width:760px!important;margin:0!important;color:#fff9ef!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(62px,6vw,96px)!important;line-height:.89!important;letter-spacing:-.058em!important;text-shadow:0 16px 42px rgba(0,0,0,.28)!important}
+main.homeV16 .heroLead{margin-top:14px!important;color:#e8bb75!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(28px,2.8vw,43px)!important;line-height:1!important;letter-spacing:-.03em!important}
+main.homeV16 .hero p{max-width:610px!important;margin:18px 0 0!important;color:#afc1cf!important;font-size:14px!important;line-height:1.62!important}
+main.homeV16 .searchBox{position:relative!important;width:100%!important;max-width:690px!important;margin:28px 0 0!important}
+main.homeV16 .searchShell{height:70px!important;display:flex!important;align-items:center!important;gap:14px!important;padding:0 20px!important;border:1px solid rgba(88,66,39,.14)!important;border-radius:22px!important;background:linear-gradient(180deg,#fffaf0,#ecdfcc)!important;box-shadow:0 24px 58px rgba(0,0,0,.34),inset 0 1px #fff!important;transition:.18s ease!important}
+main.homeV16 .searchShell:focus-within{transform:translateY(-2px)!important;border-color:rgba(199,146,75,.5)!important;box-shadow:0 30px 68px rgba(0,0,0,.4),0 0 0 4px rgba(199,146,75,.08),inset 0 1px #fff!important}
+main.homeV16 .search{width:100%!important;border:0!important;outline:0!important;background:transparent!important;color:var(--ink)!important;font-size:16px!important;font-weight:760!important}
+main.homeV16 .search::placeholder{color:#758494!important}
+main.homeV16 .searchIcon{position:relative!important;width:20px!important;height:20px!important;flex:none!important}
+main.homeV16 .searchIcon:before{content:"";position:absolute;width:11px;height:11px;border:2px solid #173752;border-radius:50%;left:0;top:0}
+main.homeV16 .searchIcon:after{content:"";position:absolute;width:8px;height:2px;border-radius:2px;background:#b47e37;transform:rotate(45deg);left:12px;top:14px;transform-origin:left center}
+main.homeV16 .results{top:78px!important;border-radius:20px!important}
+main.homeV16 .heroActions{display:flex!important;align-items:center!important;gap:16px!important;margin-top:22px!important}
+main.homeV16 .categoryCta{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border:1px solid rgba(224,188,130,.24);border-radius:15px;background:linear-gradient(180deg,rgba(224,188,130,.13),rgba(224,188,130,.055));color:#f0cb91;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:.04em;box-shadow:inset 0 1px rgba(255,255,255,.06);transition:.18s ease}
+main.homeV16 .categoryCta:hover{transform:translateY(-2px);border-color:rgba(224,188,130,.45);background:linear-gradient(180deg,rgba(224,188,130,.18),rgba(224,188,130,.075))}
+main.homeV16 .heroNote{color:#8297aa;font-size:10px;font-weight:750;letter-spacing:.04em}
+
+/* soft-premium 3D composition, no card catalogue */
+main.homeV16 .heroStage{position:relative!important;z-index:2!important;height:430px!important;perspective:1100px!important}
+main.homeV16 .stageAura{position:absolute;left:50%;top:48%;width:390px;height:390px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(100,156,211,.19),rgba(199,148,76,.055) 38%,transparent 68%);filter:blur(4px)}
+main.homeV16 .stagePlinth{position:absolute;left:50%;bottom:44px;width:82%;height:90px;transform:translateX(-50%) rotateX(67deg);border-radius:50%;border:1px solid rgba(184,207,226,.16);background:radial-gradient(ellipse,rgba(25,61,91,.72),rgba(5,18,30,.12) 66%,transparent 72%);box-shadow:0 34px 60px rgba(0,0,0,.30),inset 0 1px rgba(255,255,255,.05)}
+main.homeV16 .stageLogo{position:absolute;left:50%;top:50%;width:142px;height:142px;transform:translate(-50%,-50%);display:grid;place-items:center;border:1px solid rgba(224,188,130,.20);border-radius:34px;background:linear-gradient(145deg,#173b59,#0b2942 68%,#071b2c);box-shadow:0 34px 72px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.09),0 0 80px rgba(199,148,76,.055)}
+main.homeV16 .stageLogo:after{content:"";position:absolute;bottom:-18px;width:94px;height:22px;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(8px)}
+main.homeV16 .stageLogo img{width:92px;height:92px;filter:drop-shadow(0 16px 16px rgba(0,0,0,.35))}
+main.homeV16 .stageIcon{position:absolute;display:grid;place-items:center;width:148px;height:118px;border-radius:28px;background:linear-gradient(145deg,rgba(25,61,91,.96),rgba(8,28,46,.98));border:1px solid rgba(175,202,224,.16);box-shadow:0 28px 58px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.08);transform-style:preserve-3d}
+main.homeV16 .stageIcon:after{content:"";position:absolute;bottom:-16px;width:96px;height:18px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(8px)}
+main.homeV16 .stageIcon img{width:124px;height:98px;object-fit:contain;filter:drop-shadow(0 16px 13px rgba(0,0,0,.34)) saturate(.96)}
+main.homeV16 .stageAuto{left:1%;top:16%;transform:rotate(-6deg) translateZ(30px)}
+main.homeV16 .stageFood{right:0;top:12%;transform:rotate(6deg) translateZ(24px)}
+main.homeV16 .stageHome{right:8%;bottom:7%;transform:rotate(-4deg) translateZ(18px)}
+
+main.homeV16 .homeStrip{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:12px!important;margin-top:14px!important}
+main.homeV16 .homeStrip>div{position:relative;min-height:96px;padding:18px 18px 16px 54px;border:1px solid rgba(171,198,220,.12);border-radius:20px;background:linear-gradient(180deg,rgba(14,34,53,.74),rgba(7,21,34,.80));box-shadow:inset 0 1px rgba(255,255,255,.04)}
+main.homeV16 .homeStrip span{position:absolute;left:16px;top:18px;color:#c89957;font-size:10px;font-weight:900;letter-spacing:.08em}
+main.homeV16 .homeStrip strong{display:block;color:#f6efe5;font-family:Georgia,"Times New Roman",serif;font-size:18px}
+main.homeV16 .homeStrip small{display:block;margin-top:5px;color:#8398aa;font-size:10px;line-height:1.35}
+main.homeV16 .footer{margin-top:24px!important}
+
+/* Mobile: still a Home, not a category list */
+@media(max-width:900px){
+  main.homeV16 .hero{grid-template-columns:1fr!important;min-height:0!important;padding:44px 34px 30px!important}
+  main.homeV16 .heroCopy{text-align:center!important;margin:auto!important}
+  main.homeV16 .hero p,main.homeV16 .searchBox{margin-left:auto!important;margin-right:auto!important}
+  main.homeV16 .heroActions{justify-content:center!important}
+  main.homeV16 .heroStage{height:320px!important;margin-top:0!important}
+  main.homeV16 .stageAura{width:300px;height:300px}
+  main.homeV16 .stagePlinth{width:72%;bottom:32px}
+  main.homeV16 .stageLogo{width:112px;height:112px;border-radius:28px}
+  main.homeV16 .stageLogo img{width:74px;height:74px}
+  main.homeV16 .stageIcon{width:112px;height:90px;border-radius:22px}
+  main.homeV16 .stageIcon img{width:94px;height:75px}
+  main.homeV16 .stageAuto{left:9%;top:16%}
+  main.homeV16 .stageFood{right:9%;top:12%}
+  main.homeV16 .stageHome{right:14%;bottom:7%}
+}
+@media(max-width:560px){
+  main.homeV16{padding:10px 11px 42px!important}
+  main.homeV16 .top{min-height:52px!important;padding-bottom:8px!important;margin-bottom:9px!important}
+  main.homeV16 .brand{font-size:12px!important}
+  main.homeV16 .brand img{width:39px!important;height:39px!important}
+  main.homeV16 .topCategories{min-height:34px;padding:0 11px;font-size:9px}
+  main.homeV16 .hero{padding:30px 16px 20px!important;border-radius:28px!important}
+  main.homeV16 .heroEyebrow{margin-bottom:12px!important;font-size:8px!important}
+  main.homeV16 .hero h1{font-size:clamp(42px,13vw,58px)!important;line-height:.91!important}
+  main.homeV16 .heroLead{margin-top:10px!important;font-size:clamp(24px,7.8vw,33px)!important}
+  main.homeV16 .hero p{margin-top:13px!important;font-size:12.5px!important;line-height:1.5!important}
+  main.homeV16 .searchBox{margin-top:20px!important}
+  main.homeV16 .searchShell{height:59px!important;border-radius:18px!important;padding:0 15px!important}
+  main.homeV16 .heroActions{flex-direction:column!important;gap:9px!important;margin-top:16px!important}
+  main.homeV16 .categoryCta{width:100%;min-height:44px}
+  main.homeV16 .heroStage{height:230px!important}
+  main.homeV16 .stageAura{width:220px;height:220px}
+  main.homeV16 .stagePlinth{width:78%;height:65px;bottom:24px}
+  main.homeV16 .stageLogo{width:84px;height:84px;border-radius:22px}
+  main.homeV16 .stageLogo img{width:56px;height:56px}
+  main.homeV16 .stageIcon{width:82px;height:68px;border-radius:18px}
+  main.homeV16 .stageIcon img{width:70px;height:55px}
+  main.homeV16 .stageAuto{left:5%;top:17%}
+  main.homeV16 .stageFood{right:5%;top:13%}
+  main.homeV16 .stageHome{right:10%;bottom:5%}
+  main.homeV16 .homeStrip{grid-template-columns:1fr!important;gap:7px!important;margin-top:10px!important}
+  main.homeV16 .homeStrip>div{min-height:72px;padding:13px 14px 12px 47px;border-radius:16px}
+  main.homeV16 .homeStrip span{left:14px;top:14px}
+  main.homeV16 .homeStrip strong{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){main.homeV16 .topCategories,main.homeV16 .categoryCta,main.homeV16 .searchShell{transition:none!important}}
