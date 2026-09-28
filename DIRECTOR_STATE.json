@@ -1,21 +1,21 @@
 {
-  "current_area": "Cross-app mobile polish — V4 batch 4",
-  "start_sha": "ab1d559a068f7da6c9e698cc541d3419ff6ba41c",
+  "current_area": "Category icon/depth consistency — Documenti",
+  "start_sha": "3a8a85a3a6e19e8bab9c9c2831fdeebe222617a7",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "ab1d559a068f7da6c9e698cc541d3419ff6ba41c",
+  "last_good_commit": "3a8a85a3a6e19e8bab9c9c2831fdeebe222617a7",
   "visual_quality_score": 74,
-  "runtime_files_changed": ["leftover-chef/index.html", "loan-compare/index.html", "margin-calc/index.html"],
+  "runtime_files_changed": ["documenti/index.html"],
   "tests": {
-    "previous_debt": "Mobile V4 batch 3 state head ab1d559a deployed Pages SUCCESS.",
-    "pass_1": "Extended the shared 390/430 V4 depth layer to LeftoverChef and LoanCompare, preserving their pro-shell runtime.",
-    "pass_2": "Extended the same V4 system to MarginCalc, keeping category navigation and runtime scripts unchanged.",
-    "responsive": "Shared V4 provides 560/400 breakpoints covering 430/390, 16px fields, 47px actions, safe-area spacing and reduced-motion protection.",
+    "previous_debt": "Eventi icon/depth pass implemented on 3a8a85a3; certify Pages before treating as public green.",
+    "pass_1": "Rebuilt Documenti hero material and icon plinth with cool paper/steel depth, layered light and stronger contact shadow.",
+    "pass_2": "Extended coordinated depth treatment to primary cards, summary/proof surfaces and secondary icon plinths without changing app runtime.",
+    "responsive": "Dedicated <=560px depth reduction covers 390/430; hover is pointer-only and reduced-motion disables transforms.",
     "deploy": "FINAL_HEAD requires Pages SUCCESS before public certification."
   },
   "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "Batch 3 deploy certified green before expansion.",
-  "next_action": "Certify batch 4 Pages deploy; then stop broad shared-shell expansion and perform a high-impact icon/depth consistency pass on the weakest visible category/app surfaces.",
+  "previous_debt": "Eventi pass is the prior FINAL_HEAD; deploy status must be checked against Pages.",
+  "next_action": "Certify Documenti Pages deploy; then apply the same high-impact icon/depth standard to the next visibly flat category, prioritizing Food or another untreated category over micro-apps.",
   "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
-  "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH3_GREEN_BATCH4_PENDING"
+  "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN_ICON_DEPTH_AUTO_CASA_SOLDI_VIAGGI_EVENTI_DOCUMENTI",
+  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH4_GREEN"
 }
