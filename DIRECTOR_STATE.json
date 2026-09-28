@@ -1,21 +1,21 @@
 {
-  "current_area": "Category icon/depth consistency — Food",
-  "start_sha": "179ea4f49f592323a01e3df44d5ddb429a3eaf34",
+  "current_area": "Home visible premium depth recovery",
+  "start_sha": "c8fe36f4e1fb1613926687827e3f95cfc7dc277a",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "179ea4f49f592323a01e3df44d5ddb429a3eaf34",
+  "last_good_commit": "c8fe36f4e1fb1613926687827e3f95cfc7dc277a",
   "visual_quality_score": 74,
-  "runtime_files_changed": ["food/index.html"],
+  "runtime_files_changed": ["assets/home-search-20260925.js"],
   "tests": {
-    "previous_debt": "Documenti FINAL_HEAD 179ea4f4 certified Pages SUCCESS before this pass.",
-    "pass_1": "Rebuilt Food hero with botanical-green material depth, warm controlled highlight, stronger icon plinth and contact shadow.",
-    "pass_2": "Extended coordinated depth to lead cards, secondary app icon plinths, summary/proof surfaces and search material without changing app runtime.",
-    "responsive": "Dedicated <=560px depth reduction covers 390/430; hover is pointer-only and reduced-motion disables transforms.",
+    "previous_debt": "User reported zero perceptible visual change; recent category-only passes did not materially change the Home they judge.",
+    "pass_1": "Rebuilt Home hero hierarchy with stronger navy/ivory lighting, larger 3D stage and deeper orbit plinths.",
+    "pass_2": "Rebuilt Home category presentation with a material panel, larger icon plinths, stronger Z hierarchy and coordinated shadows.",
+    "pass_3": "Added explicit mobile depth treatment for 390/430-class widths and preserved reduced-motion behavior.",
     "deploy": "FINAL_HEAD requires Pages SUCCESS before public certification."
   },
-  "blocker": "Public browser renderer unavailable to executor; GitHub Pages success remains deploy gate.",
-  "previous_debt": "Documenti pass is public green on 179ea4f4.",
-  "next_action": "Certify Food Pages deploy; then apply the same high-impact icon/depth standard to the next untreated visibly flat category, keeping category work ahead of micro-apps.",
-  "home_visual_status": "HOME_V7_HIERARCHY_DEPTH_PASS_PUBLIC_GREEN",
-  "category_visual_status": "CATEGORY_SHELL_V3_PUBLIC_GREEN_ICON_DEPTH_AUTO_CASA_SOLDI_VIAGGI_EVENTI_DOCUMENTI_FOOD",
-  "app_shell_visual_status": "MICROAPP_SHELL_V3_PUBLIC_GREEN_MOBILE_V4_BATCH4_GREEN"
+  "blocker": "None at implementation time; public certification depends on Pages FINAL_HEAD.",
+  "previous_debt": "Closed operationally by moving the visual intervention back to Home instead of continuing category-only polish.",
+  "next_action": "Verify FINAL_HEAD Pages and inspect Home publicly; then fix only the Home assets that remain visibly weak.",
+  "home_visual_status": "HOME_V8_VISIBLE_DEPTH_RECOVERY_IMPLEMENTED",
+  "category_visual_status": "CATEGORY_SHELL_EXISTING_PASSES_PRESERVED",
+  "app_shell_visual_status": "UNCHANGED"
 }
