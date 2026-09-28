@@ -1,5 +1,5 @@
 {
-  "current_area": "SPRINT DELIVERY — Home V13 visible composition reset",
+  "current_area": "SPRINT DELIVERY — Home V13 public certification + reliable icon preview",
   "start_sha": "0017199d3b5c778cbdb7b00445680bd9884e5e6e",
   "end_sha": "FINAL_HEAD",
   "last_good_commit": "0017199d3b5c778cbdb7b00445680bd9884e5e6e",
@@ -11,50 +11,50 @@
   ],
   "finished_checklist": {
     "category_name_contrast": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "V12 forces dark navy labels on ivory slabs including hover/focus."
+      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
+      "proof": "Public V13 browser screenshot shows all 12 category names in dark navy on ivory label slabs, including the long labels."
     },
     "card_density": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "V12 reduces card heights/gaps and increases icon-to-card mass on desktop/640/430."
+      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
+      "proof": "Public V13 screenshot at 1350px shows a compact 4-column, 3-row shelf with consistent card height and materially reduced empty space."
     },
     "icon_direction_auto_food_home": {
-      "status": "IMPLEMENTED_AS_ISOLATED_PREVIEW_PENDING_USER_APPROVAL",
-      "proof": "Auto/Food/Casa v3 assets activate only with ?iconPreview=v12; normal Home keeps the existing production icon family until approval."
+      "status": "PUBLIC_BROWSER_VERIFIED_ISOLATED_PREVIEW_PENDING_USER_APPROVAL",
+      "proof": "Auto/Food/Casa v3 assets were visually inspected inside the public Home cards. The preview now supports ?iconPreview=product and waits reliably for the async category grid; normal Home remains unchanged until approval."
     },
     "search_routing": {
-      "status": "SOURCE_UNCHANGED_REQUIRES_PUBLIC_SMOKE",
-      "proof": "Search JS, apps.json and category href generation are untouched by V13."
+      "status": "PUBLIC_BROWSER_SMOKE_PASS",
+      "proof": "Public search for 'vendere auto' returned nine relevant results; the Auto category opened and rendered its category heading."
     },
     "cache_delivery": {
-      "status": "IMPLEMENTED",
-      "proof": "V13 is directly linked by index and precached/injected by service worker v36."
+      "status": "V13_PUBLIC_VERIFIED_V37_PENDING_DEPLOY",
+      "proof": "V13 is directly linked by index and visibly served. Service worker v37 invalidates stale preview script cache for this delivery."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
       "proof": "index.html now directly loads Home V10/V11/V12 CSS on first navigation; no service-worker-controlled second load is required."
     },
     "home_composition_v13": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Hero geometry/height, product-stage proportions and category gallery composition are structurally different from V12."
+      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP_PENDING_USER_JUDGMENT",
+      "proof": "Public screenshot confirms the compact product hero and ivory/navy product-shelf composition are live; final aesthetic acceptance remains the user's decision."
     },
     "category_cards_v13": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "12-card gallery changed to compact 4/3/2-column product-shelf system with ivory cards, navy inset stages, larger objects and dark navy labels."
+      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
+      "proof": "All 12 cards rendered in a 4-column desktop product shelf with ivory shells, navy inset stages, larger objects and dark navy labels."
     },
     "mobile_390_430_v13": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Dedicated <=640 and <=430 rules reduce cards to 164/156px and preserve 2-column density."
+      "status": "IMPLEMENTED_VISUAL_BROWSER_PROOF_UNAVAILABLE_THIS_RUN",
+      "proof": "Dedicated <=640 and <=430 rules reduce cards to 164/156px and preserve 2-column density. The available public browser had a fixed desktop viewport; no mobile visual PASS is claimed."
     }
   },
   "visual_verification": {
     "before": "User explicitly reported V12 looked unchanged.",
     "implementation": "V13 changes composition, gallery material system, card proportions, icon mass and mobile density rather than tuning shadows.",
-    "after": "NOT YET PUBLICLY CERTIFIED — verify Pages FINAL_HEAD and public markers; user visual judgment remains required."
+    "after": "PUBLIC DESKTOP VISUAL CHECK COMPLETED — contrast, 12-card density and isolated Auto/Food/Casa preview were inspected on the live site. Mobile visual certification and user aesthetic judgment remain open."
   },
-  "blocker": "Public screenshot capture is not available in the current browser runtime; do not claim visual certification from source alone.",
-  "next_action": "Verify FINAL_HEAD Pages success and public delivery. Then ask user to judge the visibly different normal Home. Keep Auto/Food/Casa v3 asset proposal isolated until explicit approval.",
-  "home_visual_status": "HOME_V13_VISIBLE_RESET_PENDING_PUBLIC_VISUAL_CERT",
+  "blocker": "The public browser viewport was fixed at desktop size, so 390/430 visual certification could not be executed in this run. Extending the new icon family to the other nine categories remains gated by user approval of Auto/Food/Casa.",
+  "next_action": "Publish v37, verify the ?iconPreview=product URL loads all three proposal assets, then wait for the user's visual judgment before replacing the other nine category icons.",
+  "home_visual_status": "HOME_V13_PUBLIC_DESKTOP_VERIFIED_PENDING_USER_JUDGMENT_AND_MOBILE_CERT",
   "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
   "previous_debt": "USER VISUAL FAIL: user reported no visible improvement after V12; previous micro-polish gets no visual credit."
 }
