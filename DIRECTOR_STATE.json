@@ -1,11 +1,11 @@
 {
-  "current_area": "HOME LOCK — V14 spacing and icon coherence",
-  "start_sha": "f498538adf4fad0a0affad20219856ecfc377840",
+  "current_area": "HOME LOCK — V15 single-layer structural redesign",
+  "start_sha": "dbd73b86b438809505cd08dbf472c9590f7dd128",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "f498538adf4fad0a0affad20219856ecfc377840",
+  "last_good_commit": "dbd73b86b438809505cd08dbf472c9590f7dd128",
   "runtime_files_changed": [
     "index.html",
-    "assets/home-visual-v14.css",
+    "assets/home-visual-v15.css",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
@@ -28,7 +28,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "home-visual-v14.css is linked directly by index.html and precached/injected by service worker v39."
+      "proof": "Service worker v40 injects only V15 for Home navigation; V15 is also directly linked by index.html."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -56,17 +56,33 @@
     },
     "home_only_scope": {
       "status": "PASS",
-      "proof": "No category page, app, apps.json, search algorithm, routing target or micro-app source changed."
+      "proof": "No category page, apps.json, search algorithm, app source or routing target changed."
+    },
+    "home_structure_v15": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Category grid changed from 4-column tile shelf to 3-column horizontal product cards; mobile becomes a one-column compact list. Hero orbit markup was replaced by a new product-stage composition."
+    },
+    "home_spacing_v15": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Hero reduced to 390px desktop; category cards to 132px desktop and 98–104px mobile; outer padding/gaps reduced."
+    },
+    "home_icons_v15": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Auto/Food/Casa v3 remain live; all category icons are presented in a common 104x94 object stage with per-category optical normalization."
+    },
+    "legacy_visual_layers": {
+      "status": "REMOVED_FROM_RUNTIME",
+      "proof": "index.html no longer loads home-visual-v8 through v14; V15 is the single external Home visual layer. Legacy filename markers prevent older service workers from reinjecting previous layers during upgrade."
     }
   },
   "visual_verification": {
-    "before": "User asked to fix Home spacing and icons; previous public desktop V13 had been verified but was not accepted as finished.",
-    "implementation": "V14 changes actual Home spacing geometry and source icon selection, not only shadows.",
-    "after": "PENDING PUBLIC DEPLOY AND VISUAL CHECK."
+    "before": "User explicitly reported V14 as visually unchanged.",
+    "implementation": "V15 changes DOM hero composition and card layout, and removes accumulated V8–V14 external visual layers.",
+    "after": "PENDING PUBLIC DEPLOY AND USER VISUAL CHECK."
   },
-  "blocker": "Public visual screenshot from this execution environment may be unavailable; no visual-quality score is assigned without direct proof.",
-  "next_action": "Verify FINAL_HEAD Pages deployment and public V14 marker. Then keep focus on Home and adjust only residual spacing/icon issues based on the user's visual judgment.",
-  "home_visual_status": "HOME_V14_SPACING_ICONS_PENDING_PUBLIC_VISUAL_VERIFY",
+  "blocker": "No visual PASS claimed until the public FINAL_HEAD is served and inspected.",
+  "next_action": "Verify FINAL_HEAD Pages success and public V15 marker. Do not touch subpages. If user still rejects Home, iterate only on V15 spacing/icon composition rather than adding another legacy layer.",
+  "home_visual_status": "HOME_V15_SINGLE_LAYER_PENDING_PUBLIC_VISUAL_VERIFY",
   "category_visual_status": "SUBPAGES_FROZEN_DURING_HOME_LOCK",
-  "previous_debt": "User requested Home-only work focused on spacing and icons; no category/subpage work allowed."
+  "previous_debt": "USER VISUAL FAIL: V14 was reported as visually unchanged. V15 must change structure, not tune spacing variables."
 }
