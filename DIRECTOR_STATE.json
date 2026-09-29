@@ -1,6 +1,6 @@
 {
-  "current_area": "HOME LOCK — V18.3 continuous orbital carousel",
-  "start_sha": "63088ebfc9ab74ab3220a82164d6afa99bedc14e",
+  "current_area": "HOME LOCK — V18.4 orbital balance and settling",
+  "start_sha": "28f94e578f9a96941919c009735c9650576f3c3d",
   "end_sha": "FINAL_HEAD",
   "last_good_commit": "63088ebfc9ab74ab3220a82164d6afa99bedc14e",
   "runtime_files_changed": [
@@ -29,7 +29,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "V18.3 query versions and service worker cache v46."
+      "proof": "V18.4 query versions and service worker cache v47."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -154,16 +154,32 @@
     "home_scope_lock_v18_3": {
       "status": "PASS",
       "proof": "Earth, space, title, search logic, routes, apps.json and subpages unchanged."
+    },
+    "home_orbit_public_v18_3": {
+      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP_WITH_DEFECTS",
+      "proof": "Public V18.3 marker/assets/CTA removal verified. Real fast left drag crossed Casa to Soldi continuously, but desktop screenshot showed excessive Casa/Viaggi overlap and the final spring remained visibly off-center for several seconds."
+    },
+    "home_orbit_balance_v18_4": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Desktop spacing increased 247→274px while item/stage and per-object optical sizes were rebalanced; center 1.17, side .84, far .63 reduce overlap and edge clipping without returning to small icons."
+    },
+    "home_orbit_settle_v18_4": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
+      "proof": "Higher friction and a faster near-critical spring shorten the visibly unfinished coast; relaxed exact-stop threshold ends imperceptible tail motion."
+    },
+    "home_reduced_motion_v18_4": {
+      "status": "SOURCE_PASS_PENDING_BROWSER_EMULATION",
+      "proof": "prefers-reduced-motion now disables inertia/spring and snaps immediately while retaining direct drag, arrows, dots and keyboard navigation."
     }
   },
   "visual_verification": {
-    "before": "User screenshot showed stiff stepping, redundant orange CTA and insufficient object presence.",
-    "implementation": "V18.3 refactors only carousel physics/layout and removes CTA.",
-    "after": "PENDING DEPLOY + desktop/mobile visual and interaction verification."
+    "before": "Public V18.3 desktop screenshot showed the approved assets and continuous orbit, but Casa overlapped Food/Viaggi heavily and a fast swipe remained visibly off-center for several seconds.",
+    "implementation": "V18.4 keeps the approved scene/assets, increases orbital separation, rebalances optical object sizes, shortens the physics tail and adds functional reduced-motion behavior.",
+    "after": "IMPLEMENTED LOCALLY; PENDING DEPLOY + SAME-VIEWPORT PUBLIC SCREENSHOT AND INTERACTION VERIFY."
   },
   "blocker": "390/430 public visual certification depends on an available resizable browser.",
-  "next_action": "Wait for Pages success; verify public V18.3 slow/fast drag both directions, inertia/snap, side-click center, center-click route, arrows, keyboard, CTA absence, console, desktop and 430/390 where tooling permits.",
-  "home_visual_status": "HOME_V18_3_CONTINUOUS_ORBIT_PENDING_PUBLIC_VERIFY",
+  "next_action": "Deploy V18.4; verify public marker/assets, same desktop viewport before/after, slow/fast drag both directions, settling time, side-click center, center-click route, arrows, keyboard, CTA absence, console and mobile where tooling permits.",
+  "home_visual_status": "HOME_V18_4_BALANCE_AND_SETTLING_PENDING_PUBLIC_VERIFY",
   "category_visual_status": "SUBPAGES_UNCHANGED",
   "previous_debt": "User rejected V18.2 interaction: stepped feel, redundant orange CTA, objects too small."
 }

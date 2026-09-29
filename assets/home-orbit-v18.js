@@ -9,6 +9,7 @@ const count=items.length;
 const mod=(v,m)=>((v%m)+m)%m;
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const shortest=(v,m)=>mod(v+m/2,m)-m/2;
+const reducedMotion=matchMedia("(prefers-reduced-motion: reduce)");
 
 let position=2;
 let velocity=0;
@@ -21,10 +22,10 @@ let raf=0,lastFrame=performance.now();
 
 function metrics(){
  const w=innerWidth;
- if(w<=430)return {spacing:148,pixelsPerItem:116,center:1.19,side:.82,far:.62};
- if(w<=720)return {spacing:166,pixelsPerItem:130,center:1.19,side:.84,far:.64};
- if(w<=1100)return {spacing:218,pixelsPerItem:170,center:1.20,side:.87,far:.68};
- return {spacing:247,pixelsPerItem:195,center:1.20,side:.89,far:.70};
+ if(w<=430)return {spacing:154,pixelsPerItem:116,center:1.16,side:.77,far:.56};
+ if(w<=720)return {spacing:174,pixelsPerItem:130,center:1.17,side:.80,far:.58};
+ if(w<=1100)return {spacing:230,pixelsPerItem:170,center:1.17,side:.83,far:.63};
+ return {spacing:274,pixelsPerItem:195,center:1.17,side:.84,far:.63};
 }
 function ease(t){return t*t*(3-2*t)}
 function nearestIndex(){return mod(Math.round(position),count)}
@@ -41,11 +42,11 @@ function render(){
    const scale=a<=1
      ? m.center+(m.side-m.center)*ease(t1)
      : m.side+(m.far-m.side)*Math.min(t2/1.5,1);
-   const z=155-Math.min(a,2.5)*132;
+   const z=150-Math.min(a,2.5)*120;
    const ry=clamp(-rel*13,-28,28);
    const y=5+Math.min(a,2.4)*8;
-   const opacity=clamp(1-Math.max(0,a-1)*.14,.66,1);
-   const bright=clamp(1-Math.max(0,a-.55)*.10,.76,1);
+   const opacity=clamp(1-Math.max(0,a-1)*.18,.62,1);
+   const bright=clamp(1-Math.max(0,a-.55)*.12,.72,1);
 
    el.style.setProperty("--x",compressed.toFixed(2)+"px");
    el.style.setProperty("--y",y.toFixed(2)+"px");
@@ -78,17 +79,17 @@ function frame(now){
 
  if(mode==="inertia"){
    position+=velocity*dt;
-   velocity*=Math.exp(-3.55*dt);
-   if(Math.abs(velocity)<.34){
+   velocity*=Math.exp(-4.45*dt);
+   if(Math.abs(velocity)<.46){
      springTarget=Math.round(position);
      mode="spring";
    }
  }else if(mode==="spring"){
    const displacement=springTarget-position;
-   const acceleration=displacement*38-velocity*11.8;
+   const acceleration=displacement*52-velocity*14.4;
    velocity+=acceleration*dt;
    position+=velocity*dt;
-   if(Math.abs(displacement)<.0012&&Math.abs(velocity)<.008){
+   if(Math.abs(displacement)<.006&&Math.abs(velocity)<.025){
      position=springTarget;velocity=0;mode="idle";
    }
  }
@@ -103,6 +104,9 @@ function frame(now){
 }
 
 function springTo(target){
+ if(reducedMotion.matches){
+   position=target;springTarget=target;velocity=0;mode="idle";stopLoop();render();return;
+ }
  springTarget=target;
  mode="spring";
  velocity=clamp(velocity,-4.5,4.5);
@@ -178,7 +182,9 @@ function release(event){
  root.releasePointerCapture?.(pointerId);
  pointerId=null;
  if(moved)suppressClickUntil=performance.now()+230;
- if(horizontalIntent&&Math.abs(velocity)>.18){
+ if(reducedMotion.matches){
+   position=Math.round(position);springTarget=position;velocity=0;mode="idle";render();
+ }else if(horizontalIntent&&Math.abs(velocity)>.18){
    mode="inertia";
    ensureLoop();
  }else{
@@ -211,6 +217,7 @@ root.addEventListener("wheel",event=>{
  event.preventDefault();
  const m=metrics();
  position+=event.deltaX/(m.pixelsPerItem*3.4);
+ if(reducedMotion.matches){position=Math.round(position);springTarget=position;velocity=0;mode="idle";render();return}
  velocity=clamp(event.deltaX/(m.pixelsPerItem*.07),-6,6);
  mode="inertia";
  render();ensureLoop();
@@ -219,6 +226,7 @@ root.addEventListener("wheel",event=>{
 },{passive:false});
 
 addEventListener("resize",()=>render());
+reducedMotion.addEventListener?.("change",()=>{position=Math.round(position);springTarget=position;velocity=0;mode="idle";stopLoop();render()});
 render();
 
 const searchButton=document.querySelector(".searchSubmit"),input=document.getElementById("globalSearch");
