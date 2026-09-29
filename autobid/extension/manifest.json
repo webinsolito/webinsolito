@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "AutoBid Connector",
+  "version": "2.0.0",
+  "description": "Collega la PWA AutoBid alle schede AutoProff. Sola lettura.",
+  "permissions": [
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.autoproff.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://webinsolito.github.io/*"
+    ]
+  }
+}
