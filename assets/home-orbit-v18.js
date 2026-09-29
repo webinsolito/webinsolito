@@ -33,6 +33,7 @@ function setActive(value){active=mod(value,n);render()}
 items.forEach((el,i)=>{
  const label=el.querySelector("b")?.textContent||"categoria",dot=document.createElement("button");
  dot.type="button";dot.className="orbitDot";dot.setAttribute("aria-label","Mostra "+label);dot.addEventListener("click",()=>setActive(i));dots.appendChild(dot);
+ el.addEventListener("dragstart",event=>event.preventDefault());
  el.addEventListener("click",event=>{if(suppressClick){event.preventDefault();return}if(i!==active){event.preventDefault();setActive(i)}});
 });
 root.querySelector(".orbitPrev")?.addEventListener("click",()=>setActive(active-1));

@@ -1,5 +1,5 @@
 {
-  "current_area": "HOME LOCK — V18 realistic orbit objects",
+  "current_area": "HOME LOCK — V18.1 realistic orbit objects",
   "start_sha": "8a2d5437806f77bdf5b0103dfa1c95ae73901b8b",
   "end_sha": "FINAL_HEAD",
   "last_good_commit": "9bd82cd70a7bdcf2c957e8a30ecc1c870b18ff97",
@@ -34,7 +34,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "V18 CSS/JS and all five versioned WebP objects are directly linked and included in service worker v43; navigation fallback injection targets V18 only."
+      "proof": "V18 CSS/JS and all five versioned WebP objects are directly linked and included in service worker v44; navigation fallback injection targets V18.1 only."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -121,8 +121,8 @@
       "proof": "Auto, Food, Casa, Viaggi and Soldi now use new transparent photorealistic 3D product assets; the oversized glass spheres and legacy flat SVGs were removed from the active Home composition."
     },
     "home_orbit_interaction_v18": {
-      "status": "SOURCE_AND_SYNTAX_PASS_PENDING_PUBLIC_SMOKE",
-      "proof": "Drag now tracks pointer velocity, avoids accidental link activation, preserves vertical wheel scrolling, exposes aria-current/aria-pressed and supports Home/End plus arrow keys."
+      "status": "PUBLIC_ARROWS_SEARCH_PASS_DRAG_FIX_PENDING_REDEPLOY",
+      "proof": "Public arrows, aria-current/aria-pressed and search passed. Browser drag exposed native link-drag interception; V18.1 disables native dragging on orbit anchors and retains velocity-aware pointer handling."
     },
     "home_density_v18": {
       "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
@@ -132,11 +132,11 @@
   "visual_verification": {
     "before": "Public V17 browser screenshot showed the approved Earth/orbit structure, but category art remained flat and childish inside oversized circular glass containers.",
     "implementation": "V18 keeps the approved world-in-space composition and replaces the five active SVGs with coherent transparent 3D product objects, smaller stages and a more natural velocity-aware carousel.",
-    "after": "IMPLEMENTED, PUBLIC VISUAL VERIFICATION NOT YET EXECUTED."
+    "after": "PUBLIC DESKTOP VERIFIED ON V18: five crisp realistic objects render around Earth without the old glass spheres; V18.1 drag fix requires final redeploy smoke."
   },
-  "blocker": "V18 must be deployed and inspected in the public browser before any visual PASS; the available cloud viewport is desktop and does not yet prove 390/430 rendering.",
-  "next_action": "Deploy V18, verify the public release marker/assets, search and orbit navigation, then inspect desktop and any available 390/430 viewport. Fix only parity gaps against the approved world-in-space reference.",
-  "home_visual_status": "HOME_V18_REALISTIC_OBJECTS_IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+  "blocker": "Desktop visual/search/arrows are verified; 390/430 visual proof remains unavailable in the fixed cloud viewport. V18.1 drag fix still needs public smoke after redeploy.",
+  "next_action": "Redeploy V18.1, verify marker/assets and mouse drag on the public Home; preserve the approved world-in-space composition. Obtain 390/430 visual proof when a resizable browser is available.",
+  "home_visual_status": "HOME_V18_DESKTOP_VISUAL_PASS_V18_1_DRAG_FIX_PENDING_PUBLIC_SMOKE",
   "category_visual_status": "SUBPAGES_UNCHANGED",
   "previous_debt": "User approved the space/Earth/4D-orbit mockup and explicitly requested implementing that design on the real website."
 }
