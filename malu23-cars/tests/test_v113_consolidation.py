@@ -4,6 +4,7 @@ import io
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from PIL import Image
+import pytest
 
 from app import main as m
 
@@ -130,3 +131,14 @@ def test_document_brain_rejects_damaged_upload_without_partial_record():
     response = c.post('/api/documents/upload', data={'doc_type': 'auto'}, files={'file': ('rotto.jpg', b'not-an-image', 'image/jpeg')})
     assert response.status_code == 422
     assert c.get('/api/documents').json() == []
+
+
+@pytest.mark.parametrize('viewport', [390, 430])
+def test_document_brain_mobile_recovery_layout_gate(viewport):
+    html = (ROOT / 'app/static/index.html').read_text(encoding='utf-8')
+    css = (ROOT / 'app/static/style.css').read_text(encoding='utf-8')
+    assert viewport <= 620
+    assert 'width=device-width,initial-scale=1,viewport-fit=cover' in html
+    assert '@media(max-width:620px)' in css
+    assert '.smart-error-state,.smart-unknown-state' in css
+    assert '.smart-document .row-actions' in css and 'min-height:54px' in css
