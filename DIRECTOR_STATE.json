@@ -1,11 +1,12 @@
 {
-  "current_area": "HOME LOCK — V16 clean premium home",
-  "start_sha": "8afdf8b3caf4a2f2ae8d36aa117513e4e0dda848",
+  "current_area": "HOME LOCK — V17 approved space-orbit concept",
+  "start_sha": "9bd82cd70a7bdcf2c957e8a30ecc1c870b18ff97",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "8afdf8b3caf4a2f2ae8d36aa117513e4e0dda848",
+  "last_good_commit": "9bd82cd70a7bdcf2c957e8a30ecc1c870b18ff97",
   "runtime_files_changed": [
     "index.html",
-    "assets/home-visual-v16.css",
+    "assets/home-visual-v17.css",
+    "assets/home-orbit-v17.js",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
@@ -28,7 +29,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "V16 is directly linked by index and injected by service worker v41."
+      "proof": "V17 CSS/JS are directly linked and included in service worker v42; navigation injection targets V17 only."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -89,16 +90,36 @@
     "home_spacing_v16": {
       "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
       "proof": "Desktop hero uses a single 590px composition; mobile collapses cleanly with a 230px icon stage and no category grid."
+    },
+    "home_space_visual_v17": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Home structure now uses a full space scene, large Earth-at-night stage, sun glow and gold orbit lines, matching the approved concept rather than previous card layouts."
+    },
+    "home_orbit_carousel_v17": {
+      "status": "IMPLEMENTED_PENDING_BROWSER_SMOKE",
+      "proof": "Five featured categories rotate in a perspective carousel with active-center depth, pointer drag/swipe, arrows, dots, wheel and keyboard navigation."
+    },
+    "home_search_v17": {
+      "status": "SOURCE_PRESERVED_REQUIRES_PUBLIC_SMOKE",
+      "proof": "Existing WebinsolitoSearch/apps.json result flow is preserved; only markup/styling around the input changed."
+    },
+    "home_routes_v17": {
+      "status": "SOURCE_PASS",
+      "proof": "Featured links target auto, food, casa, viaggi and soldi; all-category CTA still targets categorie.html."
+    },
+    "mobile_v17": {
+      "status": "IMPLEMENTED_PENDING_390_430_VISUAL_VERIFY",
+      "proof": "Dedicated <=720 and <=430 carousel/earth/search sizing and touch drag support included."
     }
   },
   "visual_verification": {
-    "before": "User explicitly said V15 still did not match the desired Home.",
-    "implementation": "V16 removes the catalogue model entirely and restores the intended clean Home + separate categories architecture.",
-    "after": "PENDING FINAL_HEAD DEPLOY AND USER VISUAL JUDGMENT."
+    "before": "Approved visual reference is the user-selected Earth-in-space 4D category-orbit mockup.",
+    "implementation": "V17 recreates that composition as real HTML/CSS/JS with interactive category orbit.",
+    "after": "IMPLEMENTED, PUBLIC VISUAL VERIFICATION NOT YET EXECUTED."
   },
-  "blocker": "No visual PASS claimed until final public version is served and inspected.",
-  "next_action": "Verify Pages on FINAL_HEAD. Then keep Home frozen except for direct user visual feedback on V16 composition, spacing and icon treatment.",
-  "home_visual_status": "HOME_V16_CLEAN_PREMIUM_PENDING_PUBLIC_VISUAL_VERIFY",
-  "category_visual_status": "CATEGORIES_SEPARATE_PAGE_UNCHANGED",
-  "previous_debt": "User rejected V15 because it still missed the intended Home. Root cause: Home was treated as a category catalogue instead of a clean entry experience."
+  "blocker": "Final visual parity still requires inspecting the deployed public page; no aesthetic PASS is claimed from code alone.",
+  "next_action": "Wait for Pages FINAL_HEAD success, then inspect public Home desktop and 390/430. Fix only visual parity gaps against the approved mockup; no new Home concept.",
+  "home_visual_status": "HOME_V17_APPROVED_CONCEPT_IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+  "category_visual_status": "SUBPAGES_UNCHANGED",
+  "previous_debt": "User approved the space/Earth/4D-orbit mockup and explicitly requested implementing that design on the real website."
 }
