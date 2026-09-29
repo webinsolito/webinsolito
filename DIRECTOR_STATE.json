@@ -1,17 +1,12 @@
 {
-  "current_area": "HOME LOCK — V18.1 realistic orbit objects",
-  "start_sha": "8a2d5437806f77bdf5b0103dfa1c95ae73901b8b",
+  "current_area": "HOME LOCK — V18.2 carousel interaction + active category CTA",
+  "start_sha": "0fe63351e01695a6e5efee97bef73e7395a9c076",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "0645b0a75a9f5238cb37902909cfe0c47a736a5a",
+  "last_good_commit": "0fe63351e01695a6e5efee97bef73e7395a9c076",
   "runtime_files_changed": [
     "index.html",
     "assets/home-visual-v18.css",
     "assets/home-orbit-v18.js",
-    "assets/categories-v18/auto-product-v18.webp",
-    "assets/categories-v18/food-product-v18.webp",
-    "assets/categories-v18/home-product-v18.webp",
-    "assets/categories-v18/travel-product-v18.webp",
-    "assets/categories-v18/money-product-v18.webp",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
@@ -34,7 +29,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "V18 CSS/JS and all five versioned WebP objects are directly linked and included in service worker v44; navigation fallback injection targets V18.1 only."
+      "proof": "Home assets bumped to query v18.2 and service worker cache v45."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -127,16 +122,28 @@
     "home_density_v18": {
       "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
       "proof": "Public desktop screenshot confirms the reduced-height object stages preserve visible Earth, headline, search, labels and CTA in one coherent composition without the previous oversized bubbles."
+    },
+    "home_orbit_interaction_v18_2": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_BROWSER_SMOKE",
+      "proof": "Drag now uses smoothed velocity, projected release position, 1–2 item inertial stepping and snap feedback. Side item click centers; active item click navigates."
+    },
+    "home_active_category_cta_v18_2": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_BROWSER_SMOKE",
+      "proof": "Gold CTA now follows the selected carousel item and updates href/label to Apri Auto/Food/Casa/Viaggi/Soldi; all categories remains a separate secondary link."
+    },
+    "home_visual_lock_v18_2": {
+      "status": "PASS",
+      "proof": "No category imagery, Earth composition, search logic or route targets changed; only carousel interaction and CTA affordance were refined."
     }
   },
   "visual_verification": {
-    "before": "Public V17 browser screenshot showed the approved Earth/orbit structure, but category art remained flat and childish inside oversized circular glass containers.",
-    "implementation": "V18 keeps the approved world-in-space composition and replaces the five active SVGs with coherent transparent 3D product objects, smaller stages and a more natural velocity-aware carousel.",
-    "after": "PUBLIC DESKTOP VERIFIED ON V18.1: five crisp realistic objects render around Earth without the old glass spheres; search, arrow, keyboard route and physical drag smoke tests passed."
+    "before": "V18.1 desktop composition accepted enough to refine interaction; user specifically requested better scrolling and active category opening.",
+    "implementation": "V18.2 keeps the approved composition and changes only carousel gesture/snap/selection CTA behavior.",
+    "after": "PENDING PUBLIC DEPLOY AND INTERACTION SMOKE."
   },
   "blocker": "The fixed cloud browser verified desktop only; 390/430 visual proof remains unavailable. Final aesthetic acceptance belongs to the user.",
-  "next_action": "Keep the V18.1 Home composition locked pending user judgment. On the next useful run, obtain 390/430 visual proof if a resizable browser is available and fix only demonstrated responsive defects; do not introduce another concept.",
-  "home_visual_status": "HOME_V18_1_PUBLIC_DESKTOP_VISUAL_AND_FLOW_PASS_PENDING_USER_APPROVAL_AND_MOBILE_PROOF",
+  "next_action": "Wait for Pages FINAL_HEAD success, then smoke-test public drag/arrow/side-click/active CTA navigation. Do not change the approved visual concept.",
+  "home_visual_status": "HOME_V18_2_INTERACTION_REFINED_PENDING_PUBLIC_SMOKE",
   "category_visual_status": "SUBPAGES_UNCHANGED",
-  "previous_debt": "User approved the space/Earth/4D-orbit mockup and explicitly requested implementing that design on the real website."
+  "previous_debt": "User requested smoother category scrolling and an explicit active-category button that opens the selected category."
 }

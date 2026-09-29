@@ -136,3 +136,75 @@ inset 0 0 100px rgba(0,0,0,.54),
  .homeV17 .orbitArrow{width:42px!important;height:42px!important}
 }
 @media(prefers-reduced-motion:reduce){.homeV17 .orbitItem,.homeV17 .orbitDot,.homeV17 .categoryCta,.homeV17 .orbitArrow{transition:none!important}.homeV17 .sceneBubble img{animation:none!important}}
+
+
+/* V18.2 — carousel selection clarity + active category CTA */
+.homeV17 .orbitItem[data-active="true"]{cursor:pointer!important}
+.homeV17 .orbitItem:not([data-active="true"]){cursor:grab!important}
+.homeV17 .orbitCarousel[data-dragging="true"] .orbitItem{cursor:grabbing!important}
+.homeV17 .orbitItem[data-active="true"] .orbitLabel:before{
+  content:"SELEZIONATA";
+  position:absolute;
+  top:-16px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#efbf78;
+  font:900 8px/1 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.14em;
+  white-space:nowrap;
+  text-shadow:0 4px 12px rgba(0,0,0,.55)
+}
+.homeV17 .orbitActions{
+  position:relative!important;
+  z-index:40!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:9px!important;
+  margin-top:20px!important
+}
+.homeV17 .orbitActions .categoryCta{
+  margin-top:0!important;
+  min-width:280px!important
+}
+.homeV17 .activeCategoryCta .ctaText{display:inline-block;min-width:116px;text-align:center}
+.homeV17 .allCategoriesLink{
+  color:#9eb0c0!important;
+  text-decoration:none!important;
+  font:800 10px/1 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  padding:7px 10px!important;
+  border-radius:999px!important;
+  transition:.18s ease!important
+}
+.homeV17 .allCategoriesLink:hover{color:#efbf78!important;background:rgba(228,180,102,.07)!important}
+.homeV17 .orbitCarousel:after{
+  content:"Trascina per scegliere";
+  position:absolute;
+  left:50%;
+  bottom:-2px;
+  transform:translateX(-50%);
+  color:#71879a;
+  font:800 9px/1 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  pointer-events:none;
+  opacity:.82
+}
+.homeV17 .orbitCarousel[data-dragging="true"]:after{opacity:.28}
+.homeV17 .orbitItem.snapPulse .orbitLabel{animation:orbitSnapPulse .36s ease}
+@keyframes orbitSnapPulse{
+  0%{transform:scale(.96)}
+  55%{transform:scale(1.045)}
+  100%{transform:scale(1)}
+}
+@media(max-width:720px){
+  .homeV17 .orbitActions{margin-top:15px!important}
+  .homeV17 .orbitActions .categoryCta{min-width:245px!important}
+  .homeV17 .orbitCarousel:after{bottom:0;font-size:8px}
+}
+@media(max-width:430px){
+  .homeV17 .orbitActions .categoryCta{min-width:224px!important}
+  .homeV17 .allCategoriesLink{font-size:9px!important}
+}
