@@ -22,10 +22,10 @@ let raf=0,lastFrame=performance.now();
 
 function metrics(){
  const w=innerWidth;
- if(w<=430)return {spacing:154,pixelsPerItem:116,center:1.16,side:.77,far:.56};
- if(w<=720)return {spacing:174,pixelsPerItem:130,center:1.17,side:.80,far:.58};
- if(w<=1100)return {spacing:230,pixelsPerItem:170,center:1.17,side:.83,far:.63};
- return {spacing:274,pixelsPerItem:195,center:1.17,side:.84,far:.63};
+ if(w<=430)return {spacing:158,pixelsPerItem:116,center:1.18,side:.73,far:.52};
+ if(w<=720)return {spacing:182,pixelsPerItem:130,center:1.19,side:.75,far:.54};
+ if(w<=1100)return {spacing:242,pixelsPerItem:170,center:1.19,side:.78,far:.57};
+ return {spacing:294,pixelsPerItem:195,center:1.19,side:.79,far:.57};
 }
 function ease(t){return t*t*(3-2*t)}
 function nearestIndex(){return mod(Math.round(position),count)}
@@ -79,17 +79,17 @@ function frame(now){
 
  if(mode==="inertia"){
    position+=velocity*dt;
-   velocity*=Math.exp(-4.45*dt);
-   if(Math.abs(velocity)<.46){
+   velocity*=Math.exp(-6.1*dt);
+   if(Math.abs(velocity)<.78){
      springTarget=Math.round(position);
      mode="spring";
    }
  }else if(mode==="spring"){
    const displacement=springTarget-position;
-   const acceleration=displacement*52-velocity*14.4;
+   const acceleration=displacement*72-velocity*17;
    velocity+=acceleration*dt;
    position+=velocity*dt;
-   if(Math.abs(displacement)<.006&&Math.abs(velocity)<.025){
+   if(Math.abs(displacement)<.01&&Math.abs(velocity)<.045){
      position=springTarget;velocity=0;mode="idle";
    }
  }
@@ -109,7 +109,7 @@ function springTo(target){
  }
  springTarget=target;
  mode="spring";
- velocity=clamp(velocity,-4.5,4.5);
+ velocity=clamp(velocity,-3.8,3.8);
  ensureLoop();
 }
 function selectIndex(index){springTo(targetForIndex(index))}
@@ -170,7 +170,7 @@ root.addEventListener("pointermove",event=>{
  const deltaItems=-(event.clientX-lastX)/m.pixelsPerItem;
  const instant=deltaItems/dt;
  velocity=velocity*.72+instant*.28;
- velocity=clamp(velocity,-9,9);
+ velocity=clamp(velocity,-6.5,6.5);
  lastX=event.clientX;lastY=event.clientY;lastTime=now;
  if(Math.abs(dxTotal)>6)moved=true;
  render();
