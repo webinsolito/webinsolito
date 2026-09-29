@@ -1,8 +1,8 @@
 {
-  "current_area": "HOME LOCK — V18.2 carousel interaction + active category CTA",
-  "start_sha": "0fe63351e01695a6e5efee97bef73e7395a9c076",
+  "current_area": "HOME LOCK — V18.3 continuous orbital carousel",
+  "start_sha": "63088ebfc9ab74ab3220a82164d6afa99bedc14e",
   "end_sha": "FINAL_HEAD",
-  "last_good_commit": "0fe63351e01695a6e5efee97bef73e7395a9c076",
+  "last_good_commit": "63088ebfc9ab74ab3220a82164d6afa99bedc14e",
   "runtime_files_changed": [
     "index.html",
     "assets/home-visual-v18.css",
@@ -29,7 +29,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "Home assets bumped to query v18.2 and service worker cache v45."
+      "proof": "V18.3 query versions and service worker cache v46."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -134,16 +134,36 @@
     "home_visual_lock_v18_2": {
       "status": "PASS",
       "proof": "No category imagery, Earth composition, search logic or route targets changed; only carousel interaction and CTA affordance were refined."
+    },
+    "home_orbit_continuous_v18_3": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
+      "proof": "Continuous float position, exact pointer tracking, requestAnimationFrame inertia, exponential friction and damped spring snap; no index stepping during drag."
+    },
+    "home_orbit_click_flow_v18_3": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
+      "proof": "Side click centers with spring; only settled central item navigates; drag suppresses accidental clicks."
+    },
+    "home_orbit_visual_scale_v18_3": {
+      "status": "IMPLEMENTED_PENDING_VISUAL_VERIFY",
+      "proof": "Objects enlarged; center scale 1.20; side depth/brightness/rotateY continuously derive from float position."
+    },
+    "home_orange_cta_removed_v18_3": {
+      "status": "SOURCE_PASS",
+      "proof": "Orange CTA and related CSS removed; category labels remain under objects."
+    },
+    "home_scope_lock_v18_3": {
+      "status": "PASS",
+      "proof": "Earth, space, title, search logic, routes, apps.json and subpages unchanged."
     }
   },
   "visual_verification": {
-    "before": "V18.1 desktop composition accepted enough to refine interaction; user specifically requested better scrolling and active category opening.",
-    "implementation": "V18.2 keeps the approved composition and changes only carousel gesture/snap/selection CTA behavior.",
-    "after": "PENDING PUBLIC DEPLOY AND INTERACTION SMOKE."
+    "before": "User screenshot showed stiff stepping, redundant orange CTA and insufficient object presence.",
+    "implementation": "V18.3 refactors only carousel physics/layout and removes CTA.",
+    "after": "PENDING DEPLOY + desktop/mobile visual and interaction verification."
   },
-  "blocker": "The fixed cloud browser verified desktop only; 390/430 visual proof remains unavailable. Final aesthetic acceptance belongs to the user.",
-  "next_action": "Wait for Pages FINAL_HEAD success, then smoke-test public drag/arrow/side-click/active CTA navigation. Do not change the approved visual concept.",
-  "home_visual_status": "HOME_V18_2_INTERACTION_REFINED_PENDING_PUBLIC_SMOKE",
+  "blocker": "390/430 public visual certification depends on an available resizable browser.",
+  "next_action": "Wait for Pages success; verify public V18.3 slow/fast drag both directions, inertia/snap, side-click center, center-click route, arrows, keyboard, CTA absence, console, desktop and 430/390 where tooling permits.",
+  "home_visual_status": "HOME_V18_3_CONTINUOUS_ORBIT_PENDING_PUBLIC_VERIFY",
   "category_visual_status": "SUBPAGES_UNCHANGED",
-  "previous_debt": "User requested smoother category scrolling and an explicit active-category button that opens the selected category."
+  "previous_debt": "User rejected V18.2 interaction: stepped feel, redundant orange CTA, objects too small."
 }
