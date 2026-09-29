@@ -1,0 +1,29 @@
+{
+  "name": "Malù23 Cars",
+  "short_name": "Malù23",
+  "description": "Gestionale operativo Malù23 Cars · Document Brain",
+  "start_url": "/launch?source=pwa&view=today",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#0d0d0e",
+  "icons": [
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/",
+  "display_override": [
+    "standalone",
+    "fullscreen"
+  ]
+}
