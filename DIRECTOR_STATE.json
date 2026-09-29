@@ -1,12 +1,17 @@
 {
-  "current_area": "HOME LOCK — V17 approved space-orbit concept",
-  "start_sha": "9bd82cd70a7bdcf2c957e8a30ecc1c870b18ff97",
+  "current_area": "HOME LOCK — V18 realistic orbit objects",
+  "start_sha": "8a2d5437806f77bdf5b0103dfa1c95ae73901b8b",
   "end_sha": "FINAL_HEAD",
   "last_good_commit": "9bd82cd70a7bdcf2c957e8a30ecc1c870b18ff97",
   "runtime_files_changed": [
     "index.html",
-    "assets/home-visual-v17.css",
-    "assets/home-orbit-v17.js",
+    "assets/home-visual-v18.css",
+    "assets/home-orbit-v18.js",
+    "assets/categories-v18/auto-product-v18.webp",
+    "assets/categories-v18/food-product-v18.webp",
+    "assets/categories-v18/home-product-v18.webp",
+    "assets/categories-v18/travel-product-v18.webp",
+    "assets/categories-v18/money-product-v18.webp",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
@@ -29,7 +34,7 @@
     },
     "cache_delivery": {
       "status": "IMPLEMENTED",
-      "proof": "V17 CSS/JS are directly linked and included in service worker v42; navigation injection targets V17 only."
+      "proof": "V18 CSS/JS and all five versioned WebP objects are directly linked and included in service worker v43; navigation fallback injection targets V18 only."
     },
     "direct_home_delivery": {
       "status": "IMPLEMENTED",
@@ -110,16 +115,28 @@
     "mobile_v17": {
       "status": "IMPLEMENTED_PENDING_390_430_VISUAL_VERIFY",
       "proof": "Dedicated <=720 and <=430 carousel/earth/search sizing and touch drag support included."
+    },
+    "home_objects_v18": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Auto, Food, Casa, Viaggi and Soldi now use new transparent photorealistic 3D product assets; the oversized glass spheres and legacy flat SVGs were removed from the active Home composition."
+    },
+    "home_orbit_interaction_v18": {
+      "status": "SOURCE_AND_SYNTAX_PASS_PENDING_PUBLIC_SMOKE",
+      "proof": "Drag now tracks pointer velocity, avoids accidental link activation, preserves vertical wheel scrolling, exposes aria-current/aria-pressed and supports Home/End plus arrow keys."
+    },
+    "home_density_v18": {
+      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+      "proof": "Object stages and carousel height were reduced across desktop, <=1100, <=720 and <=430 breakpoints; category art floats directly around Earth instead of inside 250px bubbles."
     }
   },
   "visual_verification": {
-    "before": "Approved visual reference is the user-selected Earth-in-space 4D category-orbit mockup.",
-    "implementation": "V17 recreates that composition as real HTML/CSS/JS with interactive category orbit.",
+    "before": "Public V17 browser screenshot showed the approved Earth/orbit structure, but category art remained flat and childish inside oversized circular glass containers.",
+    "implementation": "V18 keeps the approved world-in-space composition and replaces the five active SVGs with coherent transparent 3D product objects, smaller stages and a more natural velocity-aware carousel.",
     "after": "IMPLEMENTED, PUBLIC VISUAL VERIFICATION NOT YET EXECUTED."
   },
-  "blocker": "Final visual parity still requires inspecting the deployed public page; no aesthetic PASS is claimed from code alone.",
-  "next_action": "Wait for Pages FINAL_HEAD success, then inspect public Home desktop and 390/430. Fix only visual parity gaps against the approved mockup; no new Home concept.",
-  "home_visual_status": "HOME_V17_APPROVED_CONCEPT_IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
+  "blocker": "V18 must be deployed and inspected in the public browser before any visual PASS; the available cloud viewport is desktop and does not yet prove 390/430 rendering.",
+  "next_action": "Deploy V18, verify the public release marker/assets, search and orbit navigation, then inspect desktop and any available 390/430 viewport. Fix only parity gaps against the approved world-in-space reference.",
+  "home_visual_status": "HOME_V18_REALISTIC_OBJECTS_IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
   "category_visual_status": "SUBPAGES_UNCHANGED",
   "previous_debt": "User approved the space/Earth/4D-orbit mockup and explicitly requested implementing that design on the real website."
 }
