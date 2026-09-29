@@ -4,7 +4,7 @@ export function classify(car,now=new Date()){
  const reasons=[],km=number(car.km);
  const date=typeof car.registered==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(car.registered)?new Date(car.registered+'T00:00:00Z'):null;
  const valid=date&&!Number.isNaN(+date)&&date.toISOString().slice(0,10)===car.registered&&date<=now;
- const cutoff=new Date(now);cutoff.setUTCFullYear(cutoff.getUTCFullYear()-6);
+ const cutoff=new Date(now);cutoff.setUTCHours(0,0,0,0);cutoff.setUTCFullYear(cutoff.getUTCFullYear()-6);
  if(km!==null&&km>150000)reasons.push('Oltre 150.000 km');
  if(valid&&date<cutoff)reasons.push('Oltre 6 anni');
  if(car.accident===true)reasons.push('Incidente confermato');
@@ -29,3 +29,4 @@ export const fixtures=[
 {id:'DEMO-104',name:'Peugeot 3008',km:42000,registered:'2023-01-20',accident:true},
 {id:'DEMO-105',name:'Mercedes Classe A',km:null,registered:'2022-08-10',accident:null},
 {id:'DEMO-106',name:'Toyota Corolla · Hybrid',km:150000,registered:'2024-05-10',accident:false}];
+
