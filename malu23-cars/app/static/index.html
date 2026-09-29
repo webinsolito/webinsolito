@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0d0e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Malù23 Cars" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Malù23 Cars — Gestionale</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/static/icon-192.png" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand malu-brand">
+      <div class="brand-logo-wrap"><img src="/static/brand/malu23_logo_transparent.png" alt="Malù23 Cars"></div>
+      <div class="brand-copy"><strong>MALÙ23 CARS</strong><small>Gestionale operativo</small></div>
+    </div>
+
+    <nav id="nav" aria-label="Navigazione principale">
+      <button data-view="today" class="active"><span class="nav-icon">⌂</span><span>OGGI</span></button>
+      <button data-view="garage"><span class="nav-icon">◇</span><span>GARAGE</span></button>
+      <button data-view="clients"><span class="nav-icon">◌</span><span>CLIENTI</span></button>
+      <button data-view="calendar"><span class="nav-icon">□</span><span>CALENDARIO</span></button>
+      <button data-view="finance"><span class="nav-icon">↗</span><span>GUADAGNI</span></button>
+      <button data-view="autoscout"><span class="nav-icon">⌕</span><span>AUTOSCOUT</span></button>
+      <button data-view="documents"><span class="nav-icon">▤</span><span>DOCUMENTI</span></button>
+    </nav>
+
+    <button id="newVehicleBtn" class="primary big"><span>＋</span> NUOVA AUTO</button>
+
+    <div class="side-footer">
+      <button data-view="settings"><span class="nav-icon">⚙</span><span>Impostazioni</span></button>
+      <div class="system-pill"><i></i><span id="statusDot">Malù23 Cars · v1.13</span></div>
+      <a class="logout-link" href="/logout">Esci dall’account</a>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div class="page-heading">
+        <span class="eyebrow">MALÙ23 CARS · AUTOSALONE ONE</span>
+        <h1 id="pageTitle">OGGI</h1>
+        <p id="pageSubtitle">Cosa devi fare, cosa manca, qual è il prossimo passo.</p>
+      </div>
+      <div class="top-actions">
+        <button id="notificationBtn" class="top-action notification-action" aria-label="Notifiche"><span>🔔</span><b id="notificationBadge" class="notification-badge hidden">0</b><em>Notifiche</em></button>
+        <button id="refreshBtn" class="top-action" aria-label="Aggiorna"><span>↻</span> Aggiorna</button>
+        <button id="mobileMenuBtn" class="mobile-only" aria-label="Apri menu">☰</button>
+      </div>
+    </header>
+    <section id="content" class="content"></section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <button id="modalClose" class="modal-close" aria-label="Chiudi">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="Navigazione rapida iPhone">
+  <button data-mobile-view="today" class="active"><span>⌂</span><small>Oggi</small></button>
+  <button data-mobile-view="garage"><span>◇</span><small>Garage</small></button>
+  <button id="mobileNewVehicleBtn" class="mobile-new" aria-label="Nuova auto"><span>＋</span><small>Auto</small></button>
+  <button data-mobile-view="clients"><span>◌</span><small>Clienti</small></button>
+  <button id="mobileMoreBtn"><span>☰</span><small>Menu</small></button>
+</nav>
+
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
