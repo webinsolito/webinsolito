@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Malù23 Cars">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Installa Malù23 Cars</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/static/icon-192.png">
+  <link rel="stylesheet" href="/static/install.css">
+</head>
+<body>
+  <main class="install-shell">
+    <section class="install-card" aria-labelledby="installTitle">
+      <div class="brand-lockup">
+        <img src="/static/brand/malu23_logo_transparent.png" alt="Malù23 Cars">
+        <span>APP CONCESSIONARIA</span>
+      </div>
+
+      <div id="installIntro" class="install-screen">
+        <span class="eyebrow">UNA VOLTA SOLA · CIRCA 10 SECONDI</span>
+        <h1 id="installTitle">Vuoi MALÙ23 CARS direttamente sulla Home?</h1>
+        <p>Da quel momento tocchi l’icona e sei subito dentro al gestionale. Niente link, niente Safari da cercare, niente passaggi tecnici.</p>
+        <div class="install-benefits">
+          <div><b>✓</b><span>Icona MALÙ23 CARS sulla Home</span></div>
+          <div><b>✓</b><span>Apertura diretta su OGGI</span></div>
+          <div><b>✓</b><span>Notifiche e promemoria sull’iPhone</span></div>
+        </div>
+        <button id="startInstallBtn" class="primary-install">Installa MALÙ23 CARS</button>
+        <button id="notNowBtn" class="text-button">Non ora</button>
+      </div>
+
+      <div id="safariGuide" class="install-screen hidden">
+        <span class="eyebrow">TI GUIDO IO</span>
+        <h1>Fai questi 3 tocchi.</h1>
+        <p class="lead">Non devi configurare niente. Segui soltanto i pulsanti dell’iPhone.</p>
+        <ol class="steps">
+          <li><span class="step-number">1</span><div><strong>Tocca Condividi</strong><small>È il simbolo <b class="share-symbol">□↑</b> nella barra di Safari.</small></div></li>
+          <li><span class="step-number">2</span><div><strong>Tocca “Aggiungi alla schermata Home”</strong><small>Se non la vedi subito, scorri leggermente il menu.</small></div></li>
+          <li><span class="step-number">3</span><div><strong>Tocca “Aggiungi”</strong><small>Lascia il nome “Malù23 Cars”. Fine.</small></div></li>
+        </ol>
+        <div class="bottom-hint"><span>↓</span><strong>Il tasto Condividi è qui sotto, nella barra di Safari</strong></div>
+        <button id="doneInstallBtn" class="primary-install">Fatto, ho aggiunto l’icona</button>
+        <button id="backInstallBtn" class="text-button">Indietro</button>
+      </div>
+
+
+      <div id="desktopGuide" class="install-screen hidden">
+        <span class="eyebrow">WINDOWS · ZERO DOWNLOAD</span>
+        <h1>Installala come un programma.</h1>
+        <p class="lead">Niente EXE, niente ZIP e niente avvisi antivirus. MALÙ23 CARS viene installata direttamente da Edge o Chrome.</p>
+        <div class="whatsapp-steps">
+          <div><span>1</span><p>Apri questa pagina con <strong>Edge o Chrome</strong>.</p></div>
+          <div><span>2</span><p>Tocca <strong>Installa MALÙ23 CARS</strong> quando compare la richiesta del browser.</p></div>
+          <div><span>3</span><p>Da quel momento la trovi nel <strong>menu Start</strong> e puoi fissarla al Desktop/barra applicazioni.</p></div>
+        </div>
+        <button id="desktopInstallBtn" class="primary-install">Installa MALÙ23 CARS sul PC</button>
+        <p id="desktopInstallResult" class="copy-result" aria-live="polite"></p>
+        <button id="backDesktopBtn" class="text-button">Indietro</button>
+      </div>
+
+      <div id="openSafariGuide" class="install-screen hidden">
+        <span class="eyebrow">PRIMA APRIAMO SAFARI</span>
+        <h1>Sei nel browser di WhatsApp.</h1>
+        <p>Per installare l’app sulla Home, iPhone richiede Safari. È l’unico passaggio che Apple non lascia automatizzare.</p>
+        <div class="whatsapp-steps">
+          <div><span>1</span><p>Tocca <strong>•••</strong> o il menu del browser.</p></div>
+          <div><span>2</span><p>Scegli <strong>Apri in Safari</strong>.</p></div>
+          <div><span>3</span><p>Questa pagina si riapre e ti guida fino alla Home.</p></div>
+        </div>
+        <button id="copyLinkBtn" class="primary-install">Copia il link</button>
+        <p id="copyResult" class="copy-result" aria-live="polite"></p>
+      </div>
+
+      <div id="installedGuide" class="install-screen hidden">
+        <div class="success-icon">✓</div>
+        <span class="eyebrow">TUTTO FATTO</span>
+        <h1>Adesso apri MALÙ23 CARS dalla sua icona.</h1>
+        <p>Installazione completata. Dalla prossima volta apri MALÙ23 CARS dalla sua icona e vai direttamente su <strong>OGGI</strong>.</p>
+        <div class="home-preview">
+          <img src="/static/icon-192.png" alt="Icona Malù23 Cars">
+          <div><strong>Malù23 Cars</strong><small>tocca l’icona dalla schermata Home</small></div>
+        </div>
+        <p class="micro-note">Al primo accesso potrà chiederti il login. Dopo rimani collegato finché la sessione è valida.</p>
+      </div>
+
+      <div id="alreadyInstalled" class="install-screen hidden">
+        <div class="success-icon">✓</div>
+        <span class="eyebrow">APP INSTALLATA</span>
+        <h1>Ti porto subito su OGGI.</h1>
+        <p>Stai già usando MALÙ23 CARS come app.</p>
+      </div>
+
+      <footer>Malù23 Cars · Lumezzane (BS) · powered by AUTOSALONE ONE</footer>
+    </section>
+  </main>
+  <script src="/static/install.js"></script>
+</body>
+</html>
