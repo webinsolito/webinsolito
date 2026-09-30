@@ -1,10 +1,10 @@
-const VERSION='2.0.0';
+const VERSION='2.1.0';
 chrome.runtime.onMessageExternal.addListener((message,sender,reply)=>{
  let url;try{url=new URL(sender.url)}catch{return false}
  if(url.origin!=='https://webinsolito.github.io'||!url.pathname.startsWith('/webinsolito/autobid/'))return false;
  const response=(data)=>reply({protocol:1,version:VERSION,requestId:message.requestId,...data});
  if(message.protocol!==1||message.version!==VERSION){response({error:'VERSION_MISMATCH: aggiorna PWA ed estensione a '+VERSION});return false}
- if(message.type==='AUTOBID_HELLO'){response({state:'ready'});return false}
+ if(message.type==='AUTOBID_HELLO'){chrome.tabs.query({url:['https://*.autoproff.com/*']}).then(tabs=>response({state:'ready',autoProffTabs:tabs.length})).catch(()=>response({state:'ready',autoProffTabs:0}));return true}
  if(message.type!=='AUTOBID_SCAN'){response({error:'UNSUPPORTED_MESSAGE'});return false}
  (async()=>{try{
  const tabs=await chrome.tabs.query({url:['https://*.autoproff.com/*']});

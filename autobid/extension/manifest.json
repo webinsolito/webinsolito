@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AutoBid Connector",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Collega la PWA AutoBid alle schede AutoProff. Sola lettura.",
   "permissions": [
     "scripting"

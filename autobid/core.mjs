@@ -1,4 +1,4 @@
-export const VERSION='2.0.0';
+export const VERSION='2.1.0';
 export function number(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null}
 export function classify(car,now=new Date()){
  const reasons=[],km=number(car.km);
@@ -30,3 +30,15 @@ export const fixtures=[
 {id:'DEMO-105',name:'Mercedes Classe A',km:null,registered:'2022-08-10',accident:null},
 {id:'DEMO-106',name:'Toyota Corolla · Hybrid',km:150000,registered:'2024-05-10',accident:false}];
 
+
+export const COST_KEYS=['fees','transport','documents','repairs','risk'];
+export function costEngine(values){
+ const parsed=Object.fromEntries(COST_KEYS.map(key=>[key,number(values?.[key])]));
+ const unknown=COST_KEYS.filter(key=>parsed[key]===null);
+ return {values:parsed,unknown,total:unknown.length?null:COST_KEYS.reduce((sum,key)=>sum+parsed[key],0)};
+}
+export function offerModel(car,resale,costs,margin){
+ const sale=number(resale),wanted=number(margin),engine=costEngine(costs);
+ const bid=maxBid(sale,engine.total,wanted);
+ return {vehicle:car?.name||null,vehicleId:car?.id||null,resale:sale,margin:wanted,costs:engine.values,costTotal:engine.total,maxBid:bid,complete:Boolean(car&&car.status==='shortlist'&&bid!==null),unknown:[...(sale===null?['resale']:[]),...engine.unknown,...(wanted===null?['margin']:[])]};
+}

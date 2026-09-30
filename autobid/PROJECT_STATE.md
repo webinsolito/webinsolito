@@ -1,23 +1,20 @@
-# AutoBid 2.0.0-r2 — 30 settembre 2026
-Architettura: PWA ↔ estensione Chrome ↔ AutoProff.
+# AutoBid 2.1.0 — 30 settembre 2026
 Preview: https://webinsolito.github.io/webinsolito/autobid/
+Architettura unica: PWA ↔ estensione Chrome ↔ AutoProff.
 
-## Implementato
-PWA con manifest, icona, cache offline del guscio UI e aggiornamento network-first.
-UI responsive senza emoji, shortlist/esclusi/revisione, simulatore costi e max bid.
-Scanner fixture, deduplicazione per auction ID, filtri >150000 km, oltre 6 anni di calendario, sinistro confermato.
-UNKNOWN resta null e richiede revisione. Duplicati discordanti non entrano silenziosamente in shortlist.
-Estensione MV3, handshake/versione/protocollo/requestId, controllo origine e percorso, errori e timeout. Nessun invio offerte.
-ZIP estensione disponibile dalla Home.
+## Vertical slice verificata
+Handshake versionato protocollo 1 con requestId, timeout, stato scheda AutoProff ed errori espliciti.
+Fixture: 7 record → 6 veicoli dopo deduplica → 2 shortlist / 3 esclusi / 1 revisione.
+Regole: oltre 150.000 km, più di 6 anni e incidente confermato esclusi; dati UNKNOWN restano revisione e non zero.
+Cost engine: commissioni + trasporto + documenti/immatricolazione + lavori/preparazione + riserva rischio.
+Demo report: veicolo → costi → margine → offerta massima → report stampabile/PDF. Nessuna offerta viene inviata.
 
-## Evidenze
-node tests.mjs PASS: fixture → dedup → filtri → shortlist → budget, unknown, soglie, date invalide, conflitti.
-node extension.test.mjs PASS: MOCK del trasporto Chrome per handshake/versione/origine/percorso/scheda mancante. Non equivale a test estensione installata.
-Sintassi app, service worker e background PASS.
-Browser pubblico: demo 7 record → 6 auto, 2 shortlist / 3 esclusi / 1 revisione. Selezione Golf e input 22000/2000/2500 producono 17500 EUR.
-Layout desktop ispezionato. Mobile e installazione PWA su dispositivo non verificati.
+## Evidenze test
+Sintassi PWA/estensione/service worker verificata.
+Fixture engine PASS.
+Costi 4.300 EUR e rivendita 22.000 EUR con margine 2.500 EUR → max bid 15.200 EUR.
+Un singolo costo UNKNOWN rende totale/max bid null e blocca il report.
+Connector mock: origine/percorso/versione/requestId/scheda AutoProff assente verificati.
 
-## NEXT_ACTION
-Validare parser su HTML AutoProff reale autorizzato: l'adattatore attuale legge soltanto attributi data-auction-id / data-mileage-km / data-first-registration / data-accident. Se assenti restituisce ADAPTER_NO_RECORDS: non dichiarare scansione live completata.
-Provare handshake e scansione con estensione realmente installata; verificare 390/430px e offline/update su dispositivo.
-Non ricreare bridge, server intermedi o eseguibili.
+## Limite reale / NEXT_ACTION
+Il parser live riconosce soltanto attributi AutoProff strutturati espliciti. Serve un campione DOM autenticato autorizzato per mappare i campi reali; finché manca, ADAPTER_NO_RECORDS è comportamento corretto. Provare estensione installata, scansione live e stampa PDF su Chrome Windows.

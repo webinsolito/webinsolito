@@ -1,34 +1,33 @@
-import {VERSION,scan,maxBid,fixtures} from './core.mjs';
-const $=id=>document.getElementById(id);let cars=[],filter='shortlist',selected=null,connected=false;
+import {VERSION,scan,fixtures,offerModel} from './core.mjs';
+const $=id=>document.getElementById(id);let cars=[],filter='shortlist',selected=null,connected=false,currentOffer=null;
 const money=n=>n===null?'—':new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(n);
-function budget(){const v=['resale','cost','margin'].map(id=>$(id).value.trim()===''?null:Number($(id).value));$('maxbid').textContent=selected?money(maxBid(...v)):'—'}
+const numeric=id=>$(id).value.trim()===''?null:Number($(id).value);
+function budget(){
+ const costs={fees:numeric('fees'),transport:numeric('transport'),documents:numeric('documents'),repairs:numeric('repairs'),risk:numeric('risk')};
+ currentOffer=offerModel(selected,numeric('resale'),costs,numeric('margin'));
+ $('costTotal').textContent=money(currentOffer.costTotal);$('maxbid').textContent=money(currentOffer.maxBid);
+ $('report').disabled=!currentOffer.complete;
+ $('budgetState').textContent=currentOffer.complete?'Calcolo completo · pronto per il report':currentOffer.unknown.length?'Completa: '+currentOffer.unknown.map(label).join(', '):'Seleziona un veicolo idoneo.';
+}
+function label(key){return ({resale:'rivendita',fees:'commissioni asta',transport:'trasporto',documents:'documenti e immatricolazione',repairs:'lavori e preparazione',risk:'riserva rischio',margin:'margine'})[key]||key}
 function render(){
  for(const status of ['shortlist','review','excluded'])$('n-'+status).textContent=cars.filter(c=>c.status===status).length;
- const container=$('cars');container.replaceChildren();
- const visible=cars.filter(c=>c.status===filter);
+ const container=$('cars');container.replaceChildren();const visible=cars.filter(c=>c.status===filter);
  if(!visible.length){const p=document.createElement('div');p.className='empty';p.textContent='Nessun veicolo in questa sezione.';container.append(p)}
  for(const car of visible){const card=document.createElement('article');card.className='vehicle'+(selected===car?' selected':'');
  const meta=document.createElement('div');meta.className='meta';meta.textContent=(car.id||'ID SCONOSCIUTO')+' / '+({shortlist:'IDONEO',review:'DA VERIFICARE',excluded:'ESCLUSO'}[car.status]);
- const title=document.createElement('h3');title.textContent=car.name||'Veicolo senza nome';
- const details=document.createElement('p');details.textContent=(car.km===null||car.km===undefined?'Km sconosciuti':car.km.toLocaleString('it-IT')+' km')+' · '+(car.registered||'Immatricolazione sconosciuta');
- card.append(meta,title,details);
+ const title=document.createElement('h3');title.textContent=car.name||'Veicolo senza nome';const details=document.createElement('p');details.textContent=(car.km===null||car.km===undefined?'Km sconosciuti':car.km.toLocaleString('it-IT')+' km')+' · '+(car.registered||'Immatricolazione sconosciuta');card.append(meta,title,details);
  if(car.reasons.length){const reason=document.createElement('p');reason.className='reason';reason.textContent=car.reasons.join(' · ');card.append(reason)}
- if(car.status==='shortlist'){const button=document.createElement('button');button.textContent=selected===car?'Selezionato':'Valuta offerta →';button.onclick=()=>{selected=car;$('selected').textContent=car.name;budget();render()};card.append(button)}
- container.append(card);
- }
-}
-function load(rows,source){const result=scan(rows);cars=result.cars;selected=null;$('selected').textContent='Seleziona un veicolo dalla shortlist.';budget();$('source').textContent=source;$('summary').textContent=rows.length+' record · '+cars.length+' veicoli · '+result.duplicates+' duplicati rimossi';render()}
+ if(car.status==='shortlist'){const button=document.createElement('button');button.textContent=selected===car?'Selezionato':'Valuta offerta →';button.onclick=()=>{selected=car;$('selected').textContent=car.name;budget();render()};card.append(button)}container.append(card);
+ }}
+function load(rows,source){const result=scan(rows);cars=result.cars;selected=null;$('selected').textContent='Seleziona un veicolo dalla shortlist.';$('source').textContent=source;$('summary').textContent=rows.length+' record · '+cars.length+' veicoli · '+result.duplicates+' duplicati rimossi';budget();render()}
 $('demo').onclick=()=>load(fixtures,'DEMO · DATI FITTIZI');
 document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>{filter=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render()});
 $('budget').onsubmit=e=>e.preventDefault();$('budget').oninput=budget;
+$('report').onclick=()=>{if(!currentOffer?.complete)return;const car=selected,lines=[['Rivendita prevista',currentOffer.resale],['Commissioni asta',currentOffer.costs.fees],['Trasporto',currentOffer.costs.transport],['Documenti e immatricolazione',currentOffer.costs.documents],['Lavori e preparazione',currentOffer.costs.repairs],['Riserva rischio',currentOffer.costs.risk],['Costi totali',currentOffer.costTotal],['Margine desiderato',currentOffer.margin],['OFFERTA MASSIMA',currentOffer.maxBid]];const report=$('reportSheet');report.innerHTML='<div class="report-brand">AUTOBID / REPORT DEMO</div><h2></h2><p class="report-meta"></p><div class="report-lines"></div><p class="report-note">Stima decisionale: verificare dati AutoProff, IVA, danni e documenti prima di ogni acquisto. AutoBid non invia offerte.</p>';report.querySelector('h2').textContent=car.name;report.querySelector('.report-meta').textContent=car.id+' · '+car.km.toLocaleString('it-IT')+' km · '+car.registered;for(const [name,value] of lines){const row=document.createElement('div');row.innerHTML='<span></span><strong></strong>';row.querySelector('span').textContent=name;row.querySelector('strong').textContent=money(value);report.querySelector('.report-lines').append(row)}report.hidden=false;$('printReport').hidden=false;report.scrollIntoView({behavior:'smooth',block:'start'})};
+$('printReport').onclick=()=>print();
 function state(title,detail,ready=false){$('connection').textContent=title;$('detail').textContent=detail;connected=ready;$('live').disabled=!ready}
-async function request(type){
- const id=$('extensionId').value.trim();if(!/^[a-p]{32}$/.test(id))throw Error('ID estensione non valido: usa le 32 lettere mostrate in chrome://extensions.');
- if(!globalThis.chrome?.runtime?.sendMessage)throw Error('Apri in Chrome desktop e installa l’estensione AutoBid.');
- return new Promise((resolve,reject)=>{const requestId=crypto.randomUUID();const timer=setTimeout(()=>reject(Error('Estensione non raggiungibile (timeout).')),7000);
- chrome.runtime.sendMessage(id,{type,protocol:1,version:VERSION,requestId},response=>{clearTimeout(timer);if(chrome.runtime.lastError)return reject(Error(chrome.runtime.lastError.message));if(!response||response.requestId!==requestId||response.protocol!==1)return reject(Error('Risposta estensione non valida.'));if(response.error)return reject(Error(response.error));if(response.version!==VERSION)return reject(Error('Versione incompatibile: aggiorna PWA ed estensione a '+VERSION));resolve(response)});
- });
-}
-$('connect').onclick=async()=>{state('Collegamento…','Verifica versione e protocollo.');try{const r=await request('AUTOBID_HELLO');state('Collegata · '+r.version,'Apri AutoProff in una scheda Chrome, quindi avvia la scansione.',true)}catch(e){state('Connessione non riuscita',e.message)}};
-$('live').onclick=async()=>{if(!connected)return;const button=$('live');button.disabled=true;try{const r=await request('AUTOBID_SCAN');if(!Array.isArray(r.rows)||r.rows.length>5000)throw Error('Risultati scanner non validi.');load(r.rows,'AUTOPROFF · LETTURA ESTENSIONE');state('Collegata · '+VERSION,r.rows.length+' record ricevuti.',true)}catch(e){state('Scansione non riuscita',e.message,false)}};
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+async function request(type){const id=$('extensionId').value.trim();if(!/^[a-p]{32}$/.test(id))throw Error('ID estensione non valido: usa le 32 lettere mostrate in chrome://extensions.');if(!globalThis.chrome?.runtime?.sendMessage)throw Error('Apri in Chrome desktop e installa l’estensione AutoBid.');return new Promise((resolve,reject)=>{const requestId=crypto.randomUUID();const timer=setTimeout(()=>reject(Error('EXTENSION_TIMEOUT: estensione non raggiungibile.')),7000);chrome.runtime.sendMessage(id,{type,protocol:1,version:VERSION,requestId},response=>{clearTimeout(timer);if(chrome.runtime.lastError)return reject(Error('CHROME_RUNTIME: '+chrome.runtime.lastError.message));if(!response||response.requestId!==requestId||response.protocol!==1)return reject(Error('PROTOCOL_ERROR: risposta non valida.'));if(response.error)return reject(Error(response.error));if(response.version!==VERSION)return reject(Error('VERSION_MISMATCH: aggiorna PWA ed estensione a '+VERSION));resolve(response)})})}
+$('connect').onclick=async()=>{state('Collegamento…','Verifica versione e protocollo.');try{const r=await request('AUTOBID_HELLO');state('Collegata · '+r.version,'AutoProff: '+(r.autoProffTabs?'scheda rilevata':'apri una scheda e accedi')+'.',true)}catch(e){state('Connessione non riuscita',e.message)}};
+$('live').onclick=async()=>{if(!connected)return;$('live').disabled=true;try{const r=await request('AUTOBID_SCAN');if(!Array.isArray(r.rows)||r.rows.length>5000)throw Error('PAYLOAD_INVALID: risultati scanner non validi.');load(r.rows,'AUTOPROFF · LETTURA ESTENSIONE');state('Collegata · '+VERSION,r.rows.length+' record ricevuti.',true)}catch(e){state('Scansione non riuscita',e.message,false)}};
+budget();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
