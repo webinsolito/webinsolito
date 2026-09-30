@@ -1,4 +1,4 @@
-import {VERSION,scan,fixtures,offerModel} from './core.mjs';
+import {VERSION,scan,fixtures,offerModel} from './core.mjs?v=2.1.0';
 const $=id=>document.getElementById(id);let cars=[],filter='shortlist',selected=null,connected=false,currentOffer=null;
 const money=n=>n===null?'—':new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(n);
 const numeric=id=>$(id).value.trim()===''?null:Number($(id).value);
