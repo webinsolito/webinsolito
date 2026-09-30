@@ -22,10 +22,10 @@ let raf=0,lastFrame=performance.now();
 
 function metrics(){
  const w=innerWidth;
- if(w<=430)return {spacing:158,pixelsPerItem:116,center:1.18,side:.73,far:.52};
- if(w<=720)return {spacing:182,pixelsPerItem:130,center:1.19,side:.75,far:.54};
- if(w<=1100)return {spacing:242,pixelsPerItem:170,center:1.19,side:.78,far:.57};
- return {spacing:294,pixelsPerItem:195,center:1.19,side:.79,far:.57};
+ if(w<=430)return {spacing:150,outerStep:.62,pixelsPerItem:116,center:1.20,side:.78,far:.60};
+ if(w<=720)return {spacing:176,outerStep:.66,pixelsPerItem:130,center:1.20,side:.79,far:.62};
+ if(w<=1100)return {spacing:246,outerStep:.72,pixelsPerItem:170,center:1.20,side:.81,far:.65};
+ return {spacing:300,outerStep:.75,pixelsPerItem:195,center:1.20,side:.83,far:.68};
 }
 function ease(t){return t*t*(3-2*t)}
 function nearestIndex(){return mod(Math.round(position),count)}
@@ -37,16 +37,17 @@ function render(){
  const nearest=nearestIndex();
  items.forEach((el,index)=>{
    const rel=itemRelative(index),a=Math.abs(rel);
-   const compressed=rel*m.spacing*(1-Math.min(a,2.5)*.035);
+   const arc=a<=1?a:1+(a-1)*m.outerStep;
+   const compressed=Math.sign(rel)*arc*m.spacing;
    const t1=Math.min(a,1),t2=Math.max(0,Math.min(a-1,1.5));
    const scale=a<=1
      ? m.center+(m.side-m.center)*ease(t1)
      : m.side+(m.far-m.side)*Math.min(t2/1.5,1);
-   const z=150-Math.min(a,2.5)*120;
-   const ry=clamp(-rel*13,-28,28);
-   const y=5+Math.min(a,2.4)*8;
-   const opacity=clamp(1-Math.max(0,a-1)*.18,.62,1);
-   const bright=clamp(1-Math.max(0,a-.55)*.12,.72,1);
+   const z=155-Math.min(a,2.5)*112;
+   const ry=clamp(-rel*12,-26,26);
+   const y=4+Math.pow(Math.min(a,2.4),1.18)*10;
+   const opacity=clamp(1-Math.max(0,a-1)*.14,.72,1);
+   const bright=clamp(1-Math.max(0,a-.65)*.10,.79,1);
 
    el.style.setProperty("--x",compressed.toFixed(2)+"px");
    el.style.setProperty("--y",y.toFixed(2)+"px");
