@@ -2,7 +2,7 @@
 const root=document.getElementById("orbitCarousel"),
       track=document.getElementById("orbitTrack"),
       dots=document.getElementById("orbitDots");
-if(!root||!track||!dots)return;
+if(!root||!track)return;
 
 const items=[...track.querySelectorAll(".orbitItem")];
 const count=items.length;
@@ -62,11 +62,13 @@ function render(){
    el.tabIndex=current?0:-1;
    el.style.zIndex=String(30-Math.round(a*5));
  });
- [...dots.children].forEach((dot,index)=>{
-   const current=index===nearest;
-   dot.classList.toggle("active",current);
-   dot.setAttribute("aria-pressed",current?"true":"false");
- });
+ if(dots){
+   [...dots.children].forEach((dot,index)=>{
+     const current=index===nearest;
+     dot.classList.toggle("active",current);
+     dot.setAttribute("aria-pressed",current?"true":"false");
+   });
+ }
 }
 
 function ensureLoop(){
@@ -121,11 +123,13 @@ function step(direction){
 
 items.forEach((el,index)=>{
  const label=el.querySelector("b")?.textContent?.trim()||"categoria";
- const dot=document.createElement("button");
- dot.type="button";dot.className="orbitDot";
- dot.setAttribute("aria-label","Mostra "+label);
- dot.addEventListener("click",()=>selectIndex(index));
- dots.appendChild(dot);
+ if(dots){
+   const dot=document.createElement("button");
+   dot.type="button";dot.className="orbitDot";
+   dot.setAttribute("aria-label","Mostra "+label);
+   dot.addEventListener("click",()=>selectIndex(index));
+   dots.appendChild(dot);
+ }
 
  el.draggable=false;
  el.querySelectorAll("img").forEach(img=>img.draggable=false);
@@ -133,12 +137,11 @@ items.forEach((el,index)=>{
  el.addEventListener("click",event=>{
    if(performance.now()<suppressClickUntil){event.preventDefault();return}
    const rel=Math.abs(itemRelative(index));
-   const settled=mode==="idle"&&rel<.035;
-   if(!settled){
-     event.preventDefault();
-     velocity=0;
-     selectIndex(index);
-   }
+   const activeEnough=rel<.18&&mode!=="drag";
+   if(activeEnough)return;
+   event.preventDefault();
+   velocity=0;
+   selectIndex(index);
  });
 });
 
