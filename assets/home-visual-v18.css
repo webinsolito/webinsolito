@@ -136,3 +136,7 @@ inset 0 0 100px rgba(0,0,0,.54),
  .homeV17 .orbitArrow{width:36px!important;height:36px!important;font-size:28px!important}
 }
 @media(prefers-reduced-motion:reduce){.homeV17 .orbitItem,.homeV17 .orbitDot,.homeV17 .orbitArrow{transition:none!important}.homeV17 .sceneBubble img{animation:none!important}}
+
+/* Candidate-only visual refinement; production untouched */
+@media(max-width:430px){.orbitCard{will-change:transform}.orbitCard img{filter:drop-shadow(0 16px 22px rgba(0,0,0,.34))}}
+@media(min-width:900px){.orbitCard.isActive{filter:saturate(1.05)}}
