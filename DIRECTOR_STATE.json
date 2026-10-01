@@ -1,30 +1,28 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T16:33:19+02:00",
-  "release": "V19.1",
-  "base_main_sha": "05e16899f475bb7d3d4e01d4373ed0a7aac58196",
-  "backup_branch": "backup/home-v18-6-20261001",
-  "candidate_branch": "candidate/home-v19-reset",
-  "status": "PUBLIC_V19_1_DEPLOYED",
+  "updated_at": "2026-10-01T17:34:00+02:00",
+  "release": "V20.0",
+  "base_main_sha": "1cc75ce704dc9b5b2b29c6883eb63946ace20292",
+  "backup_branch": "backup/home-v19-1-20261001",
+  "candidate_branch": "candidate/home-v20-editorial-r2",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "reason": "User asked for another complete redesign, explicitly wanting something different from V19.1.",
   "design_reset": {
-    "reason": "User rejected the V18 space/Earth/orbit composition and requested a full visual reset.",
     "removed": [
-      "Earth/space background",
-      "orbit carousel",
-      "pill category labels",
-      "starfield",
-      "legacy V18 visual CSS/JS runtime dependency"
+      "V19 cream + product-gallery composition",
+      "3D category product assets from Home",
+      "featured object carousel/gallery",
+      "Earth/space/orbit legacy",
+      "pill category labels"
     ],
     "introduced": [
-      "warm cream editorial canvas",
-      "navy premium product-gallery stage",
-      "single featured category object at a time",
-      "plain typographic category caption",
-      "primary natural-language search",
-      "drag/swipe + tabs + keyboard category selection",
-      "responsive 390px/560px/860px/1100px rules",
-      "reduced-motion fallback"
+      "split-screen editorial composition",
+      "warm paper search workspace on the left",
+      "deep navy typographic category index on the right",
+      "large serif typography with no decorative category imagery",
+      "direct category rows instead of cards or carousel",
+      "responsive stacked mobile composition"
     ]
   },
   "files_changed": [
@@ -33,31 +31,30 @@
     "DIRECTOR_STATE.json"
   ],
   "functional_checks": {
-    "search_engine": "SOURCE_PRESERVED: home-search-20260925.js + WebinsolitoSearch.search",
-    "featured_routes": "SOURCE_PASS: auto, food, casa, viaggi, soldi",
-    "pointer_swipe": "SOURCE_PASS",
-    "keyboard_left_right_enter": "SOURCE_PASS",
-    "categories_link": "SOURCE_PASS: categorie.html",
-    "reduced_motion": "SOURCE_PASS",
-    "mobile_rules": "SOURCE_PASS: 390px and 560px breakpoints"
+    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch.search preserved",
+    "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi + Tutte le categorie",
+    "keyboard_search": "SOURCE_PASS: ArrowUp/ArrowDown/Enter/Escape",
+    "responsive": "SOURCE_PASS: <=1080, <=860, <=560, <=390 rules",
+    "reduced_motion": "SOURCE_PASS"
   },
   "cache_delivery": {
     "status": "SOURCE_PASS",
-    "cache": "webinsolito-v50-home19",
-    "note": "V50 service worker removes legacy V18 HTML injection. V19.1 also carries a harmless marker guard so the previously installed V49 worker cannot inject V18 CSS/JS on the first navigation after update."
+    "cache": "webinsolito-v51-home20",
+    "note": "No legacy Home visual injection or V18/V19 visual assets in service-worker core."
   },
   "verification": {
     "static_source": "PASS",
-    "branch_compare": "candidate ahead of main with no behind commits at validation time",
-    "public_deploy": "PASS: GitHub Pages build, report and deploy jobs completed successfully for b07d361ebd641ebae6f4c62d1708fefb5aed07ef.",
-    "public_marker": "SOURCE + DEPLOY PIPELINE PASS for V19.1; direct pixel/browser marker fetch unavailable in this session.",
+    "old_v19_gallery_removed": "PASS",
+    "old_earth_orbit_removed": "PASS",
+    "no_home_product_assets": "PASS",
+    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
+    "public_deploy": "PENDING",
     "desktop_visual": "NOT_PIXEL_VERIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
   },
-  "completion_gate": "ND: V19.1 is deployed and source/runtime gates passed; user aesthetic approval and pixel-level desktop/390/430 visual certification remain open.",
-  "blocker": "This session has no resizable visual browser, so no same-viewport pixel screenshot claim is made.",
-  "next_action": "Collect user visual judgment on the full V19.1 reset. Do not restore Earth/orbit/pill labels. If rejected, replace the gallery composition and/or object assets rather than layering more CSS over the old concept.",
-  "deployed_source_sha": "b07d361ebd641ebae6f4c62d1708fefb5aed07ef",
+  "completion_gate": "ND until public deploy succeeds and user judges the new direction. No visual score is claimed without browser screenshots.",
+  "blocker": "No resizable browser is available in this session for same-viewport desktop/390/430 screenshots.",
+  "next_action": "Re-read main HEAD; if candidate is not behind, fast-forward main and verify GitHub Pages build/deploy. Then wait for user visual judgment; do not revert to Earth/orbit or product gallery.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V19.1"
+  "preview_version": "PENDING V20.0"
 }
