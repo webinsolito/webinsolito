@@ -67,7 +67,7 @@ export function deepAnalysis(car){
  return {fields,unknown,complete:Boolean(car&&unknown.length===0),docsReady};
 }
 export function damageModel(car,input={}){
- const state=input.state||car?.damageState||(car?.accident===false?'clear':'unknown');
+ const state=input.state||car?.damageState||'unknown';
  const estimate=number(input.estimate??car?.damageEstimate);
  const complete=state==='clear'||(state==='costed'&&estimate!==null);
  return {state,estimate,complete,needsReview:!complete};
