@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T19:38:00+02:00",
+  "updated_at": "2026-10-01T19:43:45+02:00",
   "release": "V22.0",
   "base_main_sha": "4d0d232b4b52c825a0121b602dcf00cfce3841ce",
   "backup_branch": "backup/home-v21-20261001-premium",
   "candidate_branch": "candidate/home-v22-celestial-r2",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V22_DEPLOYED",
   "reason": "User approved the premium celestial blue/petrol/champagne concept generated from their reference and asked to turn it into the real Webinsolito site.",
   "approved_direction": {
     "palette": [
@@ -58,15 +58,16 @@
     "search_preserved": "PASS",
     "responsive_rules": "PASS",
     "reduced_motion": "PASS",
-    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
-    "public_deploy": "PENDING",
-    "public_marker": "PENDING",
+    "candidate_compare": "PASS: final candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
+    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for 292f5ab34bc96d2a0f3adf33622d0b890115a46d.",
+    "public_marker": "DIRECT_FETCH_UNAVAILABLE: public Pages URL could not be opened by the available browser tool; source marker V22.0 and successful Pages deployment are confirmed.",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "ND until public deploy succeeds and the user judges the live V22 visually. No aesthetic score is claimed without pixel screenshots.",
+  "completion_gate": "ND: V22.0 is deployed and source/runtime gates passed; final visual approval and pixel-level 390/430 certification remain open.",
   "blocker": "The available connected browser does not provide a resizable screenshot workflow; visual approval will be based on the live Pages preview and the user's inspection.",
-  "next_action": "Re-read main HEAD. If only unrelated project files changed, rebase the same Home-only changes again; otherwise reconcile Home changes before promotion. Then verify Pages build/deploy and live marker.",
+  "next_action": "User to inspect the live V22.0 premium celestial Home. Preserve this approved palette/composition if accepted; next pass should be polish/responsive only, not another concept reset unless the user asks.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "PENDING V22.0"
+  "preview_version": "V22.0",
+  "deployed_source_sha": "292f5ab34bc96d2a0f3adf33622d0b890115a46d"
 }
