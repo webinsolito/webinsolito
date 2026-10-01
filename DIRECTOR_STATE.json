@@ -6,7 +6,7 @@
   "base_main_sha": "05e16899f475bb7d3d4e01d4373ed0a7aac58196",
   "backup_branch": "backup/home-v18-6-20261001",
   "candidate_branch": "candidate/home-v19-reset",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V19_DEPLOYED",
   "design_reset": {
     "reason": "User rejected the V18 space/Earth/orbit composition and requested a full visual reset.",
     "removed": [
@@ -49,12 +49,15 @@
   "verification": {
     "static_source": "PASS",
     "branch_compare": "candidate ahead of main with no behind commits at validation time",
-    "public_deploy": "PENDING",
-    "public_marker": "PENDING",
+    "public_deploy": "PASS: GitHub Pages build + deploy job completed successfully for 9945427e05811d4e3cb76cda523012c3564f1d47",
+    "public_marker": "SOURCE + DEPLOY PIPELINE PASS; direct pixel/browser marker fetch unavailable in this session",
     "desktop_visual": "NOT_PIXEL_VERIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
   },
-  "completion_gate": "ND until public V19.0 deploy marker and live flow are verified; aesthetic approval remains with user.",
+  "completion_gate": "ND: V19.0 is deployed and source/runtime gates passed; user aesthetic approval and pixel-level desktop/390/430 visual certification remain open.",
   "blocker": "This session has no resizable visual browser, so no same-viewport pixel screenshot claim is made.",
-  "next_action": "Promote candidate only if main HEAD is still the validated base; then verify public V19.0 marker, removal of V18 runtime injection, asset loading, search results and category routes."
+  "next_action": "Wait for user visual judgment on V19.0. If rejected, change composition/assets rather than returning to Earth/orbit/cards; if accepted, certify 390/430 responsive behavior and then lock Home.",
+  "deployed_source_sha": "9945427e05811d4e3cb76cda523012c3564f1d47",
+  "preview_url": "https://webinsolito.github.io/webinsolito/",
+  "preview_version": "V19.0"
 }
