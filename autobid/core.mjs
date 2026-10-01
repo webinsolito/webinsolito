@@ -1,5 +1,5 @@
 export const VERSION='2.1.0';
-export const APP_VERSION='2.1.1';
+export const APP_VERSION='2.1.2';
 export function number(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null}
 export function classify(car,now=new Date()){
  const reasons=[],km=number(car.km);
