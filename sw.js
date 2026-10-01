@@ -1,4 +1,4 @@
-const CACHE='webinsolito-v51-home20';
+const CACHE='webinsolito-v52-home21';
 const CORE=[
   './index.html',
   './apps.json',
