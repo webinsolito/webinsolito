@@ -49,8 +49,8 @@ export function decisionModel(car,inputs={}){
  const manualResale=number(inputs.resale);const resale=manualResale??market.median;const desiredMargin=number(inputs.desiredMargin);const currentBid=number(inputs.currentBid??car?.currentBid);
  const bid=maxBid(resale,engine.total,desiredMargin);const landedCost=currentBid===null||engine.total===null?null:currentBid+engine.total;
  const projectedMargin=resale===null||landedCost===null?null:resale-landedCost;const roi=projectedMargin===null||landedCost===null||landedCost===0?null:(projectedMargin/landedCost)*100;
- const complete=Boolean(car?.status==='shortlist'&&deep.complete&&market.complete&&engine.total!==null&&resale!==null&&desiredMargin!==null&&currentBid!==null&&bid!==null);
- return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.complete?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax:currentBid!==null&&bid!==null?currentBid<=bid:null,complete};
+ const complete=Boolean(car?.status==='shortlist'&&market.complete&&engine.total!==null&&resale!==null&&desiredMargin!==null&&currentBid!==null&&bid!==null);const verified=Boolean(complete&&deep.complete);
+ return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.complete?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax:currentBid!==null&&bid!==null?currentBid<=bid:null,complete,verified};
 }
 
 const demoCosts={fees:500,transport:650,vatNonRecoverable:0,documents:250,registration:750,damage:350,tyres:450,service:0,keys:300,preparation:550,warranty:180,stock:250,risk:500};
