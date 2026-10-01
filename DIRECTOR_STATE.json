@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T16:18:00+02:00",
-  "release": "V19.0",
+  "updated_at": "2026-10-01T16:33:19+02:00",
+  "release": "V19.1",
   "base_main_sha": "05e16899f475bb7d3d4e01d4373ed0a7aac58196",
   "backup_branch": "backup/home-v18-6-20261001",
   "candidate_branch": "candidate/home-v19-reset",
-  "status": "PUBLIC_V19_DEPLOYED",
+  "status": "PUBLIC_V19_1_DEPLOYED",
   "design_reset": {
     "reason": "User rejected the V18 space/Earth/orbit composition and requested a full visual reset.",
     "removed": [
@@ -44,20 +44,20 @@
   "cache_delivery": {
     "status": "SOURCE_PASS",
     "cache": "webinsolito-v50-home19",
-    "note": "Removed legacy service-worker HTML injection that could re-add home-visual-v18.css/home-orbit-v18.js."
+    "note": "V50 service worker removes legacy V18 HTML injection. V19.1 also carries a harmless marker guard so the previously installed V49 worker cannot inject V18 CSS/JS on the first navigation after update."
   },
   "verification": {
     "static_source": "PASS",
     "branch_compare": "candidate ahead of main with no behind commits at validation time",
-    "public_deploy": "PASS: GitHub Pages build + deploy job completed successfully for 9945427e05811d4e3cb76cda523012c3564f1d47",
-    "public_marker": "SOURCE + DEPLOY PIPELINE PASS; direct pixel/browser marker fetch unavailable in this session",
+    "public_deploy": "PASS: GitHub Pages build, report and deploy jobs completed successfully for b07d361ebd641ebae6f4c62d1708fefb5aed07ef.",
+    "public_marker": "SOURCE + DEPLOY PIPELINE PASS for V19.1; direct pixel/browser marker fetch unavailable in this session.",
     "desktop_visual": "NOT_PIXEL_VERIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
   },
-  "completion_gate": "ND: V19.0 is deployed and source/runtime gates passed; user aesthetic approval and pixel-level desktop/390/430 visual certification remain open.",
+  "completion_gate": "ND: V19.1 is deployed and source/runtime gates passed; user aesthetic approval and pixel-level desktop/390/430 visual certification remain open.",
   "blocker": "This session has no resizable visual browser, so no same-viewport pixel screenshot claim is made.",
-  "next_action": "Wait for user visual judgment on V19.0. If rejected, change composition/assets rather than returning to Earth/orbit/cards; if accepted, certify 390/430 responsive behavior and then lock Home.",
-  "deployed_source_sha": "9945427e05811d4e3cb76cda523012c3564f1d47",
+  "next_action": "Collect user visual judgment on the full V19.1 reset. Do not restore Earth/orbit/pill labels. If rejected, replace the gallery composition and/or object assets rather than layering more CSS over the old concept.",
+  "deployed_source_sha": "b07d361ebd641ebae6f4c62d1708fefb5aed07ef",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V19.0"
+  "preview_version": "V19.1"
 }
