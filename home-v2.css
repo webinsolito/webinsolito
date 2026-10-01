@@ -1,3 +1,17 @@
-/* Clean-sheet home candidate foundation */
-:root{--home-bg:#071522;--home-panel:#0d2234;--home-gold:#d7ad6b;--home-text:#f7f1e7;--home-muted:#9cafc0}
-body{background:radial-gradient(800px 500px at 80% 0,#173957,transparent 65%),var(--home-bg)!important}
+/* Clean-sheet home candidate */
+:root{--home-bg:#07111b;--home-panel:#102235;--home-gold:#d7ad6b;--home-text:#f8f1e5;--home-muted:#9cafc0}
+body{background:radial-gradient(900px 520px at 82% -10%,rgba(215,173,107,.11),transparent 62%),linear-gradient(180deg,#081522,#050c13)!important}
+.hero{display:block!important;min-height:0!important;margin:48px 0 54px!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.hero:before,.hero:after,.heroStage{display:none!important}
+.heroCopy{max-width:980px!important}
+.hero h1{max-width:980px!important;color:var(--home-text)!important;font-size:clamp(64px,8vw,116px)!important;line-height:.86!important;letter-spacing:-.06em!important;text-shadow:none!important}
+.heroLead{max-width:780px!important;color:var(--home-gold)!important;font-size:clamp(30px,3.8vw,52px)!important}
+.hero p{max-width:650px!important;color:var(--home-muted)!important;font-size:15px!important;line-height:1.7!important}
+.searchBox{max-width:780px!important;margin:32px 0 0!important}
+.searchShell{height:66px!important;border-radius:18px!important;background:rgba(16,36,54,.9)!important;border-color:rgba(200,218,233,.24)!important}
+.gridHead{padding-top:24px;border-top:1px solid rgba(190,208,224,.15)}
+.cats{gap:14px!important}
+.cat{border-radius:22px!important;background:linear-gradient(160deg,rgba(22,46,68,.97),rgba(8,21,33,.99))!important;box-shadow:0 18px 44px rgba(0,0,0,.24)!important;transform:none!important}
+.cat:hover{transform:translateY(-4px)!important;border-color:rgba(215,173,107,.36)!important}
+@media(max-width:820px){.hero{margin:34px 0 42px!important}.hero h1{font-size:clamp(54px,13vw,82px)!important}.heroStage{display:none!important}}
+@media(max-width:560px){.hero{margin:28px 4px 36px!important}.hero h1{font-size:clamp(48px,15vw,68px)!important}.heroLead{font-size:clamp(26px,8.5vw,36px)!important}.hero p{font-size:13px!important}.cat{border-radius:18px!important}}
