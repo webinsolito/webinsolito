@@ -1,28 +1,29 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T17:40:18+02:00",
-  "release": "V20.0",
-  "base_main_sha": "1cc75ce704dc9b5b2b29c6883eb63946ace20292",
-  "backup_branch": "backup/home-v19-1-20261001",
-  "candidate_branch": "candidate/home-v20-editorial-r2",
-  "status": "PUBLIC_V20_DEPLOYED",
-  "reason": "User asked for another complete redesign, explicitly wanting something different from V19.1.",
+  "updated_at": "2026-10-01T17:34:00+02:00",
+  "release": "V21.0",
+  "base_main_sha": "fab388ca0d2dfb1a2902046f6859f9fc09773f5b",
+  "backup_branch": "backup/home-v20-20261001",
+  "candidate_branch": "candidate/home-v21-monolith",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "reason": "User said V20 was better but still not right and requested another full redesign/version.",
   "design_reset": {
     "removed": [
-      "V19 cream + product-gallery composition",
-      "3D category product assets from Home",
-      "featured object carousel/gallery",
+      "V20 split-screen cream/navy layout",
+      "right-side editorial index panel",
+      "all Home product imagery",
       "Earth/space/orbit legacy",
-      "pill category labels"
+      "carousel/card-based category presentation"
     ],
     "introduced": [
-      "split-screen editorial composition",
-      "warm paper search workspace on the left",
-      "deep navy typographic category index on the right",
-      "large serif typography with no decorative category imagery",
-      "direct category rows instead of cards or carousel",
-      "responsive stacked mobile composition"
+      "single full-screen dark monolith composition",
+      "centered oversized serif headline",
+      "Spotlight-style command search",
+      "five-column typographic category rail",
+      "subtle cursor-responsive ambient light on desktop",
+      "large ghost category word on hover/focus",
+      "single-column category rail on mobile"
     ]
   },
   "files_changed": [
@@ -34,28 +35,29 @@
     "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch.search preserved",
     "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi + Tutte le categorie",
     "keyboard_search": "SOURCE_PASS: ArrowUp/ArrowDown/Enter/Escape",
-    "responsive": "SOURCE_PASS: <=1080, <=860, <=560, <=390 rules",
-    "reduced_motion": "SOURCE_PASS"
+    "responsive": "SOURCE_PASS: <=980, <=760, <=430, <=390",
+    "reduced_motion": "SOURCE_PASS",
+    "fine_pointer_ambient": "PROGRESSIVE_ENHANCEMENT_ONLY"
   },
   "cache_delivery": {
     "status": "SOURCE_PASS",
-    "cache": "webinsolito-v51-home20",
-    "note": "No legacy Home visual injection or V18/V19 visual assets in service-worker core."
+    "cache": "webinsolito-v52-home21",
+    "note": "No legacy Home visual injection. Navigation remains network-first and querystrings are normalized for cache keys."
   },
   "verification": {
-    "static_source": "PASS",
+    "static_source": "PASS_PENDING_FINAL_RECHECK",
+    "old_v20_split_removed": "PASS",
     "old_v19_gallery_removed": "PASS",
     "old_earth_orbit_removed": "PASS",
     "no_home_product_assets": "PASS",
-    "candidate_compare": "PASS: candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
-    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy jobs completed successfully for c41fadb26e54febe22bcca4294a17bbad9ac3d5e.",
+    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
+    "public_deploy": "PENDING",
     "desktop_visual": "NOT_PIXEL_VERIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
   },
-  "completion_gate": "ND: V20.0 is deployed and source/runtime gates passed; user visual approval and pixel-level desktop/390/430 certification remain open.",
-  "blocker": "No resizable browser is available in this session for same-viewport desktop/390/430 screenshots.",
-  "next_action": "Collect user visual judgment on V20.0. Keep this split editorial direction isolated from V18/V19; if rejected, change the composition again rather than layering old visuals back in.",
+  "completion_gate": "ND until public deploy succeeds and user judges the new direction. No visual score is claimed without browser screenshots.",
+  "blocker": "No resizable visual browser is available in this session for same-viewport desktop/390/430 screenshots.",
+  "next_action": "Re-read main HEAD; if candidate is not behind, promote and verify Pages build/deploy. If main moved, rebase the same three Home-only files onto the current HEAD without touching concurrent project changes.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V20.0",
-  "deployed_source_sha": "c41fadb26e54febe22bcca4294a17bbad9ac3d5e"
+  "preview_version": "PENDING V21.0"
 }
