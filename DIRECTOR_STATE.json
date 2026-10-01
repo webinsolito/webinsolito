@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T17:34:00+02:00",
+  "updated_at": "2026-10-01T17:54:12+02:00",
   "release": "V21.0",
   "base_main_sha": "fab388ca0d2dfb1a2902046f6859f9fc09773f5b",
   "backup_branch": "backup/home-v20-20261001",
   "candidate_branch": "candidate/home-v21-monolith",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V21_DEPLOYED",
   "reason": "User said V20 was better but still not right and requested another full redesign/version.",
   "design_reset": {
     "removed": [
@@ -45,19 +45,21 @@
     "note": "No legacy Home visual injection. Navigation remains network-first and querystrings are normalized for cache keys."
   },
   "verification": {
-    "static_source": "PASS_PENDING_FINAL_RECHECK",
+    "static_source": "PASS",
     "old_v20_split_removed": "PASS",
     "old_v19_gallery_removed": "PASS",
     "old_earth_orbit_removed": "PASS",
     "no_home_product_assets": "PASS",
-    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
-    "public_deploy": "PENDING",
+    "candidate_compare": "PASS: candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
+    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for 2c85a8e9a9effdadcdae24630e840fd8cbf1765b.",
     "desktop_visual": "NOT_PIXEL_VERIFIED",
-    "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
+    "mobile_390_430_visual": "NOT_PIXEL_VERIFIED",
+    "public_marker": "UNVERIFIED_BY_DIRECT_FETCH: Pages URL could not be fetched by the available browser/network tools in this session; source marker V21.0 and successful Pages deploy are confirmed."
   },
-  "completion_gate": "ND until public deploy succeeds and user judges the new direction. No visual score is claimed without browser screenshots.",
-  "blocker": "No resizable visual browser is available in this session for same-viewport desktop/390/430 screenshots.",
-  "next_action": "Re-read main HEAD; if candidate is not behind, promote and verify Pages build/deploy. If main moved, rebase the same three Home-only files onto the current HEAD without touching concurrent project changes.",
+  "completion_gate": "ND: V21.0 is deployed and source/runtime gates passed; user visual approval and pixel-level desktop/390/430 certification remain open.",
+  "blocker": "No resizable browser is available for same-viewport desktop/390/430 screenshots, and the public Pages URL could not be directly fetched by available browser/network tools despite a successful Pages deployment.",
+  "next_action": "Collect user visual judgment on V21.0. If rejected, create another genuinely different composition rather than layering V18/V19/V20 ideas back in.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "PENDING V21.0"
+  "preview_version": "V21.0",
+  "deployed_source_sha": "2c85a8e9a9effdadcdae24630e840fd8cbf1765b"
 }
