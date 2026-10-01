@@ -1,5 +1,5 @@
 export const VERSION='2.1.0';
-export const APP_VERSION='2.3.0';
+export const APP_VERSION='2.4.0';
 
 export function number(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null}
 export function classify(car,now=new Date()){
@@ -58,7 +58,9 @@ export function marketModel(comparables){
  }).filter(row=>row.price!==null&&row.price>0);
  const prices=rows.map(r=>r.price).sort((a,b)=>a-b);
  const kms=rows.map(r=>r.km).filter(v=>v!==null),years=rows.map(r=>r.year).filter(v=>v!==null);
- return {rows,count:rows.length,partial:rows.length>=3,robust:rows.length>=5,median:rows.length?median(prices):null,low:prices[0]??null,high:prices.at(-1)??null,avgKm:kms.length?Math.round(kms.reduce((a,b)=>a+b,0)/kms.length):null,avgYear:years.length?Math.round(years.reduce((a,b)=>a+b,0)/years.length):null};
+ const med=rows.length?median(prices):null;const outliers=med===null?[]:rows.filter(r=>Math.abs(r.price-med)/med>.25);
+ const detailComplete=rows.filter(r=>r.km!==null&&r.year!==null).length;
+ return {rows,count:rows.length,partial:rows.length>=3,robust:rows.length>=5,median:med,low:prices[0]??null,high:prices.at(-1)??null,avgKm:kms.length?Math.round(kms.reduce((a,b)=>a+b,0)/kms.length):null,avgYear:years.length?Math.round(years.reduce((a,b)=>a+b,0)/years.length):null,outliers:outliers.length,detailComplete};
 }
 export function deepAnalysis(car){
  const fields=Object.fromEntries(DEEP_FIELDS.map(key=>[key,car?.[key]??null]));
@@ -91,7 +93,15 @@ export function decisionModel(car,inputs={}){
  const gates={filters:car?.status==='shortlist',market:market.robust,costs:engine.total!==null,damage:damage.complete,documents:deep.docsReady,price:currentBid!==null,bid:withinMax===true};
  const readiness=Math.round(Object.values(gates).filter(Boolean).length/Object.keys(gates).length*100);
  const blockers=[];if(!gates.filters)blockers.push('filtri');if(!gates.market)blockers.push('mercato');if(!gates.costs)blockers.push('costi');if(!gates.damage)blockers.push('danni');if(!gates.documents)blockers.push('documenti');if(!gates.price)blockers.push('prezzo');else if(!gates.bid)blockers.push('MAX BID');
- return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,economicsComplete,complete,verified,stage,bidHeadroom,marginBuffer,marketSpreadPct,gates,readiness,blockers};
+ const deepCoverage=Math.round((DEEP_FIELDS.length-deep.unknown.length)/DEEP_FIELDS.length*100);
+ const stressedResale=resale===null?null:Math.round(resale*.95);const stressedCost=engine.total===null?null:Math.round(engine.total*1.10);
+ const stressedLanded=currentBid===null||stressedCost===null?null:currentBid+stressedCost;
+ const stressedMargin=stressedResale===null||stressedLanded===null?null:stressedResale-stressedLanded;
+ const stressedRoi=stressedMargin===null||stressedLanded===null||stressedLanded===0?null:(stressedMargin/stressedLanded)*100;
+ const stressedMaxBid=maxBid(stressedResale,stressedCost,desiredMargin);
+ const stressWithinMax=currentBid!==null&&stressedMaxBid!==null?currentBid<=stressedMaxBid:null;
+ const warnings=[];if(market.outliers)warnings.push(market.outliers+' comparabile/i anomalo/i');if(marketSpreadPct!==null&&marketSpreadPct>20)warnings.push('mercato disperso');if(market.detailComplete<market.count)warnings.push('comparabili con km/anno incompleti');if(complete&&stressWithinMax===false)warnings.push('scenario prudente oltre MAX BID');
+ return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,economicsComplete,complete,verified,stage,bidHeadroom,marginBuffer,marketSpreadPct,gates,readiness,blockers,deepCoverage,warnings,stress:{resale:stressedResale,costTotal:stressedCost,landedCost:stressedLanded,projectedMargin:stressedMargin,roi:stressedRoi,maxBid:stressedMaxBid,withinMax:stressWithinMax}};
 }
 export function stageLabel(stage){return ({excluded:'ESCLUSA',review:'DA VERIFICARE',filter_ok:'IDONEA AI FILTRI',analysis_complete:'ANALISI COMPLETA',bid_over_max:'OLTRE MAX BID',buy_candidate:'CANDIDATA ALL’ACQUISTO'})[stage]||'DA ANALIZZARE'}
 
