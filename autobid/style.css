@@ -39,3 +39,8 @@
 @media(max-width:900px){.stress-grid{grid-template-columns:repeat(3,1fr)}.safety-grid{grid-template-columns:1fr 1fr}.purchase-tools{width:100%;justify-content:space-between}}
 @media(max-width:700px){.stress-grid,.safety-grid{grid-template-columns:1fr 1fr}.dashboard-head{align-items:stretch;flex-direction:column}.purchase-tools{align-items:center}.purchase-tools label{flex:1}.purchase-tools select{width:100%}.purchase-metrics{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.stress-grid,.safety-grid{grid-template-columns:1fr}.purchase-tools{display:block}.purchase-tools>span{display:block;margin-bottom:8px}}
+
+
+.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:20px 0 8px}.report-summary div{background:#f1f5f1;border:1px solid #dce4dd;border-radius:8px;padding:10px}.report-summary span{display:block;font-size:8px;letter-spacing:.7px;color:#728078;text-transform:uppercase}.report-summary strong{display:block;font-size:14px;margin-top:4px}.report-section-title{margin:28px 0 7px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#4d6658}.purchase-card.stress-risk{border-color:#ddb6a6;box-shadow:inset 3px 0 #c77858}.purchase-card.stress-risk .purchase-top strong{color:#a55d43}
+@media(max-width:650px){.report-summary{grid-template-columns:1fr 1fr}}
+@media print{.report-summary{grid-template-columns:repeat(3,1fr)}.report-section-title{break-after:avoid}.report-lines{break-inside:avoid}}
