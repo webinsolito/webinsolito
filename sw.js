@@ -1,10 +1,96 @@
-const CACHE='webinsolito-v49';
-const CORE=['./index.html','./apps.json','./manifest.webmanifest','./assets/webinsolito-logo.svg','./assets/webinsolito-core.css','./assets/webinsolito-core.js','./assets/home-search.js','./assets/home-search-20260925.js','./assets/home-mobile-depth-v7.css','./assets/home-visual-v8.css','./assets/home-visual-v9.css','./assets/home-visual-v10.css','./assets/home-visual-v11.css','./assets/home-visual-v12.css','./assets/home-visual-v13.css','./assets/home-visual-v14.css','./assets/home-visual-v15.css','./assets/home-visual-v16.css','./assets/home-visual-v18.css','./assets/home-orbit-v18.js','./assets/categories-v18/auto-product-v18.webp','./assets/categories-v18/food-product-v18.webp','./assets/categories-v18/home-product-v18.webp','./assets/categories-v18/travel-product-v18.webp','./assets/categories-v18/money-product-v18.webp','./assets/home-icon-preview-product-v13.js','./assets/categories-v3/auto.svg','./assets/categories-v3/food.svg','./assets/categories-v3/home.svg','./assets/category-page.css','./assets/category-page.js','./assets/microapp.css','./assets/microapp.js','./assets/microapp-defs.js','./assets/microapp-pro.css','./assets/microapp-pro-defs.js','./assets/microapp-pro.js','./assets/categories-v2/auto.svg','./assets/categories-v2/food.svg','./assets/categories-v2/money.svg','./assets/categories-v2/events.svg','./assets/categories-v2/docs.svg','./assets/categories-v2/home.svg','./assets/categories-v2/travel.svg','./assets/categories-v2/travel-premium.webp','./assets/categories-v2/travel-transparent.webp','./assets/categories-v2/style.svg','./assets/categories-v2/shopping.svg','./assets/categories-v2/territory.svg','./assets/categories-v2/business.svg','./assets/categories-v2/study.svg'];
-self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.allSettled(CORE.map(async url=>{const response=await fetch(url,{cache:'reload',credentials:'same-origin'});if(cacheable(new Request(new URL(url,self.location.href)),response))await cache.put(url,response.clone())}));await self.skipWaiting()})()));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('webinsolito-')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})()));
-function cacheKey(request){const url=new URL(request.url);url.search='';url.hash='';return url.href}
-function cacheable(request,response){if(!response||!response.ok||response.type!=='basic')return false;const url=new URL(request.url);if(url.origin!==self.location.origin||request.headers.has('range'))return false;const policy=(response.headers.get('cache-control')||'').toLowerCase();return !policy.includes('no-store')&&!policy.includes('private')}
-async function withHomeVisual(response,request){if(!response||!response.ok||request.mode!=='navigate')return response;const url=new URL(request.url);if(!/\/webinsolito\/?$/.test(url.pathname))return response;const type=response.headers.get('content-type')||'';if(!type.includes('text/html'))return response;let html=await response.text();if(!html.includes('home-visual-v18.css'))html=html.replace('</head>','<link rel="stylesheet" href="./assets/home-visual-v18.css?v=18.6"><script defer src="./assets/home-orbit-v18.js?v=18.6"></script></head>');const headers=new Headers(response.headers);headers.delete('content-length');headers.set('cache-control','no-cache');return new Response(html,{status:response.status,statusText:response.statusText,headers})}
-async function onlineFirst(request){const cache=await caches.open(CACHE);try{const raw=await fetch(request,{cache:'no-store',credentials:'same-origin'});const response=await withHomeVisual(raw,request);if(cacheable(request,response))await cache.put(cacheKey(request),response.clone());return response}catch{const hit=await cache.match(cacheKey(request));if(hit)return withHomeVisual(hit,request);return new Response(request.mode==='navigate'?'Questa pagina non è ancora disponibile offline. Riconnettiti e aprila una volta per salvarla.':'Webinsolito non disponibile offline.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}})}}
-async function assetFirst(request){const cache=await caches.open(CACHE),key=cacheKey(request),hit=await cache.match(key);if(hit){fetch(request,{cache:'no-cache',credentials:'same-origin'}).then(response=>{if(cacheable(request,response))return cache.put(key,response.clone())}).catch(()=>{});return hit}const response=await fetch(request,{cache:'no-cache',credentials:'same-origin'});if(cacheable(request,response))await cache.put(key,response.clone());return response}
-self.addEventListener('fetch',event=>{const request=event.request;if(request.method!=='GET'||request.headers.has('range'))return;const url=new URL(request.url);if((url.protocol!=='https:'&&url.protocol!=='http:')||url.origin!==self.location.origin)return;const fresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');event.respondWith(fresh?onlineFirst(request):assetFirst(request))});
+const CACHE='webinsolito-v50-home19';
+const CORE=[
+  './index.html',
+  './apps.json',
+  './manifest.webmanifest',
+  './assets/webinsolito-logo.svg',
+  './assets/home-search-20260925.js',
+  './assets/categories-v18/auto-product-v18.webp',
+  './assets/categories-v18/food-product-v18.webp',
+  './assets/categories-v18/home-product-v18.webp',
+  './assets/categories-v18/travel-product-v18.webp',
+  './assets/categories-v18/money-product-v18.webp',
+  './assets/category-page.css',
+  './assets/category-page.js',
+  './assets/microapp.css',
+  './assets/microapp.js'
+];
+
+self.addEventListener('install',event=>{
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await Promise.allSettled(CORE.map(async url=>{
+      const response=await fetch(url,{cache:'reload',credentials:'same-origin'});
+      if(cacheable(new Request(new URL(url,self.location.href)),response)){
+        await cache.put(cacheKey(new Request(new URL(url,self.location.href))),response.clone());
+      }
+    }));
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate',event=>{
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(key=>key.startsWith('webinsolito-')&&key!==CACHE).map(key=>caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+
+function cacheKey(request){
+  const url=new URL(request.url);
+  url.search='';
+  url.hash='';
+  return url.href;
+}
+
+function cacheable(request,response){
+  if(!response||!response.ok||response.type!=='basic')return false;
+  const url=new URL(request.url);
+  if(url.origin!==self.location.origin||request.headers.has('range'))return false;
+  const policy=(response.headers.get('cache-control')||'').toLowerCase();
+  return !policy.includes('no-store')&&!policy.includes('private');
+}
+
+async function networkFirst(request){
+  const cache=await caches.open(CACHE);
+  const key=cacheKey(request);
+  try{
+    const response=await fetch(request,{cache:'no-store',credentials:'same-origin'});
+    if(cacheable(request,response))await cache.put(key,response.clone());
+    return response;
+  }catch{
+    const hit=await cache.match(key);
+    if(hit)return hit;
+    return new Response(
+      request.mode==='navigate'
+        ?'Questa pagina non è ancora disponibile offline. Riconnettiti e aprila una volta per salvarla.'
+        :'Webinsolito non disponibile offline.',
+      {status:503,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}}
+    );
+  }
+}
+
+async function staleWhileRevalidate(request){
+  const cache=await caches.open(CACHE);
+  const key=cacheKey(request);
+  const hit=await cache.match(key);
+  const refresh=fetch(request,{cache:'no-cache',credentials:'same-origin'})
+    .then(response=>{
+      if(cacheable(request,response))cache.put(key,response.clone());
+      return response;
+    })
+    .catch(()=>null);
+  if(hit){refresh.catch(()=>{});return hit}
+  const response=await refresh;
+  return response||new Response('Webinsolito non disponibile offline.',{status:503});
+}
+
+self.addEventListener('fetch',event=>{
+  const request=event.request;
+  if(request.method!=='GET'||request.headers.has('range'))return;
+  const url=new URL(request.url);
+  if((url.protocol!=='https:'&&url.protocol!=='http:')||url.origin!==self.location.origin)return;
+  const mustBeFresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');
+  event.respondWith(mustBeFresh?networkFirst(request):staleWhileRevalidate(request));
+});
