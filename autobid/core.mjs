@@ -77,13 +77,15 @@ export function decisionModel(car,inputs={}){
  const manualResale=number(inputs.resale);const resale=manualResale??(market.robust?market.median:null);const desiredMargin=number(inputs.desiredMargin);const currentBid=number(inputs.currentBid??car?.currentBid);
  const bid=maxBid(resale,engine.total,desiredMargin);const landedCost=currentBid===null||engine.total===null?null:currentBid+engine.total;
  const projectedMargin=resale===null||landedCost===null?null:resale-landedCost;const roi=projectedMargin===null||landedCost===null||landedCost===0?null:(projectedMargin/landedCost)*100;
- const complete=Boolean(car?.status==='shortlist'&&market.robust&&engine.total!==null&&resale!==null&&desiredMargin!==null&&currentBid!==null&&bid!==null&&damage.complete);
+ const economicsComplete=Boolean(car?.status==='shortlist'&&market.robust&&engine.total!==null&&resale!==null&&desiredMargin!==null&&currentBid!==null&&bid!==null);
+ const complete=Boolean(economicsComplete&&damage.complete);
  const withinMax=currentBid!==null&&bid!==null?currentBid<=bid:null;
  let stage=car?.status==='excluded'?'excluded':car?.status==='review'?'review':'filter_ok';
- if(complete)stage=withinMax?'analysis_complete':'bid_over_max';
+ if(economicsComplete)stage='analysis_complete';
+ if(economicsComplete&&withinMax===false)stage='bid_over_max';
  if(complete&&withinMax&&deep.docsReady)stage='buy_candidate';
  const verified=Boolean(stage==='buy_candidate'&&deep.complete);
- return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,complete,verified,stage};
+ return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,economicsComplete,complete,verified,stage};
 }
 export function stageLabel(stage){return ({excluded:'ESCLUSA',review:'DA VERIFICARE',filter_ok:'IDONEA AI FILTRI',analysis_complete:'ANALISI COMPLETA',bid_over_max:'OLTRE MAX BID',buy_candidate:'CANDIDATA ALL’ACQUISTO'})[stage]||'DA ANALIZZARE'}
 
