@@ -1,5 +1,5 @@
 export const VERSION='2.1.0';
-export const APP_VERSION='2.2.0';
+export const APP_VERSION='2.3.0';
 
 export function number(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null}
 export function classify(car,now=new Date()){
@@ -85,7 +85,13 @@ export function decisionModel(car,inputs={}){
  if(economicsComplete&&withinMax===false)stage='bid_over_max';
  if(complete&&withinMax&&deep.docsReady)stage='buy_candidate';
  const verified=Boolean(stage==='buy_candidate'&&deep.complete);
- return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,economicsComplete,complete,verified,stage};
+ const bidHeadroom=currentBid!==null&&bid!==null?bid-currentBid:null;
+ const marginBuffer=projectedMargin!==null&&desiredMargin!==null?projectedMargin-desiredMargin:null;
+ const marketSpreadPct=market.low!==null&&market.high!==null&&market.median?((market.high-market.low)/market.median)*100:null;
+ const gates={filters:car?.status==='shortlist',market:market.robust,costs:engine.total!==null,damage:damage.complete,documents:deep.docsReady,price:currentBid!==null,bid:withinMax===true};
+ const readiness=Math.round(Object.values(gates).filter(Boolean).length/Object.keys(gates).length*100);
+ const blockers=[];if(!gates.filters)blockers.push('filtri');if(!gates.market)blockers.push('mercato');if(!gates.costs)blockers.push('costi');if(!gates.damage)blockers.push('danni');if(!gates.documents)blockers.push('documenti');if(!gates.price)blockers.push('prezzo');else if(!gates.bid)blockers.push('MAX BID');
+ return {vehicle:car?.name||null,vehicleId:car?.id||null,deep,damage,market,costs:engine.values,costUnknown:engine.unknown,costTotal:engine.total,resale,resaleSource:manualResale!==null?'manual':market.robust?'market-median':null,currentBid,landedCost,desiredMargin,projectedMargin,roi,maxBid:bid,withinMax,economicsComplete,complete,verified,stage,bidHeadroom,marginBuffer,marketSpreadPct,gates,readiness,blockers};
 }
 export function stageLabel(stage){return ({excluded:'ESCLUSA',review:'DA VERIFICARE',filter_ok:'IDONEA AI FILTRI',analysis_complete:'ANALISI COMPLETA',bid_over_max:'OLTRE MAX BID',buy_candidate:'CANDIDATA ALL’ACQUISTO'})[stage]||'DA ANALIZZARE'}
 
