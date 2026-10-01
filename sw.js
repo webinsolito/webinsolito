@@ -1,15 +1,10 @@
-const CACHE='webinsolito-v50-home19';
+const CACHE='webinsolito-v51-home20';
 const CORE=[
   './index.html',
   './apps.json',
   './manifest.webmanifest',
   './assets/webinsolito-logo.svg',
   './assets/home-search-20260925.js',
-  './assets/categories-v18/auto-product-v18.webp',
-  './assets/categories-v18/food-product-v18.webp',
-  './assets/categories-v18/home-product-v18.webp',
-  './assets/categories-v18/travel-product-v18.webp',
-  './assets/categories-v18/money-product-v18.webp',
   './assets/category-page.css',
   './assets/category-page.js',
   './assets/microapp.css',
@@ -20,10 +15,9 @@ self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE);
     await Promise.allSettled(CORE.map(async url=>{
-      const response=await fetch(url,{cache:'reload',credentials:'same-origin'});
-      if(cacheable(new Request(new URL(url,self.location.href)),response)){
-        await cache.put(cacheKey(new Request(new URL(url,self.location.href))),response.clone());
-      }
+      const request=new Request(new URL(url,self.location.href));
+      const response=await fetch(request,{cache:'reload',credentials:'same-origin'});
+      if(cacheable(request,response))await cache.put(cacheKey(request),response.clone());
     }));
     await self.skipWaiting();
   })());
@@ -91,6 +85,6 @@ self.addEventListener('fetch',event=>{
   if(request.method!=='GET'||request.headers.has('range'))return;
   const url=new URL(request.url);
   if((url.protocol!=='https:'&&url.protocol!=='http:')||url.origin!==self.location.origin)return;
-  const mustBeFresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');
-  event.respondWith(mustBeFresh?networkFirst(request):staleWhileRevalidate(request));
+  const fresh=request.mode==='navigate'||url.pathname.endsWith('/apps.json')||url.pathname.includes('/data/');
+  event.respondWith(fresh?networkFirst(request):staleWhileRevalidate(request));
 });
