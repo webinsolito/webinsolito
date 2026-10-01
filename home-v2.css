@@ -1,0 +1,3 @@
+/* Clean-sheet home candidate foundation */
+:root{--home-bg:#071522;--home-panel:#0d2234;--home-gold:#d7ad6b;--home-text:#f7f1e7;--home-muted:#9cafc0}
+body{background:radial-gradient(800px 500px at 80% 0,#173957,transparent 65%),var(--home-bg)!important}
