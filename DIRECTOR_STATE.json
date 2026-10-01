@@ -1,185 +1,60 @@
 {
-  "current_area": "HOME LOCK — V18.4 orbital balance and settling",
-  "start_sha": "28f94e578f9a96941919c009735c9650576f3c3d",
-  "end_sha": "FINAL_HEAD",
-  "last_good_commit": "63088ebfc9ab74ab3220a82164d6afa99bedc14e",
-  "runtime_files_changed": [
+  "project": "WEBINSOLITO",
+  "scope": "HOME ONLY",
+  "updated_at": "2026-10-01T16:18:00+02:00",
+  "release": "V19.0",
+  "base_main_sha": "05e16899f475bb7d3d4e01d4373ed0a7aac58196",
+  "backup_branch": "backup/home-v18-6-20261001",
+  "candidate_branch": "candidate/home-v19-reset",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "design_reset": {
+    "reason": "User rejected the V18 space/Earth/orbit composition and requested a full visual reset.",
+    "removed": [
+      "Earth/space background",
+      "orbit carousel",
+      "pill category labels",
+      "starfield",
+      "legacy V18 visual CSS/JS runtime dependency"
+    ],
+    "introduced": [
+      "warm cream editorial canvas",
+      "navy premium product-gallery stage",
+      "single featured category object at a time",
+      "plain typographic category caption",
+      "primary natural-language search",
+      "drag/swipe + tabs + keyboard category selection",
+      "responsive 390px/560px/860px/1100px rules",
+      "reduced-motion fallback"
+    ]
+  },
+  "files_changed": [
     "index.html",
-    "assets/home-visual-v18.css",
-    "assets/home-orbit-v18.js",
     "sw.js",
     "DIRECTOR_STATE.json"
   ],
-  "finished_checklist": {
-    "category_name_contrast": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
-      "proof": "Public V13 browser screenshot shows all 12 category names in dark navy on ivory label slabs, including the long labels."
-    },
-    "card_density": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
-      "proof": "Public V13 screenshot at 1350px shows a compact 4-column, 3-row shelf with consistent card height and materially reduced empty space."
-    },
-    "icon_direction_auto_food_home": {
-      "status": "PUBLIC_BROWSER_VERIFIED_ISOLATED_PREVIEW_PENDING_USER_APPROVAL",
-      "proof": "Auto/Food/Casa v3 assets were visually inspected inside the public Home cards. The preview now supports ?iconPreview=product and waits reliably for the async category grid; normal Home remains unchanged until approval."
-    },
-    "search_routing": {
-      "status": "PUBLIC_BROWSER_SMOKE_PASS",
-      "proof": "Public search for 'vendere auto' returned nine relevant results; the Auto category opened and rendered its category heading."
-    },
-    "cache_delivery": {
-      "status": "IMPLEMENTED",
-      "proof": "V18.4 query versions and service worker cache v47."
-    },
-    "direct_home_delivery": {
-      "status": "IMPLEMENTED",
-      "proof": "index.html now directly loads Home V10/V11/V12 CSS on first navigation; no service-worker-controlled second load is required."
-    },
-    "home_composition_v13": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP_PENDING_USER_JUDGMENT",
-      "proof": "Public screenshot confirms the compact product hero and ivory/navy product-shelf composition are live; final aesthetic acceptance remains the user's decision."
-    },
-    "category_cards_v13": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
-      "proof": "All 12 cards rendered in a 4-column desktop product shelf with ivory shells, navy inset stages, larger objects and dark navy labels."
-    },
-    "mobile_390_430_v13": {
-      "status": "IMPLEMENTED_VISUAL_BROWSER_PROOF_UNAVAILABLE_THIS_RUN",
-      "proof": "Dedicated <=640 and <=430 rules reduce cards to 164/156px and preserve 2-column density. The available public browser had a fixed desktop viewport; no mobile visual PASS is claimed."
-    },
-    "home_spacing_v14": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Hero reduced to 438px desktop; category cards 176px desktop / 150px <=640 / 148px <=430 / 144px <=390; panel padding and grid gaps reduced."
-    },
-    "home_icons_v14": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Auto/Food/Casa now use categories-v3 product-object assets on normal Home and hero; Travel no longer uses travel-transparent.webp and uses the coherent travel.svg family; remaining nine receive per-category optical scale normalization."
-    },
-    "home_only_scope": {
-      "status": "PASS",
-      "proof": "No category page, app, apps.json, category route target or micro-app source changed."
-    },
-    "home_structure_v15": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Category grid changed from 4-column tile shelf to 3-column horizontal product cards; mobile becomes a one-column compact list. Hero orbit markup was replaced by a new product-stage composition."
-    },
-    "home_spacing_v15": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Hero reduced to 390px desktop; category cards to 132px desktop and 98–104px mobile; outer padding/gaps reduced."
-    },
-    "home_icons_v15": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Auto/Food/Casa v3 remain live; all category icons are presented in a common 104x94 object stage with per-category optical normalization."
-    },
-    "legacy_visual_layers": {
-      "status": "REMOVED_FROM_RUNTIME",
-      "proof": "index.html no longer loads home-visual-v8 through v14; V15 is the single external Home visual layer. Legacy filename markers prevent older service workers from reinjecting previous layers during upgrade."
-    },
-    "home_catalog_removed": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "The 12-category grid is removed from Home; categories are accessed via categorie.html from top nav and a single CTA."
-    },
-    "home_primary_flow": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_SMOKE",
-      "proof": "Home now has one primary flow: describe need in search; secondary flow is one categories CTA."
-    },
-    "home_icon_composition": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Hero contains only Webinsolito logo plus large Auto/Food/Casa product-object icons on a shared soft-premium stage; no category-card wall."
-    },
-    "home_spacing_v16": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Desktop hero uses a single 590px composition; mobile collapses cleanly with a 230px icon stage and no category grid."
-    },
-    "home_space_visual_v17": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Home structure now uses a full space scene, large Earth-at-night stage, sun glow and gold orbit lines, matching the approved concept rather than previous card layouts."
-    },
-    "home_orbit_carousel_v17": {
-      "status": "IMPLEMENTED_PENDING_BROWSER_SMOKE",
-      "proof": "Five featured categories rotate in a perspective carousel with active-center depth, pointer drag/swipe, arrows, dots, wheel and keyboard navigation."
-    },
-    "home_search_v17": {
-      "status": "SOURCE_PRESERVED_REQUIRES_PUBLIC_SMOKE",
-      "proof": "Existing WebinsolitoSearch/apps.json result flow is preserved; only markup/styling around the input changed."
-    },
-    "home_routes_v17": {
-      "status": "SOURCE_PASS",
-      "proof": "Featured links target auto, food, casa, viaggi and soldi; all-category CTA still targets categorie.html."
-    },
-    "mobile_v17": {
-      "status": "IMPLEMENTED_PENDING_390_430_VISUAL_VERIFY",
-      "proof": "Dedicated <=720 and <=430 carousel/earth/search sizing and touch drag support included."
-    },
-    "home_objects_v18": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
-      "proof": "Public V18.1 screenshot shows Auto, Food, Casa, Viaggi and Soldi as crisp realistic transparent product objects directly around Earth; the old circular glass containers and flat SVGs are absent."
-    },
-    "home_orbit_interaction_v18": {
-      "status": "PUBLIC_BROWSER_SMOKE_PASS",
-      "proof": "On public V18.1, next-arrow changed Casa to Viaggi with one aria-current and one aria-pressed; physical left drag changed Casa to Viaggi after the native link-drag fix; keyboard Enter opened /casa/."
-    },
-    "home_density_v18": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP",
-      "proof": "Public desktop screenshot confirms the reduced-height object stages preserve visible Earth, headline, search, labels and CTA in one coherent composition without the previous oversized bubbles."
-    },
-    "home_orbit_interaction_v18_2": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_BROWSER_SMOKE",
-      "proof": "Drag now uses smoothed velocity, projected release position, 1–2 item inertial stepping and snap feedback. Side item click centers; active item click navigates."
-    },
-    "home_active_category_cta_v18_2": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_BROWSER_SMOKE",
-      "proof": "Gold CTA now follows the selected carousel item and updates href/label to Apri Auto/Food/Casa/Viaggi/Soldi; all categories remains a separate secondary link."
-    },
-    "home_visual_lock_v18_2": {
-      "status": "PASS",
-      "proof": "No category imagery, Earth composition, search logic or route targets changed; only carousel interaction and CTA affordance were refined."
-    },
-    "home_orbit_continuous_v18_3": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
-      "proof": "Continuous float position, exact pointer tracking, requestAnimationFrame inertia, exponential friction and damped spring snap; no index stepping during drag."
-    },
-    "home_orbit_click_flow_v18_3": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
-      "proof": "Side click centers with spring; only settled central item navigates; drag suppresses accidental clicks."
-    },
-    "home_orbit_visual_scale_v18_3": {
-      "status": "IMPLEMENTED_PENDING_VISUAL_VERIFY",
-      "proof": "Objects enlarged; center scale 1.20; side depth/brightness/rotateY continuously derive from float position."
-    },
-    "home_orange_cta_removed_v18_3": {
-      "status": "SOURCE_PASS",
-      "proof": "Orange CTA and related CSS removed; category labels remain under objects."
-    },
-    "home_scope_lock_v18_3": {
-      "status": "PASS",
-      "proof": "Earth, space, title, search logic, routes, apps.json and subpages unchanged."
-    },
-    "home_orbit_public_v18_3": {
-      "status": "PUBLIC_BROWSER_VERIFIED_DESKTOP_WITH_DEFECTS",
-      "proof": "Public V18.3 marker/assets/CTA removal verified. Real fast left drag crossed Casa to Soldi continuously, but desktop screenshot showed excessive Casa/Viaggi overlap and the final spring remained visibly off-center for several seconds."
-    },
-    "home_orbit_balance_v18_4": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_VISUAL_VERIFY",
-      "proof": "Desktop spacing increased 247→274px while item/stage and per-object optical sizes were rebalanced; center 1.17, side .84, far .63 reduce overlap and edge clipping without returning to small icons."
-    },
-    "home_orbit_settle_v18_4": {
-      "status": "IMPLEMENTED_PENDING_PUBLIC_INTERACTION_VERIFY",
-      "proof": "Higher friction and a faster near-critical spring shorten the visibly unfinished coast; relaxed exact-stop threshold ends imperceptible tail motion."
-    },
-    "home_reduced_motion_v18_4": {
-      "status": "SOURCE_PASS_PENDING_BROWSER_EMULATION",
-      "proof": "prefers-reduced-motion now disables inertia/spring and snaps immediately while retaining direct drag, arrows, dots and keyboard navigation."
-    }
+  "functional_checks": {
+    "search_engine": "SOURCE_PRESERVED: home-search-20260925.js + WebinsolitoSearch.search",
+    "featured_routes": "SOURCE_PASS: auto, food, casa, viaggi, soldi",
+    "pointer_swipe": "SOURCE_PASS",
+    "keyboard_left_right_enter": "SOURCE_PASS",
+    "categories_link": "SOURCE_PASS: categorie.html",
+    "reduced_motion": "SOURCE_PASS",
+    "mobile_rules": "SOURCE_PASS: 390px and 560px breakpoints"
   },
-  "visual_verification": {
-    "before": "Public V18.3 desktop screenshot showed the approved assets and continuous orbit, but Casa overlapped Food/Viaggi heavily and a fast swipe remained visibly off-center for several seconds.",
-    "implementation": "V18.4 keeps the approved scene/assets, increases orbital separation, rebalances optical object sizes, shortens the physics tail and adds functional reduced-motion behavior.",
-    "after": "IMPLEMENTED LOCALLY; PENDING DEPLOY + SAME-VIEWPORT PUBLIC SCREENSHOT AND INTERACTION VERIFY."
+  "cache_delivery": {
+    "status": "SOURCE_PASS",
+    "cache": "webinsolito-v50-home19",
+    "note": "Removed legacy service-worker HTML injection that could re-add home-visual-v18.css/home-orbit-v18.js."
   },
-  "blocker": "390/430 public visual certification depends on an available resizable browser.",
-  "next_action": "Deploy V18.4; verify public marker/assets, same desktop viewport before/after, slow/fast drag both directions, settling time, side-click center, center-click route, arrows, keyboard, CTA absence, console and mobile where tooling permits.",
-  "home_visual_status": "HOME_V18_4_BALANCE_AND_SETTLING_PENDING_PUBLIC_VERIFY",
-  "category_visual_status": "SUBPAGES_UNCHANGED",
-  "previous_debt": "User rejected V18.2 interaction: stepped feel, redundant orange CTA, objects too small."
+  "verification": {
+    "static_source": "PASS",
+    "branch_compare": "candidate ahead of main with no behind commits at validation time",
+    "public_deploy": "PENDING",
+    "public_marker": "PENDING",
+    "desktop_visual": "NOT_PIXEL_VERIFIED",
+    "mobile_390_430_visual": "NOT_PIXEL_VERIFIED"
+  },
+  "completion_gate": "ND until public V19.0 deploy marker and live flow are verified; aesthetic approval remains with user.",
+  "blocker": "This session has no resizable visual browser, so no same-viewport pixel screenshot claim is made.",
+  "next_action": "Promote candidate only if main HEAD is still the validated base; then verify public V19.0 marker, removal of V18 runtime injection, asset loading, search results and category routes."
 }
