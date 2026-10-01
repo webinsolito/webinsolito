@@ -93,7 +93,7 @@ function selectCar(car){
  selected=car;$('selected').textContent=car.name||'Veicolo';clearInputs();
  const saved=car._inputs||car.demoDecision||{};
  if(saved.currentBid===undefined&&car.currentBid!==undefined)saved.currentBid=car.currentBid;
- fillAnalysis(saved);evidence();budget();
+ fillAnalysis(saved);applyAutoCosts(false);evidence();budget();
 }
 function load(rows,source){
  const old=new Map(cars.filter(c=>c.id).map(c=>[c.id,c]));const result=scan(rows);
@@ -109,7 +109,8 @@ document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>{f
 $('budget').onsubmit=e=>e.preventDefault();$('budget').oninput=budget;
 $('damageState').onchange=()=>{if($('damageState').value==='clear'){$('damageEstimate').value=0;$('cost-damage').value=0}else if($('damageState').value==='costed'&&$('damageEstimate').value==='')$('damageEstimate').focus();budget()};
 $('damageEstimate').oninput=()=>{if($('damageState').value==='costed')$('cost-damage').value=$('damageEstimate').value;budget()};
-$('autoCosts').onclick=()=>{if(!selected)return;const preset=autoCostPreset(selected,numeric('currentBid'));let filled=0;for(const [k,v] of Object.entries(preset)){if(v!==null&&v!==undefined){$('cost-'+k).value=v;filled++}}if($('damageState').value==='clear')$('cost-damage').value=0;$('costState').textContent=filled+' stime precompilate';budget()};
+function applyAutoCosts(overwrite=false){if(!selected)return 0;const preset=autoCostPreset(selected,numeric('currentBid'));let filled=0;for(const [k,v] of Object.entries(preset)){const field=$('cost-'+k);if(v!==null&&v!==undefined&&(overwrite||field.value==='')){field.value=v;filled++}}if($('damageState').value==='clear'&&(overwrite||$('cost-damage').value===''))$('cost-damage').value=0;return filled}
+$('autoCosts').onclick=()=>{const filled=applyAutoCosts(true);$('costState').textContent=filled+' stime precompilate';budget()};
 
 function addLine(parent,name,value,strong=false){const row=document.createElement('div'),a=document.createElement('span'),b=document.createElement(strong?'b':'strong');a.textContent=name;b.textContent=value;row.append(a,b);parent.append(row)}
 function vehicleReportSection(car,index,total,mode){
