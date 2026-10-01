@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101d29">
-<title>AutoBid — Auction workspace</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg"><link rel="stylesheet" href="./style.css?v=2.1.1">
+<title>AutoBid — Auction workspace</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg"><link rel="stylesheet" href="./style.css?v=2.1.2">
 </head>
 <body>
-<header><a class="brand" href="./"><span class="monogram">A<span>/</span>B</span> AutoBid</a><span class="version">WORKSPACE · 2.1.1 · CONNECTOR 2.1.0</span></header>
+<header><a class="brand" href="./"><span class="monogram">A<span>/</span>B</span> AutoBid</a><span class="version">WORKSPACE · 2.1.2 · CONNECTOR 2.1.0</span></header>
 <main>
 <section class="hero"><div><p class="eyebrow">ACQUISTA CON CRITERIO</p><h1>Le occasioni giuste.<br><span>I numeri, prima.</span></h1><p class="intro">Dalla scansione alla decisione: dati veicolo, costi reali, comparabili Italia, margine, ROI e offerta massima in un unico flusso.</p><div class="actions"><button id="demo">Prova flusso demo <span>↗</span></button><button class="secondary" id="live" disabled>Scansiona AutoProff</button></div><p class="hint">La demo usa veicoli fittizi. AutoBid è solo decisionale: non invia offerte e non preme Compra ora.</p></div><aside class="connection"><p class="eyebrow">CONNESSIONE ESTENSIONE</p><strong id="connection" role="status">Non collegata</strong><p id="detail">Inserisci l’ID dell’estensione Chrome per collegare AutoProff.</p><label for="extensionId">ID estensione</label><div class="connectrow"><input id="extensionId" placeholder="ID di 32 lettere" autocomplete="off" spellcheck="false"><button id="connect" class="secondary">Collega</button></div><a href="./autobid-connector-2.1.0.zip" download>Scarica estensione Chrome ↓</a><a href="./extension/README.md">Installazione e limiti live →</a></aside></section>
 <section class="pipeline" aria-label="Pipeline AutoBid"><span id="step-scan">1 Scanner</span><span id="step-shortlist">2 Shortlist</span><span id="step-deep">3 Deep analysis</span><span id="step-cost">4 Cost engine</span><span id="step-market">5 Mercato Italia</span><span id="step-decision">6 Margine / ROI / MAX BID</span><span id="step-report">7 Report</span></section>
 <section class="criteria" aria-label="Criteri di selezione"><span>01 <b>Fino a 150.000 km</b></span><span>02 <b>Fino a 6 anni</b></span><span>03 <b>Sinistri verificati</b></span><span>04 <b>Duplicati rimossi</b></span></section>
-<section class="workhead"><div><p class="eyebrow" id="source">IL TUO SPAZIO DI LAVORO</p><h2>Selezione veicoli</h2></div><p id="summary" role="status">Avvia una scansione per iniziare.</p></section>
+<section class="workhead"><div><p class="eyebrow" id="source">IL TUO SPAZIO DI LAVORO</p><h2>Selezione veicoli</h2></div><div class="work-actions"><p id="summary" role="status">Avvia una scansione per iniziare.</p><button id="acceptedReport" class="secondary accepted-report-button" disabled>Report veicoli accettati</button></div></section>
 <nav class="tabs" aria-label="Stato veicoli"><button data-filter="shortlist" aria-pressed="true">Shortlist <span id="n-shortlist">0</span></button><button data-filter="review" aria-pressed="false">Da verificare <span id="n-review">0</span></button><button data-filter="excluded" aria-pressed="false">Esclusi <span id="n-excluded">0</span></button></nav>
 <div class="workspace">
 <section id="cars" aria-live="polite"><div class="empty"><span class="emptyline"></span><h3>Una shortlist che puoi spiegare.</h3><p>Chilometri, età e sinistri determinano l’esito.<br>Un dato sconosciuto resta da verificare.</p></div></section>
@@ -22,5 +22,5 @@
 </div>
 <section class="history"><div class="section-head"><div><p class="eyebrow">STORICO LOCALE</p><h2>Analisi salvate sul dispositivo</h2></div><span id="historyState">IndexedDB</span></div><div id="historyList" class="history-list"><p class="hint">Nessuna analisi salvata.</p></div></section>
 <section id="reportSheet" class="report-sheet" hidden></section><button id="printReport" class="print-report" hidden>Stampa / salva PDF</button>
-<footer><span>AutoBid / Valuta. Verifica. Decidi.</span><span>PWA + Chrome extension · workspace 2.1.1</span></footer>
-</main><script type="module" src="./app.mjs?v=2.1.1"></script></body></html>
+<footer><span>AutoBid / Valuta. Verifica. Decidi.</span><span>PWA + Chrome extension · workspace 2.1.2</span></footer>
+</main><script type="module" src="./app.mjs?v=2.1.2"></script></body></html>
