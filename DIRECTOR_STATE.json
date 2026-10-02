@@ -1,67 +1,89 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T14:26:03+02:00",
-  "release": "V22.2",
-  "base_main_sha": "b8a550e6c7258f66eb373ea6237b12b2e5eaf2d6",
-  "backup_branch": "backup/home-v22-20261002-reference",
-  "candidate_branch": "candidate/home-v22-2-reference",
-  "status": "PUBLIC_V22_2_DEPLOYED",
-  "reason": "User clarified that the live web implementation only vaguely resembled the approved premium reference and asked to keep working on the web, not generate another image.",
-  "approved_reference": {
-    "palette": [
-      "midnight blue",
-      "petrol blue",
-      "champagne gold",
-      "warm ivory"
+  "updated_at": "2026-10-02T17:10:00+02:00",
+  "release": "V23.0",
+  "base_main_sha": "0e4b09c52826867a2e0f79191e57a0bbf53ecf4a",
+  "backup_branch": "backup/home-v22-2-before-glb",
+  "candidate_branch": "candidate/home-v23-real-glb",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "reason": "User explicitly requested a real GLB hero inside the actual Webinsolito Home, not CSS/SVG imitation or a separate viewer.",
+  "implementation": {
+    "hero": "real GLB payload rendered in WebGL with Three.js + GLTFLoader",
+    "payload": "10 same-origin compressed base64 chunks, reconstructed client-side then parsed as GLB",
+    "model_parts": [
+      "globe core",
+      "metallic rim/meridians/parallels",
+      "3D W",
+      "gold star",
+      "vertical axis",
+      "4 orbit rings",
+      "5 planets",
+      "spark elements",
+      "3D continent-wire details"
     ],
-    "visual_target": [
-      "dramatic cinematic light",
-      "detailed metallic armillary sphere",
-      "gold W core",
-      "five thin-line category nodes",
-      "large serif Webinsolito title",
-      "gold outlined search",
-      "premium loading treatment"
+    "motion": [
+      "very slow root rotation",
+      "independent orbit-ring movement",
+      "subtle desktop pointer parallax",
+      "limited touch drag",
+      "no wheel zoom",
+      "soft return"
     ],
-    "implementation_note": "V22.2 replaces the simpler CSS sphere with a substantially more detailed inline SVG artwork using metallic gradients, globe meridians, abstract Europe/Africa outlines, orbital rings, gold nodes, glows and depth."
+    "lighting": [
+      "hemisphere fill",
+      "warm directional key",
+      "cool rim",
+      "gold/cool point accents",
+      "ACES tone mapping"
+    ],
+    "html_overlay": [
+      "Auto",
+      "Casa",
+      "Viaggi",
+      "Food",
+      "Soldi remain real accessible clickable HTML links"
+    ],
+    "search": "existing WebinsolitoSearch preserved"
   },
   "files_changed": [
     "index.html",
     "sw.js",
+    "assets/home-3d-v23.js",
+    "assets/models/webinsolito-hero-v3.part00.b64 ... part09.b64",
     "DIRECTOR_STATE.json"
   ],
   "functional_checks": {
-    "search_engine": "SOURCE_PASS: existing WebinsolitoSearch retained",
-    "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi + Tutte le categorie",
-    "keyboard_search": "SOURCE_PASS: ArrowUp/ArrowDown/Enter/Escape",
-    "responsive": "SOURCE_PASS: <=860, <=680, <=430, <=390",
+    "release_marker": "SOURCE_PASS: V23.0",
+    "old_svg_removed": "SOURCE_PASS",
+    "real_webgl_canvas": "SOURCE_PASS",
+    "gltf_loader": "SOURCE_PASS",
+    "payload_parts": "SOURCE_PASS: 10/10 present",
+    "payload_header": "SOURCE_PASS: concatenated base64 decodes to gzip header 1F 8B 08 00",
+    "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi",
+    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch preserved",
+    "keyboard_search": "SOURCE_PASS",
+    "no_zoom": "SOURCE_PASS: no wheel handler",
     "reduced_motion": "SOURCE_PASS",
-    "loading_intro": "SOURCE_PASS: once per session; skipped for reduced motion"
+    "mobile_rules": "SOURCE_PASS: 680/430/390 breakpoints",
+    "loading_intro": "SOURCE_PASS: waits for 3D-ready/error event with 3s safety timeout"
   },
   "cache_delivery": {
     "status": "SOURCE_PASS",
-    "cache": "webinsolito-v54-home22-2",
-    "note": "No legacy V18 injection; navigation remains network-first."
+    "cache": "webinsolito-v55-home23-glb",
+    "note": "Renderer + all ten GLB payload chunks are included in the same-origin core cache."
   },
   "verification": {
     "static_source": "PASS",
-    "reference_match_structure": "PASS",
-    "detailed_svg": "PASS",
-    "five_category_nodes": "PASS",
-    "search_preserved": "PASS",
-    "responsive_rules": "PASS",
-    "reduced_motion": "PASS",
-    "candidate_compare": "PASS: candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
-    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for 6d6e73a09f923da88332fa0299b951c4bd2f93df.",
-    "public_marker": "SOURCE marker V22.2 confirmed; Pages deployment succeeded. Direct visual screenshot fetch is unavailable in this session.",
+    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
+    "public_deploy": "PENDING",
+    "runtime_glb_parse": "PENDING_PUBLIC_RUNTIME",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "ND: V22.2 is publicly deployed and functional/source gates passed; user visual approval and pixel-level 390/430 certification remain open.",
-  "blocker": "No resizable screenshot browser is available in this session. Visual fidelity was improved directly in production code using the approved image as composition reference.",
-  "next_action": "User to inspect live V22.2. If the visual is still short of the approved reference, refine the same SVG/material/lighting direction rather than generating another standalone image or resetting the concept.",
+  "completion_gate": "ND until final head recheck, Pages deploy success and public runtime inspection. Do not report V23 as finished before those gates.",
+  "blocker": "No outbound network is available in the container browser, so public WebGL runtime must be checked after GitHub Pages deployment using available public-page tooling/user inspection.",
+  "next_action": "Re-read current main, require candidate behind_by=0, fast-forward main, monitor Pages build/deploy, then inspect public V23 source/runtime marker. If runtime GLB fails, rollback or patch before calling the release complete.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V22.2",
-  "deployed_source_sha": "6d6e73a09f923da88332fa0299b951c4bd2f93df"
+  "preview_version": "PENDING V23.0"
 }
