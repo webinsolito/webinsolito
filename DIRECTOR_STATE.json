@@ -1,98 +1,112 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T19:08:00+02:00",
-  "release": "V24.0",
-  "base_main_sha": "e7ae8b4fab2793a83eb31766428283d58e5fe858",
-  "backup_branch": "backup/home-v23-broken-glb",
-  "candidate_branch": "candidate/home-v24-direct-glb",
-  "status": "PUBLIC_V24_BINARY_VERIFIED",
-  "reason": "V23 contained the WebGL integration but its runtime chunked GLB payload was proven corrupt from the actual GitHub Pages artifact. V24 removes that path and serves one verified binary GLB directly.",
+  "updated_at": "2026-10-02T19:41:00+02:00",
+  "release": "V25.0",
+  "base_main_sha": "e061e3556e83c68d9ea59fd3c3a34f4492ec8836",
+  "backup_branch": "backup/home-v24-lowdetail",
+  "candidate_branch": "candidate/home-v25-premium-glb",
+  "status": "PUBLIC_V25_DEPLOYED_ARTIFACT_VERIFIED",
+  "reason": "V24 proved the real GLB pipeline but the compact model itself was too crude. V25 replaces only the central 3D asset/rendering while preserving the approved Home composition and HTML categories/search.",
   "model": {
-    "path": "assets/models/webinsolito-hero-v24.glb",
-    "bytes": 68860,
-    "sha256": "a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615",
-    "git_blob_sha": "10cc728bb25da6204141f0e624422bc2e0ece6fa",
-    "verification": "GitHub Actions materialization job decoded the transfer, checked exact byte length, SHA-256 and glTF magic before committing the binary.",
-    "parts": [
-      "deep-petrol globe",
-      "gold rim",
-      "latitude/meridian rings",
-      "3D continent wire details",
-      "3D W",
-      "spark",
-      "vertical axis",
-      "4 orbit rings",
-      "5 planets",
-      "accent spark nodes"
+    "path": "assets/models/webinsolito-hero-v25.glb",
+    "bytes": 1161316,
+    "sha256": "2e1c1de9e7fee040492242b0f7c7dc35d349e8fb47c8d1e4a92618650a5d1b1a",
+    "git_blob_sha": "3db4e44e18b42816ab1e7fafedef67b9681c471f",
+    "geometries": 110,
+    "vertices": 57574,
+    "faces": 114776,
+    "parts": {
+      "globe": [
+        "globe_core",
+        "globe_inner",
+        "globe_rim",
+        "5 latitude rings",
+        "6 meridians",
+        "63 modeled continent tubes"
+      ],
+      "armillary": [
+        "vertical axis",
+        "top/bottom finials",
+        "4 orbit rings",
+        "outer armillary ring"
+      ],
+      "planets": [
+        "planet_01",
+        "planet_02",
+        "planet_03",
+        "planet_04",
+        "planet_05"
+      ],
+      "logo": [
+        "4 modeled W strokes",
+        "5 serif caps",
+        "3D star"
+      ],
+      "accents": "8 sparkle meshes"
+    },
+    "materials": [
+      "ChampagneGoldPremium",
+      "IvoryGoldHighlight",
+      "AntiqueGoldShadow",
+      "DeepPetrolLacquer",
+      "DeepPetrolInner",
+      "MapGold",
+      "SparkGold"
     ]
   },
-  "implementation": {
-    "loader": "Three.js + GLTFLoader reads the direct same-origin .glb binary",
-    "runtime_integrity": [
-      "HTTP status",
-      "exact 68860-byte size",
+  "renderer": {
+    "module": "assets/home-3d-v25.js",
+    "loader": "Three.js + GLTFLoader direct same-origin binary",
+    "integrity": [
+      "exact byte size",
       "glTF magic",
-      "SHA-256 using Web Crypto before parse"
+      "SHA-256 Web Crypto"
     ],
-    "removed": [
-      "runtime base64 chunks",
-      "gzip decompression",
-      "pako fallback",
-      "V23 payload files",
-      "V23 loader"
-    ],
-    "motion": [
-      "slow root rotation",
-      "independent orbit ring rotation",
-      "limited pointer/touch parallax",
-      "no wheel zoom"
-    ],
+    "environment": "RoomEnvironment + PMREM reflections",
+    "tone_mapping": "ACES Filmic",
     "lighting": [
-      "hemisphere",
-      "warm key",
+      "warm directional key",
+      "warm fill",
       "cool rim",
       "gold point",
       "cool point",
-      "ACES tone mapping"
+      "hemisphere"
     ],
-    "overlays": "Auto, Casa, Viaggi, Food, Soldi remain real HTML links; existing search remains HTML/JS"
+    "interactions": [
+      "slow root motion",
+      "independent orbit movement",
+      "subtle desktop parallax",
+      "limited touch drag",
+      "no wheel zoom",
+      "reduced-motion support"
+    ]
   },
-  "files_changed": [
-    "index.html",
-    "sw.js",
-    "assets/home-3d-v24.js",
-    "assets/models/webinsolito-hero-v24.glb",
-    "DIRECTOR_STATE.json"
-  ],
-  "functional_checks": {
-    "release_marker": "SOURCE_PASS: V24.0",
-    "direct_binary": "PASS: single 68860-byte .glb present",
-    "old_svg_removed": "PASS",
-    "old_chunk_runtime_removed": "PASS",
-    "runtime_hash_gate": "SOURCE_PASS",
-    "category_routes": "SOURCE_PASS: Auto/Casa/Viaggi/Food/Soldi",
-    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch retained",
-    "no_zoom": "SOURCE_PASS",
-    "reduced_motion": "SOURCE_PASS",
-    "mobile_rules": "SOURCE_PASS: existing 680/430/390 layout preserved",
-    "cache": "SOURCE_PASS: webinsolito-v56-home24-direct-glb caches direct GLB"
+  "home_preserved": {
+    "categories": "Auto/Casa/Viaggi/Food/Soldi remain real clickable HTML",
+    "search": "WebinsolitoSearch + apps.json preserved",
+    "layout": "premium midnight/petrol/champagne composition preserved",
+    "breakpoints": [
+      "680",
+      "430",
+      "390"
+    ]
   },
   "verification": {
+    "model_builder": "PASS: GitHub Actions run 37041808424 generated >1MB GLB with >100k faces and committed binary",
     "static_source": "PASS",
-    "binary_materialization": "PASS: GitHub Actions job 37037695178",
-    "binary_sha256": "PASS: a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615",
-    "candidate_compare": "PASS: candidate was ahead of main by 32 commits and behind by 0 immediately before promotion.",
-    "public_deploy": "PASS: GitHub Pages build/report/deploy succeeded for source commit 8d55a4b917affb9cff8fe50801103327623eb149 (run 37038374637).",
-    "pages_artifact_binary": "PASS: downloaded Pages artifact 11241317947, extracted artifact.tar, found assets/models/webinsolito-hero-v24.glb at exactly 68860 bytes with magic glTF and SHA-256 a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615.",
-    "runtime_browser": "NOT_EXECUTED: local/system Chromium is blocked by administrator policy from both localhost and the public Pages URL. The shipped binary and loader are verified, but WebGL pixel/runtime rendering cannot be certified from this environment.",
+    "candidate_compare": "PASS: ahead 6 / behind 0 before promotion",
+    "public_deploy": "PASS: GitHub Pages build/report/deploy succeeded for 3b6dffd2bdb92c22861684231a3e663ebe6a1696 (run 37042138536)",
+    "pages_artifact": "PASS: downloaded artifact 11242329418",
+    "pages_glb": "PASS: exact 1161316-byte V25 GLB present in artifact with magic glTF and matching SHA-256",
+    "glb_structure": "PASS: 110 geometries / 57,574 vertices / 114,776 faces; required globe, rings, planets, W, star, continents all present",
+    "runtime_browser": "NOT_PIXEL_CERTIFIED: no usable WebGL screenshot browser in this environment",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "V24.0 source and actual GitHub Pages artifact now contain the verified direct GLB binary. Remaining gate is live visual/runtime inspection on a normal browser/iPhone; do not claim pixel-level match until inspected.",
-  "blocker": "No resizable WebGL screenshot browser is available in this session, so visual/pixel certification must remain open even after artifact verification.",
-  "next_action": "User should open V24.0. If the real GLB renders, continue only with framing/material/light/mobile polish. If it falls back, collect the visible state/browser console symptom and patch the module/CDN/WebGL path without returning to chunked payloads.",
+  "completion_gate": "V25 is technically and artifact-verified. Visual acceptance remains open until the user inspects the live WebGL result; if aesthetics are still short, continue material/framing/geometry refinement instead of changing architecture.",
+  "next_action": "User inspects live V25. If the model renders, compare scale, W visibility, ring balance, metallic gold and mobile framing against the approved reference and refine only those details.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V24.0",
-  "deployed_source_sha": "8d55a4b917affb9cff8fe50801103327623eb149"
+  "preview_version": "V25.0",
+  "deployed_source_sha": "3b6dffd2bdb92c22861684231a3e663ebe6a1696"
 }
