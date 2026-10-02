@@ -1,22 +1,11 @@
-const CACHE='webinsolito-v55-home23-glb';
+const CACHE='webinsolito-v56-home24-direct-glb';
 const CORE=[
   './index.html',
   './apps.json',
   './manifest.webmanifest',
   './assets/webinsolito-logo.svg',
   './assets/home-search-20260925.js',
-  './assets/home-3d-v23.js',
-  './assets/models/webinsolito-hero-v3.part00.b64',
-  './assets/models/webinsolito-hero-v3.part01.b64',
-  './assets/models/webinsolito-hero-v3.part02.b64',
-  './assets/models/webinsolito-hero-v3.part03.b64',
-  './assets/models/webinsolito-hero-v3.part04.b64',
-  './assets/models/webinsolito-hero-v3.part05.b64',
-  './assets/models/webinsolito-hero-v3.part06.b64',
-  './assets/models/webinsolito-hero-v3.part07.b64',
-  './assets/models/webinsolito-hero-v3.part08.b64',
-  './assets/models/webinsolito-hero-v3.part09.b64',
-  './assets/category-page.css',
+  './assets/home-3d-v24.js',  './assets/category-page.css',
   './assets/category-page.js',
   './assets/microapp.css',
   './assets/microapp.js'
