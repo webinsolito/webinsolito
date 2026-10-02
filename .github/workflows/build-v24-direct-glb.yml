@@ -24,7 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p assets/models
-          cat assets/models/v24-transfer/part*.b64 | tr -d '\n\r ' | base64 -d > /tmp/webinsolito-hero-v24.glb.xz
+          cat assets/models/v24-transfer/compact.b64 | tr -d '\n\r ' | base64 -d > /tmp/webinsolito-hero-v24.glb.xz
           xz -dc /tmp/webinsolito-hero-v24.glb.xz > assets/models/webinsolito-hero-v24.glb
           test "$(wc -c < assets/models/webinsolito-hero-v24.glb | tr -d ' ')" = "68860"
           test "$(sha256sum assets/models/webinsolito-hero-v24.glb | awk '{print $1}')" = "a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615"
