@@ -1,12 +1,12 @@
-const CACHE='webinsolito-v56-home24-direct-glb';
+const CACHE='webinsolito-v57-home25-premium-glb';
 const CORE=[
   './index.html',
   './apps.json',
   './manifest.webmanifest',
   './assets/webinsolito-logo.svg',
   './assets/home-search-20260925.js',
-  './assets/home-3d-v24.js',
-  './assets/models/webinsolito-hero-v24.glb',
+  './assets/home-3d-v25.js',
+  './assets/models/webinsolito-hero-v25.glb',
   './assets/category-page.css',
   './assets/category-page.js',
   './assets/microapp.css',
