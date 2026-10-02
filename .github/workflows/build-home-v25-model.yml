@@ -1,0 +1,41 @@
+name: Build V25 premium GLB
+
+on:
+  push:
+    branches:
+      - candidate/home-v25-premium-glb
+    paths:
+      - 'tools/build_home_v25_model.py'
+      - '.github/workflows/build-home-v25-model.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: candidate/home-v25-premium-glb
+          fetch-depth: 0
+
+      - name: Install model toolchain
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "trimesh==4.11.1" "numpy==2.2.6" "shapely==2.1.2" "mapbox-earcut==1.0.3"
+
+      - name: Generate and validate premium GLB
+        run: |
+          python tools/build_home_v25_model.py
+          test "$(head -c 4 assets/models/webinsolito-hero-v25.glb)" = "glTF"
+          test "$(wc -c < assets/models/webinsolito-hero-v25.glb)" -gt 500000
+
+      - name: Commit generated binary
+        run: |
+          git config user.name "webinsolito-build"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/models/webinsolito-hero-v25.glb
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "feat(home3d): materialize premium V25 GLB"
+          git push origin HEAD:candidate/home-v25-premium-glb
