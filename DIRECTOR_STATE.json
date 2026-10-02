@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T17:10:00+02:00",
+  "updated_at": "2026-10-02T17:20:13+02:00",
   "release": "V23.0",
   "base_main_sha": "0e4b09c52826867a2e0f79191e57a0bbf53ecf4a",
   "backup_branch": "backup/home-v22-2-before-glb",
   "candidate_branch": "candidate/home-v23-real-glb",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V23_DEPLOYED",
   "reason": "User explicitly requested a real GLB hero inside the actual Webinsolito Home, not CSS/SVG imitation or a separate viewer.",
   "implementation": {
     "hero": "real GLB payload rendered in WebGL with Three.js + GLTFLoader",
@@ -75,15 +75,17 @@
   },
   "verification": {
     "static_source": "PASS",
-    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
-    "public_deploy": "PENDING",
-    "runtime_glb_parse": "PENDING_PUBLIC_RUNTIME",
+    "candidate_compare": "PASS: candidate was ahead of main by 24 commits and behind by 0 immediately before promotion.",
+    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for d0fe653ffec87b2df388073a6fa128a947e30120.",
+    "runtime_glb_parse": "NOT_REMOTE_EXECUTED: production loader has parse/error fallback and GLB payload parts are present; visual/runtime confirmation remains user/public-browser dependent.",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
-    "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
+    "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED",
+    "public_marker": "SOURCE V23.0 + Pages deploy confirmed. Public-page direct fetch unavailable in this session."
   },
-  "completion_gate": "ND until final head recheck, Pages deploy success and public runtime inspection. Do not report V23 as finished before those gates.",
+  "completion_gate": "V23.0 is deployed with the real GLB integration. Remaining gate is visual/runtime inspection on the live site (especially iPhone 390/430) before treating the 3D hero as final.",
   "blocker": "No outbound network is available in the container browser, so public WebGL runtime must be checked after GitHub Pages deployment using available public-page tooling/user inspection.",
-  "next_action": "Re-read current main, require candidate behind_by=0, fast-forward main, monitor Pages build/deploy, then inspect public V23 source/runtime marker. If runtime GLB fails, rollback or patch before calling the release complete.",
+  "next_action": "Inspect live V23.0 on desktop and iPhone. If the GLB loads and composition is correct, continue with material/light/framing polish only. If runtime fails, patch loader/payload immediately before any visual polish.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "PENDING V23.0"
+  "preview_version": "V23.0",
+  "deployed_source_sha": "d0fe653ffec87b2df388073a6fa128a947e30120"
 }
