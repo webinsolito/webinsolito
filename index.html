@@ -13,12 +13,12 @@
 <meta property="og:description" content="Strumenti utili, raccolti in un archivio digitale semplice da usare.">
 <meta property="og:url" content="https://webinsolito.github.io/webinsolito/">
 <meta property="og:image" content="https://webinsolito.github.io/webinsolito/assets/webinsolito-logo.svg">
-<meta name="wi-home-version" content="24.0">
+<meta name="wi-home-version" content="25.0">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/webinsolito-logo.svg">
 <title>Webinsolito</title>
 <script>
-try{document.documentElement.classList.add(sessionStorage.getItem("wi-v24-seen")?"boot-seen":"boot-new")}catch(e){document.documentElement.classList.add("boot-new")}
+try{document.documentElement.classList.add(sessionStorage.getItem("wi-v25-seen")?"boot-seen":"boot-new")}catch(e){document.documentElement.classList.add("boot-new")}
 </script>
 <style>
 :root{
@@ -479,7 +479,7 @@ body:after{
 }
 </style>
 </head>
-<body data-home-release="24.0">
+<body data-home-release="25.0">
 <div class="boot" aria-hidden="true">
   <div class="bootInner">
     <div class="bootWord">Webinsolito</div>
@@ -494,7 +494,7 @@ body:after{
     <a class="brand" href="./" aria-label="Webinsolito, Home">Webinsolito</a>
     <div class="topRight">
       <a class="topLink" href="./categorie.html">Tutte le categorie</a>
-      <span class="release" aria-label="Versione Home 24.0">Home V24.0</span>
+      <span class="release" aria-label="Versione Home 25.0">Home V25.0</span>
     </div>
   </header>
 
@@ -584,7 +584,7 @@ body:after{
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
 </script>
-<script type="module" src="./assets/home-3d-v24.js"></script>
+<script type="module" src="./assets/home-3d-v25.js"></script>
 <script src="./assets/home-search-20260925.js"></script>
 <script>
 (function(){
@@ -598,7 +598,7 @@ body:after{
       var wait=Math.max(0,1100-(performance.now()-bootStarted));
       setTimeout(function(){
         root.classList.add("boot-done");
-        try{sessionStorage.setItem("wi-v24-seen","1")}catch(e){}
+        try{sessionStorage.setItem("wi-v25-seen","1")}catch(e){}
       },wait);
       bootClosed=true;
     }
