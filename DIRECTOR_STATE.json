@@ -1,35 +1,30 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-01T19:43:45+02:00",
-  "release": "V22.0",
-  "base_main_sha": "4d0d232b4b52c825a0121b602dcf00cfce3841ce",
-  "backup_branch": "backup/home-v21-20261001-premium",
-  "candidate_branch": "candidate/home-v22-celestial-r2",
-  "status": "PUBLIC_V22_DEPLOYED",
-  "reason": "User approved the premium celestial blue/petrol/champagne concept generated from their reference and asked to turn it into the real Webinsolito site.",
-  "approved_direction": {
+  "updated_at": "2026-10-02T14:17:00+02:00",
+  "release": "V22.2",
+  "base_main_sha": "b8a550e6c7258f66eb373ea6237b12b2e5eaf2d6",
+  "backup_branch": "backup/home-v22-20261002-reference",
+  "candidate_branch": "candidate/home-v22-2-reference",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "reason": "User clarified that the live web implementation only vaguely resembled the approved premium reference and asked to keep working on the web, not generate another image.",
+  "approved_reference": {
     "palette": [
-      "night navy",
-      "deep petrol",
+      "midnight blue",
+      "petrol blue",
       "champagne gold",
       "warm ivory"
     ],
-    "composition": [
-      "central dark premium sphere with W",
-      "gold orbital rings",
-      "five category nodes around sphere",
-      "large Webinsolito serif title",
-      "premium search bar",
-      "subtle one-time loading intro"
+    "visual_target": [
+      "dramatic cinematic light",
+      "detailed metallic armillary sphere",
+      "gold W core",
+      "five thin-line category nodes",
+      "large serif Webinsolito title",
+      "gold outlined search",
+      "premium loading treatment"
     ],
-    "rejected": [
-      "botanical/green visual language",
-      "old Earth scene",
-      "old V19 product gallery",
-      "V20 split editorial layout",
-      "V21 plain monolith"
-    ]
+    "implementation_note": "V22.2 replaces the simpler CSS sphere with a substantially more detailed inline SVG artwork using metallic gradients, globe meridians, abstract Europe/Africa outlines, orbital rings, gold nodes, glows and depth."
   },
   "files_changed": [
     "index.html",
@@ -37,37 +32,35 @@
     "DIRECTOR_STATE.json"
   ],
   "functional_checks": {
-    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch.search preserved",
+    "search_engine": "SOURCE_PASS: existing WebinsolitoSearch retained",
     "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi + Tutte le categorie",
-    "category_nodes": "SOURCE_PASS: five accessible links with inline SVG icons",
     "keyboard_search": "SOURCE_PASS: ArrowUp/ArrowDown/Enter/Escape",
-    "responsive": "SOURCE_PASS: <=900, <=680, <=430, <=390 rules",
+    "responsive": "SOURCE_PASS: <=860, <=680, <=430, <=390",
     "reduced_motion": "SOURCE_PASS",
-    "intro": "SOURCE_PASS: one-time session intro; disabled with reduced motion",
-    "pointer_parallax": "PROGRESSIVE_ENHANCEMENT_ONLY"
+    "loading_intro": "SOURCE_PASS: once per session; skipped for reduced motion"
   },
   "cache_delivery": {
     "status": "SOURCE_PASS",
-    "cache": "webinsolito-v53-home22",
-    "note": "Navigation remains network-first; no legacy Home visual injection is present."
+    "cache": "webinsolito-v54-home22-2",
+    "note": "No legacy V18 injection; navigation remains network-first."
   },
   "verification": {
     "static_source": "PASS",
-    "premium_sphere_structure": "PASS",
-    "five_category_routes": "PASS",
+    "reference_match_structure": "PASS",
+    "detailed_svg": "PASS",
+    "five_category_nodes": "PASS",
     "search_preserved": "PASS",
     "responsive_rules": "PASS",
     "reduced_motion": "PASS",
-    "candidate_compare": "PASS: final candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
-    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for 292f5ab34bc96d2a0f3adf33622d0b890115a46d.",
-    "public_marker": "DIRECT_FETCH_UNAVAILABLE: public Pages URL could not be opened by the available browser tool; source marker V22.0 and successful Pages deployment are confirmed.",
+    "candidate_compare": "PASS at validation: ahead 2, behind 0",
+    "public_deploy": "PENDING",
+    "public_marker": "PENDING",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "ND: V22.0 is deployed and source/runtime gates passed; final visual approval and pixel-level 390/430 certification remain open.",
-  "blocker": "The available connected browser does not provide a resizable screenshot workflow; visual approval will be based on the live Pages preview and the user's inspection.",
-  "next_action": "User to inspect the live V22.0 premium celestial Home. Preserve this approved palette/composition if accepted; next pass should be polish/responsive only, not another concept reset unless the user asks.",
+  "completion_gate": "ND until Pages deploy succeeds and the user inspects the live V22.2. No aesthetic score claimed without browser screenshots.",
+  "blocker": "No resizable screenshot browser is available in this session. Visual fidelity was improved directly in production code using the approved image as composition reference.",
+  "next_action": "Re-read main HEAD immediately before promotion. If main moved only in unrelated paths, rebase these Home-only changes onto latest HEAD. Then deploy and verify Pages success.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V22.0",
-  "deployed_source_sha": "292f5ab34bc96d2a0f3adf33622d0b890115a46d"
+  "preview_version": "PENDING V22.2"
 }
