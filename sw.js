@@ -5,7 +5,9 @@ const CORE=[
   './manifest.webmanifest',
   './assets/webinsolito-logo.svg',
   './assets/home-search-20260925.js',
-  './assets/home-3d-v24.js',  './assets/category-page.css',
+  './assets/home-3d-v24.js',
+  './assets/models/webinsolito-hero-v24.glb',
+  './assets/category-page.css',
   './assets/category-page.js',
   './assets/microapp.css',
   './assets/microapp.js'
