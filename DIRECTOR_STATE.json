@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T14:17:00+02:00",
+  "updated_at": "2026-10-02T14:26:03+02:00",
   "release": "V22.2",
   "base_main_sha": "b8a550e6c7258f66eb373ea6237b12b2e5eaf2d6",
   "backup_branch": "backup/home-v22-20261002-reference",
   "candidate_branch": "candidate/home-v22-2-reference",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V22_2_DEPLOYED",
   "reason": "User clarified that the live web implementation only vaguely resembled the approved premium reference and asked to keep working on the web, not generate another image.",
   "approved_reference": {
     "palette": [
@@ -52,15 +52,16 @@
     "search_preserved": "PASS",
     "responsive_rules": "PASS",
     "reduced_motion": "PASS",
-    "candidate_compare": "PASS at validation: ahead 2, behind 0",
-    "public_deploy": "PENDING",
-    "public_marker": "PENDING",
+    "candidate_compare": "PASS: candidate was ahead of main by 3 commits and behind by 0 immediately before promotion.",
+    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for 6d6e73a09f923da88332fa0299b951c4bd2f93df.",
+    "public_marker": "SOURCE marker V22.2 confirmed; Pages deployment succeeded. Direct visual screenshot fetch is unavailable in this session.",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "ND until Pages deploy succeeds and the user inspects the live V22.2. No aesthetic score claimed without browser screenshots.",
+  "completion_gate": "ND: V22.2 is publicly deployed and functional/source gates passed; user visual approval and pixel-level 390/430 certification remain open.",
   "blocker": "No resizable screenshot browser is available in this session. Visual fidelity was improved directly in production code using the approved image as composition reference.",
-  "next_action": "Re-read main HEAD immediately before promotion. If main moved only in unrelated paths, rebase these Home-only changes onto latest HEAD. Then deploy and verify Pages success.",
+  "next_action": "User to inspect live V22.2. If the visual is still short of the approved reference, refine the same SVG/material/lighting direction rather than generating another standalone image or resetting the concept.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "PENDING V22.2"
+  "preview_version": "V22.2",
+  "deployed_source_sha": "6d6e73a09f923da88332fa0299b951c4bd2f93df"
 }
