@@ -1,0 +1,41 @@
+name: Build V24 direct GLB
+
+on:
+  push:
+    branches:
+      - candidate/home-v24-direct-glb
+    paths:
+      - 'assets/models/v24-transfer/**'
+      - '.github/workflows/build-v24-direct-glb.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-glb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: candidate/home-v24-direct-glb
+          fetch-depth: 0
+      - name: Decode and verify GLB
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/models
+          cat assets/models/v24-transfer/part*.b64 | tr -d '\n\r ' | base64 -d > /tmp/webinsolito-hero-v24.glb.xz
+          xz -dc /tmp/webinsolito-hero-v24.glb.xz > assets/models/webinsolito-hero-v24.glb
+          test "$(wc -c < assets/models/webinsolito-hero-v24.glb | tr -d ' ')" = "68860"
+          test "$(sha256sum assets/models/webinsolito-hero-v24.glb | awk '{print $1}')" = "a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615"
+          test "$(head -c 4 assets/models/webinsolito-hero-v24.glb)" = "glTF"
+      - name: Commit verified binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "webinsolito-build"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/models/webinsolito-hero-v24.glb
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "feat(home3d): materialize verified V24 GLB binary"
+          git push origin HEAD:candidate/home-v24-direct-glb
