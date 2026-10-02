@@ -1,12 +1,12 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T18:27:00+02:00",
+  "updated_at": "2026-10-02T19:08:00+02:00",
   "release": "V24.0",
   "base_main_sha": "e7ae8b4fab2793a83eb31766428283d58e5fe858",
   "backup_branch": "backup/home-v23-broken-glb",
   "candidate_branch": "candidate/home-v24-direct-glb",
-  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "status": "PUBLIC_V24_BINARY_VERIFIED",
   "reason": "V23 contained the WebGL integration but its runtime chunked GLB payload was proven corrupt from the actual GitHub Pages artifact. V24 removes that path and serves one verified binary GLB directly.",
   "model": {
     "path": "assets/models/webinsolito-hero-v24.glb",
@@ -82,16 +82,17 @@
     "static_source": "PASS",
     "binary_materialization": "PASS: GitHub Actions job 37037695178",
     "binary_sha256": "PASS: a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615",
-    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
-    "public_deploy": "PENDING",
-    "pages_artifact_binary": "PENDING",
-    "runtime_browser": "PENDING_USER_OR_BROWSER_CHECK",
+    "candidate_compare": "PASS: candidate was ahead of main by 32 commits and behind by 0 immediately before promotion.",
+    "public_deploy": "PASS: GitHub Pages build/report/deploy succeeded for source commit 8d55a4b917affb9cff8fe50801103327623eb149 (run 37038374637).",
+    "pages_artifact_binary": "PASS: downloaded Pages artifact 11241317947, extracted artifact.tar, found assets/models/webinsolito-hero-v24.glb at exactly 68860 bytes with magic glTF and SHA-256 a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615.",
+    "runtime_browser": "NOT_EXECUTED: local/system Chromium is blocked by administrator policy from both localhost and the public Pages URL. The shipped binary and loader are verified, but WebGL pixel/runtime rendering cannot be certified from this environment.",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
     "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "Do not call V24 finished until final main recheck, Pages deploy succeeds, and the produced Pages artifact is downloaded and the exact GLB binary is verified inside it.",
+  "completion_gate": "V24.0 source and actual GitHub Pages artifact now contain the verified direct GLB binary. Remaining gate is live visual/runtime inspection on a normal browser/iPhone; do not claim pixel-level match until inspected.",
   "blocker": "No resizable WebGL screenshot browser is available in this session, so visual/pixel certification must remain open even after artifact verification.",
-  "next_action": "Re-read live main and compare candidate. If behind_by=0, fast-forward main. Then monitor Pages, download its actual artifact and verify the shipped GLB size/SHA/magic before reporting status.",
+  "next_action": "User should open V24.0. If the real GLB renders, continue only with framing/material/light/mobile polish. If it falls back, collect the visible state/browser console symptom and patch the module/CDN/WebGL path without returning to chunked payloads.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "PENDING V24.0"
+  "preview_version": "V24.0",
+  "deployed_source_sha": "8d55a4b917affb9cff8fe50801103327623eb149"
 }
