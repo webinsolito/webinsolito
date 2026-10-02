@@ -13,12 +13,12 @@
 <meta property="og:description" content="Strumenti utili, raccolti in un archivio digitale semplice da usare.">
 <meta property="og:url" content="https://webinsolito.github.io/webinsolito/">
 <meta property="og:image" content="https://webinsolito.github.io/webinsolito/assets/webinsolito-logo.svg">
-<meta name="wi-home-version" content="22.2">
+<meta name="wi-home-version" content="23.0">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/webinsolito-logo.svg">
 <title>Webinsolito</title>
 <script>
-try{document.documentElement.classList.add(sessionStorage.getItem("wi-v22-2-seen")?"boot-seen":"boot-new")}catch(e){document.documentElement.classList.add("boot-new")}
+try{document.documentElement.classList.add(sessionStorage.getItem("wi-v23-seen")?"boot-seen":"boot-new")}catch(e){document.documentElement.classList.add("boot-new")}
 </script>
 <style>
 :root{
@@ -197,32 +197,61 @@ body:after{
   height:690px;
   margin:8px auto 0;
 }
-.art{
+.modelMount{
   position:absolute;
   left:50%;top:47%;
   width:min(650px,78vw);
   aspect-ratio:1;
   transform:translate(-50%,-50%);
-  filter:drop-shadow(0 36px 62px rgba(0,0,0,.42));
+  z-index:7;
+  touch-action:pan-y;
+  cursor:grab;
+  filter:drop-shadow(0 34px 60px rgba(0,0,0,.46));
 }
-.artGlow{
+.modelMount:active{cursor:grabbing}
+.modelMount canvas{
   position:absolute;
-  left:50%;top:47%;
-  width:min(680px,82vw);
-  aspect-ratio:1;
-  transform:translate(-50%,-50%);
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  opacity:0;
+  transition:opacity .55s ease;
+}
+.modelMount.hero3d-ready canvas{opacity:1}
+.hero3dFallback{
+  position:absolute;
+  inset:11%;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(40,120,161,.20) 0 18%,rgba(212,164,94,.08) 33%,transparent 70%);
-  filter:blur(15px);
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(236,196,126,.56);
+  background:
+    radial-gradient(circle at 34% 28%,rgba(83,158,194,.26),transparent 15%),
+    radial-gradient(circle at 55% 58%,rgba(17,68,88,.68),transparent 48%),
+    radial-gradient(circle,#0b2c3d 0 38%,#061722 72%,#020a11 100%);
+  box-shadow:0 0 0 10px rgba(212,164,94,.03),0 0 70px rgba(212,164,94,.12),inset -30px -34px 60px rgba(0,0,0,.45);
+  color:var(--gold2);
+  font:700 110px/1 Georgia,"Times New Roman",serif;
+  transition:opacity .4s ease;
   pointer-events:none;
 }
-.celestialSvg{display:block;width:100%;height:100%;overflow:visible}
-.celestialSvg .orbitA{transform-origin:350px 350px;animation:orbitA 22s linear infinite}
-.celestialSvg .orbitB{transform-origin:350px 350px;animation:orbitB 29s linear infinite reverse}
-.celestialSvg .orbitC{transform-origin:350px 350px;animation:orbitC 34s linear infinite}
-@keyframes orbitA{to{transform:rotate(360deg)}}
-@keyframes orbitB{to{transform:rotate(360deg)}}
-@keyframes orbitC{to{transform:rotate(-360deg)}}
+.modelMount.hero3d-ready .hero3dFallback{opacity:0}
+.modelMount.hero3d-failed .hero3dFallback{opacity:1}
+.hero3dBadge{
+  position:absolute;
+  left:50%;bottom:4%;
+  transform:translateX(-50%);
+  z-index:3;
+  color:rgba(238,211,163,.7);
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.78;
+  pointer-events:none;
+}
+
 
 .node{
   position:absolute;
@@ -379,7 +408,7 @@ body:after{
 
 @media(max-width:860px){
   .stage{height:620px}
-  .art{width:min(590px,78vw)}
+  .modelMount{width:min(590px,78vw)}
   .artGlow{width:min(620px,82vw)}
   .nodeAuto{left:1%}.nodeHome{right:1%}.nodeTravel{left:-1%}.nodeFood{right:-1%}
 }
@@ -390,7 +419,7 @@ body:after{
   .hero{width:100%;padding:20px 0 44px}
   .plate{font-size:9px}
   .stage{width:100%;height:520px;margin-top:4px}
-  .art{top:46%;width:390px;max-width:76vw}
+  .modelMount{top:46%;width:390px;max-width:76vw}
   .artGlow{top:46%;width:420px;max-width:82vw}
   .node{width:88px}
   .nodeIcon{width:54px;height:54px;margin-bottom:7px}
@@ -418,7 +447,7 @@ body:after{
 @media(max-width:430px){
   .release{display:none}
   .stage{height:485px}
-  .art{top:45%;width:330px;max-width:78vw}
+  .modelMount{top:45%;width:330px;max-width:78vw}
   .artGlow{top:45%;width:360px;max-width:84vw}
   .node{width:76px}
   .nodeIcon{width:48px;height:48px}
@@ -436,7 +465,7 @@ body:after{
 }
 @media(max-width:390px){
   .stage{height:460px}
-  .art{width:302px}
+  .modelMount{width:302px}
   .nodeIcon{width:46px;height:46px}
   .node strong{font-size:14px}
   .identity h1{font-size:54px}
@@ -450,7 +479,7 @@ body:after{
 }
 </style>
 </head>
-<body data-home-release="22.2">
+<body data-home-release="23.0">
 <div class="boot" aria-hidden="true">
   <div class="bootInner">
     <div class="bootWord">Webinsolito</div>
@@ -465,7 +494,7 @@ body:after{
     <a class="brand" href="./" aria-label="Webinsolito, Home">Webinsolito</a>
     <div class="topRight">
       <a class="topLink" href="./categorie.html">Tutte le categorie</a>
-      <span class="release" aria-label="Versione Home 22.2">Home V22.2</span>
+      <span class="release" aria-label="Versione Home 23.0">Home V23.0</span>
     </div>
   </header>
 
@@ -475,97 +504,10 @@ body:after{
     <div class="stage">
       <div class="artGlow" aria-hidden="true"></div>
 
-      <div class="art" aria-hidden="true">
-        <svg class="celestialSvg" viewBox="0 0 700 700" role="img" aria-label="">
-          <defs>
-            <radialGradient id="gSphere" cx="33%" cy="27%" r="77%">
-              <stop offset="0" stop-color="#2a647d"/>
-              <stop offset=".15" stop-color="#173f54"/>
-              <stop offset=".48" stop-color="#0a2534"/>
-              <stop offset=".78" stop-color="#05141f"/>
-              <stop offset="1" stop-color="#020a11"/>
-            </radialGradient>
-            <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#7b4a1d"/>
-              <stop offset=".20" stop-color="#d5a058"/>
-              <stop offset=".44" stop-color="#ffe0a7"/>
-              <stop offset=".66" stop-color="#b87834"/>
-              <stop offset="1" stop-color="#f1c987"/>
-            </linearGradient>
-            <radialGradient id="gOrb" cx="30%" cy="26%" r="78%">
-              <stop offset="0" stop-color="#fff2c9"/>
-              <stop offset=".13" stop-color="#f2c77b"/>
-              <stop offset=".45" stop-color="#c17c35"/>
-              <stop offset=".80" stop-color="#5e3515"/>
-              <stop offset="1" stop-color="#2a1709"/>
-            </radialGradient>
-            <filter id="fShadow" x="-30%" y="-30%" width="160%" height="180%">
-              <feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#000" flood-opacity=".58"/>
-            </filter>
-            <filter id="fGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="7" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="fTexture" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="8" result="noise"/>
-              <feColorMatrix in="noise" type="saturate" values="0"/>
-              <feComponentTransfer><feFuncA type="table" tableValues="0 .13"/></feComponentTransfer>
-              <feBlend in="SourceGraphic" mode="screen"/>
-            </filter>
-            <clipPath id="sphereClip"><circle cx="350" cy="350" r="164"/></clipPath>
-          </defs>
-
-          <circle cx="350" cy="350" r="244" fill="none" stroke="#d3a15c" stroke-opacity=".38" stroke-width="1.2" stroke-dasharray="5 9"/>
-          <circle cx="350" cy="350" r="214" fill="none" stroke="#4d92b4" stroke-opacity=".18" stroke-width="1"/>
-
-          <g filter="url(#fShadow)">
-            <line x1="350" y1="90" x2="350" y2="610" stroke="url(#gGold)" stroke-width="8" stroke-linecap="round"/>
-            <circle cx="350" cy="86" r="17" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1"/>
-            <circle cx="350" cy="615" r="12" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1"/>
-
-            <g class="orbitA">
-              <ellipse cx="350" cy="350" rx="264" ry="111" fill="none" stroke="url(#gGold)" stroke-width="8" transform="rotate(-17 350 350)"/>
-              <ellipse cx="350" cy="350" rx="267" ry="114" fill="none" stroke="#ffdf9a" stroke-opacity=".23" stroke-width="2" transform="rotate(-17 350 350)"/>
-            </g>
-            <g class="orbitB">
-              <ellipse cx="350" cy="350" rx="250" ry="124" fill="none" stroke="url(#gGold)" stroke-width="7" transform="rotate(34 350 350)"/>
-            </g>
-            <g class="orbitC">
-              <ellipse cx="350" cy="350" rx="108" ry="259" fill="none" stroke="url(#gGold)" stroke-width="6" transform="rotate(72 350 350)"/>
-            </g>
-
-            <circle cx="350" cy="350" r="170" fill="#02070c" stroke="url(#gGold)" stroke-width="8"/>
-            <circle cx="350" cy="350" r="164" fill="url(#gSphere)" filter="url(#fTexture)"/>
-
-            <g clip-path="url(#sphereClip)" opacity=".65">
-              <ellipse cx="350" cy="350" rx="118" ry="164" fill="none" stroke="#dcae67" stroke-opacity=".18" stroke-width="1.5"/>
-              <ellipse cx="350" cy="350" rx="68" ry="164" fill="none" stroke="#dcae67" stroke-opacity=".16" stroke-width="1.4"/>
-              <ellipse cx="350" cy="350" rx="164" ry="82" fill="none" stroke="#dcae67" stroke-opacity=".14" stroke-width="1.4"/>
-              <ellipse cx="350" cy="350" rx="164" ry="122" fill="none" stroke="#dcae67" stroke-opacity=".13" stroke-width="1.4"/>
-              <path d="M271 267c21-18 43-25 68-23 16 1 29 9 42 18l25-3 18 13-7 14-28 4-13 17-17-4-15 13-20-6-9-20-23-2-21-10Z" fill="none" stroke="#e7b76c" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity=".88"/>
-              <path d="M377 307l27 8 18 25-9 30-22 14-16 31-24 5-13-23 7-18-18-24 10-28 20-4 20-16Z" fill="none" stroke="#e7b76c" stroke-width="2" opacity=".73"/>
-              <path d="M287 394l23 10 14 28-12 27-26 13-22-11-4-25 12-22 15-20Z" fill="none" stroke="#c99049" stroke-width="1.8" opacity=".58"/>
-              <path d="M440 277l17 5 13 13-10 13-18-1-13-14 11-16ZM428 425l14 4 8 12-6 10-16-2-6-12 6-12Z" fill="none" stroke="#e7b76c" stroke-width="1.8" opacity=".62"/>
-              <path d="M220 330c54-15 87-40 119-79M237 421c50-22 88-49 120-100M312 509c36-39 59-73 77-119M417 500c-4-45-11-83-29-123M465 421c-38-8-75-20-108-42" fill="none" stroke="#d89f52" stroke-opacity=".24" stroke-width="1.2"/>
-            </g>
-
-            <path d="M272 239c28-23 67-40 102-35" fill="none" stroke="#fff0bd" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
-            <circle cx="350" cy="350" r="164" fill="none" stroke="#f2d59e" stroke-opacity=".38" stroke-width="1.2"/>
-
-            <text x="350" y="389" text-anchor="middle" fill="url(#gGold)" font-family="Georgia, 'Times New Roman', serif" font-size="150" font-weight="700">W</text>
-            <path d="M350 422l10 16 16 10-16 10-10 16-10-16-16-10 16-10 10-16Z" fill="#f6d69d"/>
-
-            <circle cx="165" cy="213" r="23" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1.3"/>
-            <circle cx="534" cy="252" r="31" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1.3"/>
-            <circle cx="185" cy="493" r="27" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1.3"/>
-            <circle cx="535" cy="476" r="18" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1.3"/>
-            <circle cx="455" cy="167" r="18" fill="url(#gOrb)" stroke="#f1cf93" stroke-width="1.3"/>
-
-            <circle cx="105" cy="350" r="8" fill="#f7d89f" filter="url(#fGlow)"/>
-            <circle cx="595" cy="350" r="8" fill="#f7d89f" filter="url(#fGlow)"/>
-            <circle cx="350" cy="110" r="6" fill="#f7d89f" filter="url(#fGlow)"/>
-          </g>
-        </svg>
+      <div class="modelMount" id="hero3d" data-state="loading" aria-label="Scultura 3D interattiva Webinsolito" aria-busy="true">
+        <canvas id="hero3dCanvas" aria-hidden="true"></canvas>
+        <div class="hero3dFallback" id="hero3dFallback" aria-hidden="true">W</div>
+        <span class="hero3dBadge" aria-hidden="true">3D · trascina leggermente</span>
       </div>
 
       <span class="connector conAuto" aria-hidden="true"></span>
@@ -639,6 +581,10 @@ body:after{
   </footer>
 </main>
 
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
+</script>
+<script type="module" src="./assets/home-3d-v23.js"></script>
 <script src="./assets/home-search-20260925.js"></script>
 <script>
 (function(){
@@ -646,10 +592,19 @@ body:after{
 
   var root=document.documentElement;
   if(root.classList.contains("boot-new")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
-    setTimeout(function(){
-      root.classList.add("boot-done");
-      try{sessionStorage.setItem("wi-v22-2-seen","1")}catch(e){}
-    },1180);
+    var bootStarted=performance.now(),bootClosed=false;
+    function closeBoot(){
+      if(bootClosed)return;
+      var wait=Math.max(0,1100-(performance.now()-bootStarted));
+      setTimeout(function(){
+        root.classList.add("boot-done");
+        try{sessionStorage.setItem("wi-v23-seen","1")}catch(e){}
+      },wait);
+      bootClosed=true;
+    }
+    window.addEventListener("webinsolito:hero3d-ready",closeBoot,{once:true});
+    window.addEventListener("webinsolito:hero3d-error",closeBoot,{once:true});
+    setTimeout(closeBoot,3000);
   }
 
   var slugMap={auto:"auto",food:"food",money:"soldi",events:"eventi",docs:"documenti",home:"casa",travel:"viaggi",style:"persona",shopping:"shopping",territory:"territorio",business:"business",study:"studio"};
