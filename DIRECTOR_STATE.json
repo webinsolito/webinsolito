@@ -1,91 +1,97 @@
 {
   "project": "WEBINSOLITO",
   "scope": "HOME ONLY",
-  "updated_at": "2026-10-02T17:20:13+02:00",
-  "release": "V23.0",
-  "base_main_sha": "0e4b09c52826867a2e0f79191e57a0bbf53ecf4a",
-  "backup_branch": "backup/home-v22-2-before-glb",
-  "candidate_branch": "candidate/home-v23-real-glb",
-  "status": "PUBLIC_V23_DEPLOYED",
-  "reason": "User explicitly requested a real GLB hero inside the actual Webinsolito Home, not CSS/SVG imitation or a separate viewer.",
-  "implementation": {
-    "hero": "real GLB payload rendered in WebGL with Three.js + GLTFLoader",
-    "payload": "10 same-origin compressed base64 chunks, reconstructed client-side then parsed as GLB",
-    "model_parts": [
-      "globe core",
-      "metallic rim/meridians/parallels",
+  "updated_at": "2026-10-02T18:27:00+02:00",
+  "release": "V24.0",
+  "base_main_sha": "e7ae8b4fab2793a83eb31766428283d58e5fe858",
+  "backup_branch": "backup/home-v23-broken-glb",
+  "candidate_branch": "candidate/home-v24-direct-glb",
+  "status": "CANDIDATE_READY_FOR_DEPLOY",
+  "reason": "V23 contained the WebGL integration but its runtime chunked GLB payload was proven corrupt from the actual GitHub Pages artifact. V24 removes that path and serves one verified binary GLB directly.",
+  "model": {
+    "path": "assets/models/webinsolito-hero-v24.glb",
+    "bytes": 68860,
+    "sha256": "a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615",
+    "git_blob_sha": "10cc728bb25da6204141f0e624422bc2e0ece6fa",
+    "verification": "GitHub Actions materialization job decoded the transfer, checked exact byte length, SHA-256 and glTF magic before committing the binary.",
+    "parts": [
+      "deep-petrol globe",
+      "gold rim",
+      "latitude/meridian rings",
+      "3D continent wire details",
       "3D W",
-      "gold star",
+      "spark",
       "vertical axis",
       "4 orbit rings",
       "5 planets",
-      "spark elements",
-      "3D continent-wire details"
+      "accent spark nodes"
+    ]
+  },
+  "implementation": {
+    "loader": "Three.js + GLTFLoader reads the direct same-origin .glb binary",
+    "runtime_integrity": [
+      "HTTP status",
+      "exact 68860-byte size",
+      "glTF magic",
+      "SHA-256 using Web Crypto before parse"
+    ],
+    "removed": [
+      "runtime base64 chunks",
+      "gzip decompression",
+      "pako fallback",
+      "V23 payload files",
+      "V23 loader"
     ],
     "motion": [
-      "very slow root rotation",
-      "independent orbit-ring movement",
-      "subtle desktop pointer parallax",
-      "limited touch drag",
-      "no wheel zoom",
-      "soft return"
+      "slow root rotation",
+      "independent orbit ring rotation",
+      "limited pointer/touch parallax",
+      "no wheel zoom"
     ],
     "lighting": [
-      "hemisphere fill",
-      "warm directional key",
+      "hemisphere",
+      "warm key",
       "cool rim",
-      "gold/cool point accents",
+      "gold point",
+      "cool point",
       "ACES tone mapping"
     ],
-    "html_overlay": [
-      "Auto",
-      "Casa",
-      "Viaggi",
-      "Food",
-      "Soldi remain real accessible clickable HTML links"
-    ],
-    "search": "existing WebinsolitoSearch preserved"
+    "overlays": "Auto, Casa, Viaggi, Food, Soldi remain real HTML links; existing search remains HTML/JS"
   },
   "files_changed": [
     "index.html",
     "sw.js",
-    "assets/home-3d-v23.js",
-    "assets/models/webinsolito-hero-v3.part00.b64 ... part09.b64",
+    "assets/home-3d-v24.js",
+    "assets/models/webinsolito-hero-v24.glb",
     "DIRECTOR_STATE.json"
   ],
   "functional_checks": {
-    "release_marker": "SOURCE_PASS: V23.0",
-    "old_svg_removed": "SOURCE_PASS",
-    "real_webgl_canvas": "SOURCE_PASS",
-    "gltf_loader": "SOURCE_PASS",
-    "payload_parts": "SOURCE_PASS: 10/10 present",
-    "payload_header": "SOURCE_PASS: concatenated base64 decodes to gzip header 1F 8B 08 00",
-    "category_routes": "SOURCE_PASS: Auto, Casa, Viaggi, Food, Soldi",
-    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch preserved",
-    "keyboard_search": "SOURCE_PASS",
-    "no_zoom": "SOURCE_PASS: no wheel handler",
+    "release_marker": "SOURCE_PASS: V24.0",
+    "direct_binary": "PASS: single 68860-byte .glb present",
+    "old_svg_removed": "PASS",
+    "old_chunk_runtime_removed": "PASS",
+    "runtime_hash_gate": "SOURCE_PASS",
+    "category_routes": "SOURCE_PASS: Auto/Casa/Viaggi/Food/Soldi",
+    "search_engine": "SOURCE_PASS: home-search-20260925.js + WebinsolitoSearch retained",
+    "no_zoom": "SOURCE_PASS",
     "reduced_motion": "SOURCE_PASS",
-    "mobile_rules": "SOURCE_PASS: 680/430/390 breakpoints",
-    "loading_intro": "SOURCE_PASS: waits for 3D-ready/error event with 3s safety timeout"
-  },
-  "cache_delivery": {
-    "status": "SOURCE_PASS",
-    "cache": "webinsolito-v55-home23-glb",
-    "note": "Renderer + all ten GLB payload chunks are included in the same-origin core cache."
+    "mobile_rules": "SOURCE_PASS: existing 680/430/390 layout preserved",
+    "cache": "SOURCE_PASS: webinsolito-v56-home24-direct-glb caches direct GLB"
   },
   "verification": {
     "static_source": "PASS",
-    "candidate_compare": "PASS: candidate was ahead of main by 24 commits and behind by 0 immediately before promotion.",
-    "public_deploy": "PASS: GitHub Pages build, report-build-status and deploy completed successfully for d0fe653ffec87b2df388073a6fa128a947e30120.",
-    "runtime_glb_parse": "NOT_REMOTE_EXECUTED: production loader has parse/error fallback and GLB payload parts are present; visual/runtime confirmation remains user/public-browser dependent.",
+    "binary_materialization": "PASS: GitHub Actions job 37037695178",
+    "binary_sha256": "PASS: a669c9b4efaa017a9e18eda1355f24d4a381b8f57a9fe65a22b3d5cf031cc615",
+    "candidate_compare": "PENDING_FINAL_HEAD_RECHECK",
+    "public_deploy": "PENDING",
+    "pages_artifact_binary": "PENDING",
+    "runtime_browser": "PENDING_USER_OR_BROWSER_CHECK",
     "desktop_visual": "NOT_PIXEL_CERTIFIED",
-    "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED",
-    "public_marker": "SOURCE V23.0 + Pages deploy confirmed. Public-page direct fetch unavailable in this session."
+    "mobile_390_430_visual": "NOT_PIXEL_CERTIFIED"
   },
-  "completion_gate": "V23.0 is deployed with the real GLB integration. Remaining gate is visual/runtime inspection on the live site (especially iPhone 390/430) before treating the 3D hero as final.",
-  "blocker": "No outbound network is available in the container browser, so public WebGL runtime must be checked after GitHub Pages deployment using available public-page tooling/user inspection.",
-  "next_action": "Inspect live V23.0 on desktop and iPhone. If the GLB loads and composition is correct, continue with material/light/framing polish only. If runtime fails, patch loader/payload immediately before any visual polish.",
+  "completion_gate": "Do not call V24 finished until final main recheck, Pages deploy succeeds, and the produced Pages artifact is downloaded and the exact GLB binary is verified inside it.",
+  "blocker": "No resizable WebGL screenshot browser is available in this session, so visual/pixel certification must remain open even after artifact verification.",
+  "next_action": "Re-read live main and compare candidate. If behind_by=0, fast-forward main. Then monitor Pages, download its actual artifact and verify the shipped GLB size/SHA/magic before reporting status.",
   "preview_url": "https://webinsolito.github.io/webinsolito/",
-  "preview_version": "V23.0",
-  "deployed_source_sha": "d0fe653ffec87b2df388073a6fa128a947e30120"
+  "preview_version": "PENDING V24.0"
 }
