@@ -1,0 +1,48 @@
+name: Fix Home loader alignment
+
+on:
+  push:
+    branches:
+      - candidate/home-v25-loader-align-fix
+    paths:
+      - '.github/workflows/fix-home-loader-align.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-loader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: candidate/home-v25-loader-align-fix
+          fetch-depth: 0
+
+      - name: Fix intro alignment
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''.bootInner{width:min(430px,76vw);text-align:center}\n.bootWord{\n  font-family:Georgia,"Times New Roman",serif;\n  font-size:clamp(34px,7vw,56px);\n  letter-spacing:.22em;\n  color:var(--gold2);\n  text-transform:uppercase;\n}\n.bootRule{width:54px;height:1px;margin:18px auto 30px;background:var(--gold)}\n.bootTrack{height:4px;border:1px solid rgba(212,164,94,.36);border-radius:999px;overflow:hidden}\n.bootFill{\n  width:0;height:100%;\n  background:linear-gradient(90deg,#8b5625,var(--gold2));\n  box-shadow:0 0 18px rgba(212,164,94,.55);\n  animation:bootProgress 1.12s cubic-bezier(.25,.7,.25,1) forwards;\n}\n.bootLabel{margin-top:17px;color:#8e9aa4;font-size:9px;font-weight:900;letter-spacing:.34em;text-transform:uppercase}\n'''
+          new = '''.bootInner{\n  width:min(460px,82vw);\n  margin:0 auto;\n  display:flex;\n  flex-direction:column;\n  align-items:center;\n  text-align:center;\n}\n.bootWord{\n  display:block;\n  width:100%;\n  margin:0 auto;\n  font-family:Georgia,"Times New Roman",serif;\n  font-size:clamp(32px,6.2vw,52px);\n  line-height:1;\n  letter-spacing:.18em;\n  text-indent:.18em;\n  white-space:nowrap;\n  color:var(--gold2);\n  text-transform:uppercase;\n}\n.bootRule{\n  width:54px;height:1px;\n  margin:18px auto 28px;\n  background:linear-gradient(90deg,transparent,var(--gold),transparent);\n}\n.bootTrack{\n  width:100%;\n  max-width:390px;\n  height:3px;\n  margin:0 auto;\n  border:1px solid rgba(212,164,94,.36);\n  border-radius:999px;\n  overflow:hidden;\n}\n.bootFill{\n  width:0;height:100%;\n  background:linear-gradient(90deg,#8b5625,var(--gold2));\n  box-shadow:0 0 18px rgba(212,164,94,.55);\n  animation:bootProgress 1.12s cubic-bezier(.25,.7,.25,1) forwards;\n}\n.bootLabel{\n  width:100%;\n  margin-top:16px;\n  color:#8e9aa4;\n  font-size:9px;\n  font-weight:900;\n  line-height:1;\n  letter-spacing:.30em;\n  text-indent:.30em;\n  text-align:center;\n  text-transform:uppercase;\n}\n@media(max-width:430px){\n  .bootInner{width:min(350px,84vw)}\n  .bootWord{font-size:clamp(27px,8vw,36px);letter-spacing:.15em;text-indent:.15em}\n  .bootTrack{max-width:320px}\n  .bootRule{margin-bottom:25px}\n}\n'''
+          if old not in s:
+              raise SystemExit('loader CSS block not found; refusing unsafe edit')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          grep -q 'text-indent:.18em' index.html
+          grep -q 'max-width:390px' index.html
+          grep -q 'max-width:320px' index.html
+
+      - name: Commit candidate fix
+        shell: bash
+        run: |
+          git config user.name "webinsolito-build"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix(home): straighten premium loading intro" || exit 0
+          git push origin HEAD:candidate/home-v25-loader-align-fix
