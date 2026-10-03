@@ -1,10 +1,10 @@
 {
   "model": "webinsolito-hero-v26.glb",
-  "bytes": 3723244,
-  "sha256": "ddd0cff44cfb4bc90c2050a682f0983ef736b2d77b69b2bd02a140aadd47ef91",
-  "geometries": 66,
-  "vertices": 187024,
-  "faces": 373896,
+  "bytes": 3989056,
+  "sha256": "e574d20b9e6fc7f34eebeb027bcdfd1091ad8ca0245ee9c3cef6bc98ebf4dbe4",
+  "geometries": 445,
+  "vertices": 193438,
+  "faces": 385204,
   "materials": [
     "AntiqueGoldShadow",
     "ChampagneGoldMirror",
@@ -17,10 +17,10 @@
   ],
   "key_nodes": [
     "globe_core",
-    "globe_inner",
-    "land_africa",
-    "land_europe",
-    "land_asia",
+    "globe_rim_01",
+    "land_africa_000",
+    "land_europe_000",
+    "land_asia_000",
     "logo_W_gold",
     "logo_star",
     "axis_vertical",
@@ -35,5 +35,5 @@
     "planet_04",
     "planet_05"
   ],
-  "notes": "Model-only V26: raised solid landmasses, real extruded serif W, refined armillary and high-detail PBR geometry."
+  "notes": "Model-only V26 revision 2: corrected globe coordinate system, front-facing armillary/rims, sphere-hugging raised continent outlines, serif W pulled forward for legibility."
 }
