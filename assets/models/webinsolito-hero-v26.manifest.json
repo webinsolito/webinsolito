@@ -1,39 +1,9 @@
 {
-  "model": "webinsolito-hero-v26.glb",
-  "bytes": 3989056,
-  "sha256": "e574d20b9e6fc7f34eebeb027bcdfd1091ad8ca0245ee9c3cef6bc98ebf4dbe4",
-  "geometries": 445,
-  "vertices": 193438,
-  "faces": 385204,
-  "materials": [
-    "AntiqueGoldShadow",
-    "ChampagneGoldMirror",
-    "DeepPetrolClearcoat",
-    "DeepPetrolInner",
-    "RaisedMapGold",
-    "SatinChampagne",
-    "SparkGold",
-    "WarmIvoryGold"
-  ],
-  "key_nodes": [
-    "globe_core",
-    "globe_rim_01",
-    "land_africa_000",
-    "land_europe_000",
-    "land_asia_000",
-    "logo_W_gold",
-    "logo_star",
-    "axis_vertical",
-    "armillary_outer",
-    "orbit_ring_01",
-    "orbit_ring_02",
-    "orbit_ring_03",
-    "orbit_ring_04",
-    "planet_01",
-    "planet_02",
-    "planet_03",
-    "planet_04",
-    "planet_05"
-  ],
-  "notes": "Model-only V26 revision 2: corrected globe coordinate system, front-facing armillary/rims, sphere-hugging raised continent outlines, serif W pulled forward for legibility."
+  "version": "V26-stage2-modeling",
+  "bytes": 4336924,
+  "sha256": "94b0bb6d5eb90f5ccc377cfaa326a0133ca0fe2fad293864d871a74b635dd5df",
+  "geometries": 647,
+  "vertices": 208692,
+  "faces": 388124,
+  "focus": "true curved continent relief + layered W + refined armillary details"
 }
