@@ -49,13 +49,15 @@ jobs:
           p=Path('assets/models/webinsolito-hero-v26.glb')
           s=trimesh.load(p, force='scene')
           names=set(s.graph.nodes_geometry)
-          required={
-              'globe_core','land_africa','land_europe','land_asia',
-              'logo_W_gold','logo_star','axis_vertical','armillary_outer',
+          required_exact={
+              'globe_core','logo_W_gold','logo_star','axis_vertical','armillary_outer',
               'orbit_ring_01','orbit_ring_02','orbit_ring_03','orbit_ring_04',
               'planet_01','planet_02','planet_03','planet_04','planet_05'
           }
-          missing=sorted(required-names)
+          missing=sorted(required_exact-names)
+          for prefix in ('land_africa_','land_europe_','land_asia_'):
+              if not any(n.startswith(prefix) for n in names):
+                  missing.append(prefix+'*')
           if missing:
               raise SystemExit('missing required 3D nodes: '+','.join(missing))
           faces=sum(len(g.faces) for g in s.geometry.values())
