@@ -50,23 +50,28 @@ jobs:
           s=trimesh.load(p, force='scene')
           names=set(s.graph.nodes_geometry)
           required_exact={
-              'globe_core','logo_W_gold','logo_star','axis_vertical','armillary_outer',
+              'globe_core','globe_inner','land_africa','land_eurasia',
+              'land_north_america','land_south_america','land_australia',
+              'axis_vertical','armillary_outer',
               'orbit_ring_01','orbit_ring_02','orbit_ring_03','orbit_ring_04',
-              'planet_01','planet_02','planet_03','planet_04','planet_05'
+              'planet_01','planet_02','planet_03','planet_04','planet_05',
+              'logo_W_gold_layer_01','logo_W_gold_layer_02','logo_W_gold_layer_03',
+              'logo_star_layer_01','logo_star_layer_02'
           }
           missing=sorted(required_exact-names)
-          for prefix in ('land_africa_','land_europe_','land_asia_'):
-              if not any(n.startswith(prefix) for n in names):
-                  missing.append(prefix+'*')
           if missing:
               raise SystemExit('missing required 3D nodes: '+','.join(missing))
+          coast_count=sum(1 for n in names if '_coast_' in n)
+          if coast_count < 100:
+              raise SystemExit(f'coast relief detail too low: {coast_count}')
           faces=sum(len(g.faces) for g in s.geometry.values())
-          if faces < 180000:
+          if faces < 250000:
               raise SystemExit(f'face count too low: {faces}')
           m=json.loads(Path('assets/models/webinsolito-hero-v26.manifest.json').read_text())
           print('VALIDATED_BYTES', p.stat().st_size)
           print('VALIDATED_GEOMETRIES', len(s.geometry))
           print('VALIDATED_FACES', faces)
+          print('VALIDATED_COAST_SEGMENTS', coast_count)
           print('VALIDATED_SHA256', m['sha256'])
           PY
 
@@ -78,7 +83,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add assets/models/webinsolito-hero-v26.glb assets/models/webinsolito-hero-v26.manifest.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "feat(model): materialize detailed V26 premium GLB"
+          git commit -m "feat(model): materialize V26 curved-relief modeling pass"
           git push origin HEAD:candidate/model-v26-premium-one-at-a-time
 
       - name: Upload model artifact
