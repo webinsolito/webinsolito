@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0d0e">
+<title>MALÙ23 CARS — Preview V1.16</title>
+<style>html,body{margin:0;min-height:100%;background:#0d0d0e;color:#fff;font-family:Inter,system-ui,sans-serif}.boot{min-height:100vh;display:grid;place-items:center}.boot div{text-align:center}.boot strong{display:block;font-size:18px}.boot small{display:block;color:#aaa;margin-top:6px}</style>
+</head>
+<body><div class="boot"><div><strong>MALÙ23 CARS</strong><small>Caricamento preview V1.16…</small></div></div>
+<script>
+(async()=>{
+ try{
+  const r=await fetch('./index.html?v=115-base',{cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  let html=await r.text();
+  const css=`
+/* V1.16 preview patch — operational clarity + iPhone safe area */
+.v116-marker{position:fixed;right:12px;top:12px;z-index:9999;background:#111113;color:#fff;border:1px solid #333338;border-radius:999px;padding:7px 10px;font:800 9px/1 Inter,system-ui;letter-spacing:.7px;box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.v116-command{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(250px,.7fr);gap:12px;margin:0 0 16px}.v116-command>div{border-radius:15px;padding:16px 18px;border:1px solid #e1e1e4;background:#fff;box-shadow:0 7px 20px rgba(0,0,0,.04)}.v116-command .focus{background:linear-gradient(135deg,#18181a,#09090a);color:#fff;border-color:#29292c}.v116-command small{display:block;font-size:9px;font-weight:900;letter-spacing:1.2px;color:#d51f27}.v116-command .focus small{color:#ff5157}.v116-command strong{display:block;font-size:17px;margin-top:4px}.v116-command p{margin:5px 0 0;font-size:10px;color:#85858b}.v116-command .focus p{color:#b8b8bd}.desktop-dashboard .empty{padding:13px 15px!important;text-align:left!important;border-radius:12px!important;min-height:0!important}.desktop-dashboard .section-title+ .empty{margin-bottom:4px}.garage-photo-add{width:100%;min-height:132px;border:1px dashed #cfcfd3;border-radius:14px;background:linear-gradient(145deg,#fafafa,#f2f2f3);display:grid;place-items:center;align-content:center;gap:5px;color:#626268}.garage-photo-add b{font-size:27px;color:#d21f26}.garage-photo-add strong{font-size:11px;color:#252529}.garage-photo-add span{font-size:9px}.mobile-brand-lockup{object-fit:contain!important}
+@media(max-width:620px){body{padding-bottom:calc(94px + env(safe-area-inset-bottom))!important}.content{padding-bottom:calc(128px + env(safe-area-inset-bottom))!important}.mobile-bottom-nav{z-index:70!important}.topbar{min-height:60px!important;padding:calc(6px + env(safe-area-inset-top)) 11px 6px!important}.page-heading{display:flex!important;align-items:center!important;gap:9px!important;min-width:0}.mobile-brand-lockup{width:84px!important;height:31px!important;margin:0!important;flex:0 0 auto}.topbar h1{font-size:17px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v116-marker{top:auto;bottom:calc(82px + env(safe-area-inset-bottom));right:8px;padding:5px 7px;font-size:7px}.v116-command{grid-template-columns:1fr;gap:8px}.v116-command>div{padding:13px 14px;border-radius:13px}.v116-command strong{font-size:15px}.desktop-dashboard .empty{padding:11px 12px!important}.garage-photo-add{min-height:108px;border-radius:12px}}
+`;
+  const patch=`
+(function(){
+ const apply=()=>{
+  if(!document.querySelector('.v116-marker')){const m=document.createElement('div');m.className='v116-marker';m.textContent='DEMO V1.16';document.body.appendChild(m)}
+  const d=document.querySelector('.desktop-dashboard');
+  if(d && !d.querySelector('.v116-command')){
+   const metrics=[...d.querySelectorAll('.metric .n')].map(x=>x.textContent.trim());
+   const c=document.createElement('section');c.className='v116-command';
+   c.innerHTML='<div class="focus"><small>DA FARE ORA</small><strong>'+(metrics[0]&&metrics[0]!=='0'?'Controlla le attività prioritarie':'Tutto sotto controllo')+'</strong><p>Una sola prossima azione evidente; gli stati vuoti restano compatti.</p></div><div><small>CONTROLLO PARCO</small><strong>Capitale e margini in evidenza</strong><p>Apri Guadagni per stock investito, spese e margine previsto.</p></div>';
+   d.prepend(c);
+  }
+  document.querySelectorAll('.garage-card').forEach(card=>{
+   if(card.querySelector('img,.garage-photo-add')) return;
+   const b=document.createElement('button');b.className='garage-photo-add';b.innerHTML='<b>＋</b><strong>Aggiungi foto principale</strong><span>Apri foto della vettura</span>';
+   b.onclick=(e)=>{e.stopPropagation();const btn=[...card.querySelectorAll('button')].find(x=>/apri|scheda|dettag/i.test(x.textContent));if(btn)btn.click()};card.prepend(b)
+  });
+ };
+ new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
+ setTimeout(apply,80);setTimeout(apply,500);setTimeout(apply,1500);
+})();
+`;
+  html=html.replace(/V1\.15/g,'V1.16').replace(/1\.15\.0-malu23/g,'1.16.0-malu23');
+  html=html.replace('</head>','<style>'+css+'</style></head>');
+  html=html.replace('</body>','<script>'+patch.replace(/<\\\/script>/g,'<\\/script>')+'<\\/script></body>');
+  document.open();document.write(html);document.close();
+ }catch(e){document.body.innerHTML='<div class="boot"><div><strong>Preview V1.16 non caricata</strong><small>'+String(e.message||e)+'</small></div></div>'}
+})();
+</script></body></html>
