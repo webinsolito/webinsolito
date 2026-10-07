@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v0.8.0';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./documents.js','./contracts.js','./invoices.js','./api.js','./offline.js'];
+const CACHE='dealer-platform-v0.9.0';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./documents.js','./contracts.js','./invoices.js','./sales.js','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{
@@ -23,4 +23,3 @@ self.addEventListener('fetch',event=>{
 });
 
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});
-
