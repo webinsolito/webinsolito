@@ -1,0 +1,14 @@
+name = "malu23-dealer-worker"
+main = "index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+APP_URL = "https://webinsolito.github.io/webinsolito/dealer-platform/"
+SUPABASE_URL = "https://YOUR_PROJECT_REF.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "sb_publishable_REPLACE_ME"
+
+# Secrets — set with `wrangler secret put`, NEVER commit values:
+# TELEGRAM_BOT_TOKEN
+# TELEGRAM_WEBHOOK_SECRET_TOKEN
+# SUPABASE_SERVICE_ROLE_KEY
