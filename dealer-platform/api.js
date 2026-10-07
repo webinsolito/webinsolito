@@ -34,22 +34,10 @@ async function authPassword(email,password){
 async function refresh(){
   const c=assertConfigured(),token=Session.refreshToken();if(!token)throw new Error('no_refresh_token');
   const res=await fetch(`${c.supabaseUrl}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:jsonHeaders({apikey:c.supabasePublishableKey}),body:JSON.stringify({refresh_token:token})});
-  const data=await parse(res);const session={...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};Session.set(session);return session;
+  const data=await parse(res);const previous=Session.get()||{};const session={...previous,...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};Session.set(session);return session;
 }
 
 export async function accessToken(){if(Session.expired())await refresh();return Session.accessToken()}
-
-export async function login({identifier,password,dealerSlug}){
-  const c=cfg();
-  if(c.demoMode||!c.workerUrl){
-    const demo={access_token:'demo',refresh_token:'demo',expires_at:Math.floor(Date.now()/1000)+86400,user:{id:'demo-admin',email:'admin@malu23.local'},dealer:{id:'demo-malu23',slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Admin',role:'ADMIN'}};Session.set(demo);return demo;
-  }
-  if(identifier.includes('@'))return authPassword(identifier,password);
-  const res=await fetch(`${c.workerUrl}/auth/resolve-login`,{method:'POST',headers:jsonHeaders(),body:JSON.stringify({username:identifier,dealer_slug:dealerSlug||c.defaultDealerSlug,password})});
-  const data=await parse(res);Session.set(data);return data;
-}
-
-export async function logout(){Session.clear()}
 
 async function rest(path,{method='GET',body,token,prefer}={}){
   const c=assertConfigured();const jwt=token||await accessToken();
@@ -57,6 +45,28 @@ async function rest(path,{method='GET',body,token,prefer}={}){
   if(body!==undefined)Object.assign(headers,jsonHeaders());if(prefer)headers.Prefer=prefer;
   return parse(await fetch(`${c.supabaseUrl}/rest/v1/${path}`,{method,headers,body:body===undefined?undefined:JSON.stringify(body)}));
 }
+
+async function hydrateEmailSession(session,dealerSlug){
+  const slug=encodeURIComponent(dealerSlug||cfg().defaultDealerSlug||'malu23');
+  const dealers=await rest(`dealers?slug=eq.${slug}&select=id,slug,display_name&limit=1`,{token:session.access_token});
+  const dealer=dealers?.[0];if(!dealer)throw new Error('dealer_not_authorized');
+  const memberships=await rest(`memberships?dealer_id=eq.${encodeURIComponent(dealer.id)}&select=user_id,username,role,permissions,status&limit=1`,{token:session.access_token});
+  const member=memberships?.[0];if(!member||member.status!=='ACTIVE')throw new Error('membership_inactive');
+  const profiles=await rest('profiles?select=display_name,force_password_change&limit=1',{token:session.access_token});
+  const hydrated={...session,dealer,profile:{...(profiles?.[0]||{}),username:member.username,role:member.role,permissions:member.permissions}};Session.set(hydrated);return hydrated;
+}
+
+export async function login({identifier,password,dealerSlug}){
+  const c=cfg();
+  if(c.demoMode||!c.workerUrl){
+    const demo={access_token:'demo',refresh_token:'demo',expires_at:Math.floor(Date.now()/1000)+86400,user:{id:'demo-admin',email:'admin@malu23.local'},dealer:{id:'demo-malu23',slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Admin',role:'ADMIN',username:'admin'}};Session.set(demo);return demo;
+  }
+  if(identifier.includes('@'))return hydrateEmailSession(await authPassword(identifier,password),dealerSlug);
+  const res=await fetch(`${c.workerUrl}/auth/resolve-login`,{method:'POST',headers:jsonHeaders(),body:JSON.stringify({username:identifier,dealer_slug:dealerSlug||c.defaultDealerSlug,password})});
+  const data=await parse(res);Session.set(data);return data;
+}
+
+export async function logout(){Session.clear()}
 
 export async function fetchTenantData(dealerId){
   const c=cfg();
@@ -94,9 +104,7 @@ export async function softDeleteEntity(entity,dealerId,id){
 export async function sendMutation(mutation,token){
   const c=cfg();if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,120));return {demo:true}}
   if(!['vehicles','customers','vehicle_costs','vehicle_events','documents'].includes(mutation.entity))throw new Error('entity_not_allowed');
-  if(mutation.method==='UPSERT'){
-    return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});
-  }
+  if(mutation.method==='UPSERT')return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});
   if(mutation.method==='DELETE')return rest(`${mutation.entity}?id=eq.${encodeURIComponent(mutation.record_id)}`,{method:'DELETE',token,prefer:'return=minimal'});
   throw new Error('mutation_method_not_supported');
 }
@@ -106,9 +114,9 @@ export async function validateTelegram(initData){
   return parse(await fetch(`${c.workerUrl}/telegram/validate`,{method:'POST',headers:jsonHeaders(),body:JSON.stringify({initData})}));
 }
 
-export async function linkTelegram(initData){
+export async function linkTelegram(initData,dealerId){
   const c=cfg(),token=await accessToken();if(!c.workerUrl)throw new Error('worker_not_configured');
-  return parse(await fetch(`${c.workerUrl}/telegram/link`,{method:'POST',headers:jsonHeaders({authorization:`Bearer ${token}`}),body:JSON.stringify({initData})}));
+  return parse(await fetch(`${c.workerUrl}/telegram/link`,{method:'POST',headers:jsonHeaders({authorization:`Bearer ${token}`,'x-dealer-id':dealerId}),body:JSON.stringify({initData,dealer_id:dealerId})}));
 }
 
 function demoData(dealerId='demo-malu23'){
