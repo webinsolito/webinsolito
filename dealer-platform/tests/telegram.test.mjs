@@ -57,8 +57,10 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '1\.1\.1'/);
-  assert.match(sw,/dealer-platform-v1\.1\.1/);
-  assert.match(html,/V1\.1\.1 · Offline \+ Telegram/);
+  assert.match(config,/version: '1\.1\.2'/);
+  assert.match(config,/sales\.js\?v=1\.1\.2/);
+  assert.match(sw,/dealer-platform-v1\.1\.2/);
+  assert.match(html,/V1\.1\.2 · Offline \+ Telegram/);
+  assert.match(html,/app\.js\?v=1\.1\.2/);
   assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
 });

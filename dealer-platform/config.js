@@ -1,7 +1,7 @@
 // Runtime configuration for Dealer Platform.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.1.1',
+  version: '1.1.2',
   supabaseUrl: '',
   supabasePublishableKey: '',
   workerUrl: '',
@@ -15,11 +15,11 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(legacy&&!document.getElementById('clientsApp')){
     const root=document.createElement('div');root.id='clientsApp';legacy.hidden=true;legacy.before(root);
   }
-  import('./clients.js').catch(err=>console.warn('CRM Clienti non caricato',err));
-  import('./calendar.js').catch(err=>console.warn('Calendario non caricato',err));
-  import('./documents.js').catch(err=>console.warn('Documenti non caricati',err));
-  import('./contracts.js').catch(err=>console.warn('Contratti non caricati',err));
-  import('./invoices.js').catch(err=>console.warn('Fatture non caricate',err));
-  import('./sales.js').catch(err=>console.warn('Vendite non caricate',err));
-  import('./finances.js').catch(err=>console.warn('Finanze non caricate',err));
+  import('./clients.js?v=1.1.2').catch(err=>console.warn('CRM Clienti non caricato',err));
+  import('./calendar.js?v=1.1.2').catch(err=>console.warn('Calendario non caricato',err));
+  import('./documents.js?v=1.1.2').catch(err=>console.warn('Documenti non caricati',err));
+  import('./contracts.js?v=1.1.2').catch(err=>console.warn('Contratti non caricati',err));
+  import('./invoices.js?v=1.1.2').catch(err=>console.warn('Fatture non caricate',err));
+  import('./sales.js?v=1.1.2').catch(err=>console.warn('Vendite non caricate',err));
+  import('./finances.js?v=1.1.2').catch(err=>console.warn('Finanze non caricate',err));
 });
