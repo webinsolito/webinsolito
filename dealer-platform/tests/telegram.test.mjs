@@ -52,11 +52,13 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   const config=await readFile(new URL('../config.js',import.meta.url),'utf8');
   const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+  const featureModules=await Promise.all(['sales.js','finances.js'].map(name=>readFile(new URL(`../${name}`,import.meta.url),'utf8')));
   assert.match(app,/TELEGRAM_VIEWS=new Set\(\['today','garage','clients','calendar','documenti','vendite','fatture','finanze'\]\)/);
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '1\.1\.0'/);
-  assert.match(sw,/dealer-platform-v1\.1\.0/);
-  assert.match(html,/V1\.1 · Offline \+ Telegram/);
+  assert.match(config,/version: '1\.1\.1'/);
+  assert.match(sw,/dealer-platform-v1\.1\.1/);
+  assert.match(html,/V1\.1\.1 · Offline \+ Telegram/);
+  assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
 });

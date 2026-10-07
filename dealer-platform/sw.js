@@ -1,4 +1,4 @@
-const CACHE='dealer-platform-v1.1.0';
+const CACHE='dealer-platform-v1.1.1';
 const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./documents.js','./contracts.js','./invoices.js','./sales.js','./finances.js','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 

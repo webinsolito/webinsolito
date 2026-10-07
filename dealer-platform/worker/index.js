@@ -212,7 +212,7 @@ export default {
   async fetch(req,env){
     const url=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(env,req)});
     try{
-      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'1.1.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
+      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'1.1.1',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
       if(url.pathname==='/auth/resolve-login'&&req.method==='POST')return resolveLogin(req,env);
       if(url.pathname==='/telegram/validate'&&req.method==='POST'){const body=await req.json().catch(()=>({}));const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);return json(result,result.ok?200:401,cors(env,req))}
       if(url.pathname==='/telegram/link'&&req.method==='POST')return linkTelegram(req,env);
