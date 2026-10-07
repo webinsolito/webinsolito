@@ -14,8 +14,9 @@ async function validateTelegramInitData(initData,botToken,maxAgeSeconds=300){
   if(!initData||!botToken)return {ok:false,reason:'missing_data'};
   const params=new URLSearchParams(initData),receivedHash=params.get('hash');
   if(!receivedHash)return {ok:false,reason:'missing_hash'};
+  // Bot-token validation uses every received field except hash.
+  // The newer signature field remains part of this data-check-string.
   params.delete('hash');
-  params.delete('signature');
   const authDate=Number(params.get('auth_date')||0),now=Math.floor(Date.now()/1000);
   if(!authDate||Math.abs(now-authDate)>maxAgeSeconds)return {ok:false,reason:'expired'};
   const rows=[...params.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`);
@@ -51,7 +52,7 @@ async function webhook(req,env){
 export default {
   async fetch(req,env){
     const url=new URL(req.url);
-    if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.1.0'});
+    if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.1.1'});
     if(url.pathname==='/telegram/validate'&&req.method==='POST'){
       const body=await req.json().catch(()=>({}));
       const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);
