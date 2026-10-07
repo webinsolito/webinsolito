@@ -14,6 +14,10 @@ alter table public.vehicle_financials
 create unique index if not exists vehicle_financials_id_uq
   on public.vehicle_financials(id);
 
+alter table public.vehicle_costs add column if not exists updated_at timestamptz not null default now();
+alter table public.vehicle_events add column if not exists updated_at timestamptz not null default now();
+alter table public.documents add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists public.vehicle_work_items (
   id uuid primary key default gen_random_uuid(),
   dealer_id uuid not null,
