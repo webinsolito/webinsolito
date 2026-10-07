@@ -27,6 +27,7 @@ jobs:
           node --check dealer-platform/calendar.js
           node --check dealer-platform/documents.js
           node --check dealer-platform/contracts.js
+          node --check dealer-platform/invoices.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/setup-telegram.mjs
@@ -44,9 +45,17 @@ jobs:
           test -f dealer-platform/calendar.js
           test -f dealer-platform/documents.js
           test -f dealer-platform/contracts.js
+          test -f dealer-platform/invoices.js
           test -f dealer-platform/worker/index.js
       - name: Contract invariants
         run: |
           grep -q "snapshot_hash" dealer-platform/contracts.js
           grep -q "guard_contract_version_immutable" dealer-platform/supabase/migrations/0006_contracts_v07.sql
           grep -q "contract_versions" dealer-platform/offline.js
+      - name: Invoice invariants
+        run: |
+          grep -q "payment_status" dealer-platform/invoices.js
+          grep -q "vehicle_cost_id" dealer-platform/invoices.js
+          grep -q "invoices_member_select" dealer-platform/supabase/migrations/0007_invoices_v08.sql
+          grep -q "with check" dealer-platform/supabase/migrations/0007_invoices_v08.sql
+          grep -q "'invoices'" dealer-platform/offline.js
