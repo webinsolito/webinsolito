@@ -116,6 +116,8 @@ export async function validateTelegram(initData){
 
 export async function linkTelegram(initData,dealerId){
   const c=cfg(),token=await accessToken();if(!c.workerUrl)throw new Error('worker_not_configured');
+  dealerId=dealerId||Session.get()?.dealer?.id;
+  if(!dealerId)throw new Error('dealer_required');
   return parse(await fetch(`${c.workerUrl}/telegram/link`,{method:'POST',headers:jsonHeaders({authorization:`Bearer ${token}`,'x-dealer-id':dealerId}),body:JSON.stringify({initData,dealer_id:dealerId})}));
 }
 
