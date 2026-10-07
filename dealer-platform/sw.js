@@ -1,4 +1,4 @@
-const CACHE='dealer-platform-v0.7.0';
+const CACHE='dealer-platform-v0.8.0';
 const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./documents.js','./contracts.js','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
@@ -23,3 +23,4 @@ self.addEventListener('fetch',event=>{
 });
 
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});
+
