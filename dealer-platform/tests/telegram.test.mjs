@@ -30,16 +30,20 @@ test('initData scaduto viene rifiutato',async()=>{
   assert.deepEqual(await validateTelegramInitData(expired,token),{ok:false,reason:'expired'});
 });
 
-test('dashboard Telegram espone una CTA primaria, deep-link e callback stato',()=>{
+test('dashboard Telegram espone una CTA primaria, incassi, moduli operativi e callback stato',()=>{
   const env={APP_URL:'https://example.test/dealer-platform/'};
-  const ctx={dealer:{slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Luca'},vehicleCount:42,callbacks:3,deliveries:1,openWorks:4,appointments:2};
+  const ctx={dealer:{slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Luca'},vehicleCount:42,callbacks:3,deliveries:1,openWorks:4,appointments:2,receivables:12500,overdueInvoices:2};
   const text=buildDashboardMessage(ctx,'');
   assert.match(text,/3 richiami/);assert.match(text,/1 consegne/);assert.match(text,/4 lavori/);
+  assert.match(text,/12\.500/);assert.match(text,/2 scadute/);
   const keyboard=buildTelegramKeyboard(env,ctx).inline_keyboard;
   assert.equal(keyboard[0][0].text,'APRI OGGI');
   assert.equal(new URL(keyboard[1][0].web_app.url).searchParams.get('view'),'garage');
-  assert.equal(new URL(keyboard[2][1].web_app.url).searchParams.get('view'),'documenti');
-  assert.equal(keyboard.at(-1)[0].callback_data,'dealer:status');
+  assert.equal(new URL(keyboard[2][0].web_app.url).searchParams.get('view'),'vendite');
+  assert.equal(new URL(keyboard[2][1].web_app.url).searchParams.get('view'),'fatture');
+  assert.equal(new URL(keyboard[3][1].web_app.url).searchParams.get('view'),'documenti');
+  assert.equal(new URL(keyboard[4][0].web_app.url).searchParams.get('view'),'finanze');
+  assert.equal(keyboard.at(-1)[1].callback_data,'dealer:status');
   assert.equal(new URL(appViewUrl(env,'malu23','clients')).searchParams.get('dealer'),'malu23');
 });
 
@@ -48,11 +52,11 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   const config=await readFile(new URL('../config.js',import.meta.url),'utf8');
   const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  assert.match(app,/TELEGRAM_VIEWS=new Set\(\['today','garage','clients','calendar','documenti'\]\)/);
+  assert.match(app,/TELEGRAM_VIEWS=new Set\(\['today','garage','clients','calendar','documenti','vendite','fatture','finanze'\]\)/);
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '0\.8\.0'/);
-  assert.match(sw,/dealer-platform-v0\.8\.0/);
-  assert.match(html,/V0\.8 · Offline \+ Telegram/);
+  assert.match(config,/version: '1\.1\.0'/);
+  assert.match(sw,/dealer-platform-v1\.1\.0/);
+  assert.match(html,/V1\.1 · Offline \+ Telegram/);
 });

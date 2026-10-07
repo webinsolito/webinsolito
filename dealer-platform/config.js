@@ -1,7 +1,7 @@
 // Runtime configuration for Dealer Platform.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.0.0',
+  version: '1.1.0',
   supabaseUrl: '',
   supabasePublishableKey: '',
   workerUrl: '',

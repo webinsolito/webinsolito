@@ -15,7 +15,7 @@ function normalizeData(data={}){return {...EMPTY_DATA,...data,...Object.fromEntr
 function sessionDealer(){const s=Session.get();return s?.dealer||{id:'demo-malu23',display_name:'MALÙ23 CARS',slug:'malu23'}}
 function canViewCosts(){const p=Session.get()?.profile||{};return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.view_costs===true}
 function canWriteGarage(){const p=Session.get()?.profile||{};return ['ADMIN','VENDITORE','OPERATORE'].includes(p.role)||p.permissions?.garage_write===true||window.DEALER_CONFIG?.demoMode}
-const TELEGRAM_VIEWS=new Set(['today','garage','clients','calendar','documenti']);
+const TELEGRAM_VIEWS=new Set(['today','garage','clients','calendar','documenti','vendite','fatture','finanze']);
 function requestedView(){const view=new URLSearchParams(location.search).get('view')||'today';return TELEGRAM_VIEWS.has(view)?view:'today'}
 function syncTelegramBackButton(view=state.view){const back=state.telegram?.BackButton;if(!back)return;try{view==='today'?back.hide():back.show()}catch{}}
 function openRequestedView(attempt=0){const view=requestedView();if(view==='today'){go('today');return}const button=$(`.navbtn[data-view="${view}"]`);if(button){button.click();syncTelegramBackButton(view);return}if(attempt<20)setTimeout(()=>openRequestedView(attempt+1),100)}

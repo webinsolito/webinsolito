@@ -1,4 +1,4 @@
-// MALÙ23 Dealer Platform — Cloudflare Worker V0.8
+// MALÙ23 Dealer Platform — Cloudflare Worker V1.1
 // Secrets / vars expected in Worker environment only:
 // TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET_TOKEN, APP_URL,
 // SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY
@@ -135,14 +135,17 @@ async function linkedTelegramContext(env,telegramUserId){
   const links=await serviceRest(env,`telegram_links?telegram_user_id=eq.${encodeURIComponent(String(telegramUserId))}&select=dealer_id,user_id&limit=1`);const link=links?.[0];if(!link)return null;
   const dealers=await serviceRest(env,`dealers?id=eq.${link.dealer_id}&status=eq.ACTIVE&select=id,slug,display_name&limit=1`);const dealer=dealers?.[0];if(!dealer)return null;
   const profiles=await serviceRest(env,`profiles?user_id=eq.${link.user_id}&select=display_name&limit=1`);const profile=profiles?.[0]||{};
-  const [vehicles,customers,workItems,calendarEvents]=await Promise.all([
+  const [vehicles,customers,workItems,calendarEvents,invoices]=await Promise.all([
     serviceRest(env,`vehicles?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,status`),
     serviceRest(env,`customers?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,next_contact_at`),
     serviceRest(env,`vehicle_work_items?dealer_id=eq.${link.dealer_id}&status=neq.DONE&status=neq.CANCELLED&select=id`),
-    serviceRest(env,`calendar_events?dealer_id=eq.${link.dealer_id}&status=neq.CANCELLED&select=id,starts_at`)
+    serviceRest(env,`calendar_events?dealer_id=eq.${link.dealer_id}&status=neq.CANCELLED&select=id,starts_at`),
+    serviceRest(env,`invoices?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,invoice_type,total_amount,paid_amount,due_date,status`)
   ]);
   const tomorrow=Date.now()+86400000,today=new Date().toISOString().slice(0,10);const callbacks=(customers||[]).filter(c=>c.next_contact_at&&new Date(c.next_contact_at).getTime()<=tomorrow).length;const deliveries=(vehicles||[]).filter(v=>v.status==='DA_CONSEGNARE').length;const appointments=(calendarEvents||[]).filter(e=>String(e.starts_at||'').slice(0,10)===today).length;
-  return {dealer,profile,vehicleCount:vehicles?.length||0,callbacks,deliveries,openWorks:workItems?.length||0,appointments};
+  const unpaidSales=(invoices||[]).filter(i=>i.invoice_type==='SALE'&&i.status!=='CANCELLED'&&Number(i.total_amount||0)>Number(i.paid_amount||0));
+  const receivables=unpaidSales.reduce((sum,i)=>sum+Math.max(0,Number(i.total_amount||0)-Number(i.paid_amount||0)),0);const overdueInvoices=unpaidSales.filter(i=>i.due_date&&String(i.due_date).slice(0,10)<today).length;
+  return {dealer,profile,vehicleCount:vehicles?.length||0,callbacks,deliveries,openWorks:workItems?.length||0,appointments,receivables,overdueInvoices};
 }
 
 function appViewUrl(env,dealerSlug,view='today'){
@@ -151,7 +154,8 @@ function appViewUrl(env,dealerSlug,view='today'){
 
 function buildDashboardMessage(ctx,firstName=''){
   const first=ctx.profile?.display_name||firstName||'utente';
-  return `${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\nOGGI\n📞 ${ctx.callbacks} richiami entro domani\n📅 ${ctx.appointments} appuntamenti oggi\n🚚 ${ctx.deliveries} consegne da preparare\n🔧 ${ctx.openWorks} lavori aperti\n\n🚗 ${ctx.vehicleCount} auto nel Garage`;
+  const due=new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(ctx.receivables||0));
+  return `${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\nOGGI\n📞 ${ctx.callbacks} richiami entro domani\n📅 ${ctx.appointments} appuntamenti oggi\n🚚 ${ctx.deliveries} consegne da preparare\n🔧 ${ctx.openWorks} lavori aperti\n💶 ${due} da incassare${ctx.overdueInvoices?` · ${ctx.overdueInvoices} scadute`:''}\n\n🚗 ${ctx.vehicleCount} auto nel Garage`;
 }
 
 function buildTelegramKeyboard(env,ctx){
@@ -159,8 +163,9 @@ function buildTelegramKeyboard(env,ctx){
   return {inline_keyboard:[
     [{text:'APRI OGGI',web_app:{url:appViewUrl(env,slug,'today')}}],
     [{text:'🚗 Garage',web_app:{url:appViewUrl(env,slug,'garage')}},{text:'👥 Clienti',web_app:{url:appViewUrl(env,slug,'clients')}}],
+    [{text:'🤝 Vendite',web_app:{url:appViewUrl(env,slug,'vendite')}},{text:'🧾 Fatture',web_app:{url:appViewUrl(env,slug,'fatture')}}],
     [{text:'📅 Calendario',web_app:{url:appViewUrl(env,slug,'calendar')}},{text:'📄 Documenti',web_app:{url:appViewUrl(env,slug,'documenti')}}],
-    [{text:'↻ Aggiorna stato',callback_data:'dealer:status'}]
+    [{text:'📊 Finanze',web_app:{url:appViewUrl(env,slug,'finanze')}},{text:'↻ Aggiorna',callback_data:'dealer:status'}]
   ]};
 }
 
@@ -207,7 +212,7 @@ export default {
   async fetch(req,env){
     const url=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(env,req)});
     try{
-      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.8.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
+      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'1.1.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
       if(url.pathname==='/auth/resolve-login'&&req.method==='POST')return resolveLogin(req,env);
       if(url.pathname==='/telegram/validate'&&req.method==='POST'){const body=await req.json().catch(()=>({}));const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);return json(result,result.ok?200:401,cors(env,req))}
       if(url.pathname==='/telegram/link'&&req.method==='POST')return linkTelegram(req,env);
