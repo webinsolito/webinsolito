@@ -1,24 +1,35 @@
-import {OfflineDB,SyncEngine,mutationCount} from './offline.js';
+import {OfflineDB,SyncEngine,mutationCount,uuid} from './offline.js';
 import {Session,login,logout,fetchTenantData,cachedTenantData,saveOfflineEntity,sendMutation,accessToken,validateTelegram,linkTelegram} from './api.js';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n||0));
 const dateTime=v=>v?new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'—';
-const state={view:'today',dealerId:'demo-malu23',dealerName:'MALÙ23 CARS',data:{vehicles:[],customers:[],costs:[],events:[]},syncState:'idle',telegram:null};
+const dateOnly=v=>v?new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(`${String(v).slice(0,10)}T12:00:00`)):'—';
+const EMPTY_DATA={vehicles:[],financials:[],costs:[],events:[],workItems:[],media:[],documents:[],customers:[]};
+const state={view:'today',dealerId:'demo-malu23',dealerName:'MALÙ23 CARS',data:{...EMPTY_DATA},syncState:'idle',telegram:null,garage:{query:'',status:'ALL',attention:false,selected:null}};
 let syncEngine=null,deferredInstall=null;
 
-function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function statusLabel(s){return ({IN_ARRIVO:'IN ARRIVO',DA_CONTROLLARE:'DA CONTROLLARE',IN_PREPARAZIONE:'IN PREPARAZIONE',DA_FOTOGRAFARE:'DA FOTOGRAFARE',DA_PUBBLICARE:'DA PUBBLICARE',IN_VENDITA:'IN VENDITA',PRENOTATA:'PRENOTATA',VENDUTA:'VENDUTA',DA_CONSEGNARE:'DA CONSEGNARE',CONSEGNATA:'CONSEGNATA'})[s]||s||'—'}
-
+function normalizeData(data={}){return {...EMPTY_DATA,...data,...Object.fromEntries(Object.keys(EMPTY_DATA).map(k=>[k,Array.isArray(data[k])?data[k]:[]]))}}
 function sessionDealer(){const s=Session.get();return s?.dealer||{id:'demo-malu23',display_name:'MALÙ23 CARS',slug:'malu23'}}
+function canViewCosts(){const p=Session.get()?.profile||{};return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.view_costs===true}
+function canWriteGarage(){const p=Session.get()?.profile||{};return ['ADMIN','VENDITORE','OPERATORE'].includes(p.role)||p.permissions?.garage_write===true||window.DEALER_CONFIG?.demoMode}
+function replaceRow(key,row){const arr=state.data[key]||[];const i=arr.findIndex(x=>x.id===row.id);if(i>=0)arr[i]=row;else arr.unshift(row)}
+function vehicleFinancial(id){return state.data.financials.find(x=>x.vehicle_id===id)||null}
+function vehicleCosts(id){return state.data.costs.filter(x=>x.vehicle_id===id)}
+function vehicleWork(id){return state.data.workItems.filter(x=>x.vehicle_id===id)}
+function vehicleEvents(id){return state.data.events.filter(x=>x.vehicle_id===id).sort((a,b)=>String(b.happened_at).localeCompare(String(a.happened_at)))}
+function vehicleDocs(id){return state.data.documents.filter(x=>x.vehicle_id===id&&!x.deleted_at)}
+function vehicleMedia(id){return state.data.media.filter(x=>x.vehicle_id===id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))}
+function expenseTotal(id){return vehicleCosts(id).reduce((s,x)=>s+Number(x.amount||0),0)}
+function stockDays(v){const d=v.purchase_date||v.created_at;if(!d)return 0;return Math.max(0,Math.floor((Date.now()-new Date(d).getTime())/86400000))}
+function priceFor(v){return Number(v.sale_price||v.asking_price||0)}
+function investmentFor(v){const f=vehicleFinancial(v.id);return Number(f?.purchase_price||0)+expenseTotal(v.id)}
+function marginFor(v){return priceFor(v)-investmentFor(v)}
+function needsAttention(v){return stockDays(v)>=60||vehicleWork(v.id).some(w=>w.status!=='DONE'&&w.status!=='CANCELLED'&&w.due_date&&new Date(`${w.due_date}T23:59:59`)<new Date())||['DA_CONTROLLARE','DA_CONSEGNARE'].includes(v.status)}
 
-async function boot(){
-  registerSW();bindGlobal();initTelegram();
-  const s=Session.get();
-  if(!s){showLogin();return}
-  await enterApp();
-}
-
+async function boot(){registerSW();bindGlobal();initTelegram();ensureGarageUi();const s=Session.get();if(!s){showLogin();return}await enterApp()}
 function registerSW(){if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(console.warn)}
 
 function bindGlobal(){
@@ -40,127 +51,93 @@ function bindGlobal(){
   $$('.navbtn').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 }
 
-async function handleLogin(e){
-  e.preventDefault();const fd=new FormData(e.currentTarget);const msg=$('#loginMsg');msg.textContent='Accesso…';
-  try{await login({identifier:String(fd.get('identifier')||''),password:String(fd.get('password')||''),dealerSlug:String(fd.get('dealer')||'malu23')});msg.textContent='';await enterApp()}
-  catch(err){msg.textContent=err.message==='backend_not_configured'?'Backend non ancora collegato. Usa “Entra demo”.':`Accesso non riuscito: ${err.message}`}
-}
+async function handleLogin(e){e.preventDefault();const fd=new FormData(e.currentTarget);const msg=$('#loginMsg');msg.textContent='Accesso…';try{await login({identifier:String(fd.get('identifier')||''),password:String(fd.get('password')||''),dealerSlug:String(fd.get('dealer')||'malu23')});msg.textContent='';await enterApp()}catch(err){msg.textContent=err.message==='backend_not_configured'?'Backend non ancora collegato. Usa “Entra demo”.':`Accesso non riuscito: ${err.message}`}}
 
 async function enterApp(){
   $('#loginScreen').hidden=true;$('#appShell').hidden=false;
   const dealer=sessionDealer();state.dealerId=dealer.id||'demo-malu23';state.dealerName=dealer.display_name||'MALÙ23 CARS';
   $('#dealerName').textContent=state.dealerName;$('#dealerBadge').textContent=state.dealerName.trim().slice(0,1).toUpperCase();
   syncEngine=new SyncEngine({dealerId:state.dealerId,getAccessToken:accessToken,sendMutation,onStatus:s=>{state.syncState=s;renderConnectivity()}});
-  state.data=await cachedTenantData(state.dealerId);
-  if(!state.data.vehicles.length)state.data=await fetchTenantData(state.dealerId);
+  state.data=normalizeData(await cachedTenantData(state.dealerId));
+  if(!state.data.vehicles.length)state.data=normalizeData(await fetchTenantData(state.dealerId));
   renderAll();renderConnectivity();renderInstall();
   if(navigator.onLine)refreshFromServer();
 }
 
-async function refreshFromServer(){
-  try{state.data=await fetchTenantData(state.dealerId);renderAll();await syncNow()}
-  catch(err){console.warn('refresh offline/fallito',err);renderConnectivity()}
-}
-
-function showLogin(){
-  $('#appShell').hidden=true;$('#loginScreen').hidden=false;
-  const demo=$('#demoBtn');demo.onclick=async()=>{await login({identifier:'admin',password:'demo',dealerSlug:'malu23'});await enterApp()};
-}
-
+async function refreshFromServer(){try{state.data=normalizeData(await fetchTenantData(state.dealerId));renderAll();await syncNow()}catch(err){console.warn('refresh offline/fallito',err);renderConnectivity()}}
+function showLogin(){$('#appShell').hidden=true;$('#loginScreen').hidden=false;const demo=$('#demoBtn');demo.onclick=async()=>{await login({identifier:'admin',password:'demo',dealerSlug:'malu23'});await enterApp()}}
 function go(view){state.view=view;$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#pageTitle').textContent=({today:'OGGI',garage:'GARAGE',clients:'CLIENTI',inbox:'INBOX',admin:'ADMIN'})[view]||view.toUpperCase();window.scrollTo({top:0,behavior:'smooth'})}
-
 function renderAll(){renderToday();renderGarage();renderClients();renderInbox();renderAdmin()}
 
 function renderToday(){
-  const v=state.data.vehicles,c=state.data.customers;
-  const delivery=v.filter(x=>x.status==='DA_CONSEGNARE').length;
-  const callbacks=c.filter(x=>x.next_contact_at&&new Date(x.next_contact_at)<=new Date(Date.now()+86400000)).length;
-  const published=v.filter(x=>x.status==='IN_VENDITA').length;
+  const v=state.data.vehicles.filter(x=>!x.deleted_at),c=state.data.customers;
+  const delivery=v.filter(x=>x.status==='DA_CONSEGNARE').length,callbacks=c.filter(x=>x.next_contact_at&&new Date(x.next_contact_at)<=new Date(Date.now()+86400000)).length,published=v.filter(x=>x.status==='IN_VENDITA').length;
   $('#todayStats').innerHTML=`<div><span>PARCO</span><b>${v.length}</b></div><div><span>IN VENDITA</span><b>${published}</b></div><div><span>RICHIAMI</span><b>${callbacks}</b></div><div><span>CONSEGNE</span><b>${delivery}</b></div>`;
-  let priority='Nessuna urgenza';let sub='La giornata è sotto controllo.';let target='garage';
-  if(callbacks){priority=`${callbacks} ${callbacks===1?'cliente':'clienti'} da richiamare`;sub='Parti dai contatti con prossimo passo in scadenza.';target='clients'}else if(delivery){priority=`${delivery} ${delivery===1?'consegna':'consegne'} da preparare`;sub='Controlla documenti e checklist veicolo.'}
+  let priority='Nessuna urgenza',sub='La giornata è sotto controllo.',target='garage';if(callbacks){priority=`${callbacks} ${callbacks===1?'cliente':'clienti'} da richiamare`;sub='Parti dai contatti con prossimo passo in scadenza.';target='clients'}else if(delivery){priority=`${delivery} ${delivery===1?'consegna':'consegne'} da preparare`;sub='Controlla documenti e checklist veicolo.'}
   $('#priorityTitle').textContent=priority;$('#prioritySub').textContent=sub;$('#priorityBtn').onclick=()=>go(target);
   const latest=[...state.data.events].sort((a,b)=>String(b.happened_at).localeCompare(String(a.happened_at))).slice(0,5);
   $('#activityList').innerHTML=latest.length?latest.map(e=>`<div class="row"><div><strong>${esc(e.title)}</strong><small>${dateTime(e.happened_at)}</small></div><span class="tag">${esc(e.event_type||'EVENTO')}</span></div>`).join(''):'<div class="empty">Nessuna attività ancora.</div>';
 }
 
-function vehicleCost(id){return state.data.costs.filter(c=>c.vehicle_id===id).reduce((a,b)=>a+Number(b.amount||0),0)}
-function vehicleEvents(id){return state.data.events.filter(e=>e.vehicle_id===id).sort((a,b)=>String(b.happened_at).localeCompare(String(a.happened_at))).slice(0,3)}
+function ensureGarageUi(){
+  if(!$('#garageV03Style')){const st=document.createElement('style');st.id='garageV03Style';st.textContent=`
+    .garage-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 12px}.garage-kpis>div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.garage-kpis span{display:block;font-size:7px;color:var(--muted);font-weight:900}.garage-kpis b{display:block;font-size:15px;margin-top:4px}.garage-tools{display:grid;grid-template-columns:1fr 190px auto;gap:8px;margin:0 0 12px}.garage-tools input,.garage-tools select{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:10px}.garage-tools label{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 11px;font-size:9px;font-weight:850}.vehicle-card{cursor:pointer;transition:.16s ease}.vehicle-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(15,23,42,.08)}.vehicle-card.attention{border-color:#e8c38c}.vehicle-card .stockline{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.vehicle-card .garage-actions{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-top:10px}.vehicle-card .garage-actions select{max-width:160px;border:1px solid var(--line);border-radius:9px;padding:7px;font-size:8px;background:#fff}.margin-positive{color:#19764f}.margin-negative{color:#bb3037}.garage-overlay{position:fixed;inset:0;background:rgba(5,9,16,.58);z-index:110;display:flex;justify-content:flex-end}.garage-drawer{width:min(820px,100%);height:100%;overflow:auto;background:#f6f7f9;box-shadow:-28px 0 80px rgba(0,0,0,.22)}.gd-head{position:sticky;top:0;z-index:4;background:#0b1220;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;gap:12px}.gd-head small{font-size:8px;color:#a7b5c8;font-weight:900}.gd-head h2{margin:4px 0 2px;font-size:22px}.gd-head p{margin:0;color:#aeb8c6;font-size:9px}.gd-close{border:0;background:rgba(255,255,255,.12);color:#fff;width:38px;height:38px;border-radius:12px}.gd-body{padding:14px;display:grid;gap:11px}.gd-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.gd-card h3{margin:0 0 11px;font-size:13px}.gd-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.gd-grid.three{grid-template-columns:repeat(3,1fr)}.gd-field{display:grid;gap:5px}.gd-field.wide{grid-column:1/-1}.gd-field label{font-size:7px;font-weight:950;color:var(--muted)}.gd-field input,.gd-field select,.gd-field textarea{border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:10px;background:#fff;min-width:0}.gd-field textarea{min-height:72px;resize:vertical}.gd-list{display:grid;gap:7px}.gd-row{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f7f8fa;border-radius:11px;padding:9px}.gd-row strong{font-size:9px}.gd-row small{display:block;font-size:7px;color:var(--muted);margin-top:2px}.gd-row button{border:0;border-radius:8px;padding:6px 8px;font-size:8px;font-weight:900}.gd-inline{display:grid;grid-template-columns:1fr 130px 130px auto;gap:7px;margin-top:9px}.gd-inline input,.gd-inline select{border:1px solid var(--line);border-radius:9px;padding:8px;font-size:9px}.gd-inline button{border:0;background:#111827;color:#fff;border-radius:9px;font-weight:900}.gd-fin{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}.gd-fin>div{background:#f5f6f8;border-radius:11px;padding:10px}.gd-fin span{display:block;font-size:7px;color:var(--muted);font-weight:900}.gd-fin b{display:block;font-size:13px;margin-top:3px}.gd-media{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.gd-photo{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#e9edf2;display:grid;place-items:center;font-size:8px;color:var(--muted)}.gd-photo img{width:100%;height:100%;object-fit:cover}.gd-files{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.gd-files label{background:#eef1f4;border-radius:10px;padding:8px 10px;font-size:8px;font-weight:900;cursor:pointer}.gd-files input{display:none}.gd-note{font-size:8px;color:var(--muted);line-height:1.5}.garage-empty{grid-column:1/-1}
+    @media(max-width:900px){.garage-kpis{grid-template-columns:1fr 1fr}.garage-tools{grid-template-columns:1fr}.garage-tools label{min-height:42px}.gd-grid,.gd-grid.three{grid-template-columns:1fr}.gd-fin{grid-template-columns:1fr 1fr}.gd-inline{grid-template-columns:1fr 1fr}.gd-media{grid-template-columns:1fr 1fr}.garage-drawer{width:100%}.gd-body{padding-bottom:100px}}
+  `;document.head.appendChild(st)}
+  const view=$('[data-view="garage"]');if(view&&!$('#garageTools')){const grid=$('#vehicleGrid');if(grid){const wrap=document.createElement('div');wrap.innerHTML=`<div class="garage-kpis" id="garageKpis"></div><div class="garage-tools" id="garageTools"><input id="garageSearch" type="search" placeholder="Cerca targa, marca, modello, VIN…"><select id="garageStatus"><option value="ALL">Tutti gli stati</option>${['IN_ARRIVO','DA_CONTROLLARE','IN_PREPARAZIONE','DA_FOTOGRAFARE','DA_PUBBLICARE','IN_VENDITA','PRENOTATA','VENDUTA','DA_CONSEGNARE','CONSEGNATA'].map(s=>`<option value="${s}">${statusLabel(s)}</option>`).join('')}</select><label><input type="checkbox" id="garageAttention"> Solo da controllare</label></div>`;grid.parentNode.insertBefore(wrap,grid);$('#garageSearch')?.addEventListener('input',e=>{state.garage.query=e.target.value.trim().toLowerCase();renderGarage()});$('#garageStatus')?.addEventListener('change',e=>{state.garage.status=e.target.value;renderGarage()});$('#garageAttention')?.addEventListener('change',e=>{state.garage.attention=e.target.checked;renderGarage()})}}
+  if(!$('#garageOverlay')){const overlay=document.createElement('div');overlay.id='garageOverlay';overlay.className='garage-overlay';overlay.hidden=true;overlay.innerHTML='<aside class="garage-drawer" id="garageDrawer"></aside>';document.body.appendChild(overlay);overlay.addEventListener('click',e=>{if(e.target===overlay)closeGarageDrawer()})}
+}
 
 function renderGarage(){
-  const list=$('#vehicleGrid');const rows=state.data.vehicles.filter(v=>!v.deleted_at);
-  list.innerHTML=rows.length?rows.map(v=>{
-    const extra=vehicleCost(v.id),events=vehicleEvents(v.id),sale=Number(v.sale_price||v.asking_price||0);
-    return `<article class="vehicle-card"><div class="vehicle-top"><div><small>${esc(v.plate||'SENZA TARGA')}</small><h3>${esc(v.brand)} ${esc(v.model)}</h3><p>${esc(v.year||'—')} · ${Number(v.mileage||0).toLocaleString('it-IT')} km</p></div><span class="tag">${esc(statusLabel(v.status))}</span></div><div class="metrics"><div><span>SPESE</span><b>${money(extra)}</b></div><div><span>PREZZO</span><b>${money(sale)}</b></div><div><span>EVENTI</span><b>${events.length}</b></div></div><div class="timeline">${events.length?events.map(e=>`<div>${dateTime(e.happened_at)} · ${esc(e.title)}</div>`).join(''):'<div>Nessun evento registrato</div>'}</div><button class="textbtn" data-vehicle-event="${esc(v.id)}">＋ Aggiungi evento</button></article>`
-  }).join(''):'<div class="empty">Nessuna auto. Puoi aggiungerne una anche offline.</div>';
-  $$('[data-vehicle-event]').forEach(b=>b.onclick=()=>addVehicleEvent(b.dataset.vehicleEvent));
+  ensureGarageUi();const all=state.data.vehicles.filter(v=>!v.deleted_at);const q=state.garage.query;
+  const rows=all.filter(v=>{const hay=[v.plate,v.brand,v.model,v.version,v.vin].join(' ').toLowerCase();return(!q||hay.includes(q))&&(state.garage.status==='ALL'||v.status===state.garage.status)&&(!state.garage.attention||needsAttention(v))});
+  const viewCosts=canViewCosts(),invested=all.reduce((s,v)=>s+investmentFor(v),0),potential=all.reduce((s,v)=>s+Math.max(0,marginFor(v)),0),old=all.filter(v=>stockDays(v)>=60).length,pending=state.data.workItems.filter(w=>!['DONE','CANCELLED'].includes(w.status)).length;
+  if($('#garageKpis'))$('#garageKpis').innerHTML=`<div><span>AUTO</span><b>${all.length}</b></div><div><span>IN VENDITA</span><b>${all.filter(v=>v.status==='IN_VENDITA').length}</b></div><div><span>60+ GIORNI</span><b>${old}</b></div><div><span>LAVORI APERTI</span><b>${pending}</b></div><div><span>${viewCosts?'CAPITALE / MARGINE':'ATTENZIONI'}</span><b>${viewCosts?`${money(invested)} / ${money(potential)}`:all.filter(needsAttention).length}</b></div>`;
+  const list=$('#vehicleGrid');if(!list)return;
+  list.innerHTML=rows.length?rows.map(v=>{const f=vehicleFinancial(v.id),extra=expenseTotal(v.id),work=vehicleWork(v.id),openWork=work.filter(w=>!['DONE','CANCELLED'].includes(w.status)).length,events=vehicleEvents(v.id).slice(0,2),days=stockDays(v),price=priceFor(v),invest=investmentFor(v),margin=marginFor(v),docs=vehicleDocs(v.id).length,photos=vehicleMedia(v.id).length;return `<article class="vehicle-card ${needsAttention(v)?'attention':''}" data-open-vehicle="${esc(v.id)}"><div class="vehicle-top"><div><small>${esc(v.plate||'SENZA TARGA')}</small><h3>${esc(v.brand)} ${esc(v.model)}</h3><p>${esc(v.version||'')} ${v.year?`· ${esc(v.year)}`:''} · ${Number(v.mileage||0).toLocaleString('it-IT')} km</p></div><span class="tag">${esc(statusLabel(v.status))}</span></div><div class="stockline"><span class="tag">${days} gg stock</span>${openWork?`<span class="tag">${openWork} lavori</span>`:''}<span class="tag">${photos} foto</span><span class="tag">${docs} doc</span></div><div class="metrics"><div><span>${viewCosts?'COSTO TOTALE':'PREZZO'}</span><b>${money(viewCosts?invest:price)}</b></div><div><span>${viewCosts?'PREZZO':'STATO'}</span><b>${viewCosts?money(price):esc(statusLabel(v.status))}</b></div><div><span>${viewCosts?'MARGINE':'GIORNI'}</span><b class="${viewCosts?(margin>=0?'margin-positive':'margin-negative'):''}">${viewCosts?money(margin):days}</b></div></div><div class="timeline">${events.length?events.map(e=>`<div>${dateTime(e.happened_at)} · ${esc(e.title)}</div>`).join(''):'<div>Nessun evento registrato</div>'}</div><div class="garage-actions"><button class="textbtn" data-detail="${esc(v.id)}">Apri scheda completa →</button>${canWriteGarage()?`<select data-status="${esc(v.id)}">${['IN_ARRIVO','DA_CONTROLLARE','IN_PREPARAZIONE','DA_FOTOGRAFARE','DA_PUBBLICARE','IN_VENDITA','PRENOTATA','VENDUTA','DA_CONSEGNARE','CONSEGNATA'].map(s=>`<option value="${s}" ${v.status===s?'selected':''}>${statusLabel(s)}</option>`).join('')}</select>`:''}</div></article>`}).join(''):'<div class="empty garage-empty">Nessuna auto con questi filtri.</div>';
+  $$('[data-open-vehicle]').forEach(card=>card.onclick=e=>{if(e.target.closest('select,button'))return;openGarageDrawer(card.dataset.openVehicle)});$$('[data-detail]').forEach(b=>b.onclick=e=>{e.stopPropagation();openGarageDrawer(b.dataset.detail)});$$('[data-status]').forEach(s=>s.onchange=async e=>{e.stopPropagation();await updateVehicleStatus(s.dataset.status,s.value)});
 }
 
-function renderClients(){
-  const rows=state.data.customers.filter(c=>!c.deleted_at).sort((a,b)=>String(a.next_contact_at||'9999').localeCompare(String(b.next_contact_at||'9999')));
-  $('#clientList').innerHTML=rows.length?rows.map(c=>`<div class="row"><div><strong>${esc(c.first_name)} ${esc(c.last_name)}</strong><small>${esc(c.next_step||'Nessun prossimo passo')} · ${dateTime(c.next_contact_at)}</small></div><span class="tag">${esc(c.status||'LEAD')}</span></div>`).join(''):'<div class="empty">Nessun cliente.</div>';
-}
+async function updateVehicleStatus(id,status){const v=state.data.vehicles.find(x=>x.id===id);if(!v)return;const row=await saveOfflineEntity('vehicles',state.dealerId,{...v,status});replaceRow('vehicles',row);const ev=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:id,event_type:'STATUS',title:`Stato → ${statusLabel(status)}`,happened_at:new Date().toISOString()});replaceRow('events',ev);renderAll();renderConnectivity();if(navigator.onLine)syncNow()}
 
-function renderInbox(){
-  $('#inboxList').innerHTML='<div class="empty"><b>Inbox locale pronta.</b><br>Il prossimo step collegherà foto/PDF a R2. I documenti privati resteranno disponibili offline solo se l’utente li ha esplicitamente scaricati sul dispositivo.</div>';
+function mediaPreview(m){if(m.blob instanceof Blob){try{return `<img src="${URL.createObjectURL(m.blob)}" alt="foto veicolo">`}catch{}}return '<span>FOTO</span>'}
+function openGarageDrawer(id){state.garage.selected=id;const v=state.data.vehicles.find(x=>x.id===id);if(!v)return;const f=vehicleFinancial(id),costs=vehicleCosts(id).sort((a,b)=>String(b.occurred_on).localeCompare(String(a.occurred_on))),work=vehicleWork(id).sort((a,b)=>String(a.due_date||'9999').localeCompare(String(b.due_date||'9999'))),events=vehicleEvents(id),docs=vehicleDocs(id),media=vehicleMedia(id),viewCosts=canViewCosts(),invest=investmentFor(v),margin=marginFor(v),price=priceFor(v),overlay=$('#garageOverlay'),drawer=$('#garageDrawer');overlay.hidden=false;drawer.innerHTML=`
+  <header class="gd-head"><div><small>${esc(v.plate||'SENZA TARGA')} · ${stockDays(v)} GIORNI IN STOCK</small><h2>${esc(v.brand)} ${esc(v.model)}</h2><p>${esc(v.version||'')} ${v.vin?`· VIN ${esc(v.vin)}`:''}</p></div><button class="gd-close" id="gdClose">✕</button></header>
+  <div class="gd-body">
+    ${viewCosts?`<section class="gd-card"><div class="gd-fin"><div><span>ACQUISTO</span><b>${money(f?.purchase_price)}</b></div><div><span>SPESE</span><b>${money(expenseTotal(id))}</b></div><div><span>COSTO TOTALE</span><b>${money(invest)}</b></div><div><span>MARGINE</span><b class="${margin>=0?'margin-positive':'margin-negative'}">${money(margin)}</b></div></div><form id="gdFinancialForm" class="gd-grid three"><input type="hidden" name="id" value="${esc(f?.id||'')}"><div class="gd-field"><label>PREZZO ACQUISTO</label><input name="purchase_price" type="number" step="0.01" value="${esc(f?.purchase_price||0)}"></div><div class="gd-field"><label>PREZZO MINIMO</label><input name="minimum_price" type="number" step="0.01" value="${esc(f?.minimum_price||0)}"></div><div class="gd-field"><label>REGIME IVA</label><select name="vat_regime"><option value="MARGINE" ${f?.vat_regime==='MARGINE'?'selected':''}>Margine</option><option value="IVA_ESPOSTA" ${f?.vat_regime==='IVA_ESPOSTA'?'selected':''}>IVA esposta</option><option value="PRIVATO_FUORI_CAMPO" ${f?.vat_regime==='PRIVATO_FUORI_CAMPO'?'selected':''}>Privato / fuori campo</option></select></div><div class="gd-field wide"><label>FORNITORE</label><input name="supplier" value="${esc(f?.supplier||'')}"></div><div class="gd-field wide"><button class="btn" type="submit">Salva dati economici</button></div></form></section>`:''}
+    <section class="gd-card"><h3>Dati veicolo</h3><form id="gdVehicleForm" class="gd-grid"><div class="gd-field"><label>MARCA</label><input name="brand" required value="${esc(v.brand)}"></div><div class="gd-field"><label>MODELLO</label><input name="model" required value="${esc(v.model)}"></div><div class="gd-field"><label>VERSIONE</label><input name="version" value="${esc(v.version||'')}"></div><div class="gd-field"><label>TARGA</label><input name="plate" value="${esc(v.plate||'')}"></div><div class="gd-field"><label>VIN</label><input name="vin" value="${esc(v.vin||'')}"></div><div class="gd-field"><label>ANNO</label><input name="year" type="number" value="${esc(v.year||'')}"></div><div class="gd-field"><label>KM</label><input name="mileage" type="number" value="${esc(v.mileage||0)}"></div><div class="gd-field"><label>STATO</label><select name="status">${['IN_ARRIVO','DA_CONTROLLARE','IN_PREPARAZIONE','DA_FOTOGRAFARE','DA_PUBBLICARE','IN_VENDITA','PRENOTATA','VENDUTA','DA_CONSEGNARE','CONSEGNATA'].map(s=>`<option value="${s}" ${v.status===s?'selected':''}>${statusLabel(s)}</option>`).join('')}</select></div><div class="gd-field"><label>PREZZO VENDITA</label><input name="asking_price" type="number" step="0.01" value="${esc(v.asking_price||'')}"></div><div class="gd-field"><label>PREZZO VENDUTO</label><input name="sale_price" type="number" step="0.01" value="${esc(v.sale_price||'')}"></div><div class="gd-field"><label>DATA ACQUISTO</label><input name="purchase_date" type="date" value="${esc(String(v.purchase_date||'').slice(0,10))}"></div><div class="gd-field wide"><label>NOTE</label><textarea name="notes">${esc(v.notes||'')}</textarea></div><div class="gd-field wide"><button class="btn" type="submit">Salva veicolo</button></div></form></section>
+    <section class="gd-card"><h3>Spese</h3><div class="gd-list">${costs.length?costs.map(c=>`<div class="gd-row"><div><strong>${esc(c.category)} · ${money(c.amount)}</strong><small>${dateOnly(c.occurred_on)} ${c.supplier?`· ${esc(c.supplier)}`:''}${c.note?` · ${esc(c.note)}`:''}</small></div></div>`).join(''):'<div class="gd-note">Nessuna spesa registrata.</div>'}</div>${viewCosts?`<form id="gdCostForm" class="gd-inline"><input name="category" placeholder="Categoria" required><input name="amount" type="number" step="0.01" placeholder="Importo" required><input name="supplier" placeholder="Fornitore"><button type="submit">＋ Spesa</button></form>`:''}</section>
+    <section class="gd-card"><h3>Lavori / checklist</h3><div class="gd-list">${work.length?work.map(w=>`<div class="gd-row"><div><strong>${esc(w.title)}</strong><small>${esc(w.category)} ${w.due_date?`· entro ${dateOnly(w.due_date)}`:''} · ${esc(w.status)}</small></div>${canWriteGarage()&&!['DONE','CANCELLED'].includes(w.status)?`<button data-work-done="${esc(w.id)}">✓ Fatto</button>`:''}</div>`).join(''):'<div class="gd-note">Nessun lavoro aperto.</div>'}</div>${canWriteGarage()?`<form id="gdWorkForm" class="gd-inline"><input name="title" placeholder="Lavoro da fare" required><select name="category"><option>PREPARAZIONE</option><option>MECCANICA</option><option>CARROZZERIA</option><option>DOCUMENTI</option><option>CONSEGNA</option><option>ALTRO</option></select><input name="due_date" type="date"><button type="submit">＋ Lavoro</button></form>`:''}</section>
+    <section class="gd-card"><h3>Foto e documenti</h3><div class="gd-media">${media.length?media.map(m=>`<div class="gd-photo">${mediaPreview(m)}</div>`).join(''):'<div class="gd-note">Nessuna foto.</div>'}</div><div class="gd-list" style="margin-top:9px">${docs.length?docs.map(d=>`<div class="gd-row"><div><strong>${esc(d.original_name||'Documento')}</strong><small>${d.local_only?'Salvato offline sul dispositivo':'Documento collegato al veicolo'}</small></div></div>`).join(''):'<div class="gd-note">Nessun documento collegato.</div>'}</div><div class="gd-files"><label>📷 Aggiungi foto offline<input id="gdPhotoInput" type="file" accept="image/*" capture="environment" multiple></label><label>📎 Aggiungi documento offline<input id="gdDocInput" type="file" accept="application/pdf,image/*" multiple></label></div><p class="gd-note">Gli allegati locali restano disponibili sul dispositivo anche senza rete; l'upload cloud verrà agganciato a R2 quando configuriamo il backend reale.</p></section>
+    <section class="gd-card"><h3>Timeline</h3><div class="gd-list">${events.length?events.slice(0,12).map(e=>`<div class="gd-row"><div><strong>${esc(e.title)}</strong><small>${dateTime(e.happened_at)} · ${esc(e.event_type||'EVENTO')}</small></div></div>`).join(''):'<div class="gd-note">Nessun evento.</div>'}</div>${canWriteGarage()?`<form id="gdEventForm" class="gd-inline"><input name="title" placeholder="Nota / evento" required><select name="event_type"><option>NOTE</option><option>TEST_DRIVE</option><option>OFFICINA</option><option>DOCUMENTO</option><option>PREZZO</option><option>CONSEGNA</option></select><span></span><button type="submit">＋ Evento</button></form>`:''}</section>
+  </div>`;
+  $('#gdClose').onclick=closeGarageDrawer;$('#gdVehicleForm')?.addEventListener('submit',saveGarageVehicle);$('#gdFinancialForm')?.addEventListener('submit',saveGarageFinancial);$('#gdCostForm')?.addEventListener('submit',addGarageCost);$('#gdWorkForm')?.addEventListener('submit',addGarageWork);$('#gdEventForm')?.addEventListener('submit',addGarageEvent);$$('[data-work-done]',drawer).forEach(b=>b.onclick=()=>finishWork(b.dataset.workDone));$('#gdPhotoInput')?.addEventListener('change',e=>saveLocalAttachments('photo',e.target.files));$('#gdDocInput')?.addEventListener('change',e=>saveLocalAttachments('document',e.target.files));
 }
+function closeGarageDrawer(){state.garage.selected=null;const o=$('#garageOverlay');if(o)o.hidden=true}
 
-function renderAdmin(){
-  const s=Session.get();$('#adminInfo').innerHTML=`<div class="row"><div><strong>${esc(s?.profile?.display_name||'Admin')}</strong><small>${esc(s?.user?.email||'modalità demo')}</small></div><span class="tag">${esc(s?.profile?.role||'ADMIN')}</span></div>`;
-  $('#backendMode').textContent=(window.DEALER_CONFIG?.demoMode?'DEMO LOCALE':'SUPABASE');
-}
+async function saveGarageVehicle(e){e.preventDefault();const id=state.garage.selected,v=state.data.vehicles.find(x=>x.id===id),fd=new FormData(e.currentTarget);if(!v)return;const row=await saveOfflineEntity('vehicles',state.dealerId,{...v,brand:String(fd.get('brand')||'').trim(),model:String(fd.get('model')||'').trim(),version:String(fd.get('version')||'').trim(),plate:String(fd.get('plate')||'').trim().toUpperCase(),vin:String(fd.get('vin')||'').trim().toUpperCase(),year:Number(fd.get('year')||0)||null,mileage:Number(fd.get('mileage')||0)||0,status:String(fd.get('status')||'IN_ARRIVO'),asking_price:Number(fd.get('asking_price')||0)||null,sale_price:Number(fd.get('sale_price')||0)||null,purchase_date:String(fd.get('purchase_date')||'')||null,notes:String(fd.get('notes')||'').trim()});replaceRow('vehicles',row);const ev=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:id,event_type:'UPDATE',title:'Scheda veicolo aggiornata',happened_at:new Date().toISOString()});replaceRow('events',ev);afterGarageChange(true)}
+async function saveGarageFinancial(e){e.preventDefault();const vehicleId=state.garage.selected,fd=new FormData(e.currentTarget),existing=vehicleFinancial(vehicleId);const row=await saveOfflineEntity('vehicle_financials',state.dealerId,{...(existing||{}),id:existing?.id||uuid(),vehicle_id:vehicleId,purchase_price:Number(fd.get('purchase_price')||0),minimum_price:Number(fd.get('minimum_price')||0)||null,vat_regime:String(fd.get('vat_regime')||'MARGINE'),supplier:String(fd.get('supplier')||'').trim()});replaceRow('financials',row);afterGarageChange(true)}
+async function addGarageCost(e){e.preventDefault();const fd=new FormData(e.currentTarget),vehicleId=state.garage.selected;const row=await saveOfflineEntity('vehicle_costs',state.dealerId,{vehicle_id:vehicleId,category:String(fd.get('category')||'ALTRO').trim().toUpperCase(),amount:Number(fd.get('amount')||0),supplier:String(fd.get('supplier')||'').trim(),occurred_on:new Date().toISOString().slice(0,10)});replaceRow('costs',row);const ev=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:vehicleId,event_type:'COST',title:`Spesa ${row.category} ${money(row.amount)}`,happened_at:new Date().toISOString()});replaceRow('events',ev);afterGarageChange(true)}
+async function addGarageWork(e){e.preventDefault();const fd=new FormData(e.currentTarget),vehicleId=state.garage.selected;const row=await saveOfflineEntity('vehicle_work_items',state.dealerId,{vehicle_id:vehicleId,title:String(fd.get('title')||'').trim(),category:String(fd.get('category')||'ALTRO'),status:'TODO',priority:'NORMAL',due_date:String(fd.get('due_date')||'')||null});replaceRow('workItems',row);afterGarageChange(true)}
+async function finishWork(id){const w=state.data.workItems.find(x=>x.id===id);if(!w)return;const row=await saveOfflineEntity('vehicle_work_items',state.dealerId,{...w,status:'DONE',completed_at:new Date().toISOString()});replaceRow('workItems',row);const ev=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:w.vehicle_id,event_type:'WORK_DONE',title:`Completato: ${w.title}`,happened_at:new Date().toISOString()});replaceRow('events',ev);afterGarageChange(true)}
+async function addGarageEvent(e){e.preventDefault();const fd=new FormData(e.currentTarget),vehicleId=state.garage.selected;const row=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:vehicleId,event_type:String(fd.get('event_type')||'NOTE'),title:String(fd.get('title')||'').trim(),happened_at:new Date().toISOString()});replaceRow('events',row);afterGarageChange(true)}
+async function saveLocalAttachments(kind,fileList){const vehicleId=state.garage.selected;if(!vehicleId)return;for(const file of [...fileList]){if(kind==='photo'){const row={id:uuid(),dealer_id:state.dealerId,vehicle_id:vehicleId,kind:'PHOTO',blob:file,local_only:true,caption:file.name,sort_order:vehicleMedia(vehicleId).length,created_at:new Date().toISOString(),updated_at:new Date().toISOString()};await OfflineDB.put('vehicle_media',row);replaceRow('media',row)}else{const row={id:uuid(),dealer_id:state.dealerId,vehicle_id:vehicleId,original_name:file.name,mime_type:file.type,blob:file,local_only:true,visibility:'PRIVATE',created_at:new Date().toISOString(),updated_at:new Date().toISOString()};await OfflineDB.put('documents',row);replaceRow('documents',row)}}afterGarageChange(false)}
+function afterGarageChange(sync=true){renderAll();if(state.garage.selected)openGarageDrawer(state.garage.selected);renderConnectivity();if(sync&&navigator.onLine)syncNow()}
 
-async function renderConnectivity(){
-  const count=state.dealerId?await mutationCount(state.dealerId):0;const online=navigator.onLine;
-  const badge=$('#networkBadge');badge.className=`network ${online?'online':'offline'}`;badge.innerHTML=`<i></i>${online?'ONLINE':'OFFLINE'}`;
-  $('#queueCount').textContent=String(count);$('#syncState').textContent=state.syncState==='syncing'?'Sincronizzazione…':count?`${count} modifiche da inviare`:(online?'Tutto sincronizzato':'Lavoro locale attivo');
-  $('#syncBtn').disabled=!online||!count||state.syncState==='syncing';
-}
+function renderClients(){const rows=state.data.customers.filter(c=>!c.deleted_at).sort((a,b)=>String(a.next_contact_at||'9999').localeCompare(String(b.next_contact_at||'9999')));$('#clientList').innerHTML=rows.length?rows.map(c=>`<div class="row"><div><strong>${esc(c.first_name)} ${esc(c.last_name)}</strong><small>${esc(c.next_step||'Nessun prossimo passo')} · ${dateTime(c.next_contact_at)}</small></div><span class="tag">${esc(c.status||'LEAD')}</span></div>`).join(''):'<div class="empty">Nessun cliente.</div>'}
+function renderInbox(){$('#inboxList').innerHTML='<div class="empty"><b>Inbox locale pronta.</b><br>Gli allegati del Garage possono già essere conservati offline sul dispositivo. Il caricamento cloud verrà collegato a R2 nel passaggio Documenti.</div>'}
+function renderAdmin(){const s=Session.get();$('#adminInfo').innerHTML=`<div class="row"><div><strong>${esc(s?.profile?.display_name||'Admin')}</strong><small>${esc(s?.user?.email||'modalità demo')}</small></div><span class="tag">${esc(s?.profile?.role||'ADMIN')}</span></div>`;$('#backendMode').textContent=(window.DEALER_CONFIG?.demoMode?'DEMO LOCALE':'SUPABASE')}
 
-async function syncNow(){
-  if(!syncEngine)return;const result=await syncEngine.sync();if(result.synced){state.data=await cachedTenantData(state.dealerId);renderAll()}renderConnectivity();return result
-}
+async function renderConnectivity(){const count=state.dealerId?await mutationCount(state.dealerId):0,online=navigator.onLine,badge=$('#networkBadge');badge.className=`network ${online?'online':'offline'}`;badge.innerHTML=`<i></i>${online?'ONLINE':'OFFLINE'}`;$('#queueCount').textContent=String(count);$('#syncState').textContent=state.syncState==='syncing'?'Sincronizzazione…':count?`${count} modifiche da inviare`:(online?'Tutto sincronizzato':'Lavoro locale attivo');$('#syncBtn').disabled=!online||!count||state.syncState==='syncing'}
+async function syncNow(){if(!syncEngine)return;const result=await syncEngine.sync();if(result.synced){state.data=normalizeData(await cachedTenantData(state.dealerId));renderAll();if(state.garage.selected)openGarageDrawer(state.garage.selected)}renderConnectivity();return result}
 
-function openModal(type){
-  $('#modal').hidden=false;$('#entityType').value=type;$('#modalTitle').textContent=type==='vehicle'?'Nuova auto':'Nuovo cliente';
-  $('#vehicleFields').hidden=type!=='vehicle';$('#customerFields').hidden=type!=='customer';$('#entityForm').reset();$('#entityType').value=type;
-}
+function openModal(type){$('#modal').hidden=false;$('#entityType').value=type;$('#modalTitle').textContent=type==='vehicle'?'Nuova auto':'Nuovo cliente';$('#vehicleFields').hidden=type!=='vehicle';$('#customerFields').hidden=type!=='customer';$('#entityForm').reset();$('#entityType').value=type}
 function closeModal(){$('#modal').hidden=true}
+async function saveModal(e){e.preventDefault();const fd=new FormData(e.currentTarget),type=fd.get('entityType');if(type==='vehicle'){const row=await saveOfflineEntity('vehicles',state.dealerId,{brand:String(fd.get('brand')||'').trim(),model:String(fd.get('model')||'').trim(),plate:String(fd.get('plate')||'').trim().toUpperCase(),year:Number(fd.get('year')||0)||null,mileage:Number(fd.get('mileage')||0)||0,status:'IN_ARRIVO',purchase_date:new Date().toISOString().slice(0,10)});replaceRow('vehicles',row);const event=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:row.id,event_type:'CREATED',title:'Auto inserita',happened_at:new Date().toISOString()});replaceRow('events',event);closeModal();renderAll();renderConnectivity();openGarageDrawer(row.id)}else{const row=await saveOfflineEntity('customers',state.dealerId,{first_name:String(fd.get('first_name')||'').trim(),last_name:String(fd.get('last_name')||'').trim(),phone:String(fd.get('phone')||'').trim(),next_step:'Nuovo contatto',status:'LEAD'});replaceRow('customers',row);closeModal();renderAll();renderConnectivity()}if(navigator.onLine)syncNow()}
 
-async function saveModal(e){
-  e.preventDefault();const fd=new FormData(e.currentTarget),type=fd.get('entityType');
-  if(type==='vehicle'){
-    const row=await saveOfflineEntity('vehicles',state.dealerId,{brand:String(fd.get('brand')||'').trim(),model:String(fd.get('model')||'').trim(),plate:String(fd.get('plate')||'').trim().toUpperCase(),year:Number(fd.get('year')||0)||null,mileage:Number(fd.get('mileage')||0)||0,status:'IN_ARRIVO'});
-    state.data.vehicles.push(row);
-    const event=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:row.id,event_type:'CREATED',title:'Auto inserita',happened_at:new Date().toISOString()});state.data.events.unshift(event);
-  }else{
-    const row=await saveOfflineEntity('customers',state.dealerId,{first_name:String(fd.get('first_name')||'').trim(),last_name:String(fd.get('last_name')||'').trim(),phone:String(fd.get('phone')||'').trim(),next_step:'Nuovo contatto',status:'LEAD'});state.data.customers.push(row);
-  }
-  closeModal();renderAll();renderConnectivity();if(navigator.onLine)syncNow();
-}
-
-async function addVehicleEvent(vehicleId){
-  const title=prompt('Cosa è successo a questa auto?');if(!title)return;
-  const row=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:vehicleId,event_type:'NOTE',title:title.trim(),happened_at:new Date().toISOString()});state.data.events.unshift(row);renderAll();renderConnectivity();if(navigator.onLine)syncNow();
-}
-
-function initTelegram(){
-  const tg=window.Telegram?.WebApp;if(!tg?.initData)return;
-  state.telegram=tg;document.documentElement.classList.add('telegram');tg.ready();tg.expand();
-  try{tg.setHeaderColor('#0b1220');tg.setBackgroundColor('#f4f5f7')}catch{}
-  $('#telegramBanner').hidden=false;$('#telegramBanner').textContent='Telegram Mini App rilevata · identità da validare';
-  const cfg=window.DEALER_CONFIG||{};if(cfg.workerUrl)validateTelegram(tg.initData).then(r=>{$('#telegramBanner').textContent=r.ok?'Telegram verificato ✓':'Telegram non verificato'}).catch(()=>{$('#telegramBanner').textContent='Telegram: validazione non disponibile'});
-}
-
-async function handleTelegramLink(){
-  const tg=window.Telegram?.WebApp;if(!tg?.initData){alert('Apri questa app dal bot Telegram per collegare l’account.');return}
-  try{await linkTelegram(tg.initData);alert('Account Telegram collegato.');$('#telegramLinkBtn').textContent='Telegram collegato ✓'}catch(err){alert(`Collegamento non completato: ${err.message}`)}
-}
-
-async function installApp(){
-  if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;renderInstall();return}
-  alert('Su iPhone: Condividi → Aggiungi alla schermata Home. Su Chrome desktop: usa “Installa app” nella barra indirizzi.');
-}
+function initTelegram(){const tg=window.Telegram?.WebApp;if(!tg?.initData)return;state.telegram=tg;document.documentElement.classList.add('telegram');tg.ready();tg.expand();try{tg.setHeaderColor('#0b1220');tg.setBackgroundColor('#f4f5f7')}catch{}$('#telegramBanner').hidden=false;$('#telegramBanner').textContent='Telegram Mini App rilevata · identità da validare';const cfg=window.DEALER_CONFIG||{};if(cfg.workerUrl)validateTelegram(tg.initData).then(r=>{$('#telegramBanner').textContent=r.ok?'Telegram verificato ✓':'Telegram non verificato'}).catch(()=>{$('#telegramBanner').textContent='Telegram: validazione non disponibile'})}
+async function handleTelegramLink(){const tg=window.Telegram?.WebApp;if(!tg?.initData){alert('Apri questa app dal bot Telegram per collegare l’account.');return}try{await linkTelegram(tg.initData,state.dealerId);alert('Account Telegram collegato.');$('#telegramLinkBtn').textContent='Telegram collegato ✓'}catch(err){alert(`Collegamento non completato: ${err.message}`)}}
+async function installApp(){if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;renderInstall();return}alert('Su iPhone: Condividi → Aggiungi alla schermata Home. Su Chrome desktop: usa “Installa app” nella barra indirizzi.')}
 function renderInstall(){const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;$('#installBtn').hidden=!!standalone}
 
 boot();
