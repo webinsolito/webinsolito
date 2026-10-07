@@ -1,13 +1,21 @@
 {
+  "id": "./",
   "name": "MALÙ23 Dealer Platform",
   "short_name": "Dealer",
-  "description": "Dealer Platform multi-concessionaria — Core V0.1",
-  "start_url": "./",
+  "description": "Gestionale concessionaria offline-first per PC, iPhone e Telegram Mini App",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
   "lang": "it",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {"name":"Oggi","short_name":"Oggi","url":"./?view=today"},
+    {"name":"Garage","short_name":"Garage","url":"./?view=garage"},
+    {"name":"Clienti","short_name":"Clienti","url":"./?view=clients"}
+  ],
   "icons": []
 }
