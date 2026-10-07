@@ -1,0 +1,13 @@
+{
+  "name": "MALÙ23 Dealer Platform",
+  "short_name": "Dealer",
+  "description": "Dealer Platform multi-concessionaria — Core V0.1",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "it",
+  "orientation": "portrait-primary",
+  "icons": []
+}
