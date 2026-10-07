@@ -1,6 +1,6 @@
 const DB_NAME='dealer-platform-local';
-const DB_VERSION=2;
-const STORES=['meta','vehicles','customers','vehicle_costs','vehicle_events','documents','mutations'];
+const DB_VERSION=3;
+const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers','mutations'];
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -16,24 +16,14 @@ function openDb(){
             store.createIndex('status','status',{unique:false});
             store.createIndex('created_at','created_at',{unique:false});
           }
+          if(['vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents'].includes(name)){
+            store.createIndex('vehicle_id','vehicle_id',{unique:false});
+          }
         }
       }
     };
     req.onsuccess=()=>resolve(req.result);
     req.onerror=()=>reject(req.error);
-  });
-}
-
-async function tx(storeName,mode,fn){
-  const db=await openDb();
-  return new Promise((resolve,reject)=>{
-    const t=db.transaction(storeName,mode);
-    const store=t.objectStore(storeName);
-    let result;
-    try{result=fn(store,t)}catch(err){reject(err);return}
-    t.oncomplete=()=>resolve(result);
-    t.onerror=()=>reject(t.error);
-    t.onabort=()=>reject(t.error||new Error('transaction_aborted'));
   });
 }
 
@@ -70,6 +60,12 @@ export const OfflineDB={
     const store=db.transaction(storeName,'readonly').objectStore(storeName);
     if(dealerId&&store.indexNames.contains('dealer_id'))return reqToPromise(store.index('dealer_id').getAll(dealerId));
     return reqToPromise(store.getAll());
+  },
+  async listByVehicle(storeName,vehicleId){
+    const db=await openDb();
+    const store=db.transaction(storeName,'readonly').objectStore(storeName);
+    if(store.indexNames.contains('vehicle_id'))return reqToPromise(store.index('vehicle_id').getAll(vehicleId));
+    return (await reqToPromise(store.getAll())).filter(r=>r.vehicle_id===vehicleId);
   },
   async remove(storeName,id){
     const db=await openDb();

@@ -68,24 +68,34 @@ export async function login({identifier,password,dealerSlug}){
 
 export async function logout(){Session.clear()}
 
+const DATA_STORES=['vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers'];
+
 export async function fetchTenantData(dealerId){
   const c=cfg();
   if(c.demoMode||!c.supabaseUrl)return demoData(dealerId);
   const enc=encodeURIComponent(dealerId);
-  const [vehicles,customers,costs,events]=await Promise.all([
+  const [vehicles,financials,costs,events,workItems,media,documents,customers]=await Promise.all([
     rest(`vehicles?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
-    rest(`customers?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
+    rest(`vehicle_financials?dealer_id=eq.${enc}&select=*`),
     rest(`vehicle_costs?dealer_id=eq.${enc}&select=*`),
-    rest(`vehicle_events?dealer_id=eq.${enc}&select=*&order=happened_at.desc`)
+    rest(`vehicle_events?dealer_id=eq.${enc}&select=*&order=happened_at.desc`),
+    rest(`vehicle_work_items?dealer_id=eq.${enc}&select=*&order=created_at.desc`),
+    rest(`vehicle_media?dealer_id=eq.${enc}&select=*&order=sort_order.asc,created_at.asc`),
+    rest(`documents?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
+    rest(`customers?dealer_id=eq.${enc}&deleted_at=is.null&select=*`)
   ]);
-  await Promise.all([OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('customers',customers),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('vehicle_events',events)]);
+  const data={vehicles,financials,costs,events,workItems,media,documents,customers};
+  await Promise.all([
+    OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('vehicle_financials',financials),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('vehicle_events',events),
+    OfflineDB.bulkPut('vehicle_work_items',workItems),OfflineDB.bulkPut('vehicle_media',media),OfflineDB.bulkPut('documents',documents),OfflineDB.bulkPut('customers',customers)
+  ]);
   await OfflineDB.setMeta(`last_sync:${dealerId}`,new Date().toISOString());
-  return {vehicles,customers,costs,events};
+  return data;
 }
 
 export async function cachedTenantData(dealerId){
-  const [vehicles,customers,costs,events]=await Promise.all(['vehicles','customers','vehicle_costs','vehicle_events'].map(s=>OfflineDB.list(s,dealerId)));
-  return {vehicles,customers,costs,events};
+  const rows=await Promise.all(DATA_STORES.map(s=>OfflineDB.list(s,dealerId)));
+  return Object.fromEntries(DATA_STORES.map((s,i)=>[({vehicle_financials:'financials',vehicle_costs:'costs',vehicle_events:'events',vehicle_work_items:'workItems',vehicle_media:'media'}[s]||s),rows[i]]));
 }
 
 export async function saveOfflineEntity(entity,dealerId,row,method='UPSERT'){
@@ -102,8 +112,8 @@ export async function softDeleteEntity(entity,dealerId,id){
 }
 
 export async function sendMutation(mutation,token){
-  const c=cfg();if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,120));return {demo:true}}
-  if(!['vehicles','customers','vehicle_costs','vehicle_events','documents'].includes(mutation.entity))throw new Error('entity_not_allowed');
+  const c=cfg();if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,80));return {demo:true}}
+  if(!DATA_STORES.includes(mutation.entity))throw new Error('entity_not_allowed');
   if(mutation.method==='UPSERT')return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});
   if(mutation.method==='DELETE')return rest(`${mutation.entity}?id=eq.${encodeURIComponent(mutation.record_id)}`,{method:'DELETE',token,prefer:'return=minimal'});
   throw new Error('mutation_method_not_supported');
@@ -122,14 +132,37 @@ export async function linkTelegram(initData,dealerId){
 }
 
 function demoData(dealerId='demo-malu23'){
+  const now=new Date().toISOString();
   const vehicles=[
-    {id:'demo-v1',dealer_id:dealerId,brand:'Peugeot',model:'308',plate:'AB123CD',year:2014,mileage:109000,status:'IN_VENDITA',asking_price:10900,updated_at:new Date().toISOString()},
-    {id:'demo-v2',dealer_id:dealerId,brand:'Fiat',model:'500',plate:'CD456EF',year:2021,mileage:42000,status:'DA_CONSEGNARE',sale_price:12900,updated_at:new Date().toISOString()},
-    {id:'demo-v3',dealer_id:dealerId,brand:'Volkswagen',model:'Golf 8',plate:'EF789GH',year:2022,mileage:58000,status:'PRENOTATA',asking_price:21500,updated_at:new Date().toISOString()}
+    {id:'demo-v1',dealer_id:dealerId,brand:'Peugeot',model:'308',version:'1.6 BlueHDi',plate:'AB123CD',vin:'VF3DEMO308',year:2014,mileage:109000,status:'IN_VENDITA',asking_price:10900,purchase_date:'2026-09-18',created_at:'2026-09-18T09:00:00Z',updated_at:now},
+    {id:'demo-v2',dealer_id:dealerId,brand:'Fiat',model:'500',version:'1.0 Hybrid',plate:'CD456EF',vin:'ZFADEMO500',year:2021,mileage:42000,status:'DA_CONSEGNARE',sale_price:12900,purchase_date:'2026-08-27',created_at:'2026-08-27T09:00:00Z',updated_at:now},
+    {id:'demo-v3',dealer_id:dealerId,brand:'Volkswagen',model:'Golf 8',version:'2.0 TDI',plate:'EF789GH',vin:'WVWDEMOGOLF',year:2022,mileage:58000,status:'PRENOTATA',asking_price:21500,purchase_date:'2026-09-03',created_at:'2026-09-03T09:00:00Z',updated_at:now}
   ];
+  const financials=[
+    {id:'demo-f1',dealer_id:dealerId,vehicle_id:'demo-v1',purchase_price:7750,minimum_price:9900,vat_regime:'MARGINE',supplier:'Fornitore Demo',updated_at:now},
+    {id:'demo-f2',dealer_id:dealerId,vehicle_id:'demo-v2',purchase_price:9150,minimum_price:11900,vat_regime:'MARGINE',supplier:'Fornitore Demo',updated_at:now},
+    {id:'demo-f3',dealer_id:dealerId,vehicle_id:'demo-v3',purchase_price:16200,minimum_price:19900,vat_regime:'IVA_ESPOSTA',supplier:'Fornitore Demo',updated_at:now}
+  ];
+  const costs=[
+    {id:'demo-cost1',dealer_id:dealerId,vehicle_id:'demo-v1',category:'CARROZZERIA',supplier:'Carrozzeria Demo',amount:380,occurred_on:'2026-10-05',note:'Paraurti posteriore',updated_at:now},
+    {id:'demo-cost2',dealer_id:dealerId,vehicle_id:'demo-v1',category:'TAGLIANDO',amount:190,occurred_on:'2026-10-03',updated_at:now},
+    {id:'demo-cost3',dealer_id:dealerId,vehicle_id:'demo-v2',category:'PREPARAZIONE',amount:600,occurred_on:'2026-09-20',updated_at:now}
+  ];
+  const events=[
+    {id:'demo-e1',dealer_id:dealerId,vehicle_id:'demo-v1',event_type:'TEST_DRIVE',title:'Test drive Mario Rossi',happened_at:now,updated_at:now},
+    {id:'demo-e2',dealer_id:dealerId,vehicle_id:'demo-v2',event_type:'SALE',title:'Saldo ricevuto',happened_at:'2026-10-06T12:00:00Z',updated_at:now}
+  ];
+  const workItems=[
+    {id:'demo-w1',dealer_id:dealerId,vehicle_id:'demo-v1',title:'Lavaggio completo',category:'PREPARAZIONE',status:'TODO',due_date:'2026-10-08',priority:'NORMAL',updated_at:now},
+    {id:'demo-w2',dealer_id:dealerId,vehicle_id:'demo-v2',title:'Controllo documenti consegna',category:'CONSEGNA',status:'TODO',due_date:'2026-10-08',priority:'HIGH',updated_at:now}
+  ];
+  const media=[];
+  const documents=[];
   const customers=[{id:'demo-c1',dealer_id:dealerId,first_name:'Mario',last_name:'Rossi',phone:'',next_contact_at:new Date(Date.now()+3600000).toISOString(),next_step:'Richiamare per Peugeot 308',status:'LEAD'}];
-  const costs=[{id:'demo-cost1',dealer_id:dealerId,vehicle_id:'demo-v1',category:'CARROZZERIA',amount:380,occurred_on:new Date().toISOString().slice(0,10)}];
-  const events=[{id:'demo-e1',dealer_id:dealerId,vehicle_id:'demo-v1',event_type:'TEST_DRIVE',title:'Test drive Mario Rossi',happened_at:new Date().toISOString()}];
-  Promise.all([OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('customers',customers),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('vehicle_events',events)]).catch(()=>{});
-  return {vehicles,customers,costs,events};
+  const data={vehicles,financials,costs,events,workItems,media,documents,customers};
+  Promise.all([
+    OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('vehicle_financials',financials),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('vehicle_events',events),
+    OfflineDB.bulkPut('vehicle_work_items',workItems),OfflineDB.bulkPut('vehicle_media',media),OfflineDB.bulkPut('documents',documents),OfflineDB.bulkPut('customers',customers)
+  ]).catch(()=>{});
+  return data;
 }

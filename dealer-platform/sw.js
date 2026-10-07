@@ -1,4 +1,4 @@
-const CACHE='dealer-platform-v0.2.0';
+const CACHE='dealer-platform-v0.3.0';
 const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
@@ -19,7 +19,6 @@ self.addEventListener('fetch',event=>{
   if(url.origin===self.location.origin&&url.pathname.startsWith(APP_SCOPE)){
     event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{if(res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res})));return;
   }
-  // External assets (e.g. Telegram bridge): network first, cache fallback if already seen.
   event.respondWith(fetch(req).then(res=>{if(res.ok&&res.type!=='opaque'){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res}).catch(()=>caches.match(req)));
 });
 
