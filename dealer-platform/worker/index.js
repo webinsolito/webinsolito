@@ -1,4 +1,4 @@
-// MALÙ23 Dealer Platform — Cloudflare Worker V0.6
+// MALÙ23 Dealer Platform — Cloudflare Worker V0.8
 // Secrets / vars expected in Worker environment only:
 // TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET_TOKEN, APP_URL,
 // SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY
@@ -135,12 +135,43 @@ async function linkedTelegramContext(env,telegramUserId){
   const links=await serviceRest(env,`telegram_links?telegram_user_id=eq.${encodeURIComponent(String(telegramUserId))}&select=dealer_id,user_id&limit=1`);const link=links?.[0];if(!link)return null;
   const dealers=await serviceRest(env,`dealers?id=eq.${link.dealer_id}&status=eq.ACTIVE&select=id,slug,display_name&limit=1`);const dealer=dealers?.[0];if(!dealer)return null;
   const profiles=await serviceRest(env,`profiles?user_id=eq.${link.user_id}&select=display_name&limit=1`);const profile=profiles?.[0]||{};
-  const [vehicles,customers]=await Promise.all([
+  const [vehicles,customers,workItems,calendarEvents]=await Promise.all([
     serviceRest(env,`vehicles?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,status`),
-    serviceRest(env,`customers?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,next_contact_at`)
+    serviceRest(env,`customers?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,next_contact_at`),
+    serviceRest(env,`vehicle_work_items?dealer_id=eq.${link.dealer_id}&status=neq.DONE&status=neq.CANCELLED&select=id`),
+    serviceRest(env,`calendar_events?dealer_id=eq.${link.dealer_id}&status=neq.CANCELLED&select=id,starts_at`)
   ]);
-  const tomorrow=Date.now()+86400000;const callbacks=(customers||[]).filter(c=>c.next_contact_at&&new Date(c.next_contact_at).getTime()<=tomorrow).length;const deliveries=(vehicles||[]).filter(v=>v.status==='DA_CONSEGNARE').length;
-  return {dealer,profile,vehicleCount:vehicles?.length||0,callbacks,deliveries};
+  const tomorrow=Date.now()+86400000,today=new Date().toISOString().slice(0,10);const callbacks=(customers||[]).filter(c=>c.next_contact_at&&new Date(c.next_contact_at).getTime()<=tomorrow).length;const deliveries=(vehicles||[]).filter(v=>v.status==='DA_CONSEGNARE').length;const appointments=(calendarEvents||[]).filter(e=>String(e.starts_at||'').slice(0,10)===today).length;
+  return {dealer,profile,vehicleCount:vehicles?.length||0,callbacks,deliveries,openWorks:workItems?.length||0,appointments};
+}
+
+function appViewUrl(env,dealerSlug,view='today'){
+  const url=new URL(env.APP_URL);url.searchParams.set('dealer',dealerSlug);url.searchParams.set('view',view);return url.toString();
+}
+
+function buildDashboardMessage(ctx,firstName=''){
+  const first=ctx.profile?.display_name||firstName||'utente';
+  return `${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\nOGGI\n📞 ${ctx.callbacks} richiami entro domani\n📅 ${ctx.appointments} appuntamenti oggi\n🚚 ${ctx.deliveries} consegne da preparare\n🔧 ${ctx.openWorks} lavori aperti\n\n🚗 ${ctx.vehicleCount} auto nel Garage`;
+}
+
+function buildTelegramKeyboard(env,ctx){
+  const slug=ctx.dealer.slug;
+  return {inline_keyboard:[
+    [{text:'APRI OGGI',web_app:{url:appViewUrl(env,slug,'today')}}],
+    [{text:'🚗 Garage',web_app:{url:appViewUrl(env,slug,'garage')}},{text:'👥 Clienti',web_app:{url:appViewUrl(env,slug,'clients')}}],
+    [{text:'📅 Calendario',web_app:{url:appViewUrl(env,slug,'calendar')}},{text:'📄 Documenti',web_app:{url:appViewUrl(env,slug,'documenti')}}],
+    [{text:'↻ Aggiorna stato',callback_data:'dealer:status'}]
+  ]};
+}
+
+async function showLinkedDashboard(env,chatId,from,ctx,messageId=null){
+  const payload={chat_id:chatId,text:buildDashboardMessage(ctx,from?.first_name),reply_markup:buildTelegramKeyboard(env,ctx)};
+  if(messageId){payload.message_id=messageId;try{return await telegram('editMessageText',env,payload)}catch(err){if(String(err?.message||err).includes('message is not modified'))return {ok:true,unchanged:true};throw err}}
+  return telegram('sendMessage',env,payload);
+}
+
+async function showReservedAccess(env,chatId){
+  return telegram('sendMessage',env,{chat_id:chatId,text:'🔒 ACCESSO RISERVATO\n\nGestionale disponibile esclusivamente alle concessionarie autorizzate. Accedi prima alla Mini App per collegare il tuo account.',reply_markup:{inline_keyboard:[[{text:'ACCEDI',web_app:{url:env.APP_URL}}],[{text:'ATTIVA CONCESSIONARIA',web_app:{url:`${env.APP_URL}${env.APP_URL.includes('?')?'&':'?'}activate=1`}}]]}});
 }
 
 async function webhook(req,env){
@@ -148,15 +179,26 @@ async function webhook(req,env){
   if(!env.TELEGRAM_WEBHOOK_SECRET_TOKEN||secret!==env.TELEGRAM_WEBHOOK_SECRET_TOKEN)return json({ok:false,error:'forbidden'},403);
   const update=await req.json();const msg=update.message||update.callback_query?.message;const chatId=msg?.chat?.id;const from=update.message?.from||update.callback_query?.from;
   if(!chatId||!from?.id)return json({ok:true,ignored:true});
-  const text=update.message?.text||'';
-  if(text==='/start'||text.startsWith('/start ')){
+  const callback=update.callback_query;
+  if(callback){
+    if(callback.data==='dealer:status'){
+      let ctx=null;try{ctx=await linkedTelegramContext(env,from.id)}catch(err){console.error('context',err)}
+      if(!ctx){await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Account non collegato. Usa /start e accedi.',show_alert:true});return json({ok:true,callback:'unlinked'})}
+      await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Stato aggiornato'});
+      await showLinkedDashboard(env,chatId,from,ctx,msg.message_id);return json({ok:true,callback:'status'});
+    }
+    await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Azione non disponibile'});return json({ok:true,callback:'ignored'});
+  }
+  const text=String(update.message?.text||'').trim();
+  if(['/start','/menu','/status'].some(cmd=>text===cmd||text.startsWith(`${cmd} `))){
     let ctx=null;try{ctx=await linkedTelegramContext(env,from.id)}catch(err){console.error('context',err)}
     if(ctx){
-      const first=ctx.profile?.display_name||from.first_name||'👋';const appUrl=`${env.APP_URL}${env.APP_URL.includes('?')?'&':'?'}dealer=${encodeURIComponent(ctx.dealer.slug)}`;
-      await telegram('sendMessage',env,{chat_id:chatId,text:`${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\n🚗 ${ctx.vehicleCount} auto\n📞 ${ctx.callbacks} richiami entro domani\n🚚 ${ctx.deliveries} consegne da preparare`,reply_markup:{inline_keyboard:[[{text:'APRI GESTIONALE',web_app:{url:appUrl}}]]}});
+      await showLinkedDashboard(env,chatId,from,ctx);
     }else{
-      await telegram('sendMessage',env,{chat_id:chatId,text:'🔒 ACCESSO RISERVATO\n\nGestionale disponibile esclusivamente alle concessionarie autorizzate. Accedi prima alla Mini App per collegare il tuo account.',reply_markup:{inline_keyboard:[[{text:'ACCEDI',web_app:{url:env.APP_URL}}],[{text:'ATTIVA CONCESSIONARIA',web_app:{url:`${env.APP_URL}?activate=1`}}]]}});
+      await showReservedAccess(env,chatId);
     }
+  }else if(text.startsWith('/')){
+    await telegram('sendMessage',env,{chat_id:chatId,text:'Comando non riconosciuto. Usa /menu per aprire MALÙ23 CARS.'});
   }
   return json({ok:true});
 }
@@ -165,7 +207,7 @@ export default {
   async fetch(req,env){
     const url=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(env,req)});
     try{
-      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.6.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
+      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.8.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
       if(url.pathname==='/auth/resolve-login'&&req.method==='POST')return resolveLogin(req,env);
       if(url.pathname==='/telegram/validate'&&req.method==='POST'){const body=await req.json().catch(()=>({}));const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);return json(result,result.ok?200:401,cors(env,req))}
       if(url.pathname==='/telegram/link'&&req.method==='POST')return linkTelegram(req,env);
@@ -176,3 +218,6 @@ export default {
     }catch(err){console.error(err);return json({ok:false,error:'internal_error'},500,cors(env,req))}
   }
 };
+
+export {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl};
+
