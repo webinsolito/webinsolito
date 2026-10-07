@@ -19,5 +19,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./calendar.js').catch(err=>console.warn('Calendario non caricato',err));
   import('./documents.js').catch(err=>console.warn('Documenti non caricati',err));
   import('./contracts.js').catch(err=>console.warn('Contratti non caricati',err));
+  import('./invoices.js').catch(err=>console.warn('Fatture non caricate',err));
 });
 
