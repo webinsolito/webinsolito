@@ -74,7 +74,7 @@ async function refreshFromServer(){try{state.data=normalizeData(await fetchTenan
 function showLogin(){$('#appShell').hidden=true;$('#loginScreen').hidden=false;const demo=$('#demoBtn');demo.onclick=async()=>{await login({identifier:'admin',password:'demo',dealerSlug:'malu23'});await enterApp()}}
 function go(view){state.view=view;$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#pageTitle').textContent=({today:'OGGI',garage:'GARAGE',clients:'CLIENTI',calendar:'CALENDARIO',documenti:'DOCUMENTI',inbox:'INBOX',admin:'ADMIN'})[view]||view.toUpperCase();syncTelegramBackButton(view);window.scrollTo({top:0,behavior:'smooth'})}
 function openView(view){const button=$(`.navbtn[data-view="${view}"]`);button?button.click():go(view)}
-async function refreshTodaySignals(){if(!state.dealerId)return;const [invoices,contracts]=await Promise.all([OfflineDB.list('invoices',state.dealerId),OfflineDB.list('contracts',state.dealerId)]);state.data.invoices=invoices;state.data.contracts=contracts;if(state.view==='today')renderToday()}
+async function refreshTodaySignals(){if(!state.dealerId)return;const [invoices,contracts]=await Promise.all([OfflineDB.list('invoices',state.dealerId),OfflineDB.list('contracts',state.dealerId)]);state.data.invoices=invoices;state.data.contracts=contracts;renderToday()}
 function renderAll(){renderToday();renderGarage();renderClients();renderInbox();renderAdmin()}
 
 function renderToday(){
