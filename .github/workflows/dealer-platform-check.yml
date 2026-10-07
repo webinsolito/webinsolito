@@ -28,6 +28,7 @@ jobs:
           node --check dealer-platform/documents.js
           node --check dealer-platform/contracts.js
           node --check dealer-platform/invoices.js
+          node --check dealer-platform/sales.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/setup-telegram.mjs
@@ -46,6 +47,7 @@ jobs:
           test -f dealer-platform/documents.js
           test -f dealer-platform/contracts.js
           test -f dealer-platform/invoices.js
+          test -f dealer-platform/sales.js
           test -f dealer-platform/worker/index.js
       - name: Contract invariants
         run: |
@@ -59,3 +61,11 @@ jobs:
           grep -q "invoices_member_select" dealer-platform/supabase/migrations/0007_invoices_v08.sql
           grep -q "with check" dealer-platform/supabase/migrations/0007_invoices_v08.sql
           grep -q "'invoices'" dealer-platform/offline.js
+      - name: Sales invariants
+        run: |
+          grep -q "sale_stage" dealer-platform/sales.js
+          grep -q "financing_status" dealer-platform/sales.js
+          grep -q "trade_in" dealer-platform/sales.js
+          grep -q "planned_delivery_at" dealer-platform/sales.js
+          grep -q "contracts_sale_invoice_fk" dealer-platform/supabase/migrations/0008_sales_v09.sql
+          grep -q "CONSEGNATA" dealer-platform/sales.js
