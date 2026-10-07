@@ -1,5 +1,6 @@
 import {OfflineDB,SyncEngine,mutationCount,uuid} from './offline.js';
 import {Session,login,logout,fetchTenantData,cachedTenantData,saveOfflineEntity,sendMutation,accessToken,validateTelegram,linkTelegram} from './api.js';
+import {chooseTodayPriority} from './today-priority.js?v=1.2.0';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n||0));
@@ -41,7 +42,7 @@ function bindGlobal(){
   window.addEventListener('appinstalled',()=>{deferredInstall=null;renderInstall()});
   window.addEventListener('dealer:online',()=>{renderConnectivity();syncNow()});
   window.addEventListener('dealer:offline',renderConnectivity);
-  window.addEventListener('dealer:queue-changed',renderConnectivity);
+  window.addEventListener('dealer:queue-changed',()=>{renderConnectivity();refreshTodaySignals().catch(console.warn)});
   $('#loginForm')?.addEventListener('submit',handleLogin);
   $('#logoutBtn')?.addEventListener('click',async()=>{await logout();location.reload()});
   $('#installBtn')?.addEventListener('click',installApp);
@@ -72,14 +73,19 @@ async function enterApp(){
 async function refreshFromServer(){try{state.data=normalizeData(await fetchTenantData(state.dealerId));renderAll();await syncNow()}catch(err){console.warn('refresh offline/fallito',err);renderConnectivity()}}
 function showLogin(){$('#appShell').hidden=true;$('#loginScreen').hidden=false;const demo=$('#demoBtn');demo.onclick=async()=>{await login({identifier:'admin',password:'demo',dealerSlug:'malu23'});await enterApp()}}
 function go(view){state.view=view;$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#pageTitle').textContent=({today:'OGGI',garage:'GARAGE',clients:'CLIENTI',calendar:'CALENDARIO',documenti:'DOCUMENTI',inbox:'INBOX',admin:'ADMIN'})[view]||view.toUpperCase();syncTelegramBackButton(view);window.scrollTo({top:0,behavior:'smooth'})}
+function openView(view){const button=$(`.navbtn[data-view="${view}"]`);button?button.click():go(view)}
+async function refreshTodaySignals(){if(!state.dealerId)return;const [invoices,contracts]=await Promise.all([OfflineDB.list('invoices',state.dealerId),OfflineDB.list('contracts',state.dealerId)]);state.data.invoices=invoices;state.data.contracts=contracts;if(state.view==='today')renderToday()}
 function renderAll(){renderToday();renderGarage();renderClients();renderInbox();renderAdmin()}
 
 function renderToday(){
   const v=state.data.vehicles.filter(x=>!x.deleted_at),c=state.data.customers;
   const delivery=v.filter(x=>x.status==='DA_CONSEGNARE').length,callbacks=c.filter(x=>x.next_contact_at&&new Date(x.next_contact_at)<=new Date(Date.now()+86400000)).length,published=v.filter(x=>x.status==='IN_VENDITA').length;
   $('#todayStats').innerHTML=`<div><span>PARCO</span><b>${v.length}</b></div><div><span>IN VENDITA</span><b>${published}</b></div><div><span>RICHIAMI</span><b>${callbacks}</b></div><div><span>CONSEGNE</span><b>${delivery}</b></div>`;
-  let priority='Nessuna urgenza',sub='La giornata è sotto controllo.',target='garage';if(callbacks){priority=`${callbacks} ${callbacks===1?'cliente':'clienti'} da richiamare`;sub='Parti dai contatti con prossimo passo in scadenza.';target='clients'}else if(delivery){priority=`${delivery} ${delivery===1?'consegna':'consegne'} da preparare`;sub='Controlla documenti e checklist veicolo.'}
-  $('#priorityTitle').textContent=priority;$('#prioritySub').textContent=sub;$('#priorityBtn').onclick=()=>go(target);
+  const priority=chooseTodayPriority(state.data);
+  $('#priorityCard').dataset.tone=priority.tone;$('#priorityIcon').textContent=priority.icon;$('#priorityEyebrow').textContent=priority.eyebrow;
+  $('#priorityTitle').textContent=priority.title;$('#prioritySub').textContent=priority.subtitle;
+  $('#priorityMeta').innerHTML=`<b>${priority.tone==='money'?money(priority.meta):priority.meta}</b><span>${esc(priority.metaLabel)}</span>`;
+  $('#priorityAction').textContent=priority.action;$('#priorityBtn').onclick=()=>openView(priority.view);
   const latest=[...state.data.events].sort((a,b)=>String(b.happened_at).localeCompare(String(a.happened_at))).slice(0,5);
   $('#activityList').innerHTML=latest.length?latest.map(e=>`<div class="row"><div><strong>${esc(e.title)}</strong><small>${dateTime(e.happened_at)}</small></div><span class="tag">${esc(e.event_type||'EVENTO')}</span></div>`).join(''):'<div class="empty">Nessuna attività ancora.</div>';
 }

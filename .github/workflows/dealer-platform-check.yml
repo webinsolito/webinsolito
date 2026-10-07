@@ -21,6 +21,7 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check dealer-platform/app.js
+          node --check dealer-platform/today-priority.js
           node --check dealer-platform/api.js
           node --check dealer-platform/offline.js
           node --check dealer-platform/clients.js
@@ -33,6 +34,8 @@ jobs:
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/setup-telegram.mjs
+      - name: Focused unit tests
+        run: node --test dealer-platform/tests/*.test.mjs
       - name: Manifest JSON
         run: node -e "JSON.parse(require('fs').readFileSync('dealer-platform/manifest.webmanifest','utf8')); console.log('manifest ok')"
       - name: Secret guard
@@ -43,6 +46,7 @@ jobs:
           test -f dealer-platform/index.html
           test -f dealer-platform/offline.js
           test -f dealer-platform/sw.js
+          test -f dealer-platform/today-priority.js
           test -f dealer-platform/clients.js
           test -f dealer-platform/calendar.js
           test -f dealer-platform/documents.js
