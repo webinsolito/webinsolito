@@ -1,6 +1,6 @@
 const DB_NAME='dealer-platform-local';
-const DB_VERSION=6;
-const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','mutations'];
+const DB_VERSION=7;
+const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','mutations'];
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -16,14 +16,15 @@ function openDb(){
             store.createIndex('status','status',{unique:false});
             store.createIndex('created_at','created_at',{unique:false});
           }
-          if(['vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents'].includes(name))store.createIndex('vehicle_id','vehicle_id',{unique:false});
-          if(['customer_interactions','customer_vehicle_interests'].includes(name))store.createIndex('customer_id','customer_id',{unique:false});
+          if(['vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','contracts'].includes(name))store.createIndex('vehicle_id','vehicle_id',{unique:false});
+          if(['customer_interactions','customer_vehicle_interests','contracts'].includes(name))store.createIndex('customer_id','customer_id',{unique:false});
           if(name==='calendar_events'){
             store.createIndex('starts_at','starts_at',{unique:false});
             store.createIndex('customer_id','customer_id',{unique:false});
             store.createIndex('vehicle_id','vehicle_id',{unique:false});
           }
           if(name==='document_blobs')store.createIndex('document_id','document_id',{unique:true});
+          if(name==='contract_versions')store.createIndex('contract_id','contract_id',{unique:false});
         }
       }
     };
