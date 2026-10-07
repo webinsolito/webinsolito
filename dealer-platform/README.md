@@ -1,6 +1,6 @@
-# MALÙ23 Dealer Platform — Core V0.1
+# MALÙ23 Dealer Platform — Core V0.2
 
-Base reale del progetto multi-concessionaria definito nella chat di progetto.
+Piattaforma multi-concessionaria offline-first: la stessa app gira come PWA su PC/iPhone e come Telegram Mini App.
 
 ## Architettura
 
@@ -12,8 +12,10 @@ Cloudflare Worker
    ▼
 Dealer App
 - Telegram Mini App = stessa PWA
-- iPhone PWA = stessa PWA
-- PC = stessa PWA
+- iPhone PWA         = stessa PWA
+- PC                 = stessa PWA
+   │
+   ├─ IndexedDB locale + mutation queue (offline)
    │
    ▼
 Supabase
@@ -23,37 +25,66 @@ Auth + PostgreSQL + RLS
    └─ GitHub: codice / CI
 ```
 
-## Stato implementato
+## V0.2 implementato
 
-- PWA navigabile e responsive
-- runtime Telegram Mini App rilevato automaticamente
+- UI data-driven: non usa più dati hardcoded come fonte principale
+- login username + concessionaria tramite Worker
+- login email + password tramite Supabase Auth
+- PWA installabile e responsive
+- app shell disponibile offline
+- IndexedDB locale per veicoli, clienti, costi, eventi, documenti e coda sync
+- nuove auto/clienti/eventi salvabili senza Internet
+- UUID generati sul dispositivo per retry idempotenti
+- sync automatico quando torna la rete
 - OGGI / Garage / Clienti / Inbox / Admin
-- Service Worker offline shell
 - schema PostgreSQL tenant-aware
 - RLS su tutte le tabelle esposte
 - riferimenti composti `(dealer_id, entity_id)` contro relazioni cross-tenant
+- username unico per concessionaria, non globale
 - dati economici sensibili separati in `vehicle_financials`
+- Inbox documenti anche non ancora assegnati
 - activation key salvata solo come hash
-- Telegram linking table
-- audit log non modificabile dal client normale
-- Worker bootstrap con `/health`, `/telegram/validate`, `/telegram/webhook`
+- finalizzazione activation key in transazione DB
+- Telegram linking account ↔ user ↔ dealer
+- `/start` Telegram contestuale per utenti collegati
 - validazione server-side di `Telegram.WebApp.initData`
+- script per `setWebhook`, menu Mini App e comando `/start`
+- GitHub Action: syntax check + manifest check + secret guard
+
+## Offline: cosa significa davvero
+
+La PWA continua ad aprirsi senza rete e legge i dati già sincronizzati dal database locale. Le modifiche vengono prima salvate in IndexedDB e poi accodate. Quando la connessione ritorna, la coda tenta la sincronizzazione automaticamente.
+
+Telegram stesso richiede Internet. Se l'utente perde la rete dopo aver usato la Mini App, deve continuare dalla PWA installata sul dispositivo per avere il comportamento offline completo.
 
 ## Sicurezza
 
-Il frontend non deve mai contenere service role, bot token o chiavi amministrative. Le operazioni privilegiate (activation, creazione utenti/dealer, Telegram linking, Super Admin) passeranno dal Worker. Il browser parlerà direttamente al Data API solo con credenziali pubbliche e RLS attivo.
+Il frontend non contiene service role, bot token o chiavi amministrative. Il browser usa solo la publishable key Supabase e l'autorizzazione reale avviene tramite RLS. Le operazioni privilegiate passano dal Worker.
 
-## Non collegato intenzionalmente
+Il Worker si aspetta questi secret/vars:
 
-Il database Supabase non è ancora creato: l'unico progetto Supabase attualmente collegato è AutoBid Inspector e non deve essere riutilizzato. Prima della creazione del nuovo progetto serve conferma esplicita dell'organizzazione Supabase.
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_WEBHOOK_SECRET_TOKEN`
+- `APP_URL`
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-## Milestone successiva
+Nessuno di questi valori sensibili va committato.
 
-1. creare progetto Supabase dedicato;
-2. applicare e verificare `supabase/schema.sql`;
+## Stato live
+
+Il frontend V0.2 può essere pubblicato subito in modalità demo/offline. Il backend reale resta intenzionalmente scollegato fino alla creazione del nuovo progetto Supabase dedicato: AutoBid Inspector non viene riutilizzato.
+
+## Prossimo collegamento live
+
+1. creare Supabase dedicato;
+2. applicare `supabase/schema.sql`;
 3. eseguire Security + Performance Advisors;
-4. implementare activation transaction monouso;
-5. collegare Auth username/email + password temporanea;
-6. collegare la PWA ai dati reali MALÙ23;
-7. configurare Worker + webhook Telegram;
-8. aggiungere R2 con URL firmati per i documenti privati.
+4. creare MALÙ23 + primo admin;
+5. configurare `config.js` con URL/publishable key/Worker e `demoMode:false`;
+6. deploy Worker Cloudflare;
+7. creare bot Telegram e inserire token come secret;
+8. eseguire `worker/setup-telegram.mjs`;
+9. test `/start` → Mini App → login → collega Telegram → `/start` personalizzato;
+10. aggiungere R2 per foto/PDF privati e signed URL.
