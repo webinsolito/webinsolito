@@ -1,6 +1,6 @@
 const DB_NAME='dealer-platform-local';
-const DB_VERSION=4;
-const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers','customer_interactions','customer_vehicle_interests','mutations'];
+const DB_VERSION=5;
+const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers','customer_interactions','customer_vehicle_interests','calendar_events','mutations'];
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -18,6 +18,11 @@ function openDb(){
           }
           if(['vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents'].includes(name))store.createIndex('vehicle_id','vehicle_id',{unique:false});
           if(['customer_interactions','customer_vehicle_interests'].includes(name))store.createIndex('customer_id','customer_id',{unique:false});
+          if(name==='calendar_events'){
+            store.createIndex('starts_at','starts_at',{unique:false});
+            store.createIndex('customer_id','customer_id',{unique:false});
+            store.createIndex('vehicle_id','vehicle_id',{unique:false});
+          }
         }
       }
     };
