@@ -1,6 +1,6 @@
 const DB_NAME='dealer-platform-local';
-const DB_VERSION=5;
-const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers','customer_interactions','customer_vehicle_interests','calendar_events','mutations'];
+const DB_VERSION=6;
+const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','mutations'];
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -23,6 +23,7 @@ function openDb(){
             store.createIndex('customer_id','customer_id',{unique:false});
             store.createIndex('vehicle_id','vehicle_id',{unique:false});
           }
+          if(name==='document_blobs')store.createIndex('document_id','document_id',{unique:true});
         }
       }
     };

@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v0.5.0';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./api.js','./offline.js'];
+const CACHE='dealer-platform-v0.6.0';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js','./app.js','./clients.js','./calendar.js','./documents.js','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{

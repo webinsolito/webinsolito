@@ -23,6 +23,9 @@ jobs:
           node --check dealer-platform/app.js
           node --check dealer-platform/api.js
           node --check dealer-platform/offline.js
+          node --check dealer-platform/clients.js
+          node --check dealer-platform/calendar.js
+          node --check dealer-platform/documents.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/setup-telegram.mjs
@@ -36,4 +39,7 @@ jobs:
           test -f dealer-platform/index.html
           test -f dealer-platform/offline.js
           test -f dealer-platform/sw.js
+          test -f dealer-platform/clients.js
+          test -f dealer-platform/calendar.js
+          test -f dealer-platform/documents.js
           test -f dealer-platform/worker/index.js

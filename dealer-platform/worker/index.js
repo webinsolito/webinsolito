@@ -1,7 +1,8 @@
-// MALÙ23 Dealer Platform — Cloudflare Worker V0.2
+// MALÙ23 Dealer Platform — Cloudflare Worker V0.6
 // Secrets / vars expected in Worker environment only:
 // TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET_TOKEN, APP_URL,
 // SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY
+// R2 binding: DOCS_BUCKET (private documents, never public).
 
 const JSON_HEADERS={'content-type':'application/json; charset=utf-8','cache-control':'no-store'};
 const json=(data,status=200,extra={})=>new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...extra}});
@@ -10,7 +11,7 @@ function cors(env,req){
   const origin=req.headers.get('origin')||'';
   const appOrigin=env.APP_URL?new URL(env.APP_URL).origin:'';
   const allowed=!origin||origin===appOrigin||origin==='https://web.telegram.org';
-  return allowed?{'access-control-allow-origin':origin||appOrigin||'*','access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'content-type,authorization,x-dealer-id','vary':'Origin'}:{};
+  return allowed?{'access-control-allow-origin':origin||appOrigin||'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','access-control-allow-headers':'content-type,authorization,x-dealer-id','access-control-expose-headers':'content-disposition,content-type','vary':'Origin'}:{};
 }
 
 async function hmac(key,data){
@@ -55,6 +56,12 @@ async function currentUser(env,authorization){
   return fetchJson(`${env.SUPABASE_URL}/auth/v1/user`,{headers:publicHeaders(env,{authorization})});
 }
 
+async function activeMembership(env,dealerId,userId){
+  if(!dealerId||!userId)return null;
+  const rows=await serviceRest(env,`memberships?dealer_id=eq.${encodeURIComponent(dealerId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.ACTIVE&select=user_id,role,permissions&limit=1`);
+  return rows?.[0]||null;
+}
+
 async function resolveLogin(req,env){
   const body=await req.json().catch(()=>({}));const username=String(body.username||'').trim().toLowerCase(),dealerSlug=String(body.dealer_slug||'').trim().toLowerCase(),password=String(body.password||'');
   if(!username||!dealerSlug||!password)return json({ok:false,error:'missing_credentials'},400,cors(env,req));
@@ -77,10 +84,45 @@ async function linkTelegram(req,env){
   const body=await req.json().catch(()=>({}));const valid=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);
   if(!valid.ok)return json(valid,401,cors(env,req));
   const dealerId=String(body.dealer_id||req.headers.get('x-dealer-id')||'');if(!dealerId)return json({ok:false,error:'dealer_required'},400,cors(env,req));
-  const membership=await serviceRest(env,`memberships?dealer_id=eq.${encodeURIComponent(dealerId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.ACTIVE&select=user_id&limit=1`);
-  if(!membership?.length)return json({ok:false,error:'not_dealer_member'},403,cors(env,req));
+  const membership=await activeMembership(env,dealerId,user.id);if(!membership)return json({ok:false,error:'not_dealer_member'},403,cors(env,req));
   await serviceRest(env,'telegram_links?on_conflict=dealer_id,user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({dealer_id:dealerId,user_id:user.id,telegram_user_id:String(valid.user.id),linked_at:new Date().toISOString()})});
   return json({ok:true,telegram_user:{id:valid.user.id,first_name:valid.user.first_name||null,username:valid.user.username||null}},200,cors(env,req));
+}
+
+function safeFileName(value='documento'){
+  const cleaned=String(value).replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-120);
+  return cleaned||'documento';
+}
+
+async function docsAuth(req,env){
+  let user;try{user=await currentUser(env,req.headers.get('authorization'))}catch{return {response:json({ok:false,error:'unauthorized'},401,cors(env,req))}}
+  const dealerId=String(req.headers.get('x-dealer-id')||'');if(!dealerId)return {response:json({ok:false,error:'dealer_required'},400,cors(env,req))};
+  const membership=await activeMembership(env,dealerId,user.id);if(!membership)return {response:json({ok:false,error:'not_dealer_member'},403,cors(env,req))};
+  return {user,dealerId,membership};
+}
+
+async function uploadDocument(req,env,url){
+  if(!env.DOCS_BUCKET)return json({ok:false,error:'docs_bucket_not_configured'},503,cors(env,req));
+  const auth=await docsAuth(req,env);if(auth.response)return auth.response;
+  const documentId=String(url.searchParams.get('document_id')||''),fileName=safeFileName(url.searchParams.get('file_name')||'documento');
+  if(!/^[0-9a-f-]{16,64}$/i.test(documentId)&&!documentId.startsWith('demo-'))return json({ok:false,error:'invalid_document_id'},400,cors(env,req));
+  const size=Number(req.headers.get('content-length')||0);if(size>20*1024*1024)return json({ok:false,error:'file_too_large'},413,cors(env,req));
+  const existing=await serviceRest(env,`documents?dealer_id=eq.${encodeURIComponent(auth.dealerId)}&id=eq.${encodeURIComponent(documentId)}&deleted_at=is.null&select=object_key&limit=1`);
+  const objectKey=existing?.[0]?.object_key||`private/${auth.dealerId}/${documentId}/${fileName}`;
+  const contentType=req.headers.get('content-type')||'application/octet-stream';
+  await env.DOCS_BUCKET.put(objectKey,req.body,{httpMetadata:{contentType},customMetadata:{dealer_id:auth.dealerId,document_id:documentId,uploaded_by:auth.user.id}});
+  return json({ok:true,object_key:objectKey},200,cors(env,req));
+}
+
+async function downloadDocument(req,env,url){
+  if(!env.DOCS_BUCKET)return json({ok:false,error:'docs_bucket_not_configured'},503,cors(env,req));
+  const auth=await docsAuth(req,env);if(auth.response)return auth.response;
+  const documentId=String(url.searchParams.get('document_id')||'');if(!documentId)return json({ok:false,error:'document_required'},400,cors(env,req));
+  const docs=await serviceRest(env,`documents?dealer_id=eq.${encodeURIComponent(auth.dealerId)}&id=eq.${encodeURIComponent(documentId)}&deleted_at=is.null&select=object_key,original_name,mime_type&limit=1`),doc=docs?.[0];
+  if(!doc)return json({ok:false,error:'document_not_found'},404,cors(env,req));
+  const object=await env.DOCS_BUCKET.get(doc.object_key);if(!object)return json({ok:false,error:'file_not_found'},404,cors(env,req));
+  const headers=new Headers(cors(env,req));headers.set('cache-control','private, no-store');headers.set('content-type',doc.mime_type||object.httpMetadata?.contentType||'application/octet-stream');headers.set('content-disposition',`inline; filename="${safeFileName(doc.original_name)}"`);if(object.etag)headers.set('etag',object.etag);
+  return new Response(object.body,{status:200,headers});
 }
 
 async function telegram(method,env,payload){
@@ -123,11 +165,13 @@ export default {
   async fetch(req,env){
     const url=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(env,req)});
     try{
-      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.2.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL},200,cors(env,req));
+      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'0.6.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
       if(url.pathname==='/auth/resolve-login'&&req.method==='POST')return resolveLogin(req,env);
       if(url.pathname==='/telegram/validate'&&req.method==='POST'){const body=await req.json().catch(()=>({}));const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);return json(result,result.ok?200:401,cors(env,req))}
       if(url.pathname==='/telegram/link'&&req.method==='POST')return linkTelegram(req,env);
       if(url.pathname==='/telegram/webhook'&&req.method==='POST')return webhook(req,env);
+      if(url.pathname==='/documents/file'&&req.method==='PUT')return uploadDocument(req,env,url);
+      if(url.pathname==='/documents/file'&&req.method==='GET')return downloadDocument(req,env,url);
       return json({ok:false,error:'not_found'},404,cors(env,req));
     }catch(err){console.error(err);return json({ok:false,error:'internal_error'},500,cors(env,req))}
   }
