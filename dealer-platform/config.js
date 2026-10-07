@@ -1,7 +1,7 @@
 // Runtime configuration for Dealer Platform.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '0.9.0',
+  version: '1.0.0',
   supabaseUrl: '',
   supabasePublishableKey: '',
   workerUrl: '',
@@ -21,4 +21,5 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./contracts.js').catch(err=>console.warn('Contratti non caricati',err));
   import('./invoices.js').catch(err=>console.warn('Fatture non caricate',err));
   import('./sales.js').catch(err=>console.warn('Vendite non caricate',err));
+  import('./finances.js').catch(err=>console.warn('Finanze non caricate',err));
 });
