@@ -6,7 +6,7 @@ const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',ma
 const dateTime=v=>v?new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'—';
 const dateOnly=v=>v?new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(`${String(v).slice(0,10)}T12:00:00`)):'—';
 const EMPTY_DATA={vehicles:[],financials:[],costs:[],events:[],workItems:[],media:[],documents:[],customers:[]};
-const state={view:'today',dealerId:'demo-malu23',dealerName:'MALÙ23 CARS',data:{...EMPTY_DATA},syncState:'idle',telegram:null,garage:{query:'',status:'ALL',attention:false,selected:null}};
+const state={view:'today',dealerId:'demo-malu23',dealerName:'MALÙ23 CARS',data:{...EMPTY_DATA},syncState:'idle',telegram:null,telegramValidated:false,garage:{query:'',status:'ALL',attention:false,selected:null}};
 let syncEngine=null,deferredInstall=null;
 
 function esc(v=''){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
@@ -15,6 +15,10 @@ function normalizeData(data={}){return {...EMPTY_DATA,...data,...Object.fromEntr
 function sessionDealer(){const s=Session.get();return s?.dealer||{id:'demo-malu23',display_name:'MALÙ23 CARS',slug:'malu23'}}
 function canViewCosts(){const p=Session.get()?.profile||{};return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.view_costs===true}
 function canWriteGarage(){const p=Session.get()?.profile||{};return ['ADMIN','VENDITORE','OPERATORE'].includes(p.role)||p.permissions?.garage_write===true||window.DEALER_CONFIG?.demoMode}
+const TELEGRAM_VIEWS=new Set(['today','garage','clients','calendar','documenti']);
+function requestedView(){const view=new URLSearchParams(location.search).get('view')||'today';return TELEGRAM_VIEWS.has(view)?view:'today'}
+function syncTelegramBackButton(view=state.view){const back=state.telegram?.BackButton;if(!back)return;try{view==='today'?back.hide():back.show()}catch{}}
+function openRequestedView(attempt=0){const view=requestedView();if(view==='today'){go('today');return}const button=$(`.navbtn[data-view="${view}"]`);if(button){button.click();syncTelegramBackButton(view);return}if(attempt<20)setTimeout(()=>openRequestedView(attempt+1),100)}
 function replaceRow(key,row){const arr=state.data[key]||[];const i=arr.findIndex(x=>x.id===row.id);if(i>=0)arr[i]=row;else arr.unshift(row)}
 function vehicleFinancial(id){return state.data.financials.find(x=>x.vehicle_id===id)||null}
 function vehicleCosts(id){return state.data.costs.filter(x=>x.vehicle_id===id)}
@@ -49,6 +53,7 @@ function bindGlobal(){
   $('#syncBtn')?.addEventListener('click',syncNow);
   $('#telegramLinkBtn')?.addEventListener('click',handleTelegramLink);
   $$('.navbtn').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+  document.addEventListener('click',e=>{const button=e.target.closest?.('.navbtn[data-view]');if(button)setTimeout(()=>syncTelegramBackButton(button.dataset.view),0)});
 }
 
 async function handleLogin(e){e.preventDefault();const fd=new FormData(e.currentTarget);const msg=$('#loginMsg');msg.textContent='Accesso…';try{await login({identifier:String(fd.get('identifier')||''),password:String(fd.get('password')||''),dealerSlug:String(fd.get('dealer')||'malu23')});msg.textContent='';await enterApp()}catch(err){msg.textContent=err.message==='backend_not_configured'?'Backend non ancora collegato. Usa “Entra demo”.':`Accesso non riuscito: ${err.message}`}}
@@ -60,13 +65,13 @@ async function enterApp(){
   syncEngine=new SyncEngine({dealerId:state.dealerId,getAccessToken:accessToken,sendMutation,onStatus:s=>{state.syncState=s;renderConnectivity()}});
   state.data=normalizeData(await cachedTenantData(state.dealerId));
   if(!state.data.vehicles.length)state.data=normalizeData(await fetchTenantData(state.dealerId));
-  renderAll();renderConnectivity();renderInstall();
+  renderAll();renderConnectivity();renderInstall();openRequestedView();
   if(navigator.onLine)refreshFromServer();
 }
 
 async function refreshFromServer(){try{state.data=normalizeData(await fetchTenantData(state.dealerId));renderAll();await syncNow()}catch(err){console.warn('refresh offline/fallito',err);renderConnectivity()}}
 function showLogin(){$('#appShell').hidden=true;$('#loginScreen').hidden=false;const demo=$('#demoBtn');demo.onclick=async()=>{await login({identifier:'admin',password:'demo',dealerSlug:'malu23'});await enterApp()}}
-function go(view){state.view=view;$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#pageTitle').textContent=({today:'OGGI',garage:'GARAGE',clients:'CLIENTI',inbox:'INBOX',admin:'ADMIN'})[view]||view.toUpperCase();window.scrollTo({top:0,behavior:'smooth'})}
+function go(view){state.view=view;$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#pageTitle').textContent=({today:'OGGI',garage:'GARAGE',clients:'CLIENTI',calendar:'CALENDARIO',documenti:'DOCUMENTI',inbox:'INBOX',admin:'ADMIN'})[view]||view.toUpperCase();syncTelegramBackButton(view);window.scrollTo({top:0,behavior:'smooth'})}
 function renderAll(){renderToday();renderGarage();renderClients();renderInbox();renderAdmin()}
 
 function renderToday(){
@@ -135,9 +140,11 @@ function openModal(type){$('#modal').hidden=false;$('#entityType').value=type;$(
 function closeModal(){$('#modal').hidden=true}
 async function saveModal(e){e.preventDefault();const fd=new FormData(e.currentTarget),type=fd.get('entityType');if(type==='vehicle'){const row=await saveOfflineEntity('vehicles',state.dealerId,{brand:String(fd.get('brand')||'').trim(),model:String(fd.get('model')||'').trim(),plate:String(fd.get('plate')||'').trim().toUpperCase(),year:Number(fd.get('year')||0)||null,mileage:Number(fd.get('mileage')||0)||0,status:'IN_ARRIVO',purchase_date:new Date().toISOString().slice(0,10)});replaceRow('vehicles',row);const event=await saveOfflineEntity('vehicle_events',state.dealerId,{vehicle_id:row.id,event_type:'CREATED',title:'Auto inserita',happened_at:new Date().toISOString()});replaceRow('events',event);closeModal();renderAll();renderConnectivity();openGarageDrawer(row.id)}else{const row=await saveOfflineEntity('customers',state.dealerId,{first_name:String(fd.get('first_name')||'').trim(),last_name:String(fd.get('last_name')||'').trim(),phone:String(fd.get('phone')||'').trim(),next_step:'Nuovo contatto',status:'LEAD'});replaceRow('customers',row);closeModal();renderAll();renderConnectivity()}if(navigator.onLine)syncNow()}
 
-function initTelegram(){const tg=window.Telegram?.WebApp;if(!tg?.initData)return;state.telegram=tg;document.documentElement.classList.add('telegram');tg.ready();tg.expand();try{tg.setHeaderColor('#0b1220');tg.setBackgroundColor('#f4f5f7')}catch{}$('#telegramBanner').hidden=false;$('#telegramBanner').textContent='Telegram Mini App rilevata · identità da validare';const cfg=window.DEALER_CONFIG||{};if(cfg.workerUrl)validateTelegram(tg.initData).then(r=>{$('#telegramBanner').textContent=r.ok?'Telegram verificato ✓':'Telegram non verificato'}).catch(()=>{$('#telegramBanner').textContent='Telegram: validazione non disponibile'})}
-async function handleTelegramLink(){const tg=window.Telegram?.WebApp;if(!tg?.initData){alert('Apri questa app dal bot Telegram per collegare l’account.');return}try{await linkTelegram(tg.initData,state.dealerId);alert('Account Telegram collegato.');$('#telegramLinkBtn').textContent='Telegram collegato ✓'}catch(err){alert(`Collegamento non completato: ${err.message}`)}}
+function telegramError(error){const code=String(error?.message||error||'');return ({worker_not_configured:'Il collegamento Telegram non è ancora attivo.',unauthorized:'La sessione è scaduta: accedi di nuovo.',not_dealer_member:'Questo account non appartiene alla concessionaria.',expired:'Riapri la Mini App dal bot e riprova.',invalid_hash:'Identità Telegram non valida.'})[code]||'Collegamento non completato. Riapri la Mini App dal bot e riprova.'}
+function initTelegram(){const tg=window.Telegram?.WebApp;if(!tg?.initData)return;state.telegram=tg;document.documentElement.classList.add('telegram');tg.ready();tg.expand();try{tg.setHeaderColor('#0b1220');tg.setBackgroundColor('#f4f5f7');tg.BackButton?.onClick(()=>{const today=$('.navbtn[data-view="today"]');today?today.click():go('today')})}catch{}$('#telegramBanner').hidden=false;$('#telegramBanner').textContent='Telegram rilevato · controllo identità…';const cfg=window.DEALER_CONFIG||{};if(!cfg.workerUrl){$('#telegramBanner').textContent='Telegram in modalità demo · collegamento non attivo';return}validateTelegram(tg.initData).then(r=>{state.telegramValidated=!!r.ok;$('#telegramBanner').textContent=r.ok?`Telegram verificato ✓${r.user?.first_name?` · ${r.user.first_name}`:''}`:'Telegram non verificato · riapri dal bot'}).catch(err=>{$('#telegramBanner').textContent=telegramError(err)})}
+async function handleTelegramLink(){const tg=window.Telegram?.WebApp;if(!tg?.initData){alert('Apri questa app dal bot Telegram per collegare l’account.');return}const button=$('#telegramLinkBtn');try{button.disabled=true;button.textContent='Collegamento…';await linkTelegram(tg.initData,state.dealerId);button.textContent='Telegram collegato ✓';alert('Account Telegram collegato. Ora /start apre direttamente il tuo gestionale.')}catch(err){button.disabled=false;button.textContent='Riprova collegamento';alert(telegramError(err))}}
 async function installApp(){if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;renderInstall();return}alert('Su iPhone: Condividi → Aggiungi alla schermata Home. Su Chrome desktop: usa “Installa app” nella barra indirizzi.')}
 function renderInstall(){const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;$('#installBtn').hidden=!!standalone}
 
 boot();
+
