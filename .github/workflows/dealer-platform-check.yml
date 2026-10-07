@@ -1,0 +1,39 @@
+name: Dealer Platform Check
+
+on:
+  pull_request:
+    paths:
+      - 'dealer-platform/**'
+      - '.github/workflows/dealer-platform-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check dealer-platform/app.js
+          node --check dealer-platform/api.js
+          node --check dealer-platform/offline.js
+          node --check dealer-platform/sw.js
+          node --check dealer-platform/worker/index.js
+          node --check dealer-platform/worker/setup-telegram.mjs
+      - name: Manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('dealer-platform/manifest.webmanifest','utf8')); console.log('manifest ok')"
+      - name: Secret guard
+        run: |
+          ! grep -R -E "(sk_live_|sb_secret_|service_role[^A-Za-z0-9]*[:=][^A-Za-z0-9]*(eyJ|[A-Za-z0-9_-]{30,}))" dealer-platform --exclude='*.md' --exclude='*.example' || (echo 'Possible committed secret' && exit 1)
+      - name: Required offline assets
+        run: |
+          test -f dealer-platform/index.html
+          test -f dealer-platform/offline.js
+          test -f dealer-platform/sw.js
+          test -f dealer-platform/worker/index.js
