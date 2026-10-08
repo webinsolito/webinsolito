@@ -36,6 +36,8 @@ jobs:
           node --check dealer-platform/finances.js
           node --check dealer-platform/autoscout-advisor.js
           node --check dealer-platform/autoscout.js
+          node --check dealer-platform/autoscout-link.js
+          node --check dealer-platform/autoscout-safety.js
           node --check dealer-platform/instagram.js
           node --check dealer-platform/reports.js
           node --check dealer-platform/admin.js
@@ -70,6 +72,8 @@ jobs:
           test -f dealer-platform/finances.js
           test -f dealer-platform/autoscout-advisor.js
           test -f dealer-platform/autoscout.js
+          test -f dealer-platform/autoscout-link.js
+          test -f dealer-platform/autoscout-safety.js
           test -f dealer-platform/instagram.js
           test -f dealer-platform/reports.js
           test -f dealer-platform/admin.js
@@ -111,8 +115,12 @@ jobs:
           grep -q "suggestAutoScoutPrice" dealer-platform/autoscout.js
           grep -q "AUTOSCOUT_EXPORT" dealer-platform/autoscout.js
           grep -q "Esporta stock" dealer-platform/autoscout.js
+          grep -q "normalizeAutoScoutUrl" dealer-platform/autoscout-link.js
+          grep -q "MISSING_LISTING_ID" dealer-platform/autoscout-link.js
+          grep -q "Apri annuncio AutoScout24" dealer-platform/autoscout-safety.js
+          grep -q "autoscout-safety.js" dealer-platform/config.js
+          grep -q "autoscout-safety.js" dealer-platform/sw.js
           grep -q "autoscout_published_at" dealer-platform/supabase/migrations/0009_autoscout_v11.sql
-          grep -q "autoscout.js" dealer-platform/sw.js
       - name: Instagram invariants
         run: |
           grep -q "content_type" dealer-platform/instagram.js
