@@ -11,6 +11,7 @@ window.DEALER_CONFIG = Object.freeze({
 
 // Keep feature modules isolated from the core app so each section can evolve without regressions.
 window.addEventListener('DOMContentLoaded',()=>{
+  const demo=document.getElementById('demoBtn');if(demo)demo.hidden=true;
   const legacy=document.getElementById('clientList');
   if(legacy&&!document.getElementById('clientsApp')){
     const root=document.createElement('div');root.id='clientsApp';legacy.hidden=true;legacy.before(root);
