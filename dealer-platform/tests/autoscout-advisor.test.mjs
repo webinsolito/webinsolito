@@ -20,6 +20,17 @@ test('prezzo suggerito riduce lo stock anziano senza scendere sotto il minimo',(
   assert.equal(result.discount,.05);
   assert.equal(result.suggested,12300);
   assert.equal(result.margin,3100);
+  assert.equal(result.hasFinancialFloor,true);
+});
+
+test('senza dati finanziari non applica ribassi ciechi e non espone margine',()=>{
+  const result=suggestAutoScoutPrice(vehicles[0],[],[],now);
+  assert.equal(result.discount,0);
+  assert.equal(result.suggested,12900);
+  assert.equal(result.margin,null);
+  assert.equal(result.minimum,null);
+  assert.equal(result.hasFinancialFloor,false);
+  assert.match(result.reason,/verifica il prezzo minimo/i);
 });
 
 test('priorità ignora veicoli già prenotati o da consegnare',()=>{
