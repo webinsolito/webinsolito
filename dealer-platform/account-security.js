@@ -9,6 +9,10 @@ function parseForced(raw){
 
 export function forcedPasswordSession(storage){return parseForced(storage?.getItem?.(SESSION_KEY))}
 export function stagedForcedPasswordSession(storage){return parseForced(storage?.getItem?.(STAGED_KEY))}
+export function stageForcedPasswordSession(local,staged){
+  const session=forcedPasswordSession(local);if(!session)return null;
+  staged.setItem(STAGED_KEY,JSON.stringify(session));local.removeItem(SESSION_KEY);return session;
+}
 
 export function updateForcedPasswordSession(storage,session,stagedStorage=null){
   const next={...session,profile:{...(session?.profile||{}),force_password_change:false}};
@@ -39,8 +43,13 @@ function renderGate(session){
 
 export function initForcedPasswordGate(){
   if(typeof window==='undefined'||typeof document==='undefined')return false;
-  const session=stagedForcedPasswordSession(sessionStorage)||forcedPasswordSession(localStorage);if(!session)return false;
-  const start=()=>renderGate(session);document.readyState==='loading'?document.addEventListener('DOMContentLoaded',start,{once:true}):start();return true;
+  let session=stagedForcedPasswordSession(sessionStorage)||stageForcedPasswordSession(localStorage,sessionStorage);if(!session)return false;
+  const start=()=>renderGate(session);document.readyState==='loading'?document.addEventListener('DOMContentLoaded',start,{once:true}):start();
+  window.addEventListener('dealer:session',()=>{const fresh=stageForcedPasswordSession(localStorage,sessionStorage);if(fresh)location.reload()});
+  return true;
 }
 
-if(typeof window!=='undefined')initForcedPasswordGate();
+if(typeof window!=='undefined'){
+  const active=initForcedPasswordGate();
+  if(!active)window.addEventListener('dealer:session',()=>{const fresh=stageForcedPasswordSession(localStorage,sessionStorage);if(fresh)location.reload()});
+}
