@@ -9,7 +9,18 @@ window.DEALER_CONFIG = Object.freeze({
   demoMode: false
 });
 
-// Load the account gate as early as possible: temporary passwords must be changed before normal use.
+// Stage accounts using a temporary password before app.js boots.
+// app.js then sees no active session and cannot load dealer data until the password is changed.
+try{
+  const raw=localStorage.getItem('dealer-platform-session');
+  const saved=raw?JSON.parse(raw):null;
+  if(saved?.profile?.force_password_change===true){
+    sessionStorage.setItem('dealer-platform-forced-session',raw);
+    localStorage.removeItem('dealer-platform-session');
+  }
+}catch{}
+
+// Load the account gate immediately after staging the temporary session.
 import('./account-security.js?v=1.6.6').catch(err=>console.warn('Sicurezza account non caricata',err));
 
 // A legacy demo session must never survive once the real backend is enabled.
