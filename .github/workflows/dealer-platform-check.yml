@@ -43,7 +43,10 @@ jobs:
           node --check dealer-platform/instagram-safety.js
           node --check dealer-platform/report-metrics.js
           node --check dealer-platform/reports.js
+          node --check dealer-platform/admin-policy.js
+          node --check dealer-platform/account-security.js
           node --check dealer-platform/admin.js
+          node --check dealer-platform/admin-safety.js
           node --check dealer-platform/backup-core.js
           node --check dealer-platform/backup.js
           node --check dealer-platform/sw.js
@@ -82,7 +85,10 @@ jobs:
           test -f dealer-platform/instagram-safety.js
           test -f dealer-platform/report-metrics.js
           test -f dealer-platform/reports.js
+          test -f dealer-platform/admin-policy.js
+          test -f dealer-platform/account-security.js
           test -f dealer-platform/admin.js
+          test -f dealer-platform/admin-safety.js
           test -f dealer-platform/backup-core.js
           test -f dealer-platform/backup.js
           test -f dealer-platform/worker/index.js
@@ -154,14 +160,22 @@ jobs:
           grep -q "reports.js?v=1.6.5" dealer-platform/config.js
       - name: Admin invariants
         run: |
-          grep -q "admin_manage" dealer-platform/admin.js
           grep -q "force_password_change" dealer-platform/worker/admin.js
           grep -q "temporaryPassword" dealer-platform/worker/admin.js
           grep -q "cannot_demote_or_suspend_self" dealer-platform/worker/admin.js
           grep -q "last_admin_required" dealer-platform/worker/admin.js
+          grep -q "canAdministerDealer(member)" dealer-platform/worker/admin.js
+          grep -q "normalizeRolePermissions(role,value)" dealer-platform/worker/admin.js
+          grep -q "revokeTelegram(env,auth.dealerId,userId)" dealer-platform/worker/admin.js
+          grep -q "passwordPolicy(password).ok" dealer-platform/worker/admin.js
+          grep -q "dealer-platform-forced-session" dealer-platform/config.js
+          grep -q "account-security.js?v=1.6.6" dealer-platform/config.js
+          grep -q "admin-safety.js?v=1.6.6" dealer-platform/config.js
           grep -q "SERVICE KEY SOLO SERVER" dealer-platform/admin.js
           grep -q "handleAdminRoute" dealer-platform/worker/index.js
-          grep -q "admin.js" dealer-platform/sw.js
+          grep -q "admin-policy.js?v=1.6.6" dealer-platform/sw.js
+          grep -q "account-security.js?v=1.6.6" dealer-platform/sw.js
+          grep -q "admin-safety.js?v=1.6.6" dealer-platform/sw.js
       - name: Backup invariants
         run: |
           grep -q "MALU23_DEALER_BACKUP" dealer-platform/backup-core.js
