@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.6.1',
+  version: '1.6.3',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -43,6 +43,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./sales.js?v=1.6.1').catch(err=>console.warn('Vendite non caricate',err));
   import('./finances.js?v=1.6.1').catch(err=>console.warn('Finanze non caricate',err));
   import('./autoscout.js?v=1.6.2').catch(err=>console.warn('AutoScout non caricato',err));
+  import('./autoscout-safety.js?v=1.6.3').catch(err=>console.warn('Controllo qualità AutoScout non caricato',err));
   import('./instagram.js?v=1.6.1').catch(err=>console.warn('Instagram non caricato',err));
   import('./reports.js?v=1.6.1').catch(err=>console.warn('Report non caricati',err));
   import('./admin.js?v=1.6.1').catch(err=>console.warn('Admin non caricato',err));
