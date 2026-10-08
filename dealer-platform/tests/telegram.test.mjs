@@ -3,9 +3,7 @@ import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 
-const source=await readFile(new URL('../worker/index.js',import.meta.url),'utf8');
-const moduleUrl=`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
-const {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl}=await import(moduleUrl);
+const {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl}=await import(new URL('../worker/index.js',import.meta.url));
 
 function signedInitData(token,{user={id:123,first_name:'Luca'},authDate=Math.floor(Date.now()/1000)}={}){
   const params=new URLSearchParams({auth_date:String(authDate),query_id:'AAEAA',user:JSON.stringify(user)});
