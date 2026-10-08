@@ -1,5 +1,9 @@
 const ACTIVE_SALE_STAGES=new Set(['OPEN','AGREED','DEPOSIT','BALANCE_PENDING','READY']);
 
+export function canViewFinancialReports(profile={},demoMode=false){
+  return demoMode||['ADMIN','AMMINISTRAZIONE'].includes(profile?.role)||profile?.permissions?.finance_view===true||profile?.permissions?.view_costs===true;
+}
+
 export function latestSaleContract(vehicleId,contracts=[]){
   return contracts
     .filter(c=>c&&!c.deleted_at&&c.vehicle_id===vehicleId&&c.template_code==='VENDITA'&&c.sale_stage!=='CANCELLED')
@@ -58,20 +62,21 @@ export function buildReportRows({vehicles=[],financials=[],costs=[],invoices=[],
     const recognizedSale=state==='DELIVERED'?agreedSale:0;
     const saleDate=recognizedSaleDate(v,contract,invoice);
     const purchaseDate=v.purchase_date||v.created_at;
-    const stockDays=state==='DELIVERED'||!purchaseDate?0:Math.max(0,Math.floor((now.getTime()-new Date(purchaseDate).getTime())/86400000));
+    const purchaseTime=purchaseDate?new Date(purchaseDate).getTime():NaN;
+    const stockDays=state==='DELIVERED'||!Number.isFinite(purchaseTime)?0:Math.max(0,Math.floor((now.getTime()-purchaseTime)/86400000));
     return {vehicle:v,purchase,expenses,realCost,contract,invoice,state,agreedSale,recognizedSale,saleDate,margin:state==='DELIVERED'?recognizedSale-realCost:null,stockDays};
   });
 }
 
 export function reportTotals(rows,invoices,period='ALL',now=new Date()){
-  const activeCapital=rows.filter(r=>r.state!=='DELIVERED').reduce((s,r)=>s+r.realCost,0);
+  const stockRows=rows.filter(r=>r.state==='STOCK'),activeCapital=rows.filter(r=>r.state!=='DELIVERED').reduce((s,r)=>s+r.realCost,0);
   const delivered=rows.filter(r=>r.state==='DELIVERED'&&periodMatches(r.saleDate,period,now));
   const revenue=delivered.reduce((s,r)=>s+r.recognizedSale,0),margin=delivered.reduce((s,r)=>s+Number(r.margin||0),0);
   const saleInvoices=invoices.filter(i=>!i.deleted_at&&i.invoice_type==='SALE');
   const receivables=saleInvoices.reduce((s,i)=>s+openInvoiceAmount(i),0);
   const overdue=saleInvoices.filter(i=>isInvoiceOverdue(i,now)).reduce((s,i)=>s+openInvoiceAmount(i),0);
   return {
-    stockCount:rows.filter(r=>r.state==='STOCK').length,
+    stockCount:stockRows.length,
     pipelineCount:rows.filter(r=>r.state==='PIPELINE').length,
     activeCapital,
     deliveredCount:delivered.length,
@@ -79,7 +84,7 @@ export function reportTotals(rows,invoices,period='ALL',now=new Date()){
     margin,
     receivables,
     overdue,
-    aged60:rows.filter(r=>r.state==='STOCK'&&r.stockDays>=60).length,
-    averageStockDays:Math.round(rows.filter(r=>r.state==='STOCK').reduce((s,r)=>s+r.stockDays,0)/Math.max(1,rows.filter(r=>r.state==='STOCK').length))
+    aged60:stockRows.filter(r=>r.stockDays>=60).length,
+    averageStockDays:Math.round(stockRows.reduce((s,r)=>s+r.stockDays,0)/Math.max(1,stockRows.length))
   };
 }
