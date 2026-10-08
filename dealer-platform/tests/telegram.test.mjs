@@ -56,7 +56,7 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '1\.6\.1'/);
+  assert.match(config,/version: '1\.8\.0'/);
   assert.match(config,/sales\.js\?v=1\.6\.1/);
   assert.match(config,/autoscout\.js\?v=1\.6\.2/);
   assert.match(config,/backup\.js\?v=1\.6\.1/);
