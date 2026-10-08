@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.6.1',
+  version: '1.6.2',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -28,5 +28,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./reports.js?v=1.6.1').catch(err=>console.warn('Report non caricati',err));
   import('./admin.js?v=1.6.1').catch(err=>console.warn('Admin non caricato',err));
   import('./backup.js?v=1.6.1').catch(err=>console.warn('Backup non caricato',err));
+  import('./data-quality.js?v=1.6.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
 });
 
