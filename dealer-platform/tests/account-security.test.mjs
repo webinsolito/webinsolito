@@ -1,21 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {forcedPasswordSession,updateForcedPasswordSession} from '../account-security.js';
+import {forcedPasswordSession,stagedForcedPasswordSession,stageForcedPasswordSession,updateForcedPasswordSession} from '../account-security.js';
 
 function memoryStorage(seed={}){const map=new Map(Object.entries(seed));return {getItem:k=>map.has(k)?map.get(k):null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k),read:k=>map.get(k)}}
 
-test('sessione con password temporanea viene riconosciuta',()=>{
+test('sessione con password temporanea viene riconosciuta e staged prima del boot',()=>{
   const session={access_token:'x',dealer:{id:'d1'},profile:{force_password_change:true}};
-  const storage=memoryStorage({'dealer-platform-session':JSON.stringify(session)});
-  assert.equal(forcedPasswordSession(storage)?.dealer?.id,'d1');
+  const local=memoryStorage({'dealer-platform-session':JSON.stringify(session)}),staged=memoryStorage();
+  assert.equal(forcedPasswordSession(local)?.dealer?.id,'d1');
+  assert.equal(stageForcedPasswordSession(local,staged)?.dealer?.id,'d1');
+  assert.equal(local.getItem('dealer-platform-session'),null);
+  assert.equal(stagedForcedPasswordSession(staged)?.dealer?.id,'d1');
 });
 
-test('dopo cambio password la sessione locale perde il flag obbligatorio',()=>{
+test('dopo cambio password la sessione locale perde il flag e lo stage sparisce',()=>{
   const session={access_token:'x',profile:{role:'VENDITORE',force_password_change:true}};
-  const storage=memoryStorage();
-  const next=updateForcedPasswordSession(storage,session);
+  const storage=memoryStorage(),staged=memoryStorage({'dealer-platform-forced-session':JSON.stringify(session)});
+  const next=updateForcedPasswordSession(storage,session,staged);
   assert.equal(next.profile.force_password_change,false);
   assert.equal(JSON.parse(storage.read('dealer-platform-session')).profile.force_password_change,false);
+  assert.equal(staged.getItem('dealer-platform-forced-session'),null);
 });
 
 test('sessione normale non apre il gate',()=>{
