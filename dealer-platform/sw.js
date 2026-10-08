@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v1.4.0';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.4.0','./app.js?v=1.4.0','./today-priority.js?v=1.4.0','./delivery-readiness.js?v=1.4.0','./client-followup.js?v=1.4.0','./clients.js?v=1.4.0','./calendar.js?v=1.4.0','./documents.js?v=1.4.0','./contracts.js?v=1.4.0','./invoices.js?v=1.4.0','./sales.js?v=1.4.0','./finances.js?v=1.4.0','./api.js','./offline.js'];
+const CACHE='dealer-platform-v1.5.0';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.5.0','./app.js?v=1.5.0','./today-priority.js?v=1.5.0','./delivery-readiness.js?v=1.5.0','./client-followup.js?v=1.5.0','./calendar-priority.js?v=1.5.0','./clients.js?v=1.5.0','./calendar.js?v=1.5.0','./documents.js?v=1.5.0','./contracts.js?v=1.5.0','./invoices.js?v=1.5.0','./sales.js?v=1.5.0','./finances.js?v=1.5.0','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{
