@@ -1,3 +1,5 @@
+import {handleAdminRoute} from './admin.js';
+
 // MALÙ23 Dealer Platform — Cloudflare Worker V1.5
 // Secrets / vars expected in Worker environment only:
 // TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET_TOKEN, APP_URL,
@@ -219,10 +221,10 @@ export default {
       if(url.pathname==='/telegram/webhook'&&req.method==='POST')return webhook(req,env);
       if(url.pathname==='/documents/file'&&req.method==='PUT')return uploadDocument(req,env,url);
       if(url.pathname==='/documents/file'&&req.method==='GET')return downloadDocument(req,env,url);
+      const adminResponse=await handleAdminRoute(req,env,url);if(adminResponse)return adminResponse;
       return json({ok:false,error:'not_found'},404,cors(env,req));
     }catch(err){console.error(err);return json({ok:false,error:'internal_error'},500,cors(env,req))}
   }
 };
 
 export {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl};
-
