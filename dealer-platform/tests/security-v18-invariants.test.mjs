@@ -79,7 +79,7 @@ test('logout e cambio account eliminano cache tenant e mutazioni',()=>{
   assert.match(session,/OfflineDB\.clearTenant/);
   assert.match(session,/OfflineDB\.list\('mutations',dealerId\)/);
   assert.match(session,/switched/);
-  assert.match(config,/session-security\.js\?v=1\.8\.0/);
-  assert.match(sw,/dealer-platform-v1\.8\.0-security-hardening/);
-  assert.match(sw,/session-security\.js\?v=1\.8\.0/);
+  assert.match(config,/session-security\.js\?v=1\.8\.1/);
+  assert.match(sw,/dealer-platform-v1\.8\.1-session-containment/);
+  assert.match(sw,/session-security\.js\?v=1\.8\.1/);
 });
