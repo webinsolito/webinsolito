@@ -1,6 +1,6 @@
 import {OfflineDB} from './offline.js';
 import {Session,saveOfflineEntity} from './api.js';
-import {chooseClientFollowup,clientContactAction,snoozeUntil} from './client-followup.js?v=1.5.0';
+import {chooseClientFollowup,clientContactAction,snoozeUntil} from './client-followup.js?v=1.5.1';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
