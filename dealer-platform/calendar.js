@@ -1,6 +1,6 @@
 import {OfflineDB} from './offline.js';
 import {Session,saveOfflineEntity} from './api.js';
-import {chooseCalendarPriority,calendarAction} from './calendar-priority.js?v=1.5.1';
+import {chooseCalendarPriority,calendarAction} from './calendar-priority.js?v=1.5.2';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));

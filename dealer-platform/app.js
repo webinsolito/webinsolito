@@ -1,7 +1,7 @@
 import {OfflineDB,SyncEngine,mutationCount,uuid} from './offline.js';
 import {Session,login,logout,fetchTenantData,cachedTenantData,saveOfflineEntity,sendMutation,accessToken,validateTelegram,linkTelegram} from './api.js';
-import {chooseTodayPriority} from './today-priority.js?v=1.5.1';
-import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.5.1';
+import {chooseTodayPriority} from './today-priority.js?v=1.5.2';
+import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.5.2';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n||0));
@@ -44,7 +44,7 @@ function bindGlobal(){
   window.addEventListener('dealer:online',()=>{renderConnectivity();syncNow()});
   window.addEventListener('dealer:offline',renderConnectivity);
   window.addEventListener('dealer:queue-changed',()=>{renderConnectivity();refreshTodaySignals().catch(console.warn)});
-  window.addEventListener('dealer:open-vehicle',e=>{openView('garage');requestAnimationFrame(()=>openGarageDrawer(e.detail?.id))});
+  window.addEventListener('dealer:open-vehicle',e=>{openView('garage');openGarageDrawer(e.detail?.id)});
   $('#loginForm')?.addEventListener('submit',handleLogin);
   $('#logoutBtn')?.addEventListener('click',async()=>{await logout();location.reload()});
   $('#installBtn')?.addEventListener('click',installApp);
