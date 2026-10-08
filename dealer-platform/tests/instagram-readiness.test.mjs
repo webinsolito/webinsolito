@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {normalizePublicMediaUrl,instagramContentHealth,browserEditableStatus} from '../instagram-readiness.js';
-await import('../instagram-safety.js');
 
 test('accetta solo media HTTPS pubblici',()=>{
   assert.equal(normalizePublicMediaUrl('https://cdn.example.com/car.jpg'),'https://cdn.example.com/car.jpg');
