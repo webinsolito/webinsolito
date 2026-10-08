@@ -35,6 +35,7 @@ jobs:
           node --check dealer-platform/sales.js
           node --check dealer-platform/finances.js
           node --check dealer-platform/autoscout.js
+          node --check dealer-platform/instagram.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/setup-telegram.mjs
@@ -44,7 +45,7 @@ jobs:
         run: node -e "JSON.parse(require('fs').readFileSync('dealer-platform/manifest.webmanifest','utf8')); console.log('manifest ok')"
       - name: Secret guard
         run: |
-          ! grep -R -E "(sk_live_|sb_secret_|service_role[^A-Za-z0-9]*[:=][^A-Za-z0-9]*(eyJ|[A-Za-z0-9_-]{30,})|AUTOSCOUT_(USER|PASSWORD)[^A-Za-z0-9]*[:=][^A-Za-z0-9]+[^$'{])" dealer-platform --exclude='*.md' --exclude='*.example' || (echo 'Possible committed secret' && exit 1)
+          ! grep -R -E "(sk_live_|sb_secret_|service_role[^A-Za-z0-9]*[:=][^A-Za-z0-9]*(eyJ|[A-Za-z0-9_-]{30,})|AUTOSCOUT_(USER|PASSWORD)[^A-Za-z0-9]*[:=][^A-Za-z0-9]+[^$'{]|(META|INSTAGRAM)_(ACCESS_TOKEN|APP_SECRET)[^A-Za-z0-9]*[:=][^A-Za-z0-9]+[^$'{])" dealer-platform --exclude='*.md' --exclude='*.example' || (echo 'Possible committed secret' && exit 1)
       - name: Required offline assets
         run: |
           test -f dealer-platform/index.html
@@ -62,6 +63,7 @@ jobs:
           test -f dealer-platform/sales.js
           test -f dealer-platform/finances.js
           test -f dealer-platform/autoscout.js
+          test -f dealer-platform/instagram.js
           test -f dealer-platform/worker/index.js
       - name: Contract invariants
         run: |
@@ -98,3 +100,11 @@ jobs:
           grep -q "Esporta stock" dealer-platform/autoscout.js
           grep -q "autoscout_published_at" dealer-platform/supabase/migrations/0009_autoscout_v11.sql
           grep -q "autoscout.js" dealer-platform/sw.js
+      - name: Instagram invariants
+        run: |
+          grep -q "content_type" dealer-platform/instagram.js
+          grep -q "SCHEDULED" dealer-platform/instagram.js
+          grep -q "Genera caption auto" dealer-platform/instagram.js
+          grep -q "instagram_posts_member_select" dealer-platform/supabase/migrations/0010_instagram_v12.sql
+          grep -q "instagram_manage" dealer-platform/supabase/migrations/0010_instagram_v12.sql
+          grep -q "instagram.js" dealer-platform/sw.js
