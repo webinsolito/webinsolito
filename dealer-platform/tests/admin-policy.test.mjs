@@ -28,7 +28,7 @@ test('password personale richiede 12 caratteri, maiuscola, minuscola, numero e s
 });
 
 test('logo concessionaria accetta solo HTTPS senza credenziali',()=>{
-  assert.equal(normalizeHttpsLogoUrl(''),'');
+  assert.equal(normalizeHttpsLogoUrl(''),null);
   assert.throws(()=>normalizeHttpsLogoUrl('http://example.com/logo.png'),/invalid_logo_url/);
   assert.throws(()=>normalizeHttpsLogoUrl('https://user:pass@example.com/logo.png'),/invalid_logo_url/);
   assert.equal(normalizeHttpsLogoUrl('https://cdn.example.com/logo.png'),'https://cdn.example.com/logo.png');
