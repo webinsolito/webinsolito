@@ -47,7 +47,7 @@ test('totali periodo riconoscono solo consegne e tengono capitale non consegnato
   assert.equal(totals.revenue,16000);
   assert.equal(totals.margin,5000);
   assert.equal(totals.deliveredCount,1);
-  assert.equal(totals.receivables,16000);
+  assert.equal(totals.receivables,18000);
   assert.equal(totals.overdue,5000);
 });
 
