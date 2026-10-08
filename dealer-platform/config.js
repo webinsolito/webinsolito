@@ -28,5 +28,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./reports.js?v=1.6.1').catch(err=>console.warn('Report non caricati',err));
   import('./admin.js?v=1.6.1').catch(err=>console.warn('Admin non caricato',err));
   import('./backup.js?v=1.6.1').catch(err=>console.warn('Backup non caricato',err));
+  import('./data-quality.js?v=1.6.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
 });
 
