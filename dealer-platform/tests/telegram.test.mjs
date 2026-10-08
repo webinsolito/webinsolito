@@ -51,18 +51,20 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   const config=await readFile(new URL('../config.js',import.meta.url),'utf8');
   const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  const featureModules=await Promise.all(['sales.js','finances.js'].map(name=>readFile(new URL(`../${name}`,import.meta.url),'utf8')));
+  const featureModules=await Promise.all(['sales.js','finances.js','admin.js','backup.js'].map(name=>readFile(new URL(`../${name}`,import.meta.url),'utf8')));
   assert.match(app,/TELEGRAM_VIEWS=new Set\(\['today','garage','clients','calendar','documenti','vendite','fatture','finanze','autoscout'\]\)/);
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '1\.6\.0'/);
-  assert.match(config,/sales\.js\?v=1\.6\.0/);
-  assert.match(config,/autoscout\.js\?v=1\.6\.0/);
-  assert.match(sw,/dealer-platform-v1\.6\.0/);
-  assert.match(sw,/autoscout-advisor\.js\?v=1\.6\.0/);
-  assert.match(html,/V1\.6\.0 · AutoScout guidato/);
-  assert.match(html,/app\.js\?v=1\.6\.0/);
+  assert.match(config,/version: '1\.6\.1'/);
+  assert.match(config,/sales\.js\?v=1\.6\.1/);
+  assert.match(config,/autoscout\.js\?v=1\.6\.1/);
+  assert.match(config,/backup\.js\?v=1\.6\.1/);
+  assert.match(sw,/dealer-platform-v1\.6\.1/);
+  assert.match(sw,/backup-core\.js\?v=1\.6\.1/);
+  assert.match(html,/V1\.6\.1 · Backup sicuro/);
+  assert.match(html,/app\.js\?v=1\.6\.1/);
   assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
 });
+
 

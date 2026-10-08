@@ -1,7 +1,7 @@
 import {OfflineDB,SyncEngine,mutationCount,uuid} from './offline.js';
 import {Session,login,logout,fetchTenantData,cachedTenantData,saveOfflineEntity,sendMutation,accessToken,validateTelegram,linkTelegram} from './api.js';
-import {chooseTodayPriority} from './today-priority.js?v=1.6.0';
-import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.6.0';
+import {chooseTodayPriority} from './today-priority.js?v=1.6.1';
+import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.6.1';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n||0));
@@ -159,5 +159,6 @@ async function installApp(){if(deferredInstall){deferredInstall.prompt();await d
 function renderInstall(){const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;$('#installBtn').hidden=!!standalone}
 
 boot();
+
 
 

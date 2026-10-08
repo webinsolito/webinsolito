@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v1.6.0';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.6.0','./app.js?v=1.6.0','./today-priority.js?v=1.6.0','./delivery-readiness.js?v=1.6.0','./client-followup.js?v=1.6.0','./calendar-priority.js?v=1.6.0','./clients.js?v=1.6.0','./calendar.js?v=1.6.0','./documents.js?v=1.6.0','./contracts.js?v=1.6.0','./invoices.js?v=1.6.0','./sales.js?v=1.6.0','./finances.js?v=1.6.0','./autoscout-advisor.js?v=1.6.0','./autoscout.js?v=1.6.0','./instagram.js?v=1.6.0','./reports.js?v=1.6.0','./admin.js?v=1.6.0','./api.js','./offline.js'];
+const CACHE='dealer-platform-v1.6.1';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.6.1','./app.js?v=1.6.1','./today-priority.js?v=1.6.1','./delivery-readiness.js?v=1.6.1','./client-followup.js?v=1.6.1','./calendar-priority.js?v=1.6.1','./clients.js?v=1.6.1','./calendar.js?v=1.6.1','./documents.js?v=1.6.1','./contracts.js?v=1.6.1','./invoices.js?v=1.6.1','./sales.js?v=1.6.1','./finances.js?v=1.6.1','./autoscout-advisor.js?v=1.6.1','./autoscout.js?v=1.6.1','./instagram.js?v=1.6.1','./reports.js?v=1.6.1','./admin.js?v=1.6.1','./backup-core.js?v=1.6.1','./backup.js?v=1.6.1','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{
@@ -23,4 +23,5 @@ self.addEventListener('fetch',event=>{
 });
 
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});
+
 

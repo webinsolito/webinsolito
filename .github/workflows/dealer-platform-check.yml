@@ -39,6 +39,8 @@ jobs:
           node --check dealer-platform/instagram.js
           node --check dealer-platform/reports.js
           node --check dealer-platform/admin.js
+          node --check dealer-platform/backup-core.js
+          node --check dealer-platform/backup.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
           node --check dealer-platform/worker/admin.js
@@ -71,6 +73,8 @@ jobs:
           test -f dealer-platform/instagram.js
           test -f dealer-platform/reports.js
           test -f dealer-platform/admin.js
+          test -f dealer-platform/backup-core.js
+          test -f dealer-platform/backup.js
           test -f dealer-platform/worker/index.js
           test -f dealer-platform/worker/admin.js
       - name: Contract invariants
@@ -137,3 +141,12 @@ jobs:
           grep -q "SERVICE KEY SOLO SERVER" dealer-platform/admin.js
           grep -q "handleAdminRoute" dealer-platform/worker/index.js
           grep -q "admin.js" dealer-platform/sw.js
+      - name: Backup invariants
+        run: |
+          grep -q "MALU23_DEALER_BACKUP" dealer-platform/backup-core.js
+          grep -q "backup_wrong_dealer" dealer-platform/backup-core.js
+          grep -q "mergeForRestore" dealer-platform/backup.js
+          grep -q "document_blobs" dealer-platform/backup-core.js
+          grep -q "mutations" dealer-platform/backup-core.js
+          grep -q "backup.js" dealer-platform/sw.js
+
