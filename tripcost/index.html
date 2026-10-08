@@ -1,70 +1,72 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-app-build="tripcost-rebuild-v1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#173a5e">
-<meta name="description" content="Calcola il costo di un viaggio in auto: carburante, pedaggi, parcheggi e quota per persona.">
+<meta name="theme-color" content="#07111c">
+<meta name="description" content="Calcola in tempo reale carburante, pedaggi, parcheggio e quota per persona di un viaggio in auto.">
 <link rel="canonical" href="https://webinsolito.github.io/webinsolito/tripcost/">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
-<meta property="og:title" content="TripCost — quanto costa questo viaggio?">
-<meta property="og:description" content="Carburante, pedaggi e quota per persona in pochi secondi.">
-<title>TripCost — costo viaggio auto</title>
-<link rel="stylesheet" href="../assets/webinsolito-core.css">
+<title>TripCost — costo reale del viaggio</title>
 <style>
-:root{--navy:#173a5e;--blue:#6fb7ff;--sand:#f2d6a0;--green:#7cffb2;--bg:#f3f6f8;--ink:#16293b;--muted:#748496;--line:#dce4ea}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
-.app{max-width:1040px;margin:auto;padding:14px 14px 84px}.top{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px;font-weight:950;font-size:20px}.brand img{width:44px}.top a{font-size:10px;color:#6d7e90;text-decoration:none}
-.hero{margin-top:14px;border-radius:28px;background:linear-gradient(135deg,#173a5e,#226887);color:#fff;padding:24px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:end;min-height:220px}.ey{font-size:9px;color:#f2d6a0;font-weight:900;letter-spacing:.14em}.hero h1{font-size:43px;line-height:.95;letter-spacing:-2px;margin:7px 0}.hero p{font-size:11px;line-height:1.5;color:#cedbe5;margin:0}.heroResult{background:#ffffff0d;border:1px solid #ffffff1a;border-radius:20px;padding:16px}.heroResult span{font-size:9px;color:#c3d2dd}.heroResult b{display:block;font-size:32px;margin-top:3px}
-.layout{display:grid;grid-template-columns:1fr .78fr;gap:12px;margin-top:12px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px}.card h2{font-size:18px;margin:0 0 10px}.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px;background:#fbfcfd;font:inherit;outline:none}.f:focus{border-color:var(--blue);box-shadow:0 0 0 4px #6fb7ff1f}.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fbfcfd;font-size:11px}.check input{width:18px;height:18px}.btn{border:0;border-radius:12px;padding:11px 13px;font-weight:900;cursor:pointer}.btn.primary{background:var(--navy);color:#fff}.btn.green{background:var(--green);color:#123624}.btn.soft{background:#edf2f5;color:#53677a}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.result{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fafcfd}.metric span{font-size:9px;color:#7a8998}.metric b{display:block;font-size:22px;margin-top:4px}.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf1f4;font-size:10px}.line:last-child{border:0}.history{display:grid;gap:8px}.hist{border:1px solid var(--line);border-radius:14px;padding:11px;display:flex;justify-content:space-between;gap:10px}.hist b{display:block;font-size:12px}.hist span{font-size:9px;color:#7a8999}.empty{font-size:10px;color:#8796a5;padding:8px 0}.note{margin-top:10px;background:#fff8e8;border:1px solid #eddfbb;border-radius:14px;padding:11px;font-size:9px;line-height:1.5;color:#685b35}
-@media(max-width:760px){.hero,.layout{grid-template-columns:1fr}.heroResult{display:none}.form,.result{grid-template-columns:1fr}.app{padding:10px 10px 78px}.hero{border-radius:24px}.hero h1{font-size:38px}.top a{display:none}}
+:root{color-scheme:dark;--bg:#06101a;--panel:#0b1a28;--panel2:#0e2233;--line:rgba(139,176,204,.18);--text:#f5f8fb;--muted:#8ca0b2;--gold:#ead48e;--blue:#79bfff;--ok:#7be0aa;--danger:#ff9d9d}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:linear-gradient(180deg,#07131f,#040b12 72%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}.app{width:min(100%,720px);margin:auto;padding:18px 16px calc(34px + env(safe-area-inset-bottom))}.top{display:flex;align-items:center;gap:12px;padding:4px 2px 18px}.top img{width:42px;height:42px}.top strong{display:block;font-size:20px;letter-spacing:-.04em}.top span{display:block;margin-top:2px;color:var(--muted);font-size:11px}.intro{padding:8px 2px 22px}.intro h1{margin:0;max-width:520px;font-size:38px;line-height:1.02;letter-spacing:-.055em}.intro p{margin:10px 0 0;max-width:560px;color:var(--muted);font-size:14px;line-height:1.55}.layout{display:grid;grid-template-columns:1fr;gap:14px}.card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(150deg,rgba(14,34,51,.96),rgba(8,23,35,.98));padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.card h2{margin:0 0 4px;font-size:18px;letter-spacing:-.035em}.sub{margin:0 0 14px;color:var(--muted);font-size:11px;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:10px;font-weight:800;color:#a9bac8;letter-spacing:.02em}.input,.select{width:100%;min-height:50px;border:1px solid var(--line);border-radius:15px;background:#071521;color:var(--text);padding:0 13px;font:inherit;font-size:16px;outline:none}.input:focus,.select:focus{border-color:rgba(234,212,142,.58);box-shadow:0 0 0 3px rgba(234,212,142,.06)}.input::placeholder{color:#597083}.seg{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:16px;background:#071521}.seg button{min-height:42px;border:0;border-radius:12px;background:transparent;color:#8095a7;font-weight:850}.seg button.on{background:#183850;color:#fff;box-shadow:inset 0 0 0 1px rgba(234,212,142,.16)}.resultCard{border-color:rgba(234,212,142,.25);background:linear-gradient(145deg,rgba(38,37,24,.64),rgba(10,29,44,.98))}.resultTop{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.resultTop span{display:block;color:#aab9c5;font-size:10px;font-weight:800}.total{margin-top:3px;font-size:40px;line-height:1;font-weight:950;letter-spacing:-.055em}.perPerson{text-align:right}.perPerson b{display:block;margin-top:4px;color:var(--gold);font-size:22px;letter-spacing:-.04em}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.metric{padding:11px;border:1px solid var(--line);border-radius:15px;background:rgba(5,17,27,.55)}.metric span{display:block;color:#8297aa;font-size:9px}.metric b{display:block;margin-top:4px;font-size:14px}.breakdown{margin-top:14px}.line{display:flex;justify-content:space-between;gap:12px;padding:9px 1px;border-bottom:1px solid rgba(139,176,204,.10);font-size:11px}.line:last-child{border-bottom:0}.line span{color:#8ea2b4}.line b{font-size:11px}.hint{margin-top:12px;padding:11px 12px;border:1px solid rgba(121,191,255,.15);border-radius:15px;background:rgba(42,110,159,.09);color:#94aabd;font-size:10px;line-height:1.45}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.btn{min-height:48px;border:1px solid var(--line);border-radius:15px;background:#0b1e2e;color:var(--text);font-weight:900;font-size:13px}.btn.primary{border-color:rgba(234,212,142,.38);background:var(--gold);color:#211d11}.btn:disabled{opacity:.42}.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.link{color:#abc0d0;text-decoration:none;font-size:10px;border-bottom:1px solid rgba(171,192,208,.28);padding-bottom:2px}.saved{min-height:18px;margin-top:10px;color:var(--ok);font-size:10px}.error{color:var(--danger)}
+@media(min-width:700px){.layout{grid-template-columns:1.05fr .95fr;align-items:start}.resultCard{position:sticky;top:14px}}
+@media(max-width:430px){.app{padding-left:14px;padding-right:14px}.intro h1{font-size:34px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.metrics{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.total{font-size:36px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TripCost","applicationCategory":"TravelApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"url":"https://webinsolito.github.io/webinsolito/tripcost/"}</script>
 </head>
 <body>
 <main class="app">
-<header class="top"><div class="brand"><img src="logo.svg" alt="">TripCost</div><a href="../">← Webinsolito</a></header>
-<section class="hero"><div><div class="ey">AUTO & MOBILITÀ</div><h1>Quanto costa questo viaggio?</h1><p>Km, consumo, carburante, pedaggi e persone: TripCost fa i conti e divide la spesa.</p></div><div class="heroResult"><span>Totale viaggio</span><b id="heroTotal">—</b><span id="heroPeople">Compila i dati per iniziare</span></div></section>
+<header class="top"><img src="logo.svg" alt=""><div><strong>TripCost</strong><span>Quanto costa davvero il viaggio</span></div></header>
+<section class="intro"><h1>Fai i conti prima di partire.</h1><p>Inserisci i dati reali della tua auto e le spese del viaggio. Il totale e la quota a persona si aggiornano subito.</p></section>
 <div class="layout">
-<section class="card"><h2>Il viaggio</h2>
-<div class="form">
-<input class="f" id="tripName" placeholder="Nome, es. Milano concerto">
-<input class="f" id="distance" type="number" min="0" step="1" placeholder="Km solo andata">
-<label class="check"><input id="roundTrip" type="checkbox" checked>Andata e ritorno</label>
-<input class="f" id="people" type="number" min="1" value="2" placeholder="Persone">
-<input class="f" id="cons" type="number" min="0" step=".1" value="6.5" placeholder="Consumo L/100 km">
-<input class="f" id="fuel" type="number" min="0" step=".001" placeholder="Prezzo carburante €/L">
-<input class="f" id="tolls" type="number" min="0" step=".1" placeholder="Pedaggi totali €">
-<input class="f" id="parking" type="number" min="0" step=".1" placeholder="Parcheggio €">
-<input class="f" id="other" type="number" min="0" step=".1" placeholder="Altri costi €">
+<section class="card" aria-labelledby="tripFormTitle">
+<h2 id="tripFormTitle">Il viaggio</h2><p class="sub">Niente stime nascoste: usiamo solo i valori che inserisci tu.</p>
+<div class="grid">
+<div class="field full"><label for="distance">Distanza solo andata (km)</label><input class="input" id="distance" inputmode="decimal" type="number" min="0" step="1" placeholder="Es. 95"></div>
+<div class="field full"><label>Tragitto</label><div class="seg" role="group" aria-label="Tipo di tragitto"><button type="button" id="oneWayBtn">Solo andata</button><button type="button" id="roundTripBtn" class="on">Andata e ritorno</button></div></div>
+<div class="field"><label for="people">Persone</label><input class="input" id="people" inputmode="numeric" type="number" min="1" step="1" value="1"></div>
+<div class="field"><label for="consumptionMode">Consumo espresso in</label><select class="select" id="consumptionMode"><option value="l100">L / 100 km</option><option value="kml">km / L</option></select></div>
+<div class="field"><label for="consumption">Consumo auto</label><input class="input" id="consumption" inputmode="decimal" type="number" min="0.1" step="0.1" value="6.5"></div>
+<div class="field"><label for="fuelPrice">Carburante (€/L)</label><input class="input" id="fuelPrice" inputmode="decimal" type="number" min="0" step="0.001" value="1.800"></div>
+<div class="field"><label for="tolls">Pedaggi totali (€)</label><input class="input" id="tolls" inputmode="decimal" type="number" min="0" step="0.1" placeholder="0"></div>
+<div class="field"><label for="parking">Parcheggio (€)</label><input class="input" id="parking" inputmode="decimal" type="number" min="0" step="0.1" placeholder="0"></div>
+<div class="field full"><label for="extras">Altre spese (€)</label><input class="input" id="extras" inputmode="decimal" type="number" min="0" step="0.1" placeholder="0"></div>
 </div>
-<div class="actions"><button class="btn green" onclick="calc()">Calcola viaggio</button><button class="btn soft" onclick="loadExample()">Esempio</button></div>
-<div class="note">La quota per persona divide in parti uguali il costo totale. Eventuali accordi diversi vanno gestiti a parte, ad esempio con Splitly.</div>
+<div class="actions"><button type="button" class="btn" id="saveSettings">Salva i miei valori</button><button type="button" class="btn" id="resetBtn">Azzera viaggio</button></div>
+<div id="saveMessage" class="saved" aria-live="polite"></div>
 </section>
-<aside>
-<section class="card"><h2>Risultato</h2>
-<div class="result"><div class="metric"><span>Totale</span><b id="total">—</b></div><div class="metric"><span>A persona</span><b id="perPerson">—</b></div><div class="metric"><span>Carburante</span><b id="fuelCost">—</b></div><div class="metric"><span>Litri stimati</span><b id="litres">—</b></div></div>
-<div id="breakdown"></div>
-<div class="actions"><button class="btn primary" onclick="saveTrip()">Salva viaggio</button><a class="btn soft" style="text-decoration:none" href="../fuelgo/">Guarda prezzi carburante</a><a class="btn soft" style="text-decoration:none" href="../splitly/">Dividi spese</a><a class="btn soft" style="text-decoration:none" href="../packr/">Prepara la valigia</a></div>
+<section class="card resultCard" aria-labelledby="resultTitle">
+<div class="resultTop"><div><span id="resultTitle">Totale viaggio</span><div class="total" id="total">—</div></div><div class="perPerson"><span>A persona</span><b id="perPerson">—</b></div></div>
+<div class="metrics"><div class="metric"><span>Km totali</span><b id="totalKm">—</b></div><div class="metric"><span>Litri stimati</span><b id="litres">—</b></div><div class="metric"><span>Carburante</span><b id="fuelCost">—</b></div></div>
+<div class="breakdown" id="breakdown"></div>
+<div class="hint" id="hint">Inserisci almeno la distanza. Consumo e prezzo carburante sono modificabili e vengono salvati solo sul tuo dispositivo.</div>
+<div class="actions"><button type="button" class="btn primary" id="shareBtn" disabled>Condividi risultato</button><button type="button" class="btn" id="copyBtn" disabled>Copia riepilogo</button></div>
+<div class="links"><a class="link" href="../fuelgo/">Controlla il prezzo su FuelGo</a><a class="link" href="../splitly/">Divisione spese avanzata su Splitly</a></div>
 </section>
-<section class="card" style="margin-top:12px"><h2>Viaggi salvati</h2><div id="historyList" class="history"></div></section>
-</aside>
 </div>
 </main>
-<script src="../assets/webinsolito-core.js"></script>
 <script>
-const KEY='tripcost.v1';let last=null,S=Webinsolito.store.get(KEY,{history:[]});
-const euro=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n||0);
-const num=id=>Math.max(0,+document.getElementById(id).value||0);
-function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
-function init(){const q=new URLSearchParams(location.search),p=+q.get('fuel');if(p>0)fuel.value=p.toFixed(3);renderHistory()}
-function calc(){const kmOne=num('distance'),kmTotal=kmOne*(roundTrip.checked?2:1),p=Math.max(1,num('people')),c=num('cons'),fp=num('fuel'),l=kmTotal/100*c,fc=l*fp,tl=num('tolls'),pk=num('parking'),ot=num('other'),sum=fc+tl+pk+ot;last={name:tripName.value.trim()||'Viaggio',distance:kmOne,roundTrip:roundTrip.checked,kmTotal,people:p,cons:c,fuel:fp,litres:l,fuelCost:fc,tolls:tl,parking:pk,other:ot,total:sum,perPerson:sum/p,at:new Date().toISOString()};total.textContent=euro(sum);perPerson.textContent=euro(last.perPerson);fuelCost.textContent=euro(fc);litres.textContent=l.toFixed(1)+' L';heroTotal.textContent=euro(sum);heroPeople.textContent=euro(last.perPerson)+' a persona';breakdown.innerHTML=[['Distanza totale',kmTotal+' km'],['Carburante',euro(fc)],['Pedaggi',euro(tl)],['Parcheggio',euro(pk)],['Altri costi',euro(ot)]].map(x=>'<div class="line"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');return last}
-function saveTrip(){const x=calc();S.history.unshift(x);S.history=S.history.slice(0,12);Webinsolito.store.set(KEY,S);renderHistory();Webinsolito.toast('Viaggio salvato')}
-function renderHistory(){historyList.innerHTML=S.history.length?S.history.map((x,i)=>'<div class="hist"><div><b>'+esc(x.name)+'</b><span>'+x.kmTotal+' km · '+euro(x.total)+' · '+euro(x.perPerson)+'/persona</span></div><button class="btn soft" onclick="removeTrip('+i+')">Togli</button></div>').join(''):'<div class="empty">Nessun viaggio salvato.</div>'}
-function removeTrip(i){S.history.splice(i,1);Webinsolito.store.set(KEY,S);renderHistory()}
-function loadExample(){tripName.value='Brescia → Milano';distance.value=95;roundTrip.checked=true;people.value=3;cons.value=6.4;fuel.value=1.8;tolls.value=16;parking.value=12;other.value=0;calc()}
-init();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
+(()=>{
+'use strict';
+const BUILD='tripcost-rebuild-v1', SETTINGS_KEY='tripcost.settings.v2';
+document.documentElement.dataset.tripcostBuild=BUILD;
+const $=id=>document.getElementById(id);
+const euro=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(Number.isFinite(n)?n:0);
+const readNum=id=>Math.max(0,Number.parseFloat($(id).value)||0);
+let roundTrip=true,last=null;
+function haptic(kind='selectionChanged'){try{const h=window.Telegram?.WebApp?.HapticFeedback;if(kind==='impact')h?.impactOccurred?.('light');else h?.selectionChanged?.()}catch{}}
+function loadSettings(){try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');if(!s)return;if(s.people>0)$('people').value=s.people;if(s.mode==='l100'||s.mode==='kml')$('consumptionMode').value=s.mode;if(s.consumption>0)$('consumption').value=s.consumption;if(s.fuelPrice>0)$('fuelPrice').value=Number(s.fuelPrice).toFixed(3)}catch{}}
+function saveSettings(){const s={people:Math.max(1,Math.round(readNum('people')||1)),mode:$('consumptionMode').value,consumption:readNum('consumption'),fuelPrice:readNum('fuelPrice')};try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));$('saveMessage').textContent='Valori salvati su questo dispositivo.';haptic('impact');setTimeout(()=>{$('saveMessage').textContent=''},1800)}catch{$('saveMessage').textContent='Non riesco a salvare i valori.';$('saveMessage').classList.add('error')}}
+function setTripMode(value){roundTrip=value;$('oneWayBtn').classList.toggle('on',!roundTrip);$('roundTripBtn').classList.toggle('on',roundTrip);haptic();calculate()}
+function calculate(){const oneWay=readNum('distance'),people=Math.max(1,Math.round(readNum('people')||1)),mode=$('consumptionMode').value,cons=readNum('consumption'),fuelPrice=readNum('fuelPrice'),tolls=readNum('tolls'),parking=readNum('parking'),extras=readNum('extras'),km=oneWay*(roundTrip?2:1);let litres=0;if(km>0&&cons>0)litres=mode==='kml'?km/cons:km*cons/100;const fuelCost=litres*fuelPrice,total=fuelCost+tolls+parking+extras,perPerson=total/people;last=oneWay>0?{km,people,mode,cons,fuelPrice,litres,fuelCost,tolls,parking,extras,total,perPerson}:null;$('total').textContent=last?euro(total):'—';$('perPerson').textContent=last?euro(perPerson):'—';$('totalKm').textContent=last?`${Math.round(km)} km`:'—';$('litres').textContent=last?`${litres.toFixed(1)} L`:'—';$('fuelCost').textContent=last?euro(fuelCost):'—';$('shareBtn').disabled=!last;$('copyBtn').disabled=!last;if(!last){$('breakdown').innerHTML='';$('hint').textContent='Inserisci almeno la distanza. Consumo e prezzo carburante sono modificabili e vengono salvati solo sul tuo dispositivo.';return}const rows=[['Carburante',fuelCost],['Pedaggi',tolls],['Parcheggio',parking],['Altre spese',extras]].filter(([,v],i)=>i===0||v>0);$('breakdown').innerHTML=rows.map(([label,value])=>`<div class="line"><span>${label}</span><b>${euro(value)}</b></div>`).join('');$('hint').textContent=fuelPrice>0?`Stima basata su ${mode==='kml'?cons.toFixed(1)+' km/L':cons.toFixed(1)+' L/100 km'} e ${fuelPrice.toFixed(3)} €/L. I pedaggi non vengono inventati: aggiungili solo se li conosci.`:'Aggiungi il prezzo carburante per includere il costo del pieno nel totale.'}
+function summaryText(){if(!last)return'';return `TripCost\n${Math.round(last.km)} km · ${last.people} ${last.people===1?'persona':'persone'}\nCarburante: ${euro(last.fuelCost)}\nPedaggi: ${euro(last.tolls)}\nParcheggio: ${euro(last.parking)}\nAltre spese: ${euro(last.extras)}\nTotale: ${euro(last.total)}\nA persona: ${euro(last.perPerson)}`}
+async function share(){const text=summaryText();if(!text)return;haptic('impact');try{if(navigator.share){await navigator.share({title:'TripCost',text});return}}catch(err){if(err?.name==='AbortError')return}await copy(text)}
+async function copy(text=summaryText()){if(!text)return;try{await navigator.clipboard.writeText(text);$('saveMessage').textContent='Riepilogo copiato.';haptic('impact');setTimeout(()=>{$('saveMessage').textContent=''},1600)}catch{$('saveMessage').textContent='Copia non disponibile su questo dispositivo.';$('saveMessage').classList.add('error')}}
+function resetTrip(){$('distance').value='';$('tolls').value='';$('parking').value='';$('extras').value='';setTripMode(true);$('distance').focus()}
+$('oneWayBtn').addEventListener('click',()=>setTripMode(false));$('roundTripBtn').addEventListener('click',()=>setTripMode(true));$('saveSettings').addEventListener('click',saveSettings);$('resetBtn').addEventListener('click',resetTrip);$('shareBtn').addEventListener('click',share);$('copyBtn').addEventListener('click',()=>copy());document.querySelectorAll('input,select').forEach(el=>{el.addEventListener('input',calculate);el.addEventListener('change',calculate)});loadSettings();const q=new URLSearchParams(location.search),fuel=Number.parseFloat(q.get('fuel'));if(fuel>0)$('fuelPrice').value=fuel.toFixed(3);calculate();
+})();
 </script>
 </body>
 </html>
