@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   import('./invoices.js?v=1.6.1').catch(err=>console.warn('Fatture non caricate',err));
   import('./sales.js?v=1.6.1').catch(err=>console.warn('Vendite non caricate',err));
   import('./finances.js?v=1.6.1').catch(err=>console.warn('Finanze non caricate',err));
-  import('./autoscout.js?v=1.6.1').catch(err=>console.warn('AutoScout non caricato',err));
+  import('./autoscout.js?v=1.6.2').catch(err=>console.warn('AutoScout non caricato',err));
   import('./instagram.js?v=1.6.1').catch(err=>console.warn('Instagram non caricato',err));
   import('./reports.js?v=1.6.1').catch(err=>console.warn('Report non caricati',err));
   import('./admin.js?v=1.6.1').catch(err=>console.warn('Admin non caricato',err));
