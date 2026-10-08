@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v1.6.1-live-session-reset';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.6.1','./app.js?v=1.6.1','./today-priority.js?v=1.6.1','./delivery-readiness.js?v=1.6.1','./client-followup.js?v=1.6.1','./calendar-priority.js?v=1.6.1','./clients.js?v=1.6.1','./calendar.js?v=1.6.1','./documents.js?v=1.6.1','./contracts.js?v=1.6.1','./invoices.js?v=1.6.1','./sales.js?v=1.6.1','./finances.js?v=1.6.1','./autoscout-advisor.js?v=1.6.1','./autoscout.js?v=1.6.1','./instagram.js?v=1.6.1','./reports.js?v=1.6.1','./admin.js?v=1.6.1','./backup-core.js?v=1.6.1','./backup.js?v=1.6.1','./data-quality.js?v=1.6.2','./api.js','./offline.js'];
+const CACHE='dealer-platform-v1.6.2-autoscout-safety';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.6.1','./app.js?v=1.6.1','./today-priority.js?v=1.6.1','./delivery-readiness.js?v=1.6.1','./client-followup.js?v=1.6.1','./calendar-priority.js?v=1.6.1','./clients.js?v=1.6.1','./calendar.js?v=1.6.1','./documents.js?v=1.6.1','./contracts.js?v=1.6.1','./invoices.js?v=1.6.1','./sales.js?v=1.6.1','./finances.js?v=1.6.1','./autoscout-advisor.js?v=1.6.0','./autoscout.js?v=1.6.2','./instagram.js?v=1.6.1','./reports.js?v=1.6.1','./admin.js?v=1.6.1','./backup-core.js?v=1.6.1','./backup.js?v=1.6.1','./data-quality.js?v=1.6.2','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{
