@@ -23,6 +23,7 @@ jobs:
           node --check dealer-platform/app.js
           node --check dealer-platform/today-priority.js
           node --check dealer-platform/delivery-readiness.js
+          node --check dealer-platform/client-followup.js
           node --check dealer-platform/api.js
           node --check dealer-platform/offline.js
           node --check dealer-platform/clients.js
@@ -49,6 +50,7 @@ jobs:
           test -f dealer-platform/sw.js
           test -f dealer-platform/today-priority.js
           test -f dealer-platform/delivery-readiness.js
+          test -f dealer-platform/client-followup.js
           test -f dealer-platform/clients.js
           test -f dealer-platform/calendar.js
           test -f dealer-platform/documents.js
