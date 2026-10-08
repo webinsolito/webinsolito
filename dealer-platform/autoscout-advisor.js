@@ -11,26 +11,27 @@ function roundHundred(value){return Math.max(0,Math.round(Number(value||0)/100)*
 function ceilHundred(value){return Math.max(0,Math.ceil(Number(value||0)/100)*100)}
 
 export function suggestAutoScoutPrice(vehicle,financials=[],costs=[],now=new Date()){
-  const finance=financials.find(x=>x.vehicle_id===vehicle?.id)||{};
+  const finance=financials.find(x=>x.vehicle_id===vehicle?.id)||null;
   const extras=costs.filter(x=>x.vehicle_id===vehicle?.id).reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const investment=Number(finance.purchase_price||0)+extras;
+  const investment=finance?Number(finance.purchase_price||0)+extras:0;
   const current=Number(vehicle?.asking_price||vehicle?.sale_price||0);
-  const minimum=Math.max(Number(finance.minimum_price||0),investment?investment+1500:0);
+  const minimum=finance?Math.max(Number(finance.minimum_price||0),investment?investment+1500:0):0;
   const days=stockDays(vehicle,now);
-  const discount=days>=90?.05:days>=60?.03:days>=30?.02:0;
+  let discount=days>=90?.05:days>=60?.03:days>=30?.02:0;
   let suggested=current;
   let reason=days>=30?'Rinfresca l’annuncio senza perdere margine.':'Prezzo stabile: aggiorna foto e descrizione.';
-  if(!current){suggested=ceilHundred(Math.max(minimum,investment*1.18));reason='Manca il prezzo: proposta prudente sopra il costo reale.'}
-  else if(current<minimum){suggested=ceilHundred(minimum);reason='Il prezzo attuale è sotto la soglia minima impostata.'}
+  if(!current){suggested=finance?ceilHundred(Math.max(minimum,investment*1.18)):0;reason=finance?'Manca il prezzo: proposta prudente sopra il costo reale.':'Manca il prezzo: impostalo prima di pubblicare.'}
+  else if(finance&&current<minimum){suggested=ceilHundred(minimum);reason='Il prezzo attuale è sotto la soglia minima impostata.'}
+  else if(discount&&!finance){discount=0;suggested=current;reason='Stock anziano: verifica il prezzo minimo prima di applicare ribassi.'}
   else if(discount){suggested=Math.max(ceilHundred(minimum),roundHundred(current*(1-discount)));reason=`Stock da ${days} giorni: riduzione controllata del ${Math.round(discount*100)}%.`}
-  return {days,current,suggested,investment,minimum,margin:suggested-investment,discount,reason};
+  return {days,current,suggested,investment:finance?investment:null,minimum:finance?minimum:null,margin:finance?suggested-investment:null,discount,reason,hasFinancialFloor:Boolean(finance)};
 }
 
 export function chooseAutoScoutPriority({vehicles=[],financials=[],costs=[]}={},now=new Date()){
   const rows=vehicles.filter(v=>!v.deleted_at&&ACTIVE_STOCK.has(v.status)).map(vehicle=>({vehicle,advice:suggestAutoScoutPrice(vehicle,financials,costs,now)})).sort((a,b)=>b.advice.days-a.advice.days||String(a.vehicle.brand||'').localeCompare(String(b.vehicle.brand||'')));
   if(!rows.length)return {kind:'calm',tone:'calm',eyebrow:'STOCK SOTTO CONTROLLO',title:'Nessuna auto da pubblicare',detail:'Il Garage non contiene veicoli disponibili per AutoScout.',action:{kind:'none',label:''},vehicleId:null};
   const top=rows[0],name=`${top.vehicle.brand||''} ${top.vehicle.model||''}`.trim();
-  return {kind:top.advice.days>=60?'urgent':top.advice.days>=30?'due':'ready',tone:top.advice.days>=60?'urgent':top.advice.days>=30?'attention':'ready',eyebrow:top.advice.days>=60?'STOCK FERMO · AGISCI ORA':'PROSSIMO ANNUNCIO',title:name||'Auto da pubblicare',detail:top.advice.reason,timing:`${top.advice.days} giorni in stock`,price:top.advice.suggested,margin:top.advice.margin,vehicleId:top.vehicle.id,action:{kind:'prepare_listing',label:'Prepara annuncio'}};
+  return {kind:top.advice.days>=60?'urgent':top.advice.days>=30?'due':'ready',tone:top.advice.days>=60?'urgent':top.advice.days>=30?'attention':'ready',eyebrow:top.advice.days>=60?'STOCK FERMO · AGISCI ORA':'PROSSIMO ANNUNCIO',title:name||'Auto da pubblicare',detail:top.advice.reason,timing:`${top.advice.days} giorni in stock`,price:top.advice.suggested,margin:top.advice.margin,hasFinancialFloor:top.advice.hasFinancialFloor,vehicleId:top.vehicle.id,action:{kind:'prepare_listing',label:'Prepara annuncio'}};
 }
 
 export function buildAutoScoutCopy(vehicle,advice,{photoCount=0}={}){
