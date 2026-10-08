@@ -9,9 +9,28 @@ window.DEALER_CONFIG = Object.freeze({
   demoMode: false
 });
 
+// A legacy demo session must never survive once the real backend is enabled.
+// Otherwise the PWA keeps showing the three local demo cars and every live request uses demo-malu23.
+try{
+  const raw=localStorage.getItem('dealer-platform-session');
+  const saved=raw?JSON.parse(raw):null;
+  const staleDemo=!window.DEALER_CONFIG.demoMode&&(saved?.access_token==='demo'||saved?.dealer?.id==='demo-malu23');
+  if(staleDemo){
+    localStorage.removeItem('dealer-platform-session');
+    sessionStorage.setItem('gestionalejo-session-reset','1');
+  }
+}catch{
+  localStorage.removeItem('dealer-platform-session');
+}
+
 // Keep feature modules isolated from the core app so each section can evolve without regressions.
 window.addEventListener('DOMContentLoaded',()=>{
   const demo=document.getElementById('demoBtn');if(demo)demo.hidden=true;
+  if(sessionStorage.getItem('gestionalejo-session-reset')==='1'){
+    const msg=document.getElementById('loginMsg');
+    if(msg)msg.textContent='Sessione demo rimossa. Accedi a MALÙ23 per caricare i dati reali.';
+    sessionStorage.removeItem('gestionalejo-session-reset');
+  }
   const legacy=document.getElementById('clientList');
   if(legacy&&!document.getElementById('clientsApp')){
     const root=document.createElement('div');root.id='clientsApp';legacy.hidden=true;legacy.before(root);
