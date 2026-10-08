@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <title>MALÙ23 Dealer Platform · Anteprima diretta</title>
+  <style>html,body{margin:0;min-height:100%;background:#0b1220;color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.loading b{font-size:22px}.loading p{color:#aeb9c9}</style>
+</head>
+<body>
+  <div class="loading"><div><b>MALÙ23 Dealer Platform</b><p>Apertura anteprima diretta…</p></div></div>
+  <script>
+  (async()=>{
+    try{
+      const response=await fetch('./index.html',{cache:'no-store'});
+      if(!response.ok)throw new Error('preview_source_unavailable');
+      let html=await response.text();
+      const previewBootstrap=`<script>
+window.DEALER_CONFIG=Object.freeze({version:'preview-1.8.1',supabaseUrl:'',supabasePublishableKey:'',workerUrl:'',defaultDealerSlug:'malu23',demoMode:true});
+try{localStorage.setItem('dealer-platform-session',JSON.stringify({expires_at:Math.floor(Date.now()/1000)+2592000,user:{id:'preview-admin'},dealer:{id:'demo-malu23',slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Anteprima Admin',role:'ADMIN',username:'preview',permissions:{admin_manage:true,garage_write:true,customers_write:true,documents_write:true,invoices_view:true,invoices_write:true,finance_view:true,view_costs:true,costs_write:true,contracts_write:true,calendar_write:true,autoscout_manage:true,instagram_manage:true,reports_view:true}}}))}catch{}
+try{if(navigator.serviceWorker)navigator.serviceWorker.register=()=>Promise.resolve({})}catch{}
+window.addEventListener('DOMContentLoaded',()=>{
+ const demo=document.getElementById('demoBtn');if(demo)demo.hidden=true;
+ const top=document.querySelector('.top');if(top&&!document.getElementById('previewBadge')){const badge=document.createElement('div');badge.id='previewBadge';badge.textContent='ANTEPRIMA · DATI DEMO';badge.style.cssText='position:fixed;right:12px;bottom:12px;z-index:9999;background:#111827;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 11px;font:800 9px system-ui;box-shadow:0 10px 30px rgba(0,0,0,.2)';document.body.appendChild(badge)}
+ import('./clients.js?v=1.6.1').catch(()=>{});
+ import('./calendar.js?v=1.6.1').catch(()=>{});
+ import('./documents.js?v=1.6.1').catch(()=>{});
+ import('./contracts.js?v=1.6.1').catch(()=>{});
+ import('./invoices.js?v=1.6.1').catch(()=>{});
+ import('./sales.js?v=1.6.1').catch(()=>{});
+ import('./finances.js?v=1.6.1').catch(()=>{});
+ import('./autoscout.js?v=1.6.2').catch(()=>{});
+ import('./autoscout-safety.js?v=1.6.3').catch(()=>{});
+ import('./instagram.js?v=1.6.1').catch(()=>{});
+ import('./instagram-safety.js?v=1.6.4').catch(()=>{});
+ import('./reports.js?v=1.6.5').catch(()=>{});
+ import('./admin.js?v=1.6.1').catch(()=>{});
+ import('./admin-safety.js?v=1.6.6').catch(()=>{});
+ import('./backup.js?v=1.6.1').catch(()=>{});
+ import('./data-quality.js?v=1.6.2').catch(()=>{});
+});
+<\/script>`;
+      html=html.replace(/<script src="\.\/config\.js\?v=[^"]+"><\/script>/,previewBootstrap);
+      html=html.replace(/<title>[^<]*<\/title>/,'<title>MALÙ23 Dealer Platform · Anteprima diretta</title>');
+      document.open();document.write(html);document.close();
+    }catch(err){
+      document.body.innerHTML='<div class="loading"><div><b>Anteprima non disponibile</b><p>Ricarica la pagina.</p></div></div>';
+      console.error(err);
+    }
+  })();
+  </script>
+</body>
+</html>
