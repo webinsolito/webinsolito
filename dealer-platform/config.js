@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.6.1',
+  version: '1.8.0',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -20,11 +20,11 @@ try{
   }
 }catch{}
 
-// Load the account gate immediately after staging the temporary session.
+// Load security guards before feature modules.
 import('./account-security.js?v=1.6.6').catch(err=>console.warn('Sicurezza account non caricata',err));
+import('./session-security.js?v=1.8.0').catch(err=>console.warn('Pulizia sessione locale non caricata',err));
 
 // A legacy demo session must never survive once the real backend is enabled.
-// Otherwise the PWA keeps showing the three local demo cars and every live request uses demo-malu23.
 try{
   const raw=localStorage.getItem('dealer-platform-session');
   const saved=raw?JSON.parse(raw):null;
