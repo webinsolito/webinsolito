@@ -1,5 +1,5 @@
-const CACHE='dealer-platform-v1.5.3';
-const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.5.3','./app.js?v=1.5.3','./today-priority.js?v=1.5.3','./delivery-readiness.js?v=1.5.3','./client-followup.js?v=1.5.3','./calendar-priority.js?v=1.5.3','./clients.js?v=1.5.3','./calendar.js?v=1.5.3','./documents.js?v=1.5.3','./contracts.js?v=1.5.3','./invoices.js?v=1.5.3','./sales.js?v=1.5.3','./finances.js?v=1.5.3','./autoscout.js?v=1.5.3','./api.js','./offline.js'];
+const CACHE='dealer-platform-v1.5.2';
+const CORE=['./','./index.html','./manifest.webmanifest','./config.js?v=1.5.2','./app.js?v=1.5.2','./today-priority.js?v=1.5.2','./delivery-readiness.js?v=1.5.2','./client-followup.js?v=1.5.2','./calendar-priority.js?v=1.5.2','./clients.js?v=1.5.2','./calendar.js?v=1.5.2','./documents.js?v=1.5.2','./contracts.js?v=1.5.2','./invoices.js?v=1.5.2','./sales.js?v=1.5.2','./finances.js?v=1.5.2','./autoscout.js?v=1.5.2','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
 
 self.addEventListener('install',event=>{
