@@ -1,7 +1,9 @@
 const ACTIVE_SALE_STAGES=new Set(['OPEN','AGREED','DEPOSIT','BALANCE_PENDING','READY']);
 
 export function canViewFinancialReports(profile={},demoMode=false){
-  return demoMode||['ADMIN','AMMINISTRAZIONE'].includes(profile?.role)||profile?.permissions?.finance_view===true||profile?.permissions?.view_costs===true;
+  if(demoMode)return true;
+  if(profile?.role==='VENDITORE')return false;
+  return ['ADMIN','AMMINISTRAZIONE'].includes(profile?.role)||profile?.permissions?.finance_view===true||profile?.permissions?.view_costs===true;
 }
 
 export function latestSaleContract(vehicleId,contracts=[]){
@@ -19,7 +21,7 @@ export function saleInvoiceFor(vehicleId,contract,invoices=[]){
 export function saleState(vehicle,contract){
   const stage=contract?.sale_stage||'';
   if(stage==='DELIVERED'||vehicle?.status==='CONSEGNATA'||vehicle?.status==='VENDUTA')return 'DELIVERED';
-  if(ACTIVE_SALE_STAGES.has(stage)||vehicle?.status==='DA_CONSEGNARE')return 'PIPELINE';
+  if(ACTIVE_SALE_STAGES.has(stage)||['PRENOTATA','DA_CONSEGNARE'].includes(vehicle?.status))return 'PIPELINE';
   return 'STOCK';
 }
 
