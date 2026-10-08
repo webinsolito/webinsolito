@@ -38,8 +38,10 @@ jobs:
           node --check dealer-platform/autoscout.js
           node --check dealer-platform/instagram.js
           node --check dealer-platform/reports.js
+          node --check dealer-platform/admin.js
           node --check dealer-platform/sw.js
           node --check dealer-platform/worker/index.js
+          node --check dealer-platform/worker/admin.js
           node --check dealer-platform/worker/setup-telegram.mjs
       - name: Focused unit tests
         run: node --test dealer-platform/tests/*.test.mjs
@@ -68,7 +70,9 @@ jobs:
           test -f dealer-platform/autoscout.js
           test -f dealer-platform/instagram.js
           test -f dealer-platform/reports.js
+          test -f dealer-platform/admin.js
           test -f dealer-platform/worker/index.js
+          test -f dealer-platform/worker/admin.js
       - name: Contract invariants
         run: |
           grep -q "snapshot_hash" dealer-platform/contracts.js
@@ -123,4 +127,13 @@ jobs:
           grep -q "Esporta CSV" dealer-platform/reports.js
           grep -q "A4 landscape" dealer-platform/reports.js
           grep -q "reports.js" dealer-platform/sw.js
-
+      - name: Admin invariants
+        run: |
+          grep -q "admin_manage" dealer-platform/admin.js
+          grep -q "force_password_change" dealer-platform/worker/admin.js
+          grep -q "temporaryPassword" dealer-platform/worker/admin.js
+          grep -q "cannot_demote_or_suspend_self" dealer-platform/worker/admin.js
+          grep -q "last_admin_required" dealer-platform/worker/admin.js
+          grep -q "SERVICE KEY SOLO SERVER" dealer-platform/admin.js
+          grep -q "handleAdminRoute" dealer-platform/worker/index.js
+          grep -q "admin.js" dealer-platform/sw.js
