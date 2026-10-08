@@ -1,7 +1,7 @@
 import {OfflineDB,SyncEngine,mutationCount,uuid} from './offline.js';
 import {Session,login,logout,fetchTenantData,cachedTenantData,saveOfflineEntity,sendMutation,accessToken,validateTelegram,linkTelegram} from './api.js';
-import {chooseTodayPriority} from './today-priority.js?v=1.5.2';
-import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.5.2';
+import {chooseTodayPriority} from './today-priority.js?v=1.6.0';
+import {DELIVERY_CHECKLIST_TITLES,deliveryReadiness} from './delivery-readiness.js?v=1.6.0';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const money=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(n||0));
@@ -17,7 +17,7 @@ function normalizeData(data={}){return {...EMPTY_DATA,...data,...Object.fromEntr
 function sessionDealer(){const s=Session.get();return s?.dealer||{id:'demo-malu23',display_name:'MALÙ23 CARS',slug:'malu23'}}
 function canViewCosts(){const p=Session.get()?.profile||{};return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.view_costs===true}
 function canWriteGarage(){const p=Session.get()?.profile||{};return ['ADMIN','VENDITORE','OPERATORE'].includes(p.role)||p.permissions?.garage_write===true||window.DEALER_CONFIG?.demoMode}
-const TELEGRAM_VIEWS=new Set(['today','garage','clients','calendar','documenti','vendite','fatture','finanze']);
+const TELEGRAM_VIEWS=new Set(['today','garage','clients','calendar','documenti','vendite','fatture','finanze','autoscout']);
 function requestedView(){const view=new URLSearchParams(location.search).get('view')||'today';return TELEGRAM_VIEWS.has(view)?view:'today'}
 function syncTelegramBackButton(view=state.view){const back=state.telegram?.BackButton;if(!back)return;try{view==='today'?back.hide():back.show()}catch{}}
 function openRequestedView(attempt=0){const view=requestedView();if(view==='today'){go('today');return}const button=$(`.navbtn[data-view="${view}"]`);if(button){button.click();syncTelegramBackButton(view);return}if(attempt<20)setTimeout(()=>openRequestedView(attempt+1),100)}
@@ -159,4 +159,5 @@ async function installApp(){if(deferredInstall){deferredInstall.prompt();await d
 function renderInstall(){const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;$('#installBtn').hidden=!!standalone}
 
 boot();
+
 

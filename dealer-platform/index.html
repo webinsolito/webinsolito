@@ -10,7 +10,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <title>MALÙ23 Dealer Platform — V1.5 Agenda guidata</title>
   <script src="https://telegram.org/js/telegram-web-app.js?64"></script>
-  <script src="./config.js?v=1.5.2"></script>
+  <script src="./config.js?v=1.6.0"></script>
   <style>
     :root{--bg:#f4f5f7;--panel:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--dark:#0b1220;--dark2:#111c30;--gold:#d3a24b;--red:#c7353b;--green:#23845a;--orange:#b66a18;--r:18px;--shadow:0 14px 42px rgba(15,23,42,.08)}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}[hidden]{display:none!important}
@@ -39,7 +39,7 @@
 
   <div class="shell" id="appShell" hidden>
     <aside class="side">
-      <div class="brand"><div class="brandmark">M23</div><div><strong>MALÙ23 Dealer Platform</strong><small>V1.5.2 · Agenda guidata</small></div></div>
+      <div class="brand"><div class="brandmark">M23</div><div><strong>MALÙ23 Dealer Platform</strong><small>V1.6.0 · AutoScout guidato</small></div></div>
       <nav class="nav">
         <button class="navbtn active" data-view="today">⌂ &nbsp; OGGI</button><button class="navbtn" data-view="garage">🚗 &nbsp; Garage</button><button class="navbtn" data-view="clients">👥 &nbsp; Clienti</button><button class="navbtn" data-view="inbox">📥 &nbsp; Inbox</button><button class="navbtn" data-view="admin">🛡 &nbsp; Admin</button>
       </nav>
@@ -68,7 +68,8 @@
 
   <div class="modal" id="modal" hidden><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Nuovo</h3><button class="x" id="modalClose">×</button></div><form id="entityForm"><input type="hidden" id="entityType" name="entityType"><div class="formgrid" id="vehicleFields"><div class="field"><label>MARCA</label><input name="brand"></div><div class="field"><label>MODELLO</label><input name="model"></div><div class="field"><label>TARGA</label><input name="plate"></div><div class="field"><label>ANNO</label><input name="year" type="number"></div><div class="field wide"><label>KM</label><input name="mileage" type="number"></div></div><div class="formgrid" id="customerFields" hidden><div class="field"><label>NOME</label><input name="first_name"></div><div class="field"><label>COGNOME</label><input name="last_name"></div><div class="field wide"><label>TELEFONO</label><input name="phone" type="tel"></div></div><div class="actions" style="margin-top:12px"><button class="btn" type="submit">Salva</button><button class="btn ghost" type="button" onclick="document.getElementById('modalClose').click()">Annulla</button></div></form></div></div>
 
-  <script type="module" src="./app.js?v=1.5.2"></script>
+  <script type="module" src="./app.js?v=1.6.0"></script>
 </body>
 </html>
+
 
