@@ -1,6 +1,6 @@
 import {handleAdminRoute} from './admin.js';
 
-// MALÙ23 Dealer Platform — Cloudflare Worker V1.5
+// MALÙ23 Dealer Platform — Cloudflare Worker V1.9
 // Secrets / vars expected in Worker environment only:
 // TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET_TOKEN, APP_URL,
 // SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY
@@ -60,22 +60,38 @@ async function currentUser(env,authorization){
 
 async function activeMembership(env,dealerId,userId){
   if(!dealerId||!userId)return null;
-  const rows=await serviceRest(env,`memberships?dealer_id=eq.${encodeURIComponent(dealerId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.ACTIVE&select=user_id,role,permissions&limit=1`);
+  const rows=await serviceRest(env,`memberships?dealer_id=eq.${encodeURIComponent(dealerId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.ACTIVE&select=user_id,role,permissions,username&limit=1`);
   return rows?.[0]||null;
 }
 
+function membershipCanSeeFinance(member={}){
+  if(member?.role==='VENDITORE')return false;
+  return ['ADMIN','AMMINISTRAZIONE'].includes(member?.role)||member?.permissions?.finance_view===true||member?.permissions?.view_costs===true||member?.permissions?.invoices_view===true;
+}
+
+async function passwordGrant(env,email,password){
+  return fetchJson(`${env.SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:publicHeaders(env,{'content-type':'application/json'}),body:JSON.stringify({email,password})});
+}
+
 async function resolveLogin(req,env){
-  const body=await req.json().catch(()=>({}));const username=String(body.username||'').trim().toLowerCase(),dealerSlug=String(body.dealer_slug||'').trim().toLowerCase(),password=String(body.password||'');
-  if(!username||!dealerSlug||!password)return json({ok:false,error:'missing_credentials'},400,cors(env,req));
+  const body=await req.json().catch(()=>({}));const identifier=String(body.identifier||body.username||'').trim().toLowerCase(),dealerSlug=String(body.dealer_slug||'').trim().toLowerCase(),password=String(body.password||'');
+  if(!identifier||!dealerSlug||!password)return json({ok:false,error:'missing_credentials'},400,cors(env,req));
   const dealers=await serviceRest(env,`dealers?slug=eq.${encodeURIComponent(dealerSlug)}&status=eq.ACTIVE&select=id,slug,display_name&limit=1`);
-  const dealer=dealers?.[0];if(!dealer)return json({ok:false,error:'dealer_not_found'},401,cors(env,req));
-  const members=await serviceRest(env,`memberships?dealer_id=eq.${dealer.id}&username=ilike.${encodeURIComponent(username)}&status=eq.ACTIVE&select=user_id,role,permissions,username&limit=1`);
-  const member=members?.[0];if(!member)return json({ok:false,error:'invalid_credentials'},401,cors(env,req));
-  const adminUser=await fetchJson(`${env.SUPABASE_URL}/auth/v1/admin/users/${member.user_id}`,{headers:serviceHeaders(env)});
-  if(!adminUser?.email)return json({ok:false,error:'account_email_missing'},401,cors(env,req));
-  let auth;
-  try{auth=await fetchJson(`${env.SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:publicHeaders(env,{'content-type':'application/json'}),body:JSON.stringify({email:adminUser.email,password})})}
-  catch{return json({ok:false,error:'invalid_credentials'},401,cors(env,req))}
+  const dealer=dealers?.[0];if(!dealer)return json({ok:false,error:'invalid_credentials'},401,cors(env,req));
+  let auth=null,member=null;
+  try{
+    if(identifier.includes('@')){
+      auth=await passwordGrant(env,identifier,password);
+      member=await activeMembership(env,dealer.id,auth?.user?.id);
+    }else{
+      const members=await serviceRest(env,`memberships?dealer_id=eq.${dealer.id}&username=ilike.${encodeURIComponent(identifier)}&status=eq.ACTIVE&select=user_id,role,permissions,username&limit=1`);
+      member=members?.[0]||null;if(!member)throw new Error('invalid_credentials');
+      const adminUser=await fetchJson(`${env.SUPABASE_URL}/auth/v1/admin/users/${member.user_id}`,{headers:serviceHeaders(env)});if(!adminUser?.email)throw new Error('invalid_credentials');
+      auth=await passwordGrant(env,adminUser.email,password);
+      if(auth?.user?.id!==member.user_id)throw new Error('invalid_credentials');
+    }
+  }catch{return json({ok:false,error:'invalid_credentials'},401,cors(env,req))}
+  if(!member)return json({ok:false,error:'invalid_credentials'},401,cors(env,req));
   const profiles=await serviceRest(env,`profiles?user_id=eq.${member.user_id}&select=display_name,force_password_change&limit=1`);const profile=profiles?.[0]||{};
   return json({...auth,expires_at:Math.floor(Date.now()/1000)+(auth.expires_in||3600),dealer,profile:{...profile,role:member.role,permissions:member.permissions,username:member.username}},200,cors(env,req));
 }
@@ -135,19 +151,21 @@ async function telegram(method,env,payload){
 async function linkedTelegramContext(env,telegramUserId){
   if(!env.SUPABASE_URL||!env.SUPABASE_SERVICE_ROLE_KEY)return null;
   const links=await serviceRest(env,`telegram_links?telegram_user_id=eq.${encodeURIComponent(String(telegramUserId))}&select=dealer_id,user_id&limit=1`);const link=links?.[0];if(!link)return null;
+  const membership=await activeMembership(env,link.dealer_id,link.user_id);if(!membership)return null;
   const dealers=await serviceRest(env,`dealers?id=eq.${link.dealer_id}&status=eq.ACTIVE&select=id,slug,display_name&limit=1`);const dealer=dealers?.[0];if(!dealer)return null;
-  const profiles=await serviceRest(env,`profiles?user_id=eq.${link.user_id}&select=display_name&limit=1`);const profile=profiles?.[0]||{};
+  const profiles=await serviceRest(env,`profiles?user_id=eq.${link.user_id}&select=display_name&limit=1`);const profile={...(profiles?.[0]||{}),role:membership.role,permissions:membership.permissions||{}};
+  const canSeeFinance=membershipCanSeeFinance(membership);
   const [vehicles,customers,workItems,calendarEvents,invoices]=await Promise.all([
     serviceRest(env,`vehicles?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,status,purchase_date,created_at`),
     serviceRest(env,`customers?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,next_contact_at`),
     serviceRest(env,`vehicle_work_items?dealer_id=eq.${link.dealer_id}&status=neq.DONE&status=neq.CANCELLED&select=id`),
     serviceRest(env,`calendar_events?dealer_id=eq.${link.dealer_id}&status=neq.CANCELLED&select=id,starts_at`),
-    serviceRest(env,`invoices?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,invoice_type,total_amount,paid_amount,due_date,status`)
+    canSeeFinance?serviceRest(env,`invoices?dealer_id=eq.${link.dealer_id}&deleted_at=is.null&select=id,invoice_type,total_amount,paid_amount,due_date,payment_status`):Promise.resolve([])
   ]);
-  const tomorrow=Date.now()+86400000,today=new Date().toISOString().slice(0,10);const callbacks=(customers||[]).filter(c=>c.next_contact_at&&new Date(c.next_contact_at).getTime()<=tomorrow).length;const deliveries=(vehicles||[]).filter(v=>v.status==='DA_CONSEGNARE').length;const appointments=(calendarEvents||[]).filter(e=>String(e.starts_at||'').slice(0,10)===today).length;const oldStock=(vehicles||[]).filter(v=>!['VENDUTA','DA_CONSEGNARE','CONSEGNATA'].includes(v.status)&&(v.purchase_date||v.created_at)).filter(v=>Math.floor((Date.now()-new Date(v.purchase_date||v.created_at).getTime())/86400000)>=60).length;
-  const unpaidSales=(invoices||[]).filter(i=>i.invoice_type==='SALE'&&i.status!=='CANCELLED'&&Number(i.total_amount||0)>Number(i.paid_amount||0));
+  const tomorrow=Date.now()+86400000,today=new Date().toISOString().slice(0,10);const callbacks=(customers||[]).filter(c=>c.next_contact_at&&new Date(c.next_contact_at).getTime()<=tomorrow).length;const deliveries=(vehicles||[]).filter(v=>v.status==='DA_CONSEGNARE').length;const appointments=(calendarEvents||[]).filter(e=>String(e.starts_at||'').slice(0,10)===today).length;const oldStock=(vehicles||[]).filter(v=>!['VENDUTA','DA_CONSEGNARE','CONSEGNATA','PRENOTATA'].includes(v.status)&&(v.purchase_date||v.created_at)).filter(v=>Math.floor((Date.now()-new Date(v.purchase_date||v.created_at).getTime())/86400000)>=60).length;
+  const unpaidSales=(invoices||[]).filter(i=>i.invoice_type==='SALE'&&i.payment_status!=='PAID'&&Number(i.total_amount||0)>Number(i.paid_amount||0));
   const receivables=unpaidSales.reduce((sum,i)=>sum+Math.max(0,Number(i.total_amount||0)-Number(i.paid_amount||0)),0);const overdueInvoices=unpaidSales.filter(i=>i.due_date&&String(i.due_date).slice(0,10)<today).length;
-  return {dealer,profile,vehicleCount:vehicles?.length||0,callbacks,deliveries,openWorks:workItems?.length||0,appointments,receivables,overdueInvoices,oldStock};
+  return {dealer,profile,canSeeFinance,vehicleCount:vehicles?.length||0,callbacks,deliveries,openWorks:workItems?.length||0,appointments,receivables,overdueInvoices,oldStock};
 }
 
 function appViewUrl(env,dealerSlug,view='today'){
@@ -157,19 +175,20 @@ function appViewUrl(env,dealerSlug,view='today'){
 function buildDashboardMessage(ctx,firstName=''){
   const first=ctx.profile?.display_name||firstName||'utente';
   const due=new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(ctx.receivables||0));
-  return `${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\nOGGI\n📞 ${ctx.callbacks} richiami entro domani\n📅 ${ctx.appointments} appuntamenti oggi\n🚚 ${ctx.deliveries} consegne da preparare\n🔧 ${ctx.openWorks} lavori aperti\n💶 ${due} da incassare${ctx.overdueInvoices?` · ${ctx.overdueInvoices} scadute`:''}\n\n🚗 ${ctx.vehicleCount} auto nel Garage${ctx.oldStock?`\n⏳ ${ctx.oldStock} auto oltre 60 giorni`:''}`;
+  const financeLine=ctx.canSeeFinance===false?'':`\n💶 ${due} da incassare${ctx.overdueInvoices?` · ${ctx.overdueInvoices} scadute`:''}`;
+  return `${ctx.dealer.display_name}\n\nCiao ${first} 👋\n\nOGGI\n📞 ${ctx.callbacks} richiami entro domani\n📅 ${ctx.appointments} appuntamenti oggi\n🚚 ${ctx.deliveries} consegne da preparare\n🔧 ${ctx.openWorks} lavori aperti${financeLine}\n\n🚗 ${ctx.vehicleCount} auto nel Garage${ctx.oldStock?`\n⏳ ${ctx.oldStock} auto oltre 60 giorni`:''}`;
 }
 
 function buildTelegramKeyboard(env,ctx){
-  const slug=ctx.dealer.slug;
-  return {inline_keyboard:[
+  const slug=ctx.dealer.slug,rows=[
     [{text:'APRI OGGI',web_app:{url:appViewUrl(env,slug,'today')}}],
     [{text:'🚗 Garage',web_app:{url:appViewUrl(env,slug,'garage')}},{text:'👥 Clienti',web_app:{url:appViewUrl(env,slug,'clients')}}],
-    [{text:'🤝 Vendite',web_app:{url:appViewUrl(env,slug,'vendite')}},{text:'🧾 Fatture',web_app:{url:appViewUrl(env,slug,'fatture')}}],
+    ctx.canSeeFinance===false?[{text:'🤝 Vendite',web_app:{url:appViewUrl(env,slug,'vendite')}}]:[{text:'🤝 Vendite',web_app:{url:appViewUrl(env,slug,'vendite')}},{text:'🧾 Fatture',web_app:{url:appViewUrl(env,slug,'fatture')}}],
     [{text:'📅 Calendario',web_app:{url:appViewUrl(env,slug,'calendar')}},{text:'📄 Documenti',web_app:{url:appViewUrl(env,slug,'documenti')}}],
-    [{text:'◉ AutoScout',web_app:{url:appViewUrl(env,slug,'autoscout')}},{text:'📊 Finanze',web_app:{url:appViewUrl(env,slug,'finanze')}}],
+    ctx.canSeeFinance===false?[{text:'◉ AutoScout',web_app:{url:appViewUrl(env,slug,'autoscout')}}]:[{text:'◉ AutoScout',web_app:{url:appViewUrl(env,slug,'autoscout')}},{text:'📊 Finanze',web_app:{url:appViewUrl(env,slug,'finanze')}}],
     [{text:'↻ Aggiorna',callback_data:'dealer:status'}]
-  ]};
+  ];
+  return {inline_keyboard:rows};
 }
 
 async function showLinkedDashboard(env,chatId,from,ctx,messageId=null){
@@ -191,7 +210,7 @@ async function webhook(req,env){
   if(callback){
     if(callback.data==='dealer:status'){
       let ctx=null;try{ctx=await linkedTelegramContext(env,from.id)}catch(err){console.error('context',err)}
-      if(!ctx){await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Account non collegato. Usa /start e accedi.',show_alert:true});return json({ok:true,callback:'unlinked'})}
+      if(!ctx){await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Account non collegato o non più attivo. Accedi nuovamente.',show_alert:true});return json({ok:true,callback:'unlinked'})}
       await telegram('answerCallbackQuery',env,{callback_query_id:callback.id,text:'Stato aggiornato'});
       await showLinkedDashboard(env,chatId,from,ctx,msg.message_id);return json({ok:true,callback:'status'});
     }
@@ -215,7 +234,7 @@ export default {
   async fetch(req,env){
     const url=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(env,req)});
     try{
-      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'1.6.1',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
+      if(url.pathname==='/health')return json({ok:true,service:'malu23-dealer-worker',version:'1.9.0',telegramConfigured:!!env.TELEGRAM_BOT_TOKEN,supabaseConfigured:!!env.SUPABASE_URL,documentsConfigured:!!env.DOCS_BUCKET},200,cors(env,req));
       if(url.pathname==='/auth/resolve-login'&&req.method==='POST')return resolveLogin(req,env);
       if(url.pathname==='/telegram/validate'&&req.method==='POST'){const body=await req.json().catch(()=>({}));const result=await validateTelegramInitData(body.initData,env.TELEGRAM_BOT_TOKEN);return json(result,result.ok?200:401,cors(env,req))}
       if(url.pathname==='/telegram/link'&&req.method==='POST')return linkTelegram(req,env);
@@ -228,6 +247,4 @@ export default {
   }
 };
 
-export {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl};
-
-
+export {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl,membershipCanSeeFinance};
