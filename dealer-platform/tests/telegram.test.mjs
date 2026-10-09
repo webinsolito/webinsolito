@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 
-const {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl}=await import(new URL('../worker/index.js',import.meta.url));
+const {validateTelegramInitData,buildDashboardMessage,buildTelegramKeyboard,appViewUrl,membershipCanSeeFinance}=await import(new URL('../worker/index.js',import.meta.url));
 
 function signedInitData(token,{user={id:123,first_name:'Luca'},authDate=Math.floor(Date.now()/1000)}={}){
   const params=new URLSearchParams({auth_date:String(authDate),query_id:'AAEAA',user:JSON.stringify(user)});
@@ -30,7 +30,7 @@ test('initData scaduto viene rifiutato',async()=>{
 
 test('dashboard Telegram espone una CTA primaria, incassi, moduli operativi e callback stato',()=>{
   const env={APP_URL:'https://example.test/dealer-platform/'};
-  const ctx={dealer:{slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Luca'},vehicleCount:42,callbacks:3,deliveries:1,openWorks:4,appointments:2,receivables:12500,overdueInvoices:2,oldStock:3};
+  const ctx={dealer:{slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Luca'},canSeeFinance:true,vehicleCount:42,callbacks:3,deliveries:1,openWorks:4,appointments:2,receivables:12500,overdueInvoices:2,oldStock:3};
   const text=buildDashboardMessage(ctx,'');
   assert.match(text,/3 richiami/);assert.match(text,/1 consegne/);assert.match(text,/4 lavori/);
   assert.match(text,/12\.500/);assert.match(text,/2 scadute/);assert.match(text,/3 auto oltre 60 giorni/);
@@ -44,6 +44,19 @@ test('dashboard Telegram espone una CTA primaria, incassi, moduli operativi e ca
   assert.equal(new URL(keyboard[4][1].web_app.url).searchParams.get('view'),'finanze');
   assert.equal(keyboard.at(-1)[0].callback_data,'dealer:status');
   assert.equal(new URL(appViewUrl(env,'malu23','clients')).searchParams.get('dealer'),'malu23');
+});
+
+test('Venditore Telegram non riceve finanze anche con vecchi permessi sporchi',()=>{
+  const env={APP_URL:'https://example.test/dealer-platform/'};
+  const member={role:'VENDITORE',permissions:{finance_view:true,view_costs:true,invoices_view:true}};
+  assert.equal(membershipCanSeeFinance(member),false);
+  const ctx={dealer:{slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Mario',role:'VENDITORE'},canSeeFinance:false,vehicleCount:10,callbacks:1,deliveries:0,openWorks:0,appointments:0,receivables:99999,overdueInvoices:9,oldStock:0};
+  const text=buildDashboardMessage(ctx,'');
+  assert.doesNotMatch(text,/99\.999|da incassare|scadute/);
+  const labels=buildTelegramKeyboard(env,ctx).inline_keyboard.flat().map(b=>b.text);
+  assert.ok(!labels.includes('🧾 Fatture'));
+  assert.ok(!labels.includes('📊 Finanze'));
+  assert.ok(labels.includes('🤝 Vendite'));
 });
 
 test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=>{
@@ -67,4 +80,3 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   assert.match(html,/app\.js\?v=1\.6\.1/);
   assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
 });
-
