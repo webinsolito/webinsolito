@@ -30,3 +30,16 @@ test('senza eventi aperti mostra lo stato vuoto',()=>{
   assert.equal(result.kind,'calm');
   assert.equal(result.eventId,null);
 });
+
+test('a parità di orario gli appuntamenti HIGH vengono prima senza invertire quelli equivalenti',()=>{
+  const sameTime='2026-10-08T09:00:00.000Z';
+  const events=[
+    {id:'normal-first',status:'OPEN',starts_at:sameTime,priority:'NORMAL'},
+    {id:'high-first',status:'OPEN',starts_at:sameTime,priority:'HIGH'},
+    {id:'high-second',status:'OPEN',starts_at:sameTime,priority:'HIGH'},
+    {id:'normal-second',status:'OPEN',starts_at:sameTime,priority:'NORMAL'}
+  ];
+  assert.equal(chooseCalendarPriority(events,now).eventId,'high-first');
+  assert.equal(chooseCalendarPriority(events.filter(e=>e.priority==='HIGH'),now).eventId,'high-first');
+  assert.equal(chooseCalendarPriority(events.filter(e=>e.priority==='NORMAL'),now).eventId,'normal-first');
+});
