@@ -97,7 +97,8 @@
   else W.mountInstall();
 
   const cs=document.currentScript;
-  if('serviceWorker'in navigator&&cs?.src){
+  const insideMiniappProxy=location.pathname.startsWith('/miniapp/');
+  if('serviceWorker'in navigator&&cs?.src&&!insideMiniappProxy){
     const sw=new URL('../sw.js',cs.src);
     navigator.serviceWorker.register(sw,{scope:new URL('../',cs.src).pathname,updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
   }
