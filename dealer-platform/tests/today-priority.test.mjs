@@ -26,9 +26,22 @@ test('richiamo imminente resta la singola azione primaria senza insoluti',()=>{
   assert.equal(result.subtitle,'Confermare il test drive');
 });
 
-test('consegna, saldo in scadenza, lavori e stato calmo hanno fallback deterministico',()=>{
+test('appuntamento di oggi entra davvero nella priorità operativa',()=>{
+  const result=chooseTodayPriority({
+    calendarEvents:[{title:'Consegna Fiat 500',starts_at:'2026-10-08T14:30:00Z',status:'OPEN'}],
+    vehicles:[{status:'IN_VENDITA'}]
+  },now);
+  assert.equal(result.view,'calendar');
+  assert.equal(result.action,'Apri calendario');
+  assert.match(result.title,/Consegna Fiat 500/);
+});
+
+test('consegna, saldo in scadenza, lavori e stock anziano hanno fallback deterministico',()=>{
   assert.equal(chooseTodayPriority({vehicles:[{status:'DA_CONSEGNARE'}]},now).view,'vendite');
   assert.equal(chooseTodayPriority({invoices:[{invoice_type:'SALE',payment_status:'UNPAID',due_date:'2026-10-10',total_amount:500}]},now).view,'fatture');
   assert.equal(chooseTodayPriority({workItems:[{status:'TODO',due_date:'2026-10-01'}]},now).view,'garage');
-  assert.equal(chooseTodayPriority({vehicles:[{status:'IN_VENDITA'}]},now).tone,'calm');
+  const aged=chooseTodayPriority({vehicles:[{status:'IN_VENDITA',purchase_date:'2026-07-01'}]},now);
+  assert.equal(aged.view,'garage');
+  assert.equal(aged.eyebrow,'STOCK DA MUOVERE');
+  assert.equal(chooseTodayPriority({vehicles:[{status:'IN_VENDITA',purchase_date:'2026-10-01'}]},now).tone,'calm');
 });
