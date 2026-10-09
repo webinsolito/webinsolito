@@ -18,7 +18,7 @@ export function calendarAction(event={}){
 export function chooseCalendarPriority(events=[],now=new Date()){
   const nowMs=new Date(now).getTime();
   const rows=events.filter(e=>!['DONE','CANCELLED'].includes(e?.status)&&validTime(e?.starts_at)!==null)
-    .sort((a,b)=>validTime(a.starts_at)-validTime(b.starts_at)||(a.priority==='HIGH'?-1:1));
+    .sort((a,b)=>validTime(a.starts_at)-validTime(b.starts_at)||Number(b.priority==='HIGH')-Number(a.priority==='HIGH'));
   if(!rows.length)return {kind:'calm',tone:'calm',eyebrow:'AGENDA IN ORDINE',title:'Nessuna scadenza aperta',detail:'Il calendario non richiede azioni.',timing:'',eventId:null,action:{kind:'none',label:''}};
   const event=rows[0],delta=validTime(event.starts_at)-nowMs,overdue=delta<0,withinDay=delta<=86400000;
   return {
