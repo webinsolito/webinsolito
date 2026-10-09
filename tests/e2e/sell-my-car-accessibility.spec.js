@@ -34,4 +34,20 @@ test.describe('SellMyCar accessibility and semantic validation', () => {
     await expect(page.locator('#error')).toContainText('marca');
     await expect(page.locator('#make')).toBeFocused();
   });
+
+  test('keeps mobile layout readable without horizontal overflow', async ({ page }) => {
+    for (const width of [360, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/sell-my-car/');
+      const metrics = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+        plateButtonHeight: document.querySelector('#kmsBtn').getBoundingClientRect().height,
+        generateButtonHeight: [...document.querySelectorAll('button')].find(x => x.textContent.includes('Genera annuncio')).getBoundingClientRect().height
+      }));
+      expect(metrics.scrollWidth, 'overflow at '+width+'px').toBeLessThanOrEqual(metrics.clientWidth + 1);
+      expect(metrics.plateButtonHeight).toBeGreaterThanOrEqual(44);
+      expect(metrics.generateButtonHeight).toBeGreaterThanOrEqual(44);
+    }
+  });
 });
