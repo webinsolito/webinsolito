@@ -37,9 +37,9 @@ export function clientContactAction(customer={},vehicleLabel=''){
   const subject=vehicleLabel?` riguardo ${vehicleLabel}`:'';
   const message=`Ciao${first?` ${first}`:''}, ti contatto da MALÙ23 CARS${subject}. Quando possiamo sentirci?`;
   const phone=String(customer.phone||'').replace(/\D/g,'');
-  if(phone)return {kind:'whatsapp',label:'Apri WhatsApp',href:`https://wa.me/${phone}?text=${encodeURIComponent(message)}`};
+  if(phone.length>=8&&phone.length<=15)return {kind:'whatsapp',label:'Apri WhatsApp',href:`https://wa.me/${phone}?text=${encodeURIComponent(message)}`};
   const email=String(customer.email||'').trim();
-  if(email)return {kind:'email',label:'Scrivi email',href:`mailto:${email}?subject=${encodeURIComponent('MALÙ23 CARS · Richiamo')}`};
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return {kind:'email',label:'Scrivi email',href:`mailto:${email}?subject=${encodeURIComponent('MALÙ23 CARS · Richiamo')}`};
   return {kind:'missing',label:'Aggiungi un contatto',href:''};
 }
 
