@@ -6,16 +6,41 @@
   "start_url": "./preview.html?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
   "lang": "it",
   "orientation": "any",
-  "categories": ["business", "productivity"],
-  "shortcuts": [
-    {"name":"Oggi","short_name":"Oggi","url":"./preview.html?view=today"},
-    {"name":"Garage","short_name":"Garage","url":"./preview.html?view=garage"},
-    {"name":"Clienti","short_name":"Clienti","url":"./preview.html?view=clients"}
+  "categories": [
+    "business",
+    "productivity"
   ],
-  "icons": []
+  "shortcuts": [
+    {
+      "name": "Oggi",
+      "short_name": "Oggi",
+      "url": "./preview.html?view=today"
+    },
+    {
+      "name": "Garage",
+      "short_name": "Garage",
+      "url": "./preview.html?view=garage"
+    },
+    {
+      "name": "Clienti",
+      "short_name": "Clienti",
+      "url": "./preview.html?view=clients"
+    }
+  ],
+  "icons": [
+    {
+      "src": "./malu23-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
