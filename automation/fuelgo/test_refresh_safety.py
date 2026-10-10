@@ -1,6 +1,6 @@
 """FuelGo MIMIT validator regression tests; run with python -m unittest discover -s automation/fuelgo."""
 import unittest
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json
@@ -19,7 +19,7 @@ class FuelGoRefreshSafetyTests(unittest.TestCase):
             "source": "Ministero delle Imprese e del Made in Italy",
             "source_date_prices": "2026-10-10",
             "source_date_anagrafica": "2026-10-10",
-            "generated_at": "2026-10-10T14:00:00+00:00",
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "count": 21000,
             "provinces": [],
         }
