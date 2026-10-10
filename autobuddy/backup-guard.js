@@ -24,14 +24,17 @@
         throw new Error('Il backup supera il limite di 1000 elementi per sezione: ' + field);
       }
     }
-    const ids = source.vehicles.map(v => v && Number(v.id));
-    if (ids.some(id => !Number.isSafeInteger(id) || id <= 0) || new Set(ids).size !== ids.length) {
-      throw new Error('Identificativi veicolo non validi o duplicati');
+    const validId = id => Number.isSafeInteger(Number(id)) && Number(id) > 0;
+    const ids = source.vehicles.filter(v => v && validId(v.id)).map(v => Number(v.id));
+    if (new Set(ids).size !== ids.length) {
+      throw new Error('Identificativi veicolo duplicati');
     }
+    const expectedCount = field => field === 'vehicles' ? ids.length :
+      (source[field] || []).filter(v => v && validId(v.id) && validId(v.veh)).length;
     const next = normalize({ ...source, version: 2 });
     if (!next || next.version !== 2 || collections.some(field =>
-      !Array.isArray(next[field]) || next[field].length !== (source[field] || []).length)) {
-      throw new Error('Il backup non può essere ripristinato senza perdita di dati');
+      !Array.isArray(next[field]) || next[field].length !== expectedCount(field))) {
+      throw new Error('Il backup non può essere ripristinato senza perdita di dati validi');
     }
     return next;
   }
