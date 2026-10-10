@@ -25,12 +25,26 @@
       }
     }
     const validId = id => Number.isSafeInteger(Number(id)) && Number(id) > 0;
-    const ids = source.vehicles.filter(v => v && validId(v.id)).map(v => Number(v.id));
+    // Do not silently discard a vehicle with a malformed identifier.
+    if (source.vehicles.some(v => !v || !validId(v.id))) {
+      throw new Error('Il backup contiene un veicolo senza identificativo valido');
+    }
+    const ids = source.vehicles.map(v => Number(v.id));
     if (new Set(ids).size !== ids.length) {
       throw new Error('Identificativi veicolo duplicati');
     }
-    const expectedCount = field => field === 'vehicles' ? ids.length :
-      (source[field] || []).filter(v => v && validId(v.id) && validId(v.veh)).length;
+    const vehicleIds = new Set(ids);
+    for (const field of collections.slice(1)) {
+      if ((source[field] || []).some(v => !v || !validId(v.id) ||
+          !validId(v.veh) || !vehicleIds.has(Number(v.veh)))) {
+        throw new Error('Il backup contiene dati non collegati a un veicolo (rischio perdita): ' + field);
+      }
+    }
+    if (source.parking !== undefined && source.parking !== null &&
+        (typeof source.parking !== 'object' || Array.isArray(source.parking))) {
+      throw new Error('Il backup contiene un parcheggio non valido');
+    }
+    const expectedCount = field => (source[field] || []).length;
     const next = normalize({ ...source, version: 2 });
     if (!next || next.version !== 2 || collections.some(field =>
       !Array.isArray(next[field]) || next[field].length !== expectedCount(field))) {
@@ -45,6 +59,9 @@
     const previous = storage.getItem(key);
     const oldRecovery = storage.getItem(RECOVERY_KEY);
     if (previous !== null) {
+      // An undo must be restorable, even when the current Garage has large attachments.
+      try { parseBackup(previous, normalize); }
+      catch { throw new Error('Il Garage attuale non è ripristinabile automaticamente: esporta una copia prima di importare'); }
       try { storage.setItem(RECOVERY_KEY, previous); }
       catch { throw new Error('Spazio insufficiente per salvare la copia di sicurezza: dati originali intatti'); }
     }
@@ -60,6 +77,11 @@
         }
       }
       throw new Error('Spazio insufficiente per importare: dati originali intatti');
+    }
+    // If the Garage was absent, any prior undo point is stale.
+    if (previous === null && oldRecovery !== null) {
+      try { storage.removeItem(RECOVERY_KEY); }
+      catch { /* The import succeeded; do not misreport it as a failed write. */ }
     }
     return next;
   }
