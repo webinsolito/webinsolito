@@ -43,12 +43,24 @@
     const next = parseBackup(text, normalize);
     if (confirmImport && !confirmImport()) return null;
     const previous = storage.getItem(key);
+    const oldRecovery = storage.getItem(RECOVERY_KEY);
     if (previous !== null) {
       try { storage.setItem(RECOVERY_KEY, previous); }
       catch { throw new Error('Spazio insufficiente per salvare la copia di sicurezza: dati originali intatti'); }
     }
     try { storage.setItem(key, JSON.stringify(next)); }
-    catch { throw new Error('Spazio insufficiente per importare: dati originali intatti'); }
+    catch {
+      // The Garage write failed: preserve the earlier undo point as well.
+      if (previous !== null) {
+        try {
+          if (oldRecovery === null) storage.removeItem(RECOVERY_KEY);
+          else storage.setItem(RECOVERY_KEY, oldRecovery);
+        } catch {
+          throw new Error('Importazione annullata: Garage intatto, ma non è stato possibile ripristinare la precedente copia di recupero');
+        }
+      }
+      throw new Error('Spazio insufficiente per importare: dati originali intatti');
+    }
     return next;
   }
 
