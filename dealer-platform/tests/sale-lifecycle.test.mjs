@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DELIVERY_CHECKLIST_TITLES,normalizeInvoicePayment,saleDeliveryGate,saleInvoiceIntegrity,selectSaleInvoice} from '../sale-lifecycle.js';
+import {DELIVERY_CHECKLIST_TITLES,normalizeInvoicePayment,saleContractTermsChanged,saleDeliveryGate,saleInvoiceIntegrity,saleStageTransition,selectSaleInvoice,vehicleDeliveryTransition} from '../sale-lifecycle.js';
 
-const contract={id:'c1',template_code:'VENDITA',status:'SIGNED',vehicle_id:'v1',customer_id:'u1',price:10000,financing_amount:0,financing_status:'NOT_REQUESTED'};
+const contract={id:'c1',template_code:'VENDITA',status:'SIGNED',vehicle_id:'v1',customer_id:'u1',price:10000,deposit:1000,contract_number:'2026/0001',contract_date:'2026-10-01',notes:'ok',financing_amount:0,financing_status:'NOT_REQUESTED'};
 const invoice={id:'i1',invoice_type:'SALE',vehicle_id:'v1',customer_id:'u1',total_amount:10000,paid_amount:10000,payment_status:'UNPAID'};
 const checklist=DELIVERY_CHECKLIST_TITLES.map((title,index)=>({id:`w${index}`,vehicle_id:'v1',category:'CONSEGNA',title,status:'DONE'}));
 
@@ -35,4 +35,25 @@ test('consegna richiede contratto firmato, fattura saldata e checklist completa'
 test('finanziamento non liquidato blocca la consegna anche con fattura saldata',()=>{
   const financed={...contract,financing_amount:6000,financing_status:'APPROVED'};
   assert.equal(saleDeliveryGate({contract:financed,invoice,workItems:checklist}).code,'sale_financing_not_paid');
+});
+
+test('consegna e annullamento sono stati terminali',()=>{
+  assert.equal(saleStageTransition('DELIVERED','READY').code,'sale_delivered_terminal');
+  assert.equal(saleStageTransition('DELIVERED','DELIVERED').ok,true);
+  assert.equal(saleStageTransition('CANCELLED','OPEN').code,'sale_cancelled_terminal');
+  assert.equal(saleStageTransition('READY','DELIVERED').ok,true);
+});
+
+test('termini del contratto congelato non possono cambiare',()=>{
+  const frozen={...contract,status:'FROZEN'};
+  assert.equal(saleContractTermsChanged(frozen,{...frozen,price:10100}),true);
+  assert.equal(saleContractTermsChanged(frozen,{...frozen,customer_id:'u2'}),true);
+  assert.equal(saleContractTermsChanged(frozen,{...frozen,sale_stage:'READY',planned_delivery_at:'2026-10-20T10:00:00Z'}),false);
+  assert.equal(saleContractTermsChanged({...frozen,status:'DRAFT'},{...frozen,status:'DRAFT',price:10100}),false);
+});
+
+test('veicolo consegnato non torna in stock',()=>{
+  assert.equal(vehicleDeliveryTransition('CONSEGNATA','IN_VENDITA').code,'vehicle_delivered_terminal');
+  assert.equal(vehicleDeliveryTransition('CONSEGNATA','CONSEGNATA').ok,true);
+  assert.equal(vehicleDeliveryTransition('DA_CONSEGNARE','CONSEGNATA').ok,true);
 });
