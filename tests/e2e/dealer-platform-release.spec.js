@@ -51,13 +51,27 @@ async function rawDealerCount(page,store,dealerId){
   return page.evaluate(async({store,dealerId})=>{
     const req=indexedDB.open('dealer-platform-local',8);
     const db=await new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});
-    return await new Promise((resolve,reject)=>{
+    const count=await new Promise((resolve,reject)=>{
       const tx=db.transaction(store,'readonly'),os=tx.objectStore(store);
       const idx=os.indexNames.contains('dealer_id')?os.index('dealer_id'):null;
       const r=idx?idx.count(IDBKeyRange.only(dealerId)):os.count();
       r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
     });
+    db.close();return count;
   },{store,dealerId});
+}
+
+async function rawPut(page,store,value){
+  return page.evaluate(async({store,value})=>{
+    const req=indexedDB.open('dealer-platform-local',8);
+    const db=await new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(store,'readwrite');
+      tx.objectStore(store).put(value);
+      tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+    });
+    db.close();
+  },{store,value});
 }
 
 test.describe('MALÙ23 release gate',()=>{
@@ -133,10 +147,10 @@ test.describe('MALÙ23 release gate',()=>{
     test.skip(testInfo.project.name!=='desktop-chromium','orphan cache gate runs once');
     await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
-    await page.evaluate(async()=>{
-      const {OfflineDB}=await import('./offline.js');
-      await OfflineDB.put('vehicle_financials',{id:'orphan-fin',dealer_id:'orphan-finance-only',vehicle_id:'orphan-v',purchase_price:12345,updated_at:new Date().toISOString()});
-    });
+    // Simulate sensitive rows left by a pre-hardening build. Public OfflineDB.put correctly blocks this while logged out,
+    // so the release gate seeds the stale row directly at IndexedDB level and then verifies the security cleanup path.
+    await page.evaluate(async()=>{const {OfflineDB}=await import('./offline.js');await OfflineDB.list('vehicles','orphan-finance-only')});
+    await rawPut(page,'vehicle_financials',{id:'orphan-fin',dealer_id:'orphan-finance-only',vehicle_id:'orphan-v',purchase_price:12345,updated_at:new Date().toISOString()});
     expect(await rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBeGreaterThan(0);
     await page.evaluate(async()=>{await import('./session-security.js?orphan-release-gate=197')});
     await expect.poll(()=>rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBe(0);
