@@ -73,6 +73,16 @@ async function purgeStoreForDealer(storeName,dealerId){
     t.oncomplete=()=>resolve(removed);t.onerror=()=>reject(t.error);t.onabort=()=>resolve(removed);
   });
 }
+async function dealerIdsInStore(storeName){
+  const db=await openDb();
+  return new Promise((resolve,reject)=>{
+    const t=db.transaction(storeName,'readonly'),store=t.objectStore(storeName);
+    if(!store.indexNames.contains('dealer_id')){resolve([]);return}
+    const ids=[],req=store.index('dealer_id').openKeyCursor(null,'nextunique');
+    req.onsuccess=()=>{const c=req.result;if(c){if(c.key!=null)ids.push(String(c.key));c.continue()}};
+    t.oncomplete=()=>resolve(ids);t.onerror=()=>reject(t.error);
+  });
+}
 
 export const OfflineDB={
   async put(storeName,value){assertWriteStore(storeName);const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite');t.objectStore(storeName).put(value);t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error)})},
@@ -83,6 +93,7 @@ export const OfflineDB={
   async listByCustomer(storeName,customerId){if(!canReadStore(storeName))return [];const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(store.indexNames.contains('customer_id'))return reqToPromise(store.index('customer_id').getAll(customerId));return (await reqToPromise(store.getAll())).filter(r=>r.customer_id===customerId)},
   async remove(storeName,id){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite');t.objectStore(storeName).delete(id);t.oncomplete=()=>resolve(true);t.onerror=()=>reject(t.error)})},
   async purgeStoreForDealer(storeName,dealerId){return purgeStoreForDealer(storeName,dealerId)},
+  async dealerIdsInStore(storeName){return dealerIdsInStore(storeName)},
   async setMeta(key,value){return this.put('meta',{key,value,updated_at:new Date().toISOString()})},
   async getMeta(key){const row=await this.get('meta',key);return row?.value},
   async clearTenant(dealerId){const db=await openDb();for(const name of STORES.filter(s=>!['meta','mutations'].includes(s))){await new Promise((resolve,reject)=>{const t=db.transaction(name,'readwrite'),store=t.objectStore(name),idx=store.index('dealer_id'),req=idx.openCursor(IDBKeyRange.only(dealerId));req.onsuccess=()=>{const c=req.result;if(c){c.delete();c.continue()}};t.oncomplete=()=>resolve();t.onerror=()=>reject(t.error)})}await clearSyncBases(dealerId)}
