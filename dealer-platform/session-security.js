@@ -16,7 +16,7 @@ async function removeMutations(dealerId){try{for(const row of await OfflineDB.li
 async function purgeDealer(dealerId){if(!dealerId)return;await OfflineDB.clearTenant(dealerId);await removeMutations(dealerId);for(const key of [`last_sync:${dealerId}`,`last_backup:${dealerId}`]){try{await OfflineDB.remove('meta',key)}catch{}}}
 async function purgeFinancialCache(dealerId){
   if(!dealerId)return;
-  for(const store of FINANCIAL_STORES){try{for(const row of await OfflineDB.list(store,dealerId))await OfflineDB.remove(store,row.id)}catch{}}
+  for(const store of FINANCIAL_STORES){try{await OfflineDB.purgeStoreForDealer(store,dealerId)}catch{}}
   try{for(const row of await OfflineDB.list('mutations',dealerId)){if(FINANCIAL_ENTITIES.has(row?.entity))await OfflineDB.remove('mutations',row.id)}}catch{}
   window.dispatchEvent(new CustomEvent('dealer:financial-cache-purged'));
 }
