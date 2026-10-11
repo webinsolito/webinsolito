@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.9.4',
+  version: '1.9.5',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -75,9 +75,10 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./reports.js?v=1.6.5').catch(err=>console.warn('Report non caricati',err));
   import('./admin.js?v=1.6.1').catch(err=>console.warn('Admin non caricato',err));
   import('./admin-safety.js?v=1.6.6').catch(err=>console.warn('Sicurezza Admin non caricata',err));
-  import('./backup.js?v=1.6.1').catch(err=>console.warn('Backup non caricato',err));
+  import('./backup.js?v=1.9.5').catch(err=>console.warn('Backup non caricato',err));
   import('./data-quality.js?v=1.9.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
   import('./operational-quality.js?v=1.9.3').catch(err=>console.warn('Controlli operativi non caricati',err));
   import('./mobile-shell.js?v=1.9.3').catch(err=>console.warn('Navigazione mobile non caricata',err));
   import('./daily-ux.js?v=1.9.4').catch(err=>console.warn('UX operativa giornaliera non caricata',err));
+  import('./sync-recovery.js?v=1.9.5').catch(err=>console.warn('Recupero sincronizzazione non caricato',err));
 });
