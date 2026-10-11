@@ -16,10 +16,7 @@ function canAccessFinancialData(){
 }
 async function clearFinancialCache(dealerId){
   if(!dealerId)return;
-  for(const store of FINANCIAL_STORES){
-    const rows=await OfflineDB.list(store,dealerId);
-    for(const row of rows)await OfflineDB.remove(store,row.id);
-  }
+  for(const store of FINANCIAL_STORES)await OfflineDB.purgeStoreForDealer(store,dealerId);
   const mutations=await OfflineDB.list('mutations',dealerId);
   for(const row of mutations){if(FINANCIAL_STORES.has(row?.entity))await OfflineDB.remove('mutations',row.id)}
 }
