@@ -34,7 +34,7 @@ export function vehicleCostIssue({vehicleId,amount,category,vehicles=[]}={}){
 let snapshot={vehicles:[],media:[],contracts:[],customers:[],interactions:[],interests:[]};
 let scheduled=false,running=false;
 function dealerId(){return Session.get()?.dealer?.id||null}
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
 function dateShort(v){if(!v)return '';try{return new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit'}).format(new Date(v))}catch{return ''}}
 function customerName(id){const c=snapshot.customers.find(x=>x.id===id);return c?`${c.first_name||''} ${c.last_name||''}`.trim():''}
 function activeContract(vehicleId){return snapshot.contracts.filter(c=>c&&!c.deleted_at&&c.template_code==='VENDITA'&&c.vehicle_id===vehicleId&&c.sale_stage!=='CANCELLED').sort((a,b)=>String(b.updated_at||b.contract_date||'').localeCompare(String(a.updated_at||a.contract_date||'')))[0]||null}
@@ -65,8 +65,11 @@ function patchGarage(){
     const contract=activeContract(vehicle.id),client=contract?customerName(contract.customer_id):'';
     let line=card.querySelector('.oq-garage-sale');
     if(!contract){line?.remove();continue}
-    if(!line){line=document.createElement('div');line.className='oq-garage-sale';card.querySelector('.stockline')?.after(line)}
     const delivery=contract.planned_delivery_at?` · consegna ${dateShort(contract.planned_delivery_at)}`:'';
+    const sig=JSON.stringify([contract.id,client,delivery]);
+    if(line?.dataset.oqSig===sig)continue;
+    if(!line){line=document.createElement('div');line.className='oq-garage-sale';card.querySelector('.stockline')?.after(line)}
+    line.dataset.oqSig=sig;
     line.innerHTML=`<span>${client?`Cliente: <b>${esc(client)}</b>`:'Vendita collegata'}${delivery}</span>`;
   }
 }
@@ -75,10 +78,13 @@ function patchClients(){
     const c=snapshot.customers.find(x=>x.id===card.dataset.clientId);if(!c)continue;
     const last=customerLastInteraction(c.id),interest=snapshot.interests.find(i=>i.customer_id===c.id);
     let box=card.querySelector('.oq-client-action');
-    if(!box){box=document.createElement('div');box.className='oq-client-action';card.appendChild(box)}
     const next=normText(c.next_step)||'⚠ Prossima azione da definire';
     const lastText=last?`${last.type||last.channel||'Contatto'} · ${dateShort(last.happened_at||last.created_at)}`:'Nessun contatto registrato';
     const linked=interest?'Auto collegata':'⚠ Nessuna auto collegata';
+    const sig=JSON.stringify([next,lastText,linked]);
+    if(box?.dataset.oqSig===sig)continue;
+    if(!box){box=document.createElement('div');box.className='oq-client-action';card.appendChild(box)}
+    box.dataset.oqSig=sig;
     box.innerHTML=`<b>${esc(next)}</b><span>Ultimo: ${esc(lastText)} · ${esc(linked)}</span>`;
   }
 }
