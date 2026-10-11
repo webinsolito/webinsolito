@@ -2,12 +2,24 @@ name: Update FuelGo data
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * *"
+  pull_request:
+    paths:
+      - ".github/workflows/fuelgo-data.yml"
+      - "automation/fuelgo/**"
+      - "fuelgo/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fuelgo-data.yml"
+      - "automation/fuelgo/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: fuelgo-data
+  group: fuelgo-data-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -15,13 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Checkout main
+      - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: main
           fetch-depth: 0
 
       - name: Sync main before generating data
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -32,10 +44,19 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate updater syntax
+        run: |
+          python -m py_compile automation/fuelgo/update_fuel.py
+          python -m py_compile automation/fuelgo/validate_dataset.py
+
       - name: Download and normalize MIMIT fuel data
         run: python automation/fuelgo/update_fuel.py
 
+      - name: Reject stale or incomplete MIMIT data
+        run: python automation/fuelgo/validate_dataset.py
+
       - name: Commit changed feed safely
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -45,11 +66,11 @@ jobs:
           fi
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "::error::main changed while FuelGo was generating data. Aborting safely; rerun manually."
+            echo "::error::main changed while FuelGo was generating data. Last valid dataset remains published; rerun automatically or manually."
             exit 1
           fi
           git config user.name "webinsolito-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -A fuelgo/data
-          git commit -m "chore(fuelgo): refresh MIMIT fuel prices [skip ci]"
+          git commit -m "chore(fuelgo): refresh validated MIMIT fuel prices [skip ci]"
           git push origin HEAD:main
