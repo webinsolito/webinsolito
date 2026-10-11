@@ -23,7 +23,7 @@ Il browser gate usa solo server locale e risposte backend simulate: non pubblica
 
 ## Dispositivi
 
-- Windows/desktop browser: shell, navigazione, dati simulati e moduli principali verificati dal progetto Playwright `desktop-chromium`.
+- Windows desktop (browser): shell, navigazione, dati simulati e moduli principali verificati dal progetto Playwright `desktop-chromium`.
 - iPhone Safari/PWA: layout, bottom nav Oggi/Garage/Clienti/Calendario/Altro, overflow orizzontale e tap target verificati dal progetto Playwright `iphone`.
 - PWA offline: prima apertura online, installazione service worker, passaggio offline, reload della shell e rilettura dati IndexedDB.
 - Offline → online: retry automatico, errore visibile, conflitto senza overwrite automatico, scelta **Usa server / Mantieni locale**.
