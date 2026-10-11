@@ -21,6 +21,14 @@ test('logout cache discovery sees finance-only tenants without exposing rows',()
   assert.match(session,/orphan finance-only caches/);
 });
 
+test('IndexedDB bootstrap reuses one connection promise and resets it on version change',()=>{
+  const src=read('offline.js');
+  assert.match(src,/let dbPromise=null/);
+  assert.match(src,/if\(dbPromise\)return dbPromise/);
+  assert.match(src,/db\.onversionchange=\(\)=>\{db\.close\(\);dbPromise=null\}/);
+  assert.match(src,/req\.onerror=\(\)=>\{dbPromise=null;reject\(req\.error\)\}/);
+});
+
 test('seller sync skips finance endpoints and finance cache writes',()=>{
   const src=read('api.js');
   assert.match(src,/finance\?rest\(`vehicle_financials/);
