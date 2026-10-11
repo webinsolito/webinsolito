@@ -1,6 +1,15 @@
 name: Dealer Platform Browser Gate
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dealer-platform/**'
+      - 'tests/e2e/**'
+      - 'playwright.config.js'
+      - 'package.json'
+      - '.github/workflows/dealer-platform-browser-gate.yml'
   pull_request:
     paths:
       - 'dealer-platform/**'
