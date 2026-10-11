@@ -53,9 +53,9 @@ test('runtime, UI e database applicano lo stesso blocco terminale',async()=>{
   assert.match(api,/vehicleDeliveryTransition/);
   assert.match(safety,/option\[value="DELIVERED"\]/);
   assert.match(safety,/Vendita consegnata: pratica definitiva/);
-  assert.match(config,/version: '1\.9\.5'/);
+  assert.match(config,/version: '1\.9\.6'/);
   assert.match(config,/sale-safety\.js\?v=1\.9\.4/);
-  assert.match(sw,/dealer-platform-v1\.9\.5-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
   assert.match(sw,/sale-safety\.js\?v=1\.9\.4/);
   assert.match(preview,/preview-1\.9\.5/);
   assert.match(migration,/sale_delivered_terminal/);
