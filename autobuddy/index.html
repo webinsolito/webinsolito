@@ -41,7 +41,22 @@ if(x.parking&&typeof x.parking==='object'){const lat=Number(x.parking.lat),lng=N
 function fail(message,field){alert(message);field?.focus();return false}
 let S=load();
 function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.version===2)return normalizeState(x)}catch{}return emptyState()}
-function save(){localStorage.setItem(KEY,JSON.stringify(S));render()}function uid(){return Date.now()+Math.floor(Math.random()*10000)}function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
+let lastSaveFailed=false;
+function save(){
+  try {
+    localStorage.setItem(KEY,JSON.stringify(S));
+    lastSaveFailed=false;
+    render();
+    return true;
+  } catch {
+    // A quota/security error must never leave unsaved edits displayed as saved.
+    lastSaveFailed=true;
+    S=load();
+    render();
+    alert('Impossibile salvare: memoria del dispositivo piena o bloccata. La modifica non è stata registrata. Esporta una copia da Impostazioni prima di liberare spazio.');
+    return false;
+  }
+}function uid(){return Date.now()+Math.floor(Math.random()*10000)}function esc(s){return(s??'').toString().replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function toast(t){if(lastSaveFailed)return;const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
 function buildNav(){const mk=(x,i)=>'<button data-go="'+x[0]+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>';desktopNav.innerHTML=NAV.map(mk).join('');mobileNav.innerHTML=NAV.slice(0,5).map(mk).join('')}buildNav();
 function go(p){document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('on',x.dataset.panel===p));document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('on',x.dataset.go===p));pageTitle.textContent=NAV.find(x=>x[0]===p)?.[1]||'AutoBuddy';window.scrollTo({top:0,behavior:'smooth'});render()}
 function veh(id){return S.vehicles.find(v=>v.id==id)}function active(){let v=veh(S.activeVehicle);if(!v&&S.vehicles.length){S.activeVehicle=S.vehicles[0].id;v=S.vehicles[0]}return v}function money(n){return '€'+(+n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})}function fmtDate(d){if(!d)return'—';return new Date(d+'T12:00:00').toLocaleDateString('it-IT')}
