@@ -1,6 +1,17 @@
 const DB_NAME='dealer-platform-local';
 const DB_VERSION=8;
 const STORES=['meta','vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','invoices','mutations'];
+const FINANCIAL_STORES=new Set(['vehicle_financials','vehicle_costs','invoices']);
+const FINANCIAL_ENTITIES=FINANCIAL_STORES;
+
+function currentSession(){try{return JSON.parse(localStorage.getItem('dealer-platform-session')||'null')}catch{return null}}
+function canAccessFinancialData(){
+  const p=currentSession()?.profile||{};
+  if(p.role==='VENDITORE')return false;
+  return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.finance_view===true||p.permissions?.view_costs===true||p.permissions?.invoices_view===true;
+}
+function canReadStore(storeName){return !FINANCIAL_STORES.has(storeName)||canAccessFinancialData()}
+function assertWriteStore(storeName){if(FINANCIAL_STORES.has(storeName)&&!canAccessFinancialData())throw new Error('financial_store_forbidden')}
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -40,12 +51,12 @@ function openDb(){
 function reqToPromise(req){return new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
 
 export const OfflineDB={
-  async put(storeName,value){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite');t.objectStore(storeName).put(value);t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error)})},
-  async bulkPut(storeName,values){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite'),store=t.objectStore(storeName);values.forEach(v=>store.put(v));t.oncomplete=()=>resolve(values.length);t.onerror=()=>reject(t.error)})},
-  async get(storeName,id){const db=await openDb();return reqToPromise(db.transaction(storeName,'readonly').objectStore(storeName).get(id))},
-  async list(storeName,dealerId){const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(dealerId&&store.indexNames.contains('dealer_id'))return reqToPromise(store.index('dealer_id').getAll(dealerId));return reqToPromise(store.getAll())},
-  async listByVehicle(storeName,vehicleId){const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(store.indexNames.contains('vehicle_id'))return reqToPromise(store.index('vehicle_id').getAll(vehicleId));return (await reqToPromise(store.getAll())).filter(r=>r.vehicle_id===vehicleId)},
-  async listByCustomer(storeName,customerId){const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(store.indexNames.contains('customer_id'))return reqToPromise(store.index('customer_id').getAll(customerId));return (await reqToPromise(store.getAll())).filter(r=>r.customer_id===customerId)},
+  async put(storeName,value){assertWriteStore(storeName);const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite');t.objectStore(storeName).put(value);t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error)})},
+  async bulkPut(storeName,values){assertWriteStore(storeName);const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite'),store=t.objectStore(storeName);values.forEach(v=>store.put(v));t.oncomplete=()=>resolve(values.length);t.onerror=()=>reject(t.error)})},
+  async get(storeName,id){if(!canReadStore(storeName))return null;const db=await openDb();return reqToPromise(db.transaction(storeName,'readonly').objectStore(storeName).get(id))},
+  async list(storeName,dealerId){if(!canReadStore(storeName))return [];const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(dealerId&&store.indexNames.contains('dealer_id'))return reqToPromise(store.index('dealer_id').getAll(dealerId));return reqToPromise(store.getAll())},
+  async listByVehicle(storeName,vehicleId){if(!canReadStore(storeName))return [];const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(store.indexNames.contains('vehicle_id'))return reqToPromise(store.index('vehicle_id').getAll(vehicleId));return (await reqToPromise(store.getAll())).filter(r=>r.vehicle_id===vehicleId)},
+  async listByCustomer(storeName,customerId){if(!canReadStore(storeName))return [];const db=await openDb(),store=db.transaction(storeName,'readonly').objectStore(storeName);if(store.indexNames.contains('customer_id'))return reqToPromise(store.index('customer_id').getAll(customerId));return (await reqToPromise(store.getAll())).filter(r=>r.customer_id===customerId)},
   async remove(storeName,id){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(storeName,'readwrite');t.objectStore(storeName).delete(id);t.oncomplete=()=>resolve(true);t.onerror=()=>reject(t.error)})},
   async setMeta(key,value){return this.put('meta',{key,value,updated_at:new Date().toISOString()})},
   async getMeta(key){const row=await this.get('meta',key);return row?.value},
@@ -53,8 +64,8 @@ export const OfflineDB={
 };
 
 export function uuid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`}
-export async function queueMutation({dealer_id,entity,method,row,record_id}){const mutation={id:uuid(),dealer_id,entity,method,record_id:record_id||row?.id||null,row:row||null,status:'PENDING',attempts:0,created_at:new Date().toISOString(),last_error:null};await OfflineDB.put('mutations',mutation);window.dispatchEvent(new CustomEvent('dealer:queue-changed'));return mutation}
-export async function pendingMutations(dealerId){const all=await OfflineDB.list('mutations',dealerId);return all.filter(m=>m.status==='PENDING'||m.status==='FAILED').sort((a,b)=>a.created_at.localeCompare(b.created_at))}
+export async function queueMutation({dealer_id,entity,method,row,record_id}){if(FINANCIAL_ENTITIES.has(entity)&&!canAccessFinancialData())throw new Error('financial_mutation_forbidden');const mutation={id:uuid(),dealer_id,entity,method,record_id:record_id||row?.id||null,row:row||null,status:'PENDING',attempts:0,created_at:new Date().toISOString(),last_error:null};await OfflineDB.put('mutations',mutation);window.dispatchEvent(new CustomEvent('dealer:queue-changed'));return mutation}
+export async function pendingMutations(dealerId){const all=await OfflineDB.list('mutations',dealerId);return all.filter(m=>(m.status==='PENDING'||m.status==='FAILED')&&(canAccessFinancialData()||!FINANCIAL_ENTITIES.has(m.entity))).sort((a,b)=>a.created_at.localeCompare(b.created_at))}
 export async function mutationCount(dealerId){return (await pendingMutations(dealerId)).length}
 export async function markMutation(id,patch){const current=await OfflineDB.get('mutations',id);if(!current)return;await OfflineDB.put('mutations',{...current,...patch});window.dispatchEvent(new CustomEvent('dealer:queue-changed'))}
 export async function pruneDoneMutations(maxAgeMs=86400000){const all=await OfflineDB.list('mutations'),cutoff=Date.now()-maxAgeMs;for(const m of all){if(m.status==='DONE'&&new Date(m.updated_at||m.created_at).getTime()<cutoff)await OfflineDB.remove('mutations',m.id)}}
