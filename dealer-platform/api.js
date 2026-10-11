@@ -2,10 +2,26 @@ import {OfflineDB,queueMutation,uuid} from './offline.js';
 
 const cfg=()=>window.DEALER_CONFIG||{};
 const jsonHeaders=(extra={})=>({'content-type':'application/json',...extra});
+const FINANCIAL_STORES=new Set(['vehicle_financials','vehicle_costs','invoices']);
 function assertConfigured(){const c=cfg();if(!c.supabaseUrl||!c.supabasePublishableKey)throw new Error('backend_not_configured');return c}
 async function parse(res){const text=await res.text();let data=null;try{data=text?JSON.parse(text):null}catch{data=text}if(!res.ok)throw new Error(data?.message||data?.error_description||data?.error||`http_${res.status}`);return data}
 
 export const Session={key:'dealer-platform-session',get(){try{return JSON.parse(localStorage.getItem(this.key)||'null')}catch{return null}},set(value){if(value)localStorage.setItem(this.key,JSON.stringify(value));else localStorage.removeItem(this.key);window.dispatchEvent(new CustomEvent('dealer:session'))},clear(){this.set(null)},accessToken(){return this.get()?.access_token||null},refreshToken(){return this.get()?.refresh_token||null},expired(){const s=this.get();return !s?.expires_at||Date.now()/1000>s.expires_at-30}};
+
+function canAccessFinancialData(){
+  const p=Session.get()?.profile||{};
+  if(p.role==='VENDITORE')return false;
+  return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.finance_view===true||p.permissions?.view_costs===true||p.permissions?.invoices_view===true;
+}
+async function clearFinancialCache(dealerId){
+  if(!dealerId)return;
+  for(const store of FINANCIAL_STORES){
+    const rows=await OfflineDB.list(store,dealerId);
+    for(const row of rows)await OfflineDB.remove(store,row.id);
+  }
+  const mutations=await OfflineDB.list('mutations',dealerId);
+  for(const row of mutations){if(FINANCIAL_STORES.has(row?.entity))await OfflineDB.remove('mutations',row.id)}
+}
 
 async function refresh(){const c=assertConfigured(),token=Session.refreshToken();if(!token)throw new Error('no_refresh_token');const res=await fetch(`${c.supabaseUrl}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:jsonHeaders({apikey:c.supabasePublishableKey}),body:JSON.stringify({refresh_token:token})}),data=await parse(res),previous=Session.get()||{},session={...previous,...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};Session.set(session);return session}
 export async function accessToken(){if(Session.expired())await refresh();return Session.accessToken()}
@@ -17,19 +33,42 @@ export async function logout(){Session.clear()}
 const DATA_STORES=['vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','invoices'];
 
 export async function fetchTenantData(dealerId){
-  const c=cfg();if(c.demoMode||!c.supabaseUrl)return demoData(dealerId);const enc=encodeURIComponent(dealerId);
+  const c=cfg();if(c.demoMode||!c.supabaseUrl)return demoData(dealerId);
+  const enc=encodeURIComponent(dealerId),finance=canAccessFinancialData();
+  if(!finance)await clearFinancialCache(dealerId);
   const [vehicles,financials,costs,events,workItems,media,documents,customers,customerInteractions,customerInterests,calendarEvents,contracts,contractVersions,invoices]=await Promise.all([
-    rest(`vehicles?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),rest(`vehicle_financials?dealer_id=eq.${enc}&select=*`),rest(`vehicle_costs?dealer_id=eq.${enc}&select=*`),rest(`vehicle_events?dealer_id=eq.${enc}&select=*&order=happened_at.desc`),rest(`vehicle_work_items?dealer_id=eq.${enc}&select=*&order=created_at.desc`),rest(`vehicle_media?dealer_id=eq.${enc}&select=*&order=sort_order.asc,created_at.asc`),rest(`documents?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),rest(`customers?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),rest(`customer_interactions?dealer_id=eq.${enc}&select=*&order=happened_at.desc`),rest(`customer_vehicle_interests?dealer_id=eq.${enc}&select=*`),rest(`calendar_events?dealer_id=eq.${enc}&status=neq.CANCELLED&select=*&order=starts_at.asc`),rest(`contracts?dealer_id=eq.${enc}&select=*&order=contract_date.desc`),rest(`contract_versions?dealer_id=eq.${enc}&select=*&order=version_no.desc`),rest(`invoices?dealer_id=eq.${enc}&deleted_at=is.null&select=*&order=issue_date.desc`)
+    rest(`vehicles?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
+    finance?rest(`vehicle_financials?dealer_id=eq.${enc}&select=*`):Promise.resolve([]),
+    finance?rest(`vehicle_costs?dealer_id=eq.${enc}&select=*`):Promise.resolve([]),
+    rest(`vehicle_events?dealer_id=eq.${enc}&select=*&order=happened_at.desc`),
+    rest(`vehicle_work_items?dealer_id=eq.${enc}&select=*&order=created_at.desc`),
+    rest(`vehicle_media?dealer_id=eq.${enc}&select=*&order=sort_order.asc,created_at.asc`),
+    rest(`documents?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
+    rest(`customers?dealer_id=eq.${enc}&deleted_at=is.null&select=*`),
+    rest(`customer_interactions?dealer_id=eq.${enc}&select=*&order=happened_at.desc`),
+    rest(`customer_vehicle_interests?dealer_id=eq.${enc}&select=*`),
+    rest(`calendar_events?dealer_id=eq.${enc}&status=neq.CANCELLED&select=*&order=starts_at.asc`),
+    rest(`contracts?dealer_id=eq.${enc}&select=*&order=contract_date.desc`),
+    rest(`contract_versions?dealer_id=eq.${enc}&select=*&order=version_no.desc`),
+    finance?rest(`invoices?dealer_id=eq.${enc}&deleted_at=is.null&select=*&order=issue_date.desc`):Promise.resolve([])
   ]);
   const data={vehicles,financials,costs,events,workItems,media,documents,customers,customerInteractions,customerInterests,calendarEvents,contracts,contractVersions,invoices};
-  await Promise.all([OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('vehicle_financials',financials),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('vehicle_events',events),OfflineDB.bulkPut('vehicle_work_items',workItems),OfflineDB.bulkPut('vehicle_media',media),OfflineDB.bulkPut('documents',documents),OfflineDB.bulkPut('customers',customers),OfflineDB.bulkPut('customer_interactions',customerInteractions),OfflineDB.bulkPut('customer_vehicle_interests',customerInterests),OfflineDB.bulkPut('calendar_events',calendarEvents),OfflineDB.bulkPut('contracts',contracts),OfflineDB.bulkPut('contract_versions',contractVersions),OfflineDB.bulkPut('invoices',invoices)]);
+  const writes=[OfflineDB.bulkPut('vehicles',vehicles),OfflineDB.bulkPut('vehicle_events',events),OfflineDB.bulkPut('vehicle_work_items',workItems),OfflineDB.bulkPut('vehicle_media',media),OfflineDB.bulkPut('documents',documents),OfflineDB.bulkPut('customers',customers),OfflineDB.bulkPut('customer_interactions',customerInteractions),OfflineDB.bulkPut('customer_vehicle_interests',customerInterests),OfflineDB.bulkPut('calendar_events',calendarEvents),OfflineDB.bulkPut('contracts',contracts),OfflineDB.bulkPut('contract_versions',contractVersions)];
+  if(finance)writes.push(OfflineDB.bulkPut('vehicle_financials',financials),OfflineDB.bulkPut('vehicle_costs',costs),OfflineDB.bulkPut('invoices',invoices));
+  await Promise.all(writes);
   await OfflineDB.setMeta(`last_sync:${dealerId}`,new Date().toISOString());return data
 }
 
-export async function cachedTenantData(dealerId){const rows=await Promise.all(DATA_STORES.map(s=>OfflineDB.list(s,dealerId)));const map={vehicle_financials:'financials',vehicle_costs:'costs',vehicle_events:'events',vehicle_work_items:'workItems',vehicle_media:'media',customer_interactions:'customerInteractions',customer_vehicle_interests:'customerInterests',calendar_events:'calendarEvents',contract_versions:'contractVersions'};return Object.fromEntries(DATA_STORES.map((s,i)=>[map[s]||s,rows[i]]))}
-export async function saveOfflineEntity(entity,dealerId,row,method='UPSERT'){const id=row.id||uuid(),full={...row,id,dealer_id:dealerId,updated_at:new Date().toISOString()};await OfflineDB.put(entity,full);await queueMutation({dealer_id:dealerId,entity,method,row:full,record_id:id});return full}
-export async function softDeleteEntity(entity,dealerId,id){const current=await OfflineDB.get(entity,id);if(!current)throw new Error('record_not_found');const row={...current,deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()};await OfflineDB.put(entity,row);await queueMutation({dealer_id:dealerId,entity,method:'UPSERT',row,record_id:id});return row}
-export async function sendMutation(mutation,token){const c=cfg();if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,80));return {demo:true}}if(!DATA_STORES.includes(mutation.entity))throw new Error('entity_not_allowed');if(mutation.method==='UPSERT')return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});if(mutation.method==='DELETE')return rest(`${mutation.entity}?id=eq.${encodeURIComponent(mutation.record_id)}`,{method:'DELETE',token,prefer:'return=minimal'});throw new Error('mutation_method_not_supported')}
+export async function cachedTenantData(dealerId){
+  const finance=canAccessFinancialData();
+  if(!finance)await clearFinancialCache(dealerId);
+  const rows=await Promise.all(DATA_STORES.map(s=>FINANCIAL_STORES.has(s)&&!finance?Promise.resolve([]):OfflineDB.list(s,dealerId)));
+  const map={vehicle_financials:'financials',vehicle_costs:'costs',vehicle_events:'events',vehicle_work_items:'workItems',vehicle_media:'media',customer_interactions:'customerInteractions',customer_vehicle_interests:'customerInterests',calendar_events:'calendarEvents',contract_versions:'contractVersions'};
+  return Object.fromEntries(DATA_STORES.map((s,i)=>[map[s]||s,rows[i]]))
+}
+export async function saveOfflineEntity(entity,dealerId,row,method='UPSERT'){if(FINANCIAL_STORES.has(entity)&&!canAccessFinancialData())throw new Error('financial_entity_forbidden');const id=row.id||uuid(),full={...row,id,dealer_id:dealerId,updated_at:new Date().toISOString()};await OfflineDB.put(entity,full);await queueMutation({dealer_id:dealerId,entity,method,row:full,record_id:id});return full}
+export async function softDeleteEntity(entity,dealerId,id){if(FINANCIAL_STORES.has(entity)&&!canAccessFinancialData())throw new Error('financial_entity_forbidden');const current=await OfflineDB.get(entity,id);if(!current)throw new Error('record_not_found');const row={...current,deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()};await OfflineDB.put(entity,row);await queueMutation({dealer_id:dealerId,entity,method:'UPSERT',row,record_id:id});return row}
+export async function sendMutation(mutation,token){const c=cfg();if(FINANCIAL_STORES.has(mutation.entity)&&!canAccessFinancialData())throw new Error('financial_mutation_forbidden');if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,80));return {demo:true}}if(!DATA_STORES.includes(mutation.entity))throw new Error('entity_not_allowed');if(mutation.method==='UPSERT')return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});if(mutation.method==='DELETE')return rest(`${mutation.entity}?id=eq.${encodeURIComponent(mutation.record_id)}`,{method:'DELETE',token,prefer:'return=minimal'});throw new Error('mutation_method_not_supported')}
 
 export async function validateTelegram(initData){const c=cfg();if(!c.workerUrl)throw new Error('worker_not_configured');return parse(await fetch(`${c.workerUrl}/telegram/validate`,{method:'POST',headers:jsonHeaders(),body:JSON.stringify({initData})}))}
 export async function linkTelegram(initData,dealerId){const c=cfg(),token=await accessToken();if(!c.workerUrl)throw new Error('worker_not_configured');dealerId=dealerId||Session.get()?.dealer?.id;if(!dealerId)throw new Error('dealer_required');return parse(await fetch(`${c.workerUrl}/telegram/link`,{method:'POST',headers:jsonHeaders({authorization:`Bearer ${token}`,'x-dealer-id':dealerId}),body:JSON.stringify({initData,dealer_id:dealerId})}))}

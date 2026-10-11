@@ -41,8 +41,10 @@ test('sospensione e reset password revocano sessioni e Telegram',()=>{
   assert.match(gateway,/changeOwnPassword.*revokeSessions\(a\.user\.id,a\.user\._session_id\|\|null\)/s);
 });
 
-test('runtime 1.8.1 forza cache nuova',()=>{
-  assert.match(config,/version: '1\.8\.1'/);
-  assert.match(sw,/dealer-platform-v1\.8\.1-session-containment/);
-  assert.match(sw,/config\.js\?v=1\.8\.1/);
+test('runtime 1.9.0 forza cache statica nuova e asset sicurezza coerenti',()=>{
+  assert.match(config,/version: '1\.9\.0'/);
+  assert.match(sw,/dealer-platform-v1\.9\.0-static-only/);
+  assert.match(sw,/config\.js\?v=1\.9\.0/);
+  assert.match(sw,/session-security\.js\?v=1\.9\.0/);
+  assert.match(sw,/readability\.css\?v=1\.9\.0/);
 });
