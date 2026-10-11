@@ -10,6 +10,29 @@ export const DELIVERY_CHECKLIST_TITLES=Object.freeze([
 
 const active=rows=>(rows||[]).filter(row=>row&&!row.deleted_at&&row.status!=='CANCELLED');
 const cents=value=>Math.round(Number(value||0)*100);
+const LOCKED_SALE_TERMS=Object.freeze(['contract_number','contract_date','customer_id','vehicle_id','price','deposit','template_code','template_version','notes']);
+
+function sameTerm(field,a,b){
+  if(field==='price'||field==='deposit')return cents(a)===cents(b);
+  return String(a??'')===String(b??'');
+}
+
+export function saleContractTermsChanged(previous,next){
+  if(!previous||previous.status==='DRAFT')return false;
+  return LOCKED_SALE_TERMS.some(field=>!sameTerm(field,previous?.[field],next?.[field]));
+}
+
+export function saleStageTransition(previousStage,nextStage){
+  const from=String(previousStage||'OPEN'),to=String(nextStage||'OPEN');
+  if(from==='DELIVERED'&&to!=='DELIVERED')return {ok:false,code:'sale_delivered_terminal'};
+  if(from==='CANCELLED'&&to!=='CANCELLED')return {ok:false,code:'sale_cancelled_terminal'};
+  return {ok:true,code:'ok'};
+}
+
+export function vehicleDeliveryTransition(previousStatus,nextStatus){
+  if(String(previousStatus||'')==='CONSEGNATA'&&String(nextStatus||'')!=='CONSEGNATA')return {ok:false,code:'vehicle_delivered_terminal'};
+  return {ok:true,code:'ok'};
+}
 
 export function normalizedPaymentStatus(totalAmount,paidAmount){
   const total=Math.max(0,cents(totalAmount));
@@ -68,6 +91,10 @@ export function saleDeliveryMessage(code){
   return ({
     sale_contract_missing:'Collega prima un contratto di vendita.',
     sale_contract_not_signed:'Il contratto di vendita deve essere congelato e segnato come firmato.',
+    sale_contract_terms_locked:'Cliente, auto, prezzo e condizioni del contratto congelato non possono più cambiare.',
+    sale_delivered_terminal:'Una vendita già consegnata è definitiva e non può tornare a una fase precedente.',
+    sale_cancelled_terminal:'Una vendita annullata non può essere riaperta modificando direttamente la fase.',
+    sale_delivery_timestamp_locked:'La data di consegna registrata è definitiva.',
     sale_invoice_missing:'Serve una fattura di vendita collegata alla stessa auto e allo stesso cliente.',
     sale_invoice_wrong_type:'La fattura collegata non è una fattura di vendita.',
     sale_invoice_vehicle_mismatch:'La fattura collegata appartiene a un altro veicolo.',
@@ -77,6 +104,7 @@ export function saleDeliveryMessage(code){
     sale_financing_not_paid:'Il finanziamento deve risultare liquidato prima della consegna.',
     sale_checklist_missing:'Manca almeno un controllo obbligatorio della checklist consegna.',
     sale_checklist_pending:'Completa tutti i controlli obbligatori prima della consegna.',
-    vehicle_delivery_contract_required:'Prima segna come consegnata la vendita collegata a questo veicolo.'
+    vehicle_delivery_contract_required:'Prima segna come consegnata la vendita collegata a questo veicolo.',
+    vehicle_delivered_terminal:'Un veicolo già consegnato non può tornare in uno stato precedente.'
   })[code]||'Operazione bloccata da una regola di coerenza della vendita.';
 }
