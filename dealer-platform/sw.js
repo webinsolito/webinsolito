@@ -1,7 +1,17 @@
-// Recovery sprint V1.9: refreshes core assets while preserving the hardened cache namespace.
-const CACHE='dealer-platform-v1.8.1-session-containment';
+// MALÙ23 PWA cache policy: static app shell only. Never cache API/auth/external responses.
+const CACHE='dealer-platform-v1.9.0-static-only';
 const CORE=['./','./index.html','./preview.html','./manifest.webmanifest','./config.js?v=1.8.1','./app.js?v=1.6.1','./today-priority.js?v=1.6.1','./delivery-readiness.js?v=1.6.1','./client-followup.js?v=1.6.1','./calendar-priority.js?v=1.6.1','./clients.js?v=1.6.1','./calendar.js?v=1.6.1','./documents.js?v=1.6.1','./contracts.js?v=1.6.1','./invoices.js?v=1.6.1','./sales.js?v=1.6.1','./finances.js?v=1.6.1','./autoscout-advisor.js?v=1.6.0','./autoscout.js?v=1.6.2','./autoscout-link.js?v=1.6.3','./autoscout-safety.js?v=1.6.3','./instagram.js?v=1.6.1','./instagram-readiness.js?v=1.6.4','./instagram-safety.js?v=1.6.4','./report-metrics.js?v=1.6.5','./reports.js?v=1.6.5','./admin-policy.js?v=1.6.6','./account-security.js?v=1.6.6','./session-security.js?v=1.8.1','./admin.js?v=1.6.1','./admin-safety.js?v=1.6.6','./backup-core.js?v=1.6.1','./backup.js?v=1.6.1','./data-quality.js?v=1.6.2','./api.js','./offline.js'];
 const APP_SCOPE=new URL('./',self.location.href).pathname;
+const STATIC_DESTINATIONS=new Set(['script','style','image','font','manifest']);
+
+function hasSensitiveHeaders(req){
+  return req.headers.has('authorization')||req.headers.has('cookie')||req.headers.has('x-api-key')||req.headers.has('apikey');
+}
+function isLocalStaticRequest(req,url){
+  if(req.method!=='GET'||url.origin!==self.location.origin||!url.pathname.startsWith(APP_SCOPE))return false;
+  if(hasSensitiveHeaders(req))return false;
+  return STATIC_DESTINATIONS.has(req.destination);
+}
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
@@ -12,18 +22,32 @@ self.addEventListener('activate',event=>{
 });
 
 self.addEventListener('fetch',event=>{
-  const req=event.request;if(req.method!=='GET')return;
+  const req=event.request;
+  if(req.method!=='GET')return;
   const url=new URL(req.url);
-  if(req.mode==='navigate'&&url.pathname.startsWith(APP_SCOPE)){
+
+  // App navigation: network first, only local HTML shell as offline fallback.
+  if(req.mode==='navigate'&&url.origin===self.location.origin&&url.pathname.startsWith(APP_SCOPE)){
     const preview=url.pathname.endsWith('/preview.html');
     const fallback=preview?'./preview.html':'./index.html';
-    event.respondWith(fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(fallback,copy));return res}).catch(()=>caches.match(fallback)));return;
+    event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{
+      if(res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(fallback,copy)).catch(()=>{});}
+      return res;
+    }).catch(()=>caches.match(fallback)));
+    return;
   }
-  if(url.origin===self.location.origin&&url.pathname.startsWith(APP_SCOPE)){
-    event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{if(res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res})));return;
+
+  // Only local static assets may enter Cache Storage.
+  if(isLocalStaticRequest(req,url)){
+    event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{
+      if(res.ok&&res.type==='basic'){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});}
+      return res;
+    })));
+    return;
   }
-  event.respondWith(fetch(req).then(res=>{if(res.ok&&res.type!=='opaque'){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res}).catch(()=>caches.match(req)));
+
+  // API, Supabase, Telegram and every other external/sensitive request are network-only.
+  event.respondWith(fetch(req));
 });
 
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});
-
