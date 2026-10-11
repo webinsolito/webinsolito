@@ -79,4 +79,5 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./data-quality.js?v=1.9.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
   import('./operational-quality.js?v=1.9.3').catch(err=>console.warn('Controlli operativi non caricati',err));
   import('./mobile-shell.js?v=1.9.3').catch(err=>console.warn('Navigazione mobile non caricata',err));
+  import('./daily-ux.js?v=1.9.4').catch(err=>console.warn('UX operativa giornaliera non caricata',err));
 });
