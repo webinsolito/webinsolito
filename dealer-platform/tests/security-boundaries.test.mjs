@@ -29,8 +29,10 @@ test('IndexedDB bootstrap reuses one connection promise and resets it on version
   assert.match(src,/req\.onerror=\(\)=>\{dbPromise=null;reject\(req\.error\)\}/);
 });
 
-test('seller sync skips finance endpoints and finance cache writes',()=>{
+test('seller sync skips finance endpoints, purges finance physically and blocks finance writes',()=>{
   const src=read('api.js');
+  assert.match(src,/for\(const store of FINANCIAL_STORES\)await OfflineDB\.purgeStoreForDealer\(store,dealerId\)/);
+  assert.doesNotMatch(src,/const rows=await OfflineDB\.list\(store,dealerId\)/);
   assert.match(src,/finance\?rest\(`vehicle_financials/);
   assert.match(src,/finance\?rest\(`vehicle_costs/);
   assert.match(src,/finance\?rest\(`invoices/);
