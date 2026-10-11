@@ -23,11 +23,11 @@ test('backup v2 non esporta né ripristina la coda mutazioni',async()=>{
   assert.match(source,/ignoredMutations/);
 });
 
-test('runtime 1.9.5 carica UI recupero anche offline e in preview',async()=>{
+test('runtime 1.9.6 mantiene la UI recupero v1.9.5 offline e in preview',async()=>{
   const [config,sw,preview,recovery]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html'),read('sync-recovery.js')]);
-  assert.match(config,/version: '1\.9\.5'/);
+  assert.match(config,/version: '1\.9\.6'/);
   assert.match(config,/sync-recovery\.js\?v=1\.9\.5/);
-  assert.match(sw,/dealer-platform-v1\.9\.5-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
   assert.match(sw,/sync-conflict\.js\?v=1\.9\.5/);
   assert.match(sw,/sync-recovery\.js\?v=1\.9\.5/);
   assert.match(preview,/preview-1\.9\.5/);
