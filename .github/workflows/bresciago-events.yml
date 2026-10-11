@@ -2,26 +2,38 @@ name: Update BresciaGo events
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "35 6,15 * * *"
+  pull_request:
+    paths:
+      - ".github/workflows/bresciago-events.yml"
+      - "automation/bresciago/**"
+      - "bresciago/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bresciago-events.yml"
+      - "automation/bresciago/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: bresciago-events
+  group: bresciago-events-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
-      - name: Checkout main
+      - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: main
           fetch-depth: 0
 
       - name: Sync main before generating data
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -35,24 +47,33 @@ jobs:
       - name: Install parser dependencies
         run: pip install -r automation/bresciago/requirements.txt
 
-      - name: Collect and validate events
+      - name: Validate updater syntax
+        run: |
+          python -m py_compile automation/bresciago/update_events.py
+          python -m py_compile automation/bresciago/validate_events.py
+
+      - name: Collect events only from declared public sources
         run: python automation/bresciago/update_events.py
 
+      - name: Reject stale, expired or untraceable events
+        run: python automation/bresciago/validate_events.py
+
       - name: Commit changed feed safely
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
           if git diff --quiet -- bresciago/data/events.json; then
-            echo "Feed unchanged"
+            echo "BresciaGo feed unchanged"
             exit 0
           fi
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "::error::main changed while BresciaGo was generating data. Aborting safely; rerun manually."
+            echo "::error::main changed while BresciaGo was generating data. Last valid feed remains published; rerun automatically or manually."
             exit 1
           fi
           git config user.name "webinsolito-bot"
           git config user.email "actions@users.noreply.github.com"
           git add bresciago/data/events.json
-          git commit -m "chore(bresciago): refresh automatic events [skip ci]"
+          git commit -m "chore(bresciago): refresh validated public events [skip ci]"
           git push origin HEAD:main
