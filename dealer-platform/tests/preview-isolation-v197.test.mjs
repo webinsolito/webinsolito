@@ -20,11 +20,16 @@ test('preview is a standalone static shell with no production persistence/runtim
   assert.doesNotMatch(html,/<script[\s>]/i);
 });
 
-test('runtime 1.9.7 invalidates old PWA cache while keeping legacy config URL warm',async()=>{
-  const [config,sw]=await Promise.all([read('config.js'),read('sw.js')]);
+test('runtime 1.9.7 invalidates old PWA cache and installs the production app shell',async()=>{
+  const [config,sw,manifest,icon]=await Promise.all([read('config.js'),read('sw.js'),read('manifest.webmanifest'),read('app-icon.svg')]);
   assert.match(config,/version: '1\.9\.7'/);
   assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
   assert.match(sw,/\.\/config\.js\?v=1\.9\.7/);
   assert.match(sw,/\.\/config\.js\?v=1\.6\.1/);
   assert.match(sw,/\.\/reports\.js\?v=1\.9\.7/);
+  assert.match(sw,/\.\/app-icon\.svg/);
+  assert.match(manifest,/"start_url": "\.\/index\.html\?source=pwa"/);
+  assert.match(manifest,/"src":"\.\/app-icon\.svg"/);
+  assert.match(manifest,/"purpose":"any maskable"/);
+  assert.match(icon,/<svg[^>]+viewBox="0 0 512 512"/);
 });
