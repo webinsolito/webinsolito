@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {vehiclePublishIssue,requiresPhotoForAdvance,hasVehiclePhoto} from '../operational-quality.js';
 
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root),'utf8');
@@ -16,15 +17,35 @@ test('vehicle identity and cost integrity are enforced server-side',async()=>{
   assert.match(sql,/vehicle_cost_dealer_mismatch/);
 });
 
+test('first commercial publication requires a real photo without blocking legacy advanced edits',()=>{
+  const vehicle={id:'v1',plate:'AB123CD',vin:'ZFA12345678901234',status:'IN_VENDITA'};
+  assert.equal(requiresPhotoForAdvance('IN_PREPARAZIONE','IN_VENDITA'),true);
+  assert.equal(requiresPhotoForAdvance('IN_VENDITA','PRENOTATA'),false);
+  assert.equal(hasVehiclePhoto([{vehicle_id:'v1',kind:'VIDEO',object_key:'clip.mp4'}],'v1'),false);
+  assert.equal(hasVehiclePhoto([{vehicle_id:'v1',kind:'PHOTO',object_key:'photo.jpg'}],'v1'),true);
+  assert.match(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[],previousStatus:'IN_PREPARAZIONE'}),/Aggiungi almeno una foto/);
+  assert.equal(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[],previousStatus:'IN_VENDITA'}),'');
+  assert.equal(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[{vehicle_id:'v1',kind:'PHOTO',object_key:'photo.jpg'}],previousStatus:'IN_PREPARAZIONE'}),'');
+});
+
+test('server photo migration gates first publication and grandfather existing advanced stock',async()=>{
+  const sql=await read('supabase/migrations/0018_publish_photo_gate_v197.sql');
+  assert.match(sql,/vehicle_photo_required/);
+  assert.match(sql,/security invoker/i);
+  assert.match(sql,/before insert or update of status on public\.vehicles/i);
+  assert.match(sql,/new_is_advanced and not old_is_advanced/);
+  assert.match(sql,/m\.kind = 'PHOTO'/);
+});
+
 test('garage runtime blocks duplicates, invalid publish data and bad costs',async()=>{
   const source=await read('operational-quality.js');
   assert.match(source,/findVehicleDuplicate/);
   assert.match(source,/VIN non valido/);
-  assert.match(source,/Aggiungi almeno una foto/);
   assert.match(source,/Targa già presente nel Garage/);
   assert.match(source,/Spesa su:/);
   assert.match(source,/Inserisci un importo spesa maggiore di zero/);
   assert.match(source,/Cliente:/);
+  assert.match(source,/oqNormBound/);
 });
 
 test('operational DOM patches are idempotent under MutationObserver',async()=>{
@@ -60,13 +81,12 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('runtime 1.9.6 keeps hardened operational modules loaded',async()=>{
+test('runtime 1.9.7 loads hardened operational modules',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.6'/);
-  assert.match(config,/operational-quality\.js\?v=1\.9\.6/);
+  assert.match(config,/version: '1\.9\.7'/);
+  assert.match(config,/operational-quality\.js\?v=1\.9\.7/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
-  assert.match(sw,/operational-quality\.js\?v=1\.9\.6/);
-  assert.match(sw,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(preview,/preview-1\.9\.6/);
+  assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
+  assert.match(sw,/operational-quality\.js\?v=1\.9\.7/);
+  assert.match(preview,/V1\.9\.7/);
 });
