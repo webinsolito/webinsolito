@@ -69,13 +69,15 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   assert.match(app,/BackButton\?\.onClick/);
   assert.match(app,/openRequestedView\(\)/);
   assert.match(app,/Riapri la Mini App dal bot/);
-  assert.match(config,/version: '1\.8\.1'/);
+  assert.match(config,/version: '1\.9\.0'/);
+  assert.match(config,/DEALER_SECURITY_READY=Promise\.all/);
   assert.match(config,/sales\.js\?v=1\.6\.1/);
   assert.match(config,/autoscout\.js\?v=1\.6\.2/);
   assert.match(config,/backup\.js\?v=1\.6\.1/);
-  assert.match(sw,/const CACHE='dealer-platform-v1\.[^']+'/);
+  assert.match(sw,/const CACHE='dealer-platform-v1\.9\.0-static-only'/);
   assert.match(sw,/autoscout-safety\.js\?v=1\.6\.3/);
   assert.match(sw,/backup-core\.js\?v=1\.6\.1/);
+  assert.match(sw,/session-security\.js\?v=1\.9\.0/);
   assert.match(html,/V1\.6\.1 · Backup sicuro/);
   assert.match(html,/app\.js\?v=1\.6\.1/);
   assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
