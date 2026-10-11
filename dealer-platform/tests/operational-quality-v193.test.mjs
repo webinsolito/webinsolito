@@ -27,6 +27,14 @@ test('garage runtime blocks duplicates, invalid publish data and bad costs',asyn
   assert.match(source,/Cliente:/);
 });
 
+test('operational DOM patches are idempotent under MutationObserver',async()=>{
+  const source=await read('operational-quality.js');
+  assert.match(source,/line\?\.dataset\.oqSig===sig/);
+  assert.match(source,/line\.dataset\.oqSig=sig/);
+  assert.match(source,/box\?\.dataset\.oqSig===sig/);
+  assert.match(source,/box\.dataset\.oqSig=sig/);
+});
+
 test('crm surfaces next action, last contact and vehicle link',async()=>{
   const source=await read('operational-quality.js');
   assert.match(source,/Prossima azione da definire/);
