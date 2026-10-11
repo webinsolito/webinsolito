@@ -91,6 +91,37 @@
         throw new Error('Il backup modifica o perde un dato: ' + section + '.' + field);
       }
     };
+    // Reject malformed canonical values before the normalizer can erase them.
+    for (const section of collections) {
+      for (const row of source[section] || []) {
+        for (const field of textFields[section]) {
+          const value = row[field];
+          if (value != null && typeof value !== 'string') {
+            throw new Error('Tipo non valido nel backup: ' + section + '.' + field);
+          }
+        }
+        for (const field of numberFields[section] || []) {
+          const value = row[field];
+          if (value == null || value === '') continue;
+          if (!['string', 'number'].includes(typeof value) || !Number.isFinite(Number(value))) {
+            throw new Error('Valore numerico non valido nel backup: ' + section + '.' + field);
+          }
+        }
+      }
+    }
+    if (source.parking) {
+      for (const field of ['note', 'until', 'at']) {
+        const value = source.parking[field];
+        if (value != null && typeof value !== 'string') throw new Error('Tipo non valido nel parcheggio: ' + field);
+      }
+      for (const field of ['lat', 'lng']) {
+        const value = source.parking[field];
+        if (value != null && value !== '' &&
+            (!['string', 'number'].includes(typeof value) || !Number.isFinite(Number(value)))) {
+          throw new Error('Coordinate non valide nel parcheggio: ' + field);
+        }
+      }
+    }
     for (const field of collections) {
       const restoredById = new Map(next[field].map(item => [Number(item.id), item]));
       for (const original of source[field] || []) {
