@@ -61,15 +61,17 @@ async function rawDealerCount(page,store,dealerId){
 }
 
 test.describe('MALÙ23 release gate',()=>{
-  test('preview is isolated and responsive on desktop/iPhone',async({page})=>{
+  test('preview is storage-isolated and responsive on desktop/iPhone',async({page})=>{
     const external=[];
-    page.on('request',req=>{const u=new URL(req.url());if(!['127.0.0.1','localhost'].includes(u.hostname)&&u.hostname!=='telegram.org')external.push(req.url())});
-    await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
+    page.on('request',req=>{const u=new URL(req.url());if(!['127.0.0.1','localhost'].includes(u.hostname))external.push(req.url())});
     await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#previewBadge')).toContainText('ANTEPRIMA');
     await expect(page.locator('#appShell')).toBeVisible();
     await expect(page.locator('#loginScreen')).toBeHidden();
-    await expect.poll(()=>external.filter(u=>u.includes('supabase.co')).length).toBe(0);
+    expect(await page.evaluate(()=>localStorage.getItem('dealer-platform-session'))).toBeNull();
+    const dbNames=await page.evaluate(async()=>typeof indexedDB.databases==='function'?(await indexedDB.databases()).map(x=>x.name):[]);
+    expect(dbNames).not.toContain('dealer-platform-local');
+    expect(external).toEqual([]);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(2);
     const mobile=await page.evaluate(()=>innerWidth<=820);
@@ -102,10 +104,9 @@ test.describe('MALÙ23 release gate',()=>{
 
   test('same-account role downgrade and logout physically purge IndexedDB tenant data',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','IndexedDB purge gate runs once');
-    await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
-    await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
+    const seen=[];await seedSession(page,'ADMIN');await mockExternalRuntime(page,seen);
+    await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
-    await page.evaluate(async()=>{await import('./session-security.js?release-gate=1')});
     await page.evaluate(async({dealerId})=>{
       const {OfflineDB}=await import('./offline.js');
       const now=new Date().toISOString();
@@ -113,33 +114,31 @@ test.describe('MALÙ23 release gate',()=>{
       await OfflineDB.put('vehicle_costs',{id:'qa-cost-cache',dealer_id:dealerId,vehicle_id:'qa-v',category:'PREPARAZIONE',amount:100,updated_at:now});
       await OfflineDB.put('invoices',{id:'qa-inv-cache',dealer_id:dealerId,invoice_type:'SALE',total_amount:1000,paid_amount:0,updated_at:now});
       await OfflineDB.put('vehicles',{id:'qa-v',dealer_id:dealerId,brand:'QA',model:'Cache',status:'IN_VENDITA',updated_at:now});
-    },{dealerId:'demo-malu23'});
-    for(const store of FINANCE_PATHS)expect(await rawDealerCount(page,store,'demo-malu23')).toBeGreaterThan(0);
-    expect(await rawDealerCount(page,'vehicles','demo-malu23')).toBeGreaterThan(0);
+    },{dealerId:DEALER_ID});
+    for(const store of FINANCE_PATHS)expect(await rawDealerCount(page,store,DEALER_ID)).toBeGreaterThan(0);
+    expect(await rawDealerCount(page,'vehicles',DEALER_ID)).toBeGreaterThan(0);
     await page.evaluate(()=>{
       const current=JSON.parse(localStorage.getItem('dealer-platform-session'));
       current.profile={display_name:'QA Venditore',role:'VENDITORE',username:'qa-seller',permissions:{garage_write:true,customers_write:true,contracts_write:true,calendar_write:true}};
       localStorage.setItem('dealer-platform-session',JSON.stringify(current));
       window.dispatchEvent(new CustomEvent('dealer:session'));
     });
-    for(const store of FINANCE_PATHS)await expect.poll(()=>rawDealerCount(page,store,'demo-malu23')).toBe(0);
-    expect(await rawDealerCount(page,'vehicles','demo-malu23')).toBeGreaterThan(0);
+    for(const store of FINANCE_PATHS)await expect.poll(()=>rawDealerCount(page,store,DEALER_ID)).toBe(0);
+    expect(await rawDealerCount(page,'vehicles',DEALER_ID)).toBeGreaterThan(0);
     await page.evaluate(()=>{localStorage.removeItem('dealer-platform-session');window.dispatchEvent(new CustomEvent('dealer:session'))});
-    await expect.poll(()=>rawDealerCount(page,'vehicles','demo-malu23')).toBe(0);
+    await expect.poll(()=>rawDealerCount(page,'vehicles',DEALER_ID)).toBe(0);
   });
 
   test('logged-out startup purges a finance-only orphan tenant cache',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','orphan cache gate runs once');
-    await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
     await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
     await page.evaluate(async()=>{
       const {OfflineDB}=await import('./offline.js');
       await OfflineDB.put('vehicle_financials',{id:'orphan-fin',dealer_id:'orphan-finance-only',vehicle_id:'orphan-v',purchase_price:12345,updated_at:new Date().toISOString()});
-      localStorage.removeItem('dealer-platform-session');
-      await import('./session-security.js?orphan-release-gate=1');
     });
     expect(await rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBeGreaterThan(0);
+    await page.evaluate(async()=>{await import('./session-security.js?orphan-release-gate=197')});
     await expect.poll(()=>rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBe(0);
   });
 
@@ -164,16 +163,16 @@ test.describe('MALÙ23 release gate',()=>{
 
   test('conflict recovery UI applies server choice explicitly',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','conflict UI gate runs once');
-    await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
-    await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
+    const seen=[];await seedSession(page,'ADMIN');await mockExternalRuntime(page,seen);
+    await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
-    await page.evaluate(async()=>{
+    await page.evaluate(async({dealerId})=>{
       const {OfflineDB}=await import('./offline.js');
       const now=new Date().toISOString();
-      await OfflineDB.put('vehicles',{id:'conflict-v',dealer_id:'demo-malu23',brand:'Locale',model:'A',status:'IN_VENDITA',updated_at:now});
-      await OfflineDB.put('mutations',{id:'conflict-m',dealer_id:'demo-malu23',entity:'vehicles',method:'UPSERT',record_id:'conflict-v',row:{id:'conflict-v',dealer_id:'demo-malu23',brand:'Locale',model:'A',status:'IN_VENDITA',updated_at:now},expected_updated_at:now,status:'CONFLICT',attempts:1,created_at:now,last_error:'sync_conflict_server_newer',conflict_code:'sync_conflict_server_newer',conflict_server_updated_at:'2026-10-11T13:00:00.000Z',server_row:{id:'conflict-v',dealer_id:'demo-malu23',brand:'Server',model:'B',status:'IN_VENDITA',updated_at:'2026-10-11T13:00:00.000Z'}});
+      await OfflineDB.put('vehicles',{id:'conflict-v',dealer_id:dealerId,brand:'Locale',model:'A',status:'IN_VENDITA',updated_at:now});
+      await OfflineDB.put('mutations',{id:'conflict-m',dealer_id:dealerId,entity:'vehicles',method:'UPSERT',record_id:'conflict-v',row:{id:'conflict-v',dealer_id:dealerId,brand:'Locale',model:'A',status:'IN_VENDITA',updated_at:now},expected_updated_at:now,status:'CONFLICT',attempts:1,created_at:now,last_error:'sync_conflict_server_newer',conflict_code:'sync_conflict_server_newer',conflict_server_updated_at:'2026-10-11T13:00:00.000Z',server_row:{id:'conflict-v',dealer_id:dealerId,brand:'Server',model:'B',status:'IN_VENDITA',updated_at:'2026-10-11T13:00:00.000Z'}});
       window.dispatchEvent(new CustomEvent('dealer:queue-changed'));
-    });
+    },{dealerId:DEALER_ID});
     await expect(page.locator('#syncRecovery')).toBeVisible();
     await expect(page.getByRole('button',{name:'Usa server'})).toBeVisible();
     await expect(page.getByRole('button',{name:'Mantieni locale'})).toBeVisible();
