@@ -38,8 +38,8 @@ jobs:
           node automation/autobuddy/test_backup_types.cjs
           node automation/autobuddy/test_backup_recovery_extra.cjs
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Serve candidate
         run: |
