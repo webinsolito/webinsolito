@@ -1,5 +1,5 @@
 import {OfflineDB,queueMutation,uuid} from './offline.js';
-import {normalizeInvoicePayment,saleDeliveryGate,saleDeliveryMessage,saleInvoiceIntegrity,selectSaleInvoice} from './sale-lifecycle.js';
+import {normalizeInvoicePayment,saleContractTermsChanged,saleDeliveryGate,saleDeliveryMessage,saleInvoiceIntegrity,saleStageTransition,selectSaleInvoice,vehicleDeliveryTransition} from './sale-lifecycle.js';
 
 const cfg=()=>window.DEALER_CONFIG||{};
 const jsonHeaders=(extra={})=>({'content-type':'application/json',...extra});
@@ -33,6 +33,13 @@ async function enforceBusinessInvariant(entity,dealerId,row){
   if(entity==='invoices')return normalizeInvoicePayment(row);
   if(entity==='contracts'&&row?.template_code==='VENDITA'){
     const previous=row.id?await OfflineDB.get('contracts',row.id):null;
+    const transition=saleStageTransition(previous?.sale_stage,row.sale_stage);
+    if(!transition.ok)throw businessRuleError(transition.code);
+    if(previous&&saleContractTermsChanged(previous,row))throw businessRuleError('sale_contract_terms_locked');
+    if(previous?.sale_stage==='DELIVERED'){
+      if(row.delivered_at&&previous.delivered_at&&row.delivered_at!==previous.delivered_at)throw businessRuleError('sale_delivery_timestamp_locked');
+      row={...row,delivered_at:previous.delivered_at||row.delivered_at};
+    }
     if(row.sale_invoice_id&&row.sale_invoice_id!==previous?.sale_invoice_id){
       const invoice=await OfflineDB.get('invoices',row.sale_invoice_id),check=saleInvoiceIntegrity(row,invoice,{requirePaid:false});
       if(!check.ok)throw businessRuleError(check.code);
@@ -43,9 +50,10 @@ async function enforceBusinessInvariant(entity,dealerId,row){
       return {...row,delivered_at:row.delivered_at||new Date().toISOString(),sale_invoice_id:row.sale_invoice_id||invoice?.id||null};
     }
   }
-  if(entity==='vehicles'&&row?.status==='CONSEGNATA'){
-    const previous=row.id?await OfflineDB.get('vehicles',row.id):null;
-    if(previous?.status!=='CONSEGNATA'){
+  if(entity==='vehicles'){
+    const previous=row.id?await OfflineDB.get('vehicles',row.id):null,transition=vehicleDeliveryTransition(previous?.status,row?.status);
+    if(!transition.ok)throw businessRuleError(transition.code);
+    if(row?.status==='CONSEGNATA'&&previous?.status!=='CONSEGNATA'){
       const contracts=await OfflineDB.list('contracts',dealerId),delivered=contracts.some(c=>c.template_code==='VENDITA'&&c.vehicle_id===row.id&&c.sale_stage==='DELIVERED'&&!c.deleted_at);
       if(!delivered)throw businessRuleError('vehicle_delivery_contract_required');
     }

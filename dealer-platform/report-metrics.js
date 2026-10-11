@@ -20,8 +20,9 @@ export function saleInvoiceFor(vehicleId,contract,invoices=[]){
 
 export function saleState(vehicle,contract){
   const stage=contract?.sale_stage||'';
-  if(stage==='DELIVERED'||vehicle?.status==='CONSEGNATA')return 'DELIVERED';
-  if(ACTIVE_SALE_STAGES.has(stage)||['PRENOTATA','VENDUTA','DA_CONSEGNARE'].includes(vehicle?.status))return 'PIPELINE';
+  const physicallyDelivered=stage==='DELIVERED'&&Boolean(contract?.delivered_at);
+  if(physicallyDelivered)return 'DELIVERED';
+  if(stage==='DELIVERED'||vehicle?.status==='CONSEGNATA'||ACTIVE_SALE_STAGES.has(stage)||['PRENOTATA','VENDUTA','DA_CONSEGNARE'].includes(vehicle?.status))return 'PIPELINE';
   return 'STOCK';
 }
 
@@ -31,9 +32,9 @@ export function commercialSaleAmount(vehicle,contract,invoice){
   return Math.max(0,Number(vehicle?.sale_price||0));
 }
 
-export function recognizedSaleDate(vehicle,contract,invoice){
+export function recognizedSaleDate(vehicle,contract){
   const state=saleState(vehicle,contract);if(state!=='DELIVERED')return '';
-  return String(contract?.delivered_at||invoice?.issue_date||contract?.contract_date||vehicle?.sold_at||'').slice(0,10);
+  return String(contract?.delivered_at||'').slice(0,10);
 }
 
 export function periodMatches(date,period='ALL',now=new Date()){
@@ -62,7 +63,7 @@ export function buildReportRows({vehicles=[],financials=[],costs=[],invoices=[],
     const contract=latestSaleContract(v.id,contracts),invoice=saleInvoiceFor(v.id,contract,invoices),state=saleState(v,contract);
     const agreedSale=commercialSaleAmount(v,contract,invoice);
     const recognizedSale=state==='DELIVERED'?agreedSale:0;
-    const saleDate=recognizedSaleDate(v,contract,invoice);
+    const saleDate=recognizedSaleDate(v,contract);
     const purchaseDate=v.purchase_date||v.created_at;
     const purchaseTime=purchaseDate?new Date(purchaseDate).getTime():NaN;
     const stockDays=state==='DELIVERED'||!Number.isFinite(purchaseTime)?0:Math.max(0,Math.floor((now.getTime()-purchaseTime)/86400000));
