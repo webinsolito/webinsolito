@@ -13,6 +13,14 @@ test('seller finance is denied at the offline data layer',()=>{
   assert.match(src,/purgeStoreForDealer/);
 });
 
+test('logout cache discovery sees finance-only tenants without exposing rows',()=>{
+  const offline=read('offline.js'),session=read('session-security.js');
+  assert.match(offline,/dealerIdsInStore/);
+  assert.match(offline,/openKeyCursor\(null,'nextunique'\)/);
+  assert.match(session,/OfflineDB\.dealerIdsInStore\(store\)/);
+  assert.match(session,/orphan finance-only caches/);
+});
+
 test('seller sync skips finance endpoints and finance cache writes',()=>{
   const src=read('api.js');
   assert.match(src,/finance\?rest\(`vehicle_financials/);
