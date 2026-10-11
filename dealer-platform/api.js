@@ -1,4 +1,5 @@
 import {OfflineDB,queueMutation,uuid} from './offline.js';
+import {normalizeInvoicePayment,saleDeliveryGate,saleDeliveryMessage,saleInvoiceIntegrity,selectSaleInvoice} from './sale-lifecycle.js';
 
 const cfg=()=>window.DEALER_CONFIG||{};
 const jsonHeaders=(extra={})=>({'content-type':'application/json',...extra});
@@ -21,6 +22,35 @@ async function clearFinancialCache(dealerId){
   }
   const mutations=await OfflineDB.list('mutations',dealerId);
   for(const row of mutations){if(FINANCIAL_STORES.has(row?.entity))await OfflineDB.remove('mutations',row.id)}
+}
+function businessRuleError(code){
+  const message=saleDeliveryMessage(code),err=new Error(code);err.userMessage=message;
+  try{globalThis.dispatchEvent?.(new CustomEvent('dealer:business-rule',{detail:{code,message}}))}catch{}
+  try{if(typeof globalThis.alert==='function')setTimeout(()=>globalThis.alert(message),0)}catch{}
+  return err;
+}
+async function enforceBusinessInvariant(entity,dealerId,row){
+  if(entity==='invoices')return normalizeInvoicePayment(row);
+  if(entity==='contracts'&&row?.template_code==='VENDITA'){
+    const previous=row.id?await OfflineDB.get('contracts',row.id):null;
+    if(row.sale_invoice_id&&row.sale_invoice_id!==previous?.sale_invoice_id){
+      const invoice=await OfflineDB.get('invoices',row.sale_invoice_id),check=saleInvoiceIntegrity(row,invoice,{requirePaid:false});
+      if(!check.ok)throw businessRuleError(check.code);
+    }
+    if(row.sale_stage==='DELIVERED'&&previous?.sale_stage!=='DELIVERED'){
+      const [invoices,workItems]=await Promise.all([OfflineDB.list('invoices',dealerId),OfflineDB.listByVehicle('vehicle_work_items',row.vehicle_id)]),invoice=selectSaleInvoice(row,invoices),gate=saleDeliveryGate({contract:row,invoice,invoices,workItems});
+      if(!gate.ready)throw businessRuleError(gate.code);
+      return {...row,delivered_at:row.delivered_at||new Date().toISOString(),sale_invoice_id:row.sale_invoice_id||invoice?.id||null};
+    }
+  }
+  if(entity==='vehicles'&&row?.status==='CONSEGNATA'){
+    const previous=row.id?await OfflineDB.get('vehicles',row.id):null;
+    if(previous?.status!=='CONSEGNATA'){
+      const contracts=await OfflineDB.list('contracts',dealerId),delivered=contracts.some(c=>c.template_code==='VENDITA'&&c.vehicle_id===row.id&&c.sale_stage==='DELIVERED'&&!c.deleted_at);
+      if(!delivered)throw businessRuleError('vehicle_delivery_contract_required');
+    }
+  }
+  return row;
 }
 
 async function refresh(){const c=assertConfigured(),token=Session.refreshToken();if(!token)throw new Error('no_refresh_token');const res=await fetch(`${c.supabaseUrl}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:jsonHeaders({apikey:c.supabasePublishableKey}),body:JSON.stringify({refresh_token:token})}),data=await parse(res),previous=Session.get()||{},session={...previous,...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};Session.set(session);return session}
@@ -66,7 +96,7 @@ export async function cachedTenantData(dealerId){
   const map={vehicle_financials:'financials',vehicle_costs:'costs',vehicle_events:'events',vehicle_work_items:'workItems',vehicle_media:'media',customer_interactions:'customerInteractions',customer_vehicle_interests:'customerInterests',calendar_events:'calendarEvents',contract_versions:'contractVersions'};
   return Object.fromEntries(DATA_STORES.map((s,i)=>[map[s]||s,rows[i]]))
 }
-export async function saveOfflineEntity(entity,dealerId,row,method='UPSERT'){if(FINANCIAL_STORES.has(entity)&&!canAccessFinancialData())throw new Error('financial_entity_forbidden');const id=row.id||uuid(),full={...row,id,dealer_id:dealerId,updated_at:new Date().toISOString()};await OfflineDB.put(entity,full);await queueMutation({dealer_id:dealerId,entity,method,row:full,record_id:id});return full}
+export async function saveOfflineEntity(entity,dealerId,row,method='UPSERT'){if(FINANCIAL_STORES.has(entity)&&!canAccessFinancialData())throw new Error('financial_entity_forbidden');const checked=await enforceBusinessInvariant(entity,dealerId,row),id=checked.id||uuid(),full={...checked,id,dealer_id:dealerId,updated_at:new Date().toISOString()};await OfflineDB.put(entity,full);await queueMutation({dealer_id:dealerId,entity,method,row:full,record_id:id});return full}
 export async function softDeleteEntity(entity,dealerId,id){if(FINANCIAL_STORES.has(entity)&&!canAccessFinancialData())throw new Error('financial_entity_forbidden');const current=await OfflineDB.get(entity,id);if(!current)throw new Error('record_not_found');const row={...current,deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()};await OfflineDB.put(entity,row);await queueMutation({dealer_id:dealerId,entity,method:'UPSERT',row,record_id:id});return row}
 export async function sendMutation(mutation,token){const c=cfg();if(FINANCIAL_STORES.has(mutation.entity)&&!canAccessFinancialData())throw new Error('financial_mutation_forbidden');if(c.demoMode||!c.supabaseUrl){await new Promise(r=>setTimeout(r,80));return {demo:true}}if(!DATA_STORES.includes(mutation.entity))throw new Error('entity_not_allowed');if(mutation.method==='UPSERT')return rest(`${mutation.entity}?on_conflict=id`,{method:'POST',body:mutation.row,token,prefer:'resolution=merge-duplicates,return=representation'});if(mutation.method==='DELETE')return rest(`${mutation.entity}?id=eq.${encodeURIComponent(mutation.record_id)}`,{method:'DELETE',token,prefer:'return=minimal'});throw new Error('mutation_method_not_supported')}
 
