@@ -1,0 +1,39 @@
+name: Dealer Platform PR Check
+
+on:
+  pull_request:
+    paths:
+      - 'dealer-platform/**'
+      - '.github/workflows/dealer-platform-pr-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: find dealer-platform -maxdepth 2 -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+      - name: Unit and regression tests
+        run: node --test dealer-platform/tests/*.test.mjs
+      - name: Manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('dealer-platform/manifest.webmanifest','utf8')); console.log('manifest ok')"
+      - name: Operational v1.9.3 invariants
+        run: |
+          test -f dealer-platform/operational-quality.js
+          test -f dealer-platform/mobile-shell.js
+          test -f dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
+          grep -q "operational-quality.js?v=1.9.3" dealer-platform/config.js
+          grep -q "mobile-shell.js?v=1.9.3" dealer-platform/config.js
+          grep -q "dealer-platform-v1.9.3-static-only" dealer-platform/sw.js
+          grep -q "vehicles_active_plate_unique" dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
+          grep -q "vehicles_active_vin_unique" dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
+          grep -q "vehicle_costs_amount_positive" dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
+      - name: Secret guard
+        run: |
+          ! grep -R -E "(sk_live_|sb_secret_|service_role[^A-Za-z0-9]*[:=][^A-Za-z0-9]*(eyJ|[A-Za-z0-9_-]{30,}))" dealer-platform --exclude='*.md' --exclude='*.example' || (echo 'Possible committed secret' && exit 1)
