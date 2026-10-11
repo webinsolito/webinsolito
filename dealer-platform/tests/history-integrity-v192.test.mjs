@@ -26,9 +26,9 @@ test('data quality UI surfaces legacy deliveries in sales finance and reports',a
 
 test('newer runtime keeps the v1.9.2 historical audit module loaded and cached',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.5'/);
+  assert.match(config,/version: '1\.9\.6'/);
   assert.match(config,/data-quality\.js\?v=1\.9\.2/);
-  assert.match(sw,/dealer-platform-v1\.9\.5-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
   assert.match(sw,/data-quality\.js\?v=1\.9\.2/);
   assert.match(preview,/preview-1\.9\.5/);
 });
