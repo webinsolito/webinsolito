@@ -99,7 +99,7 @@ test.describe('MALÙ23 release gate',()=>{
     for(const entity of FINANCE_PATHS)await expect.poll(()=>seen.includes(entity)).toBeTruthy();
   });
 
-  test('role switch and logout physically purge IndexedDB tenant data',async({page},testInfo)=>{
+  test('same-account role downgrade and logout physically purge IndexedDB tenant data',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','IndexedDB purge gate runs once');
     await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
     await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
@@ -115,7 +115,12 @@ test.describe('MALÙ23 release gate',()=>{
     },{dealerId:'demo-malu23'});
     for(const store of FINANCE_PATHS)expect(await rawDealerCount(page,store,'demo-malu23')).toBeGreaterThan(0);
     expect(await rawDealerCount(page,'vehicles','demo-malu23')).toBeGreaterThan(0);
-    await page.evaluate(s=>{localStorage.setItem('dealer-platform-session',JSON.stringify(s));window.dispatchEvent(new CustomEvent('dealer:session'))},sessionFor('VENDITORE'));
+    await page.evaluate(()=>{
+      const current=JSON.parse(localStorage.getItem('dealer-platform-session'));
+      current.profile={display_name:'QA Venditore',role:'VENDITORE',username:'qa-seller',permissions:{garage_write:true,customers_write:true,contracts_write:true,calendar_write:true}};
+      localStorage.setItem('dealer-platform-session',JSON.stringify(current));
+      window.dispatchEvent(new CustomEvent('dealer:session'));
+    });
     for(const store of FINANCE_PATHS)await expect.poll(()=>rawDealerCount(page,store,'demo-malu23')).toBe(0);
     expect(await rawDealerCount(page,'vehicles','demo-malu23')).toBeGreaterThan(0);
     await page.evaluate(()=>{localStorage.removeItem('dealer-platform-session');window.dispatchEvent(new CustomEvent('dealer:session'))});
@@ -129,7 +134,10 @@ test.describe('MALÙ23 release gate',()=>{
     await expect(page.locator('#appShell')).toBeVisible();
     await expect(page.locator('#vehicleGrid')).toContainText('Fiat');
     await page.evaluate(()=>navigator.serviceWorker.ready);
-    await expect.poll(async()=>page.evaluate(async()=>!!navigator.serviceWorker.controller),{timeout:10000}).toBeTruthy();
+    await page.reload({waitUntil:'domcontentloaded'});
+    await expect(page.locator('#appShell')).toBeVisible();
+    await expect(page.locator('#vehicleGrid')).toContainText('Fiat');
+    await expect.poll(async()=>page.evaluate(()=>!!navigator.serviceWorker.controller),{timeout:10000}).toBeTruthy();
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
