@@ -4,55 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1220">
-  <title>MALÙ23 Dealer Platform · Anteprima diretta</title>
-  <style>html,body{margin:0;min-height:100%;background:#0b1220;color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.loading b{font-size:22px}.loading p{color:#aeb9c9}</style>
+  <title>MALÙ23 Dealer Platform · Anteprima isolata</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f6f8;color:#111827}button{font:inherit}.shell{min-height:100vh;display:grid;grid-template-columns:210px 1fr}.side{background:#0b1220;color:#fff;padding:22px 14px}.brand{font-weight:950;font-size:18px;letter-spacing:.02em}.brand small{display:block;margin-top:5px;color:#8ea0b9;font-size:9px}.side nav{display:grid;gap:5px;margin-top:24px}.side button,.mobile-nav button{border:0;background:transparent;color:inherit}.side button{min-height:42px;border-radius:10px;text-align:left;padding:0 11px;color:#b8c3d3;font-weight:800}.side button.active{background:#fff;color:#111827}.main{min-width:0}.top{height:64px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}.top b{font-size:14px}.status{font-size:10px;font-weight:850;color:#18794e}.content{padding:18px 22px 86px;max-width:1220px;margin:auto}.hero{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:14px}.hero small{font-size:9px;color:#6b7280;font-weight:900}.hero h1{font-size:24px;margin:4px 0 0}.demo{font-size:9px;color:#4b5563}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.card,.task{background:#fff;border:1px solid #e1e5ea;border-radius:15px;box-shadow:0 4px 16px rgba(15,23,42,.03)}.card{padding:14px}.card span{display:block;color:#6b7280;font-size:8px;font-weight:900}.card b{display:block;margin-top:6px;font-size:20px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.panel{background:#fff;border:1px solid #e1e5ea;border-radius:16px;padding:14px}.panel h2{font-size:14px;margin:0 0 10px}.task{padding:11px 12px;margin-top:7px;display:flex;justify-content:space-between;gap:10px;align-items:center;box-shadow:none}.task strong{font-size:11px}.task small{display:block;color:#6b7280;margin-top:3px;font-size:9px}.tag{font-size:8px;font-weight:900;border-radius:999px;padding:6px 8px;background:#eef5ff;color:#315b8b;white-space:nowrap}.cars{display:grid;gap:8px}.car{padding:11px;border:1px solid #e5e7eb;border-radius:12px}.car strong{font-size:11px}.car p{font-size:9px;color:#6b7280;margin:4px 0 0}.mobile-nav{display:none}.preview-badge{position:fixed;right:12px;bottom:12px;z-index:20;background:#111827;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 11px;font-size:9px;font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    @media(max-width:820px){.shell{display:block}.side{display:none}.top{height:56px;padding:0 14px}.content{padding:14px 12px 86px}.hero{align-items:start}.hero h1{font-size:20px}.demo{display:none}.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.mobile-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:15;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #dfe3e8;padding-bottom:env(safe-area-inset-bottom);color:#6b7280}.mobile-nav button{min-height:58px;display:grid;place-items:center;align-content:center;gap:2px;font-size:15px;font-weight:900}.mobile-nav button small{font-size:8px}.mobile-nav button.active{color:#111827}.preview-badge{bottom:72px}}
+  </style>
 </head>
 <body>
-  <div class="loading"><div><b>MALÙ23 Dealer Platform</b><p>Apertura anteprima diretta…</p></div></div>
-  <script>
-  (async()=>{
-    try{
-      const response=await fetch('./index.html',{cache:'no-store'});
-      if(!response.ok)throw new Error('preview_source_unavailable');
-      let html=await response.text();
-      const previewBootstrap=`<script>
-window.DEALER_CONFIG=Object.freeze({version:'preview-1.9.6',supabaseUrl:'',supabasePublishableKey:'',workerUrl:'',defaultDealerSlug:'malu23',demoMode:true});
-try{localStorage.setItem('dealer-platform-session',JSON.stringify({expires_at:Math.floor(Date.now()/1000)+2592000,user:{id:'preview-admin'},dealer:{id:'demo-malu23',slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Anteprima Admin',role:'ADMIN',username:'preview',permissions:{admin_manage:true,garage_write:true,customers_write:true,documents_write:true,invoices_view:true,invoices_write:true,finance_view:true,view_costs:true,costs_write:true,contracts_write:true,calendar_write:true,autoscout_manage:true,instagram_manage:true,reports_view:true}}}))}catch{}
-try{if(navigator.serviceWorker)navigator.serviceWorker.register=()=>Promise.resolve({})}catch{}
-window.addEventListener('DOMContentLoaded',()=>{
- const demo=document.getElementById('demoBtn');if(demo)demo.hidden=true;
- const top=document.querySelector('.top');if(top&&!document.getElementById('previewBadge')){const badge=document.createElement('div');badge.id='previewBadge';badge.textContent='ANTEPRIMA · DATI DEMO';badge.style.cssText='position:fixed;right:12px;bottom:12px;z-index:9999;background:#111827;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 11px;font:800 9px system-ui;box-shadow:0 10px 30px rgba(0,0,0,.2)';document.body.appendChild(badge)}
- import('./clients.js?v=1.6.1').catch(()=>{});
- import('./calendar.js?v=1.6.1').catch(()=>{});
- import('./documents.js?v=1.6.1').catch(()=>{});
- import('./contracts.js?v=1.6.1').catch(()=>{});
- import('./invoices.js?v=1.6.1').catch(()=>{});
- import('./sales.js?v=1.6.1').catch(()=>{});
- import('./sale-safety.js?v=1.9.4').catch(()=>{});
- import('./finances.js?v=1.6.1').catch(()=>{});
- import('./autoscout.js?v=1.6.2').catch(()=>{});
- import('./autoscout-safety.js?v=1.6.3').catch(()=>{});
- import('./instagram.js?v=1.6.1').catch(()=>{});
- import('./instagram-safety.js?v=1.6.4').catch(()=>{});
- import('./reports.js?v=1.6.5').catch(()=>{});
- import('./admin.js?v=1.6.1').catch(()=>{});
- import('./admin-safety.js?v=1.6.6').catch(()=>{});
- import('./backup.js?v=1.9.5').catch(()=>{});
- import('./data-quality.js?v=1.9.2').catch(()=>{});
- import('./operational-quality.js?v=1.9.6').catch(()=>{});
- import('./mobile-shell.js?v=1.9.6').catch(()=>{});
- import('./daily-ux.js?v=1.9.6').catch(()=>{});
- import('./sync-recovery.js?v=1.9.6').catch(()=>{});
-});
-<\/script>`;
-      html=html.replace(/<script src="\.\/config\.js\?v=[^"]+"><\/script>/,previewBootstrap);
-      html=html.replace(/<title>[^<]*<\/title>/,'<title>MALÙ23 Dealer Platform · Anteprima diretta</title>');
-      document.open();document.write(html);document.close();
-    }catch(err){
-      document.body.innerHTML='<div class="loading"><div><b>Anteprima non disponibile</b><p>Ricarica la pagina.</p></div></div>';
-      console.error(err);
-    }
-  })();
-  </script>
+  <div id="loginScreen" hidden></div>
+  <div id="appShell" class="shell">
+    <aside class="side"><div class="brand">MALÙ23 CARS<small>DEALER PLATFORM · DEMO</small></div><nav><button class="active">⌂ OGGI</button><button>🚗 Garage</button><button>👥 Clienti</button><button>📅 Calendario</button><button>💼 Vendite</button><button>▤ Report</button></nav></aside>
+    <main class="main">
+      <header class="top"><b>MALÙ23 CARS</b><span class="status">● ANTEPRIMA OFFLINE</span></header>
+      <section class="content">
+        <div class="hero"><div><small>OGGI · LUNEDÌ</small><h1>Cosa richiede attenzione</h1></div><div class="demo">Dati dimostrativi, completamente isolati</div></div>
+        <div class="kpis"><div class="card"><span>AUTO IN STOCK</span><b>8</b></div><div class="card"><span>DA CONSEGNARE</span><b>2</b></div><div class="card"><span>FOLLOW-UP OGGI</span><b>4</b></div><div class="card"><span>APPUNTAMENTI</span><b>3</b></div></div>
+        <div class="grid">
+          <section class="panel"><h2>Priorità di oggi</h2><div class="task"><div><strong>Conferma saldo · Fiat 500</strong><small>Cliente: Marco Bianchi · consegna prevista oggi</small></div><span class="tag">CONSEGNA</span></div><div class="task"><div><strong>Richiama Laura Rossi</strong><small>Interesse: Peugeot 308 · ultimo contatto ieri</small></div><span class="tag">CLIENTE</span></div><div class="task"><div><strong>Completa foto · Golf 8</strong><small>Pronta per pubblicazione dopo il set fotografico</small></div><span class="tag">GARAGE</span></div></section>
+          <section class="panel"><h2>Garage rapido</h2><div class="cars"><div class="car"><strong>Fiat 500 1.0 Hybrid</strong><p>DA CONSEGNARE · Cliente collegato · oggi</p></div><div class="car"><strong>Peugeot 308 BlueHDi</strong><p>IN VENDITA · € 10.900</p></div><div class="car"><strong>Volkswagen Golf 8 TDI</strong><p>IN PREPARAZIONE · foto da completare</p></div></div></section>
+        </div>
+      </section>
+    </main>
+  </div>
+  <nav class="mobile-nav"><button class="active">⌂<small>OGGI</small></button><button>🚗<small>GARAGE</small></button><button>👥<small>CLIENTI</small></button><button>📅<small>CALENDARIO</small></button><button>•••<small>ALTRO</small></button></nav>
+  <div id="previewBadge" class="preview-badge">ANTEPRIMA · DATI DEMO · V1.9.7</div>
 </body>
 </html>

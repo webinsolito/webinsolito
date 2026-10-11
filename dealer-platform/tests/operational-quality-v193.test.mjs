@@ -16,15 +16,32 @@ test('vehicle identity and cost integrity are enforced server-side',async()=>{
   assert.match(sql,/vehicle_cost_dealer_mismatch/);
 });
 
+test('first commercial publication requires a PHOTO without blocking legacy advanced edits',async()=>{
+  const source=await read('operational-quality.js');
+  assert.match(source,/requiresPhotoForAdvance=.*isAdvancedStatus\(nextStatus\).*?!isAdvancedStatus\(previousStatus\)/s);
+  assert.match(source,/String\(x\.kind\|\|'PHOTO'\)\.toUpperCase\(\)==='PHOTO'/);
+  assert.match(source,/requiresPhotoForAdvance\(previousStatus,status\)&&!hasVehiclePhoto/);
+  assert.match(source,/Aggiungi almeno una foto prima di portare l’auto in vendita/);
+});
+
+test('server photo migration gates first publication and grandfathers existing advanced stock',async()=>{
+  const sql=await read('supabase/migrations/0018_publish_photo_gate_v197.sql');
+  assert.match(sql,/vehicle_photo_required/);
+  assert.match(sql,/security invoker/i);
+  assert.match(sql,/before insert or update of status on public\.vehicles/i);
+  assert.match(sql,/new_is_advanced and not old_is_advanced/);
+  assert.match(sql,/m\.kind = 'PHOTO'/);
+});
+
 test('garage runtime blocks duplicates, invalid publish data and bad costs',async()=>{
   const source=await read('operational-quality.js');
   assert.match(source,/findVehicleDuplicate/);
   assert.match(source,/VIN non valido/);
-  assert.match(source,/Aggiungi almeno una foto/);
   assert.match(source,/Targa già presente nel Garage/);
   assert.match(source,/Spesa su:/);
   assert.match(source,/Inserisci un importo spesa maggiore di zero/);
   assert.match(source,/Cliente:/);
+  assert.match(source,/oqNormBound/);
 });
 
 test('operational DOM patches are idempotent under MutationObserver',async()=>{
@@ -60,13 +77,12 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('runtime 1.9.6 keeps hardened operational modules loaded',async()=>{
+test('runtime 1.9.7 loads hardened operational modules',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.6'/);
-  assert.match(config,/operational-quality\.js\?v=1\.9\.6/);
+  assert.match(config,/version: '1\.9\.7'/);
+  assert.match(config,/operational-quality\.js\?v=1\.9\.7/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
-  assert.match(sw,/operational-quality\.js\?v=1\.9\.6/);
-  assert.match(sw,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(preview,/preview-1\.9\.6/);
+  assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
+  assert.match(sw,/operational-quality\.js\?v=1\.9\.7/);
+  assert.match(preview,/V1\.9\.7/);
 });

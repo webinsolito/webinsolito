@@ -44,15 +44,16 @@ test('Clienti espone prossimo passo ultimo contatto e auto collegata',()=>{
   assert.match(glance.vehicle,/Peugeot 308/);
 });
 
-test('moduli UX 1.9.6 sono disponibili online offline e in preview con observer idempotenti',async()=>{
+test('moduli UX restano online/offline mentre preview 1.9.7 è statica e isolata',async()=>{
   const [config,sw,preview,daily,mobile]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html'),read('daily-ux.js'),read('mobile-shell.js')]);
+  assert.match(config,/version: '1\.9\.7'/);
   assert.match(config,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
   assert.match(sw,/daily-ux-core\.js/);
   assert.match(sw,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(sw,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(preview,/daily-ux\.js\?v=1\.9\.6/);
-  assert.match(preview,/mobile-shell\.js\?v=1\.9\.6/);
+  assert.match(preview,/ANTEPRIMA · DATI DEMO · V1\.9\.7/);
+  assert.doesNotMatch(preview,/daily-ux\.js|mobile-shell\.js|<script/i);
   assert.match(daily,/includeFinance:canViewFinance\(\)/);
   assert.match(daily,/section\.dataset\.dailyUxSig===sig/);
   assert.match(daily,/section\.dataset\.dailyUxSig=sig/);

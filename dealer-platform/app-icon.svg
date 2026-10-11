@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MALÙ23 Dealer Platform">
+  <rect width="512" height="512" rx="116" fill="#0b1220"/>
+  <circle cx="392" cy="118" r="92" fill="#d3a24b" opacity="0.18"/>
+  <path d="M88 354V158h62l54 103 54-103h62v196h-52V237l-45 84h-38l-45-84v117H88z" fill="#ffffff"/>
+  <path d="M338 190c0-34 25-56 62-56 36 0 60 20 60 51 0 22-12 38-36 55l-28 20h67v45H337v-38l54-42c13-10 19-18 19-28 0-11-7-18-19-18-13 0-20 8-21 23l-32-12z" fill="#d3a24b"/>
+  <path d="M339 333c0-15 12-27 27-27s27 12 27 27-12 27-27 27-27-12-27-27zm58 0c0-15 12-27 27-27s27 12 27 27-12 27-27 27-27-12-27-27z" fill="#d3a24b"/>
+</svg>

@@ -16,19 +16,20 @@ test('migration classifies legacy deliveries without rewriting commercial facts'
   assert.match(sql,/sale_checklist_incomplete/);
 });
 
-test('data quality UI surfaces legacy deliveries in sales finance and reports',async()=>{
+test('data quality UI surfaces legacy deliveries without exposing finance to sellers',async()=>{
   const source=await read('data-quality.js');
   assert.match(source,/LEGACY_UNVERIFIED/);
   assert.match(source,/STORICO DA VERIFICARE/);
-  assert.match(source,/patchSales\(\)/);
-  assert.match(source,/historyWarning\(root,legacySales\(\)\.length\)/);
+  assert.match(source,/canSeeFinance\(\)/);
+  assert.match(source,/finance\?OfflineDB\.list\('vehicle_financials'/);
+  assert.match(source,/escluse da ricavi e margini riconosciuti/);
 });
 
-test('newer runtime keeps the v1.9.2 historical audit module loaded and cached',async()=>{
+test('runtime 1.9.7 loads the hardened historical audit module and cache',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.6'/);
-  assert.match(config,/data-quality\.js\?v=1\.9\.2/);
-  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
-  assert.match(sw,/data-quality\.js\?v=1\.9\.2/);
-  assert.match(preview,/preview-1\.9\.6/);
+  assert.match(config,/version: '1\.9\.7'/);
+  assert.match(config,/data-quality\.js\?v=1\.9\.7/);
+  assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
+  assert.match(sw,/data-quality\.js\?v=1\.9\.7/);
+  assert.match(preview,/V1\.9\.7/);
 });
