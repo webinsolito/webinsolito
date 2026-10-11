@@ -17,5 +17,7 @@
     {"name":"Garage","short_name":"Garage","url":"./index.html?source=pwa&view=garage"},
     {"name":"Clienti","short_name":"Clienti","url":"./index.html?source=pwa&view=clients"}
   ],
-  "icons": []
+  "icons": [
+    {"src":"./app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
 }
