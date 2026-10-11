@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.9.2',
+  version: '1.9.3',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -13,13 +13,11 @@ window.DEALER_CONFIG = Object.freeze({
 try{
   if(!document.querySelector('link[data-m23-readability]')){
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='./readability.css?v=1.9.0';link.dataset.m23Readability='1';
+    link.rel='stylesheet';link.href='./readability.css?v=1.9.3';link.dataset.m23Readability='1';
     document.head.appendChild(link);
   }
 }catch{}
 
-// Stage accounts using a temporary password before app.js boots.
-// app.js then sees no active session and cannot load dealer data until the password is changed.
 try{
   const raw=localStorage.getItem('dealer-platform-session');
   const saved=raw?JSON.parse(raw):null;
@@ -29,13 +27,11 @@ try{
   }
 }catch{}
 
-// Security guards start immediately. Feature modules wait for this barrier before loading.
 window.DEALER_SECURITY_READY=Promise.all([
   import('./account-security.js?v=1.6.6'),
   import('./session-security.js?v=1.9.0')
 ]).catch(err=>{console.warn('Sicurezza locale non caricata completamente',err);throw err});
 
-// A legacy demo session must never survive once the real backend is enabled.
 try{
   const raw=localStorage.getItem('dealer-platform-session');
   const saved=raw?JSON.parse(raw):null;
@@ -48,7 +44,6 @@ try{
   localStorage.removeItem('dealer-platform-session');
 }
 
-// Keep feature modules isolated from the core app so each section can evolve without regressions.
 window.addEventListener('DOMContentLoaded',async()=>{
   try{await window.DEALER_SECURITY_READY}catch{
     const msg=document.getElementById('loginMsg');
@@ -81,4 +76,6 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./admin-safety.js?v=1.6.6').catch(err=>console.warn('Sicurezza Admin non caricata',err));
   import('./backup.js?v=1.6.1').catch(err=>console.warn('Backup non caricato',err));
   import('./data-quality.js?v=1.9.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
+  import('./operational-quality.js?v=1.9.3').catch(err=>console.warn('Controlli operativi non caricati',err));
+  import('./mobile-shell.js?v=1.9.3').catch(err=>console.warn('Navigazione mobile non caricata',err));
 });
