@@ -3,7 +3,7 @@
   "name": "MALÙ23 Dealer Platform",
   "short_name": "Dealer",
   "description": "Gestionale concessionaria offline-first per PC, iPhone e Telegram Mini App",
-  "start_url": "./preview.html?source=pwa",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
@@ -13,9 +13,9 @@
   "orientation": "any",
   "categories": ["business", "productivity"],
   "shortcuts": [
-    {"name":"Oggi","short_name":"Oggi","url":"./preview.html?view=today"},
-    {"name":"Garage","short_name":"Garage","url":"./preview.html?view=garage"},
-    {"name":"Clienti","short_name":"Clienti","url":"./preview.html?view=clients"}
+    {"name":"Oggi","short_name":"Oggi","url":"./index.html?source=pwa&view=today"},
+    {"name":"Garage","short_name":"Garage","url":"./index.html?source=pwa&view=garage"},
+    {"name":"Clienti","short_name":"Clienti","url":"./index.html?source=pwa&view=clients"}
   ],
   "icons": []
 }
