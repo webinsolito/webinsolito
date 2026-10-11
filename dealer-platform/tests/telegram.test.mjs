@@ -82,7 +82,8 @@ test('Mini App mantiene solo destinazioni autorizzate nel contratto UI',async()=
   assert.match(sw,/backup-core\.js\?v=1\.6\.1/);
   assert.match(sw,/sync-recovery\.js\?v=1\.9\.6/);
   assert.match(sw,/session-security\.js\?v=1\.9\.6/);
-  assert.match(html,/V1\.6\.1 · Backup sicuro/);
+  assert.match(html,/V1\.9\.7 · PWA sicura/);
+  assert.match(html,/config\.js\?v=1\.9\.7/);
   assert.match(html,/app\.js\?v=1\.6\.1/);
   assert.doesNotMatch(featureModules.join('\n'),/brand\.textContent='V/);
 });
