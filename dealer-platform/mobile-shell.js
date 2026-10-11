@@ -1,6 +1,7 @@
 const PRIMARY=['today','garage','clients','calendar'];
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 export const MOBILE_PRIMARY_VIEWS=Object.freeze([...PRIMARY,'more']);
+let scheduled=false;
 
 function ensureStyle(){if($('#m23MobileShellStyle'))return;const s=document.createElement('style');s.id='m23MobileShellStyle';s.textContent=`
 @media(max-width:820px){
@@ -17,12 +18,13 @@ function ensureStyle(){if($('#m23MobileShellStyle'))return;const s=document.crea
 @media(min-width:821px){.m23-more-btn,.m23-more-overlay{display:none!important}}
 `;document.head.appendChild(s)}
 function label(button){const small=button.querySelector('small')?.textContent?.trim();const txt=button.textContent?.replace(small||'','').trim();return {title:small||button.dataset.view?.toUpperCase()||'ALTRO',icon:txt||'•'}}
-function close(){const o=$('#m23MoreOverlay');if(o)o.hidden=true}
-function open(){const o=$('#m23MoreOverlay');if(!o)return;const grid=$('#m23MoreGrid');grid.innerHTML='';const extras=$$('.mobile-nav .navbtn.m23-mobile-extra');for(const original of extras){const meta=label(original),b=document.createElement('button');b.type='button';b.innerHTML=`${meta.icon} <b>${meta.title}</b><small>Apri sezione</small>`;b.onclick=()=>{original.click();close();syncActive()};grid.appendChild(b)}o.hidden=false}
-function syncActive(){const more=$('.mobile-nav .m23-more-btn');if(!more)return;more.classList.toggle('active',$$('.mobile-nav .navbtn.m23-mobile-extra').some(b=>b.classList.contains('active')))}
-function organize(){const nav=$('.mobile-nav');if(!nav)return;ensureStyle();for(const b of $$('.navbtn[data-view]',nav)){b.classList.toggle('m23-mobile-extra',!PRIMARY.includes(b.dataset.view));if(PRIMARY.includes(b.dataset.view))b.classList.remove('m23-mobile-extra')}
+function close(){const o=$('#m23MoreOverlay');if(o&&!o.hidden)o.hidden=true}
+function open(){const o=$('#m23MoreOverlay');if(!o)return;const grid=$('#m23MoreGrid'),extras=$$('.mobile-nav .navbtn.m23-mobile-extra'),sig=extras.map(b=>`${b.dataset.view}:${label(b).title}`).join('|');if(grid.dataset.extraSig!==sig){grid.dataset.extraSig=sig;grid.innerHTML='';for(const original of extras){const meta=label(original),b=document.createElement('button');b.type='button';b.innerHTML=`${meta.icon} <b>${meta.title}</b><small>Apri sezione</small>`;b.onclick=()=>{original.click();close();syncActive()};grid.appendChild(b)}}o.hidden=false}
+function syncActive(){const more=$('.mobile-nav .m23-more-btn');if(!more)return;const active=$$('.mobile-nav .navbtn.m23-mobile-extra').some(b=>b.classList.contains('active'));if(more.classList.contains('active')!==active)more.classList.toggle('active',active)}
+function organize(){const nav=$('.mobile-nav');if(!nav)return;ensureStyle();for(const b of $$('.navbtn[data-view]',nav)){const extra=!PRIMARY.includes(b.dataset.view);if(b.classList.contains('m23-mobile-extra')!==extra)b.classList.toggle('m23-mobile-extra',extra);if(b.dataset.view==='calendar'){const small=b.querySelector('small');if(small&&small.textContent!=='CALENDARIO')small.textContent='CALENDARIO'}}
   let more=nav.querySelector('.m23-more-btn');if(!more){more=document.createElement('button');more.type='button';more.className='m23-more-btn';more.innerHTML='•••<small>ALTRO</small>';more.onclick=open;nav.appendChild(more)}
   if(!$('#m23MoreOverlay')){const o=document.createElement('div');o.id='m23MoreOverlay';o.className='m23-more-overlay';o.hidden=true;o.innerHTML='<div class="m23-more-sheet"><div class="m23-more-head"><b>Altre sezioni</b><button class="m23-more-close" type="button">×</button></div><div class="m23-more-grid" id="m23MoreGrid"></div></div>';document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)close()});o.querySelector('.m23-more-close').onclick=close}
   syncActive();
 }
-document.addEventListener('click',e=>{const b=e.target.closest?.('.mobile-nav .navbtn[data-view]');if(b)setTimeout(syncActive,0)});new MutationObserver(organize).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});window.addEventListener('resize',()=>{if(innerWidth>820)close();organize()});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',organize,{once:true});else organize();
+function scheduleOrganize(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;organize()})}
+document.addEventListener('click',e=>{const b=e.target.closest?.('.mobile-nav .navbtn[data-view]');if(b)setTimeout(syncActive,0)});new MutationObserver(scheduleOrganize).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});window.addEventListener('resize',()=>{if(innerWidth>820)close();scheduleOrganize()});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleOrganize,{once:true});else scheduleOrganize();

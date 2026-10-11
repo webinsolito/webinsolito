@@ -28,6 +28,7 @@ function renderToday(){
   const view=$('[data-view="today"]'),activity=$('#activityList');if(!view||!activity)return;
   let section=$('#m23TodayActionSection');if(!section){section=document.createElement('section');section.id='m23TodayActionSection';section.className='m23-action-section';const timeline=activity.previousElementSibling?.classList?.contains('section')?activity.previousElementSibling:null;(timeline||activity).before(section)}
   const actions=buildTodayActions(snapshot,new Date(),{includeFinance:canViewFinance(),limit:6});
+  const sig=JSON.stringify(actions);if(section.dataset.dailyUxSig===sig)return;section.dataset.dailyUxSig=sig;
   section.innerHTML=`<div class="m23-action-head"><div><small>DA FARE OGGI</small><h2>Azioni pronte</h2></div><span class="m23-action-count">${actions.length}</span></div><div class="m23-action-list">${actions.length?actions.map((a,i)=>`<div class="m23-action" data-action-index="${i}"><div class="m23-action-icon">${actionIcon(a.kind)}</div><div><b>${esc(a.title)}</b><span>${esc(a.detail)}</span></div><button type="button">Apri →</button></div>`).join(''):'<div class="m23-action-empty">Nessuna azione urgente: puoi lavorare su stock e nuove opportunità.</div>'}</div>`;
   $$('[data-action-index]',section).forEach(row=>{const action=actions[Number(row.dataset.actionIndex)];row.querySelector('button').onclick=()=>{if(action.kind==='callback'&&action.customerId)openClient(action.customerId);else if(action.kind==='work'&&action.vehicleId)openVehicle(action.vehicleId);else openView(action.view)}});
 }

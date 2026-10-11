@@ -33,11 +33,18 @@ jobs:
           test -f dealer-platform/PRE_RELEASE_CHECKLIST.md
           test -f dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
           test -f dealer-platform/supabase/migrations/0017_sale_terminal_lock_v194.sql
-          grep -q "operational-quality.js?v=1.9.3" dealer-platform/config.js
-          grep -q "mobile-shell.js?v=1.9.3" dealer-platform/config.js
+          grep -q "operational-quality.js?v=1.9.6" dealer-platform/config.js
+          grep -q "mobile-shell.js?v=1.9.6" dealer-platform/config.js
+          grep -q "daily-ux.js?v=1.9.6" dealer-platform/config.js
           grep -q "sale-safety.js?v=1.9.4" dealer-platform/config.js
-          grep -q "sync-recovery.js?v=1.9.5" dealer-platform/config.js
-          grep -q "dealer-platform-v1.9.5-static-only" dealer-platform/sw.js
+          grep -q "sync-recovery.js?v=1.9.6" dealer-platform/config.js
+          grep -q "session-security.js?v=1.9.6" dealer-platform/config.js
+          grep -q "dealer-platform-v1.9.6-static-only" dealer-platform/sw.js
+          grep -q "operational-quality.js?v=1.9.6" dealer-platform/sw.js
+          grep -q "mobile-shell.js?v=1.9.6" dealer-platform/sw.js
+          grep -q "daily-ux.js?v=1.9.6" dealer-platform/sw.js
+          grep -q "sync-recovery.js?v=1.9.6" dealer-platform/sw.js
+          grep -q "session-security.js?v=1.9.6" dealer-platform/sw.js
           grep -q "sync-conflict.js?v=1.9.5" dealer-platform/sw.js
           grep -q "vehicles_active_plate_unique" dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
           grep -q "vehicles_active_vin_unique" dealer-platform/supabase/migrations/0016_operational_quality_v193.sql

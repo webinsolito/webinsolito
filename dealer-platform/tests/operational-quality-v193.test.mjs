@@ -27,6 +27,14 @@ test('garage runtime blocks duplicates, invalid publish data and bad costs',asyn
   assert.match(source,/Cliente:/);
 });
 
+test('operational DOM patches are idempotent under MutationObserver',async()=>{
+  const source=await read('operational-quality.js');
+  assert.match(source,/line\?\.dataset\.oqSig===sig/);
+  assert.match(source,/line\.dataset\.oqSig=sig/);
+  assert.match(source,/box\?\.dataset\.oqSig===sig/);
+  assert.match(source,/box\.dataset\.oqSig=sig/);
+});
+
 test('crm surfaces next action, last contact and vehicle link',async()=>{
   const source=await read('operational-quality.js');
   assert.match(source,/Prossima azione da definire/);
@@ -41,6 +49,7 @@ test('mobile shell exposes four primary tabs plus Altro',async()=>{
   assert.match(source,/ALTRO/);
   assert.match(source,/m23-more-sheet/);
   assert.match(source,/m23-mobile-extra/);
+  assert.match(source,/scheduleOrganize/);
 });
 
 test('phone finance and reports no longer require horizontal canvases',async()=>{
@@ -51,13 +60,13 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('newer runtime keeps v1.9.3 operational modules loaded',async()=>{
+test('runtime 1.9.6 keeps hardened operational modules loaded',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.5'/);
-  assert.match(config,/operational-quality\.js\?v=1\.9\.3/);
-  assert.match(config,/mobile-shell\.js\?v=1\.9\.3/);
-  assert.match(sw,/dealer-platform-v1\.9\.5-static-only/);
-  assert.match(sw,/operational-quality\.js\?v=1\.9\.3/);
-  assert.match(sw,/mobile-shell\.js\?v=1\.9\.3/);
-  assert.match(preview,/preview-1\.9\.5/);
+  assert.match(config,/version: '1\.9\.6'/);
+  assert.match(config,/operational-quality\.js\?v=1\.9\.6/);
+  assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
+  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
+  assert.match(sw,/operational-quality\.js\?v=1\.9\.6/);
+  assert.match(sw,/mobile-shell\.js\?v=1\.9\.6/);
+  assert.match(preview,/preview-1\.9\.6/);
 });

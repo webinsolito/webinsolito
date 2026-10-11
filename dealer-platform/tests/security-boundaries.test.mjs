@@ -13,8 +13,26 @@ test('seller finance is denied at the offline data layer',()=>{
   assert.match(src,/purgeStoreForDealer/);
 });
 
-test('seller sync skips finance endpoints and finance cache writes',()=>{
+test('logout cache discovery sees finance-only tenants without exposing rows',()=>{
+  const offline=read('offline.js'),session=read('session-security.js');
+  assert.match(offline,/dealerIdsInStore/);
+  assert.match(offline,/openKeyCursor\(null,'nextunique'\)/);
+  assert.match(session,/OfflineDB\.dealerIdsInStore\(store\)/);
+  assert.match(session,/orphan finance-only caches/);
+});
+
+test('IndexedDB bootstrap reuses one connection promise and resets it on version change',()=>{
+  const src=read('offline.js');
+  assert.match(src,/let dbPromise=null/);
+  assert.match(src,/if\(dbPromise\)return dbPromise/);
+  assert.match(src,/db\.onversionchange=\(\)=>\{db\.close\(\);dbPromise=null\}/);
+  assert.match(src,/req\.onerror=\(\)=>\{dbPromise=null;reject\(req\.error\)\}/);
+});
+
+test('seller sync skips finance endpoints, purges finance physically and blocks finance writes',()=>{
   const src=read('api.js');
+  assert.match(src,/for\(const store of FINANCIAL_STORES\)await OfflineDB\.purgeStoreForDealer\(store,dealerId\)/);
+  assert.doesNotMatch(src,/const rows=await OfflineDB\.list\(store,dealerId\)/);
   assert.match(src,/finance\?rest\(`vehicle_financials/);
   assert.match(src,/finance\?rest\(`vehicle_costs/);
   assert.match(src,/finance\?rest\(`invoices/);
