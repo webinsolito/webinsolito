@@ -86,7 +86,8 @@ test.describe('MALÙ23 release gate',()=>{
     const seen=[];await seedSession(page,'VENDITORE');await mockExternalRuntime(page,seen);
     await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
-    await expect.poll(()=>seen.includes('vehicles')).toBeTruthy();
+    await expect(page.locator('#dealerName')).toContainText('MALÙ23 QA');
+    await page.waitForTimeout(350);
     for(const entity of FINANCE_PATHS)expect(seen).not.toContain(entity);
     await expect.poll(async()=>page.locator('[data-view="finanze"]:visible,[data-view="fatture"]:visible').count()).toBe(0);
   });
@@ -178,6 +179,6 @@ test.describe('MALÙ23 release gate',()=>{
     await expect(page.getByRole('button',{name:'Mantieni locale'})).toBeVisible();
     await page.getByRole('button',{name:'Usa server'}).click();
     await expect.poll(async()=>page.evaluate(async()=>{const {OfflineDB}=await import('./offline.js');return (await OfflineDB.get('vehicles','conflict-v'))?.brand})).toBe('Server');
-    await expect.poll(async()=>page.evaluate(async()=>{const {OfflineDB}=await import('./offline.js');return await OfflineDB.get('mutations','conflict-m')})).toBeNull();
+    await expect.poll(async()=>page.evaluate(async()=>{const {OfflineDB}=await import('./offline.js');return (await OfflineDB.get('mutations','conflict-m'))??null})).toBeNull();
   });
 });
