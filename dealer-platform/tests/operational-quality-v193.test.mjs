@@ -51,13 +51,13 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('v1.9.3 runtime and PWA cache load the operational modules',async()=>{
+test('newer runtime keeps v1.9.3 operational modules loaded',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.3'/);
+  assert.match(config,/version: '1\.9\.4'/);
   assert.match(config,/operational-quality\.js\?v=1\.9\.3/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.3/);
-  assert.match(sw,/dealer-platform-v1\.9\.3-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.4-static-only/);
   assert.match(sw,/operational-quality\.js\?v=1\.9\.3/);
   assert.match(sw,/mobile-shell\.js\?v=1\.9\.3/);
-  assert.match(preview,/preview-1\.9\.3/);
+  assert.match(preview,/preview-1\.9\.4/);
 });
