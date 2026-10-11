@@ -1,24 +1,27 @@
 export const BACKUP_SIGNATURE='MALU23_DEALER_BACKUP';
-export const BACKUP_VERSION=1;
-export const BACKUP_STORES=Object.freeze(['vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','invoices','mutations']);
+export const BACKUP_VERSION=2;
+export const BACKUP_STORES=Object.freeze(['vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','invoices']);
+const LEGACY_V1_STORES=new Set([...BACKUP_STORES,'mutations']);
 
 function isRecord(value){return !!value&&typeof value==='object'&&!Array.isArray(value)}
 function timestamp(row){const value=row?.updated_at||row?.created_at||row?.happened_at||'';const time=Date.parse(value);return Number.isFinite(time)?time:0}
 
 export function validateBackup(payload,currentDealerId){
   if(!isRecord(payload)||payload.signature!==BACKUP_SIGNATURE)throw new Error('backup_not_malu23');
-  if(payload.version!==BACKUP_VERSION)throw new Error('backup_version_unsupported');
+  if(![1,BACKUP_VERSION].includes(payload.version))throw new Error('backup_version_unsupported');
   if(!currentDealerId||payload.dealer_id!==currentDealerId)throw new Error('backup_wrong_dealer');
   if(!isRecord(payload.stores))throw new Error('backup_stores_missing');
-  for(const name of Object.keys(payload.stores))if(!BACKUP_STORES.includes(name))throw new Error('backup_store_not_allowed');
+  const allowed=payload.version===1?LEGACY_V1_STORES:new Set(BACKUP_STORES);
+  for(const name of Object.keys(payload.stores))if(!allowed.has(name))throw new Error('backup_store_not_allowed');
   const counts={};let total=0;
   for(const name of BACKUP_STORES){
     const rows=payload.stores[name]??[];if(!Array.isArray(rows))throw new Error('backup_store_invalid');
     for(const row of rows){if(!isRecord(row)||!row.id)throw new Error('backup_row_invalid');if(row.dealer_id!==currentDealerId)throw new Error('backup_row_wrong_dealer')}
     counts[name]=rows.length;total+=rows.length;
   }
+  const ignoredMutations=payload.version===1&&Array.isArray(payload.stores.mutations)?payload.stores.mutations.length:0;
   if(total>100000)throw new Error('backup_too_many_records');
-  return {createdAt:payload.created_at||null,appVersion:payload.app_version||null,counts,total};
+  return {createdAt:payload.created_at||null,appVersion:payload.app_version||null,sourceVersion:payload.version,ignoredMutations,counts,total};
 }
 
 export function mergeForRestore(currentRows=[],backupRows=[]){
