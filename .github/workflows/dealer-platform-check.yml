@@ -1,10 +1,6 @@
 name: Dealer Platform Check
 
 on:
-  pull_request:
-    paths:
-      - 'dealer-platform/**'
-      - '.github/workflows/dealer-platform-check.yml'
   workflow_dispatch:
 
 permissions:
@@ -184,4 +180,3 @@ jobs:
           grep -q "document_blobs" dealer-platform/backup-core.js
           grep -q "mutations" dealer-platform/backup-core.js
           grep -q "backup.js" dealer-platform/sw.js
-
