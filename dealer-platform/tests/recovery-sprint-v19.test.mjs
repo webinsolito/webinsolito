@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {buildReportRows} from '../report-metrics.js';
 
-test('Finanze riconosce ricavo e margine solo dopo consegna',async()=>{
+test('Finanze riconosce ricavo e margine solo dopo consegna fisica registrata',async()=>{
   const rows=buildReportRows({
     vehicles:[{id:'v1',status:'DA_CONSEGNARE',sale_price:12000,purchase_date:'2026-09-01'},{id:'v2',status:'CONSEGNATA',sale_price:14000,purchase_date:'2026-09-01'}],
     financials:[{vehicle_id:'v1',purchase_price:9000},{vehicle_id:'v2',purchase_price:10000}],
     costs:[{vehicle_id:'v1',amount:500},{vehicle_id:'v2',amount:700}],
     invoices:[{id:'i1',vehicle_id:'v1',invoice_type:'SALE',total_amount:12000,issue_date:'2026-10-08'},{id:'i2',vehicle_id:'v2',invoice_type:'SALE',total_amount:14000,issue_date:'2026-10-08'}],
-    contracts:[]
+    contracts:[{id:'c2',vehicle_id:'v2',template_code:'VENDITA',sale_stage:'DELIVERED',delivered_at:'2026-10-09T10:00:00Z',price:14000,sale_invoice_id:'i2'}]
   },new Date('2026-10-09T12:00:00Z'));
   const pipeline=rows.find(r=>r.vehicle.id==='v1'),delivered=rows.find(r=>r.vehicle.id==='v2');
   assert.equal(pipeline.state,'PIPELINE');
@@ -18,6 +18,7 @@ test('Finanze riconosce ricavo e margine solo dopo consegna',async()=>{
   assert.equal(delivered.state,'DELIVERED');
   assert.equal(delivered.recognizedSale,14000);
   assert.equal(delivered.margin,3300);
+  assert.equal(delivered.saleDate,'2026-10-09');
 });
 
 test('modulo Finanze riusa le regole contabili centrali e hard-stoppa il Venditore',async()=>{
