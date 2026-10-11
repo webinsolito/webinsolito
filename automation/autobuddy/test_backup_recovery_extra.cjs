@@ -12,3 +12,5 @@ test('failed Garage write keeps old undo snapshot', () => {
  assert.equal(storage.getItem('autobuddy.v2'),old);
  assert.equal(storage.getItem(guard.RECOVERY_KEY),undo);
 });
+
+require('./test_storage_rollback.cjs');
