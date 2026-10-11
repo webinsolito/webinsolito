@@ -20,8 +20,8 @@ export function saleInvoiceFor(vehicleId,contract,invoices=[]){
 
 export function saleState(vehicle,contract){
   const stage=contract?.sale_stage||'';
-  if(stage==='DELIVERED'||vehicle?.status==='CONSEGNATA'||vehicle?.status==='VENDUTA')return 'DELIVERED';
-  if(ACTIVE_SALE_STAGES.has(stage)||['PRENOTATA','DA_CONSEGNARE'].includes(vehicle?.status))return 'PIPELINE';
+  if(stage==='DELIVERED'||vehicle?.status==='CONSEGNATA')return 'DELIVERED';
+  if(ACTIVE_SALE_STAGES.has(stage)||['PRENOTATA','VENDUTA','DA_CONSEGNARE'].includes(vehicle?.status))return 'PIPELINE';
   return 'STOCK';
 }
 
