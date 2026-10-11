@@ -4,7 +4,7 @@ import {Session} from './api.js';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
-let snapshot={vehicles:[],financials:[]};
+let snapshot={vehicles:[],financials:[],contracts:[]};
 let scheduled=false;
 let running=false;
 
@@ -14,6 +14,7 @@ function purchaseKnown(vehicleId){
   const f=financial(vehicleId);
   return !!f&&f.purchase_price!==null&&f.purchase_price!==undefined&&String(f.purchase_price).trim()!=='';
 }
+function legacySales(){return snapshot.contracts.filter(c=>c?.template_code==='VENDITA'&&c?.sale_stage==='DELIVERED'&&c?.integrity_state==='LEGACY_UNVERIFIED')}
 function isSold(v){return ['VENDUTA','DA_CONSEGNARE','CONSEGNATA'].includes(v?.status)}
 function setText(el,text){if(el&&el.textContent!==text)el.textContent=text}
 function vehicleByRow(row){
@@ -79,10 +80,58 @@ function warning(root,count){
   box.textContent=`⚠ ${count} veicoli senza prezzo d’acquisto: capitale e margini restano incompleti finché non inserisci il costo reale.`;
 }
 
+function historyWarning(root,count){
+  if(!root)return;
+  let box=root.querySelector('.history-integrity-warning');
+  if(!count){box?.remove();return}
+  if(!box){
+    box=document.createElement('div');
+    box.className='history-integrity-warning';
+    box.style.cssText='margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#fff4f2;border:1px solid #efc3bd;font-size:9px;font-weight:800;color:#8b2d27;line-height:1.45;cursor:pointer';
+    box.title='Apri Vendite per verificare lo storico';
+    box.onclick=()=>document.querySelector('.navbtn[data-view="vendite"]')?.click();
+    root.prepend(box);
+  }
+  box.textContent=`⚠ ${count} consegne storiche da verificare: restano nei totali, ma non sono considerate documentalmente verificate.`;
+}
+
+function patchSales(){
+  const root=$('#salesApp');if(!root)return;
+  const legacy=legacySales();
+  historyWarning(root,legacy.length);
+  for(const card of $$('.sale-card[data-sale-id]',root)){
+    const contract=snapshot.contracts.find(c=>c.id===card.dataset.saleId);
+    let tag=card.querySelector('.history-integrity-tag');
+    if(contract?.integrity_state==='LEGACY_UNVERIFIED'){
+      if(!tag){
+        tag=document.createElement('span');
+        tag.className='tag history-integrity-tag';
+        tag.style.cssText='background:#fff0ed;color:#9a342d;border:1px solid #efc3bd';
+        card.firstElementChild?.prepend(tag);
+      }
+      tag.textContent='⚠ STORICO DA VERIFICARE';
+    }else tag?.remove();
+  }
+  const form=$('#saleForm'),id=form?.querySelector('[name="id"]')?.value;
+  const contract=id?snapshot.contracts.find(c=>c.id===id):null;
+  const body=$('#saleDrawer .sale-body');
+  let detail=$('#saleDrawer .sale-history-warning');
+  if(contract?.integrity_state==='LEGACY_UNVERIFIED'&&body){
+    if(!detail){
+      detail=document.createElement('div');
+      detail.className='sale-box sale-history-warning';
+      detail.style.cssText='background:#fff4f2;border-color:#efc3bd;color:#8b2d27;font-size:9px;line-height:1.55;font-weight:750';
+      body.prepend(detail);
+    }
+    detail.textContent=contract.integrity_note||'Consegna storica non verificata: controlla contratto, fattura/saldo e documentazione di consegna prima di considerarla documentalmente completa.';
+  }else detail?.remove();
+}
+
 function patchFinance(){
   const root=$('#financeApp');if(!root)return;
   const missing=snapshot.vehicles.filter(v=>!v.deleted_at&&!purchaseKnown(v.id));
   warning(root,missing.length);
+  historyWarning(root,legacySales().length);
   for(const row of $$('.fin-row',root)){
     const v=vehicleByRow(row);if(!v||purchaseKnown(v.id))continue;
     const c=[...row.children];
@@ -99,6 +148,7 @@ function patchReports(){
   const root=$('#reportsApp');if(!root)return;
   const missing=snapshot.vehicles.filter(v=>!v.deleted_at&&!purchaseKnown(v.id));
   warning(root,missing.length);
+  historyWarning(root,legacySales().length);
   for(const row of $$('.rep-row',root)){
     const v=vehicleByRow(row);if(!v||purchaseKnown(v.id))continue;
     const c=[...row.children];
@@ -117,14 +167,15 @@ async function apply(){
   if(running)return;running=true;
   try{
     const id=dealerId();if(!id)return;
-    const [vehicles,financials]=await Promise.all([OfflineDB.list('vehicles',id),OfflineDB.list('vehicle_financials',id)]);
-    snapshot={vehicles,financials};
-    patchGarage();patchFinance();patchReports();
-  }catch(err){console.warn('Controllo prezzi mancanti non disponibile',err)}finally{running=false}
+    const [vehicles,financials,contracts]=await Promise.all([OfflineDB.list('vehicles',id),OfflineDB.list('vehicle_financials',id),OfflineDB.list('contracts',id)]);
+    snapshot={vehicles,financials,contracts};
+    patchGarage();patchSales();patchFinance();patchReports();
+  }catch(err){console.warn('Controllo qualità dati non disponibile',err)}finally{running=false}
 }
 function schedule(){if(scheduled)return;scheduled=true;setTimeout(()=>{scheduled=false;apply()},80)}
 
 window.addEventListener('dealer:data-updated',schedule);
+window.addEventListener('dealer:queue-changed',schedule);
 window.addEventListener('online',schedule);
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
