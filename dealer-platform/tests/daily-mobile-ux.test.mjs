@@ -44,13 +44,15 @@ test('Clienti espone prossimo passo ultimo contatto e auto collegata',()=>{
   assert.match(glance.vehicle,/Peugeot 308/);
 });
 
-test('modulo daily UX è disponibile online offline e in preview con target touch adeguati',async()=>{
+test('modulo daily UX è disponibile online offline e in preview con rendering idempotente',async()=>{
   const [config,sw,preview,source]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html'),read('daily-ux.js')]);
-  assert.match(config,/daily-ux\.js\?v=1\.9\.4/);
+  assert.match(config,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(sw,/daily-ux-core\.js/);
-  assert.match(sw,/daily-ux\.js\?v=1\.9\.4/);
+  assert.match(sw,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(preview,/daily-ux\.js\?v=1\.9\.4/);
   assert.match(source,/includeFinance:canViewFinance\(\)/);
+  assert.match(source,/section\.dataset\.dailyUxSig===sig/);
+  assert.match(source,/section\.dataset\.dailyUxSig=sig/);
   assert.match(source,/min-height:44px/);
   assert.match(source,/Cliente:/);
   assert.match(source,/WhatsApp/);
