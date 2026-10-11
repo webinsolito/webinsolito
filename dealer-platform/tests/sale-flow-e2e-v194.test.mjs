@@ -24,7 +24,7 @@ test('flusso reale resta bloccato finché saldo e checklist non sono completi',(
   assert.equal(saleDeliveryGate({contract:f.contract,invoice:f.invoice,workItems:f.workItems}).ready,true);
 });
 
-test('contabilità riconosce la vendita soltanto dopo timestamp di consegna fisica',()=>{
+test('contabilità riconosce la vendita soltanto dopo consegna fisica verificata',()=>{
   const f=flowFixture();
   f.invoice.paid_amount=15000;
   for(const item of f.workItems)item.status='DONE';
@@ -37,10 +37,15 @@ test('contabilità riconosce la vendita soltanto dopo timestamp di consegna fisi
   f.contract.delivered_at='2026-10-11T11:00:00Z';
   f.vehicle.status='CONSEGNATA';
   rows=buildReportRows(data,new Date('2026-10-11T12:00:00Z'));
+  assert.equal(reportTotals(rows,data.invoices).revenue,0);
+  assert.equal(rows[0].unverifiedDelivery,true);
+  f.contract.integrity_state='VERIFIED';
+  rows=buildReportRows(data,new Date('2026-10-11T12:00:00Z'));
   const totals=reportTotals(rows,data.invoices);
   assert.equal(totals.revenue,15000);
   assert.equal(totals.margin,4000);
   assert.equal(rows[0].saleDate,'2026-10-11');
+  assert.equal(rows[0].accountingVerified,true);
   assert.equal(saleStageTransition('DELIVERED','READY').code,'sale_delivered_terminal');
 });
 
@@ -53,11 +58,12 @@ test('runtime, UI e database applicano lo stesso blocco terminale',async()=>{
   assert.match(api,/vehicleDeliveryTransition/);
   assert.match(safety,/option\[value="DELIVERED"\]/);
   assert.match(safety,/Vendita consegnata: pratica definitiva/);
-  assert.match(config,/version: '1\.9\.6'/);
+  assert.match(config,/version: '1\.9\.7'/);
   assert.match(config,/sale-safety\.js\?v=1\.9\.4/);
-  assert.match(sw,/dealer-platform-v1\.9\.6-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
   assert.match(sw,/sale-safety\.js\?v=1\.9\.4/);
-  assert.match(preview,/preview-1\.9\.6/);
+  assert.match(preview,/ANTEPRIMA · DATI DEMO · V1\.9\.7/);
+  assert.doesNotMatch(preview,/sale-safety\.js|<script/i);
   assert.match(migration,/sale_delivered_terminal/);
   assert.match(migration,/sale_contract_terms_locked/);
   assert.match(migration,/sale_delivery_timestamp_locked/);
