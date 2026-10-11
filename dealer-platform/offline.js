@@ -17,8 +17,10 @@ function canReadStore(storeName){return !FINANCIAL_STORES.has(storeName)||canAcc
 function assertWriteStore(storeName){if(FINANCIAL_STORES.has(storeName)&&!canAccessFinancialData())throw new Error('financial_store_forbidden')}
 function syncBaseKey(storeName,dealerId,id){return `syncbase:${dealerId}:${storeName}:${id}`}
 
+let dbPromise=null;
 function openDb(){
-  return new Promise((resolve,reject)=>{
+  if(dbPromise)return dbPromise;
+  dbPromise=new Promise((resolve,reject)=>{
     const req=indexedDB.open(DB_NAME,DB_VERSION);
     req.onupgradeneeded=()=>{
       const db=req.result;
@@ -47,9 +49,10 @@ function openDb(){
         }
       }
     };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
+    req.onsuccess=()=>{const db=req.result;db.onversionchange=()=>{db.close();dbPromise=null};resolve(db)};
+    req.onerror=()=>{dbPromise=null;reject(req.error)};
   });
+  return dbPromise;
 }
 
 function reqToPromise(req){return new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
