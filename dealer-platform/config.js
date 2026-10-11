@@ -1,7 +1,7 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.9.3',
+  version: '1.9.4',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
@@ -66,6 +66,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./contracts.js?v=1.6.1').catch(err=>console.warn('Contratti non caricato',err));
   import('./invoices.js?v=1.6.1').catch(err=>console.warn('Fatture non caricate',err));
   import('./sales.js?v=1.6.1').catch(err=>console.warn('Vendite non caricate',err));
+  import('./sale-safety.js?v=1.9.4').catch(err=>console.warn('Sicurezza flusso vendita non caricata',err));
   import('./finances.js?v=1.6.1').catch(err=>console.warn('Finanze non caricate',err));
   import('./autoscout.js?v=1.6.2').catch(err=>console.warn('AutoScout non caricato',err));
   import('./autoscout-safety.js?v=1.6.3').catch(err=>console.warn('Controllo qualità AutoScout non caricato',err));
