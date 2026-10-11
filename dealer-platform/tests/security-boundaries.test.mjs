@@ -34,5 +34,5 @@ test('feature modules wait for security cleanup and readability layer is loaded'
   const src=read('config.js');
   assert.match(src,/DEALER_SECURITY_READY=Promise\.all/);
   assert.match(src,/await window\.DEALER_SECURITY_READY/);
-  assert.match(src,/readability\.css\?v=1\.9\.0/);
+  assert.match(src,/readability\.css\?v=1\.9\.3/);
 });
