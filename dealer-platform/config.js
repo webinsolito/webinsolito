@@ -1,13 +1,22 @@
 // Runtime configuration for GestionaleJo.
 // Public values only. NEVER place service_role, bot token or admin secrets here.
 window.DEALER_CONFIG = Object.freeze({
-  version: '1.8.1',
+  version: '1.9.0',
   supabaseUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey: 'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl: 'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
   defaultDealerSlug: 'malu23',
   demoMode: false
 });
+
+// Shared readability/touch layer. Loaded from the same origin and contains no user data.
+try{
+  if(!document.querySelector('link[data-m23-readability]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='./readability.css?v=1.9.0';link.dataset.m23Readability='1';
+    document.head.appendChild(link);
+  }
+}catch{}
 
 // Stage accounts using a temporary password before app.js boots.
 // app.js then sees no active session and cannot load dealer data until the password is changed.
@@ -20,9 +29,11 @@ try{
   }
 }catch{}
 
-// Load security guards before feature modules.
-import('./account-security.js?v=1.6.6').catch(err=>console.warn('Sicurezza account non caricata',err));
-import('./session-security.js?v=1.8.1').catch(err=>console.warn('Pulizia sessione locale non caricata',err));
+// Security guards start immediately. Feature modules wait for this barrier before loading.
+window.DEALER_SECURITY_READY=Promise.all([
+  import('./account-security.js?v=1.6.6'),
+  import('./session-security.js?v=1.8.1')
+]).catch(err=>{console.warn('Sicurezza locale non caricata completamente',err);throw err});
 
 // A legacy demo session must never survive once the real backend is enabled.
 try{
@@ -38,7 +49,12 @@ try{
 }
 
 // Keep feature modules isolated from the core app so each section can evolve without regressions.
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',async()=>{
+  try{await window.DEALER_SECURITY_READY}catch{
+    const msg=document.getElementById('loginMsg');
+    if(msg)msg.textContent='Controllo sicurezza locale non completato. Ricarica la pagina.';
+    return;
+  }
   const demo=document.getElementById('demoBtn');if(demo)demo.hidden=true;
   if(sessionStorage.getItem('gestionalejo-session-reset')==='1'){
     const msg=document.getElementById('loginMsg');
