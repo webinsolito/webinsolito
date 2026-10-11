@@ -26,15 +26,28 @@ export function saleState(vehicle,contract){
   return 'STOCK';
 }
 
+export function isAccountingVerifiedDelivery(contract){
+  return contract?.sale_stage==='DELIVERED'&&Boolean(contract?.delivered_at)&&contract?.integrity_state==='VERIFIED';
+}
+
+export function isUnverifiedPhysicalDelivery(contract){
+  return contract?.sale_stage==='DELIVERED'&&Boolean(contract?.delivered_at)&&!isAccountingVerifiedDelivery(contract);
+}
+
 export function commercialSaleAmount(vehicle,contract,invoice){
   const contractPrice=Number(contract?.price||0);if(contractPrice>0)return contractPrice;
   const invoiceTotal=Number(invoice?.total_amount||0);if(invoiceTotal>0)return invoiceTotal;
   return Math.max(0,Number(vehicle?.sale_price||0));
 }
 
+export function physicalDeliveryDate(contract){
+  if(contract?.sale_stage!=='DELIVERED'||!contract?.delivered_at)return '';
+  return String(contract.delivered_at).slice(0,10);
+}
+
 export function recognizedSaleDate(vehicle,contract){
-  const state=saleState(vehicle,contract);if(state!=='DELIVERED')return '';
-  return String(contract?.delivered_at||'').slice(0,10);
+  if(saleState(vehicle,contract)!=='DELIVERED'||!isAccountingVerifiedDelivery(contract))return '';
+  return physicalDeliveryDate(contract);
 }
 
 export function periodMatches(date,period='ALL',now=new Date()){
@@ -62,18 +75,22 @@ export function buildReportRows({vehicles=[],financials=[],costs=[],invoices=[],
     const realCost=purchase+expenses;
     const contract=latestSaleContract(v.id,contracts),invoice=saleInvoiceFor(v.id,contract,invoices),state=saleState(v,contract);
     const agreedSale=commercialSaleAmount(v,contract,invoice);
-    const recognizedSale=state==='DELIVERED'?agreedSale:0;
-    const saleDate=recognizedSaleDate(v,contract);
+    const accountingVerified=state==='DELIVERED'&&isAccountingVerifiedDelivery(contract);
+    const unverifiedDelivery=state==='DELIVERED'&&isUnverifiedPhysicalDelivery(contract);
+    const recognizedSale=accountingVerified?agreedSale:0;
+    const saleDate=accountingVerified?physicalDeliveryDate(contract):'';
+    const physicalDeliveredAt=state==='DELIVERED'?physicalDeliveryDate(contract):'';
     const purchaseDate=v.purchase_date||v.created_at;
     const purchaseTime=purchaseDate?new Date(purchaseDate).getTime():NaN;
     const stockDays=state==='DELIVERED'||!Number.isFinite(purchaseTime)?0:Math.max(0,Math.floor((now.getTime()-purchaseTime)/86400000));
-    return {vehicle:v,purchase,expenses,realCost,contract,invoice,state,agreedSale,recognizedSale,saleDate,margin:state==='DELIVERED'?recognizedSale-realCost:null,stockDays};
+    return {vehicle:v,purchase,expenses,realCost,contract,invoice,state,agreedSale,recognizedSale,saleDate,physicalDeliveredAt,accountingVerified,unverifiedDelivery,margin:accountingVerified?recognizedSale-realCost:null,stockDays};
   });
 }
 
 export function reportTotals(rows,invoices,period='ALL',now=new Date()){
   const stockRows=rows.filter(r=>r.state==='STOCK'),activeCapital=rows.filter(r=>r.state!=='DELIVERED').reduce((s,r)=>s+r.realCost,0);
-  const delivered=rows.filter(r=>r.state==='DELIVERED'&&periodMatches(r.saleDate,period,now));
+  const delivered=rows.filter(r=>r.accountingVerified&&periodMatches(r.saleDate,period,now));
+  const unverifiedDelivered=rows.filter(r=>r.unverifiedDelivery&&periodMatches(r.physicalDeliveredAt,period,now));
   const revenue=delivered.reduce((s,r)=>s+r.recognizedSale,0),margin=delivered.reduce((s,r)=>s+Number(r.margin||0),0);
   const saleInvoices=invoices.filter(i=>!i.deleted_at&&i.invoice_type==='SALE');
   const receivables=saleInvoices.reduce((s,i)=>s+openInvoiceAmount(i),0);
@@ -83,6 +100,8 @@ export function reportTotals(rows,invoices,period='ALL',now=new Date()){
     pipelineCount:rows.filter(r=>r.state==='PIPELINE').length,
     activeCapital,
     deliveredCount:delivered.length,
+    physicalDeliveredCount:delivered.length+unverifiedDelivered.length,
+    unverifiedDeliveredCount:unverifiedDelivered.length,
     revenue,
     margin,
     receivables,
