@@ -21,7 +21,7 @@ test('quota error restores persisted Garage and shows failure instead of success
     alert(message) { messages.push(message); }
   };
   vm.createContext(context);
-  vm.runInContext(code + 'save();', context);
+  vm.runInContext("const KEY='autobuddy.v2';" + code + 'save();', context);
   assert.equal(rendered, previous);
   assert.equal(context.S, previous);
   assert.match(messages[0], /Impossibile salvare/);
