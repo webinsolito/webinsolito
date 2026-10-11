@@ -1,5 +1,13 @@
 const { test, expect } = require('@playwright/test');
 
+// Reach backup controls through the user-visible Settings menu.
+async function openSettings(page) {
+  await page.locator('.v3more > summary').click();
+  await page.locator('.v3menu button', { hasText: 'Impostazioni' }).click();
+  await expect(page.locator('[data-panel="settings"]')).toHaveClass(/on/);
+}
+
+
 test('AutoBuddy backup import can be undone without losing Garage data', async ({ page }) => {
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(error.message));
@@ -13,6 +21,7 @@ test('AutoBuddy backup import can be undone without losing Garage data', async (
   await page.reload();
   await page.locator('button[data-go="garage"]:visible').click();
   await expect(page.locator('#garageGrid')).toContainText('AA111AA');
+  await openSettings(page);
 
   const incoming = {
     version: 2,
@@ -43,6 +52,7 @@ test('AutoBuddy rejects orphan expense without changing existing Garage', async 
     localStorage.setItem('autobuddy.v2', JSON.stringify(state));
   });
   await page.reload();
+  await openSettings(page);
   const broken = { version: 2, vehicles: [{ id: 2, plate: 'BB222BB' }], expenses: [{ id: 4, veh: 999, amt: 50 }] };
   await page.locator('#importFile').setInputFiles({
     name: 'broken.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(broken))
