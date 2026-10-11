@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
-test('anteprima diretta resta completamente isolata dai dati reali',async()=>{
+test('anteprima diretta resta completamente isolata dai dati reali e non è il target PWA',async()=>{
   const preview=await readFile(new URL('../preview.html',import.meta.url),'utf8');
   const manifest=await readFile(new URL('../manifest.webmanifest',import.meta.url),'utf8');
   const sw=await readFile(new URL('../sw.js',import.meta.url),'utf8');
@@ -12,6 +12,8 @@ test('anteprima diretta resta completamente isolata dai dati reali',async()=>{
   assert.doesNotMatch(preview,/supabase|workerUrl|serviceWorker/i);
   assert.doesNotMatch(preview,/<script[\s>]|import\s*\(/i);
   assert.doesNotMatch(preview,/sb_publishable_|service_role/);
-  assert.match(manifest,/preview\.html\?source=pwa/);
+  assert.match(manifest,/"start_url": "\.\/index\.html\?source=pwa"/);
+  assert.match(manifest,/\.\/index\.html\?source=pwa&view=today/);
+  assert.doesNotMatch(manifest,/preview\.html\?source=pwa/);
   assert.match(sw,/\.\/preview\.html/);
 });
