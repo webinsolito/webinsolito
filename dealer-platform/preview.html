@@ -16,7 +16,7 @@
       if(!response.ok)throw new Error('preview_source_unavailable');
       let html=await response.text();
       const previewBootstrap=`<script>
-window.DEALER_CONFIG=Object.freeze({version:'preview-1.8.1',supabaseUrl:'',supabasePublishableKey:'',workerUrl:'',defaultDealerSlug:'malu23',demoMode:true});
+window.DEALER_CONFIG=Object.freeze({version:'preview-1.9.2',supabaseUrl:'',supabasePublishableKey:'',workerUrl:'',defaultDealerSlug:'malu23',demoMode:true});
 try{localStorage.setItem('dealer-platform-session',JSON.stringify({expires_at:Math.floor(Date.now()/1000)+2592000,user:{id:'preview-admin'},dealer:{id:'demo-malu23',slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Anteprima Admin',role:'ADMIN',username:'preview',permissions:{admin_manage:true,garage_write:true,customers_write:true,documents_write:true,invoices_view:true,invoices_write:true,finance_view:true,view_costs:true,costs_write:true,contracts_write:true,calendar_write:true,autoscout_manage:true,instagram_manage:true,reports_view:true}}}))}catch{}
 try{if(navigator.serviceWorker)navigator.serviceWorker.register=()=>Promise.resolve({})}catch{}
 window.addEventListener('DOMContentLoaded',()=>{
@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded',()=>{
  import('./admin.js?v=1.6.1').catch(()=>{});
  import('./admin-safety.js?v=1.6.6').catch(()=>{});
  import('./backup.js?v=1.6.1').catch(()=>{});
- import('./data-quality.js?v=1.6.2').catch(()=>{});
+ import('./data-quality.js?v=1.9.2').catch(()=>{});
 });
 <\/script>`;
       html=html.replace(/<script src="\.\/config\.js\?v=[^"]+"><\/script>/,previewBootstrap);
