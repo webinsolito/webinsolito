@@ -32,7 +32,7 @@ try{
 // Security guards start immediately. Feature modules wait for this barrier before loading.
 window.DEALER_SECURITY_READY=Promise.all([
   import('./account-security.js?v=1.6.6'),
-  import('./session-security.js?v=1.8.1')
+  import('./session-security.js?v=1.9.0')
 ]).catch(err=>{console.warn('Sicurezza locale non caricata completamente',err);throw err});
 
 // A legacy demo session must never survive once the real backend is enabled.
