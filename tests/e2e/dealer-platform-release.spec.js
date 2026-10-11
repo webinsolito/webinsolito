@@ -127,6 +127,21 @@ test.describe('MALÙ23 release gate',()=>{
     await expect.poll(()=>rawDealerCount(page,'vehicles','demo-malu23')).toBe(0);
   });
 
+  test('logged-out startup purges a finance-only orphan tenant cache',async({page},testInfo)=>{
+    test.skip(testInfo.project.name!=='desktop-chromium','orphan cache gate runs once');
+    await page.route('https://telegram.org/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.Telegram={WebApp:{}};'}));
+    await page.goto(PREVIEW,{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#appShell')).toBeVisible();
+    await page.evaluate(async()=>{
+      const {OfflineDB}=await import('./offline.js');
+      await OfflineDB.put('vehicle_financials',{id:'orphan-fin',dealer_id:'orphan-finance-only',vehicle_id:'orphan-v',purchase_price:12345,updated_at:new Date().toISOString()});
+      localStorage.removeItem('dealer-platform-session');
+      await import('./session-security.js?orphan-release-gate=1');
+    });
+    expect(await rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBeGreaterThan(0);
+    await expect.poll(()=>rawDealerCount(page,'vehicle_financials','orphan-finance-only')).toBe(0);
+  });
+
   test('offline reload reopens cached PWA shell and data',async({page,context},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','service-worker offline gate runs in Chromium');
     const seen=[];await seedSession(page,'ADMIN');await mockExternalRuntime(page,seen);
