@@ -11,7 +11,7 @@ function canSeeFinance(value=session()){
   if(p.role==='VENDITORE')return false;
   return ['ADMIN','AMMINISTRAZIONE'].includes(p.role)||p.permissions?.finance_view===true||p.permissions?.view_costs===true||p.permissions?.invoices_view===true;
 }
-async function tenantIdsInCache(){const ids=new Set();for(const store of TENANT_STORES){try{for(const row of await OfflineDB.list(store)){if(row?.dealer_id)ids.add(String(row.dealer_id))}}catch{}}return [...ids]}
+async function tenantIdsInCache(){const ids=new Set();for(const store of TENANT_STORES){try{for(const id of await OfflineDB.dealerIdsInStore(store)){if(id)ids.add(String(id))}}catch{}}return [...ids]}
 async function removeMutations(dealerId){try{for(const row of await OfflineDB.list('mutations',dealerId))await OfflineDB.remove('mutations',row.id)}catch{}}
 async function purgeDealer(dealerId){if(!dealerId)return;await OfflineDB.clearTenant(dealerId);await removeMutations(dealerId);for(const key of [`last_sync:${dealerId}`,`last_backup:${dealerId}`]){try{await OfflineDB.remove('meta',key)}catch{}}}
 async function purgeFinancialCache(dealerId){
@@ -30,7 +30,7 @@ let lastCanSeeFinance=canSeeFinance(current);
 let purging=Promise.resolve();
 function queuePurge(task){purging=purging.then(task).catch(err=>console.warn('secure local purge failed',err));return purging}
 
-// A logged-out browser must not retain readable tenant business data.
+// A logged-out browser must not retain readable tenant business data, including orphan finance-only caches.
 if(!current)queuePurge(purgeAllCachedTenants);
 // A non-financial role must not inherit financial cache from a previous privileged session.
 else if(!lastCanSeeFinance&&lastDealerId)queuePurge(()=>purgeFinancialCache(lastDealerId));
