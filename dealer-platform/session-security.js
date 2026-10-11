@@ -4,6 +4,7 @@ const SESSION_KEY='dealer-platform-session';
 const TENANT_STORES=['vehicles','vehicle_financials','vehicle_costs','vehicle_events','vehicle_work_items','vehicle_media','documents','document_blobs','customers','customer_interactions','customer_vehicle_interests','calendar_events','contracts','contract_versions','invoices','mutations'];
 const FINANCIAL_STORES=['vehicle_financials','vehicle_costs','invoices'];
 const FINANCIAL_ENTITIES=new Set(FINANCIAL_STORES);
+const FINANCIAL_VIEWS=new Set(['fatture','finanze']);
 
 function session(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
 function canSeeFinance(value=session()){
@@ -22,6 +23,28 @@ async function purgeFinancialCache(dealerId){
 }
 export async function purgeAllCachedTenants(){for(const dealerId of await tenantIdsInCache())await purgeDealer(dealerId)}
 export {purgeFinancialCache,canSeeFinance};
+
+let uiScheduled=false;
+function applyFinanceVisibility(value=session()){
+  if(typeof document==='undefined')return;
+  const allowed=canSeeFinance(value);
+  document.documentElement.dataset.financeUi=allowed?'allowed':'restricted';
+  for(const node of document.querySelectorAll('[data-view="fatture"],[data-view="finanze"]')){
+    const shouldHide=!allowed;
+    if(node.hidden!==shouldHide)node.hidden=shouldHide;
+    if(node.getAttribute('aria-hidden')!==String(shouldHide))node.setAttribute('aria-hidden',String(shouldHide));
+    if('disabled' in node&&node.disabled!==shouldHide)node.disabled=shouldHide;
+  }
+  if(!allowed){
+    const active=document.querySelector('.view.active[data-view="fatture"],.view.active[data-view="finanze"]');
+    if(active){
+      const today=document.querySelector('.navbtn[data-view="today"]');
+      if(today&&!today.hidden)today.click();
+      else active.classList.remove('active');
+    }
+  }
+}
+function scheduleFinanceVisibility(){if(uiScheduled)return;uiScheduled=true;requestAnimationFrame(()=>{uiScheduled=false;applyFinanceVisibility()})}
 
 let current=session();
 let lastDealerId=current?.dealer?.id||null;
@@ -44,7 +67,17 @@ window.addEventListener('dealer:session',()=>{
   if((logout||switched)&&previousDealer)queuePurge(()=>purgeDealer(previousDealer));
   else if(lostFinance&&previousDealer)queuePurge(()=>purgeFinancialCache(previousDealer));
   lastDealerId=nextDealer;lastUserId=nextUser;lastCanSeeFinance=nextCanSeeFinance;
+  scheduleFinanceVisibility();
 });
 
 // Best-effort cleanup for forced-password logout or storage cleared outside Session.clear().
-window.addEventListener('pageshow',()=>{const value=session();if(!value)queuePurge(purgeAllCachedTenants);else if(!canSeeFinance(value)&&value?.dealer?.id)queuePurge(()=>purgeFinancialCache(value.dealer.id))});
+window.addEventListener('pageshow',()=>{const value=session();if(!value)queuePurge(purgeAllCachedTenants);else if(!canSeeFinance(value)&&value?.dealer?.id)queuePurge(()=>purgeFinancialCache(value.dealer.id));scheduleFinanceVisibility()});
+
+if(typeof document!=='undefined'){
+  const startUiGuard=()=>{
+    applyFinanceVisibility();
+    new MutationObserver(scheduleFinanceVisibility).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']});
+    setTimeout(scheduleFinanceVisibility,250);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUiGuard,{once:true});else startUiGuard();
+}
