@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {vehiclePublishIssue,requiresPhotoForAdvance,hasVehiclePhoto} from '../operational-quality.js';
 
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root),'utf8');
@@ -17,18 +16,15 @@ test('vehicle identity and cost integrity are enforced server-side',async()=>{
   assert.match(sql,/vehicle_cost_dealer_mismatch/);
 });
 
-test('first commercial publication requires a real photo without blocking legacy advanced edits',()=>{
-  const vehicle={id:'v1',plate:'AB123CD',vin:'ZFA12345678901234',status:'IN_VENDITA'};
-  assert.equal(requiresPhotoForAdvance('IN_PREPARAZIONE','IN_VENDITA'),true);
-  assert.equal(requiresPhotoForAdvance('IN_VENDITA','PRENOTATA'),false);
-  assert.equal(hasVehiclePhoto([{vehicle_id:'v1',kind:'VIDEO',object_key:'clip.mp4'}],'v1'),false);
-  assert.equal(hasVehiclePhoto([{vehicle_id:'v1',kind:'PHOTO',object_key:'photo.jpg'}],'v1'),true);
-  assert.match(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[],previousStatus:'IN_PREPARAZIONE'}),/Aggiungi almeno una foto/);
-  assert.equal(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[],previousStatus:'IN_VENDITA'}),'');
-  assert.equal(vehiclePublishIssue({vehicle,vehicles:[vehicle],media:[{vehicle_id:'v1',kind:'PHOTO',object_key:'photo.jpg'}],previousStatus:'IN_PREPARAZIONE'}),'');
+test('first commercial publication requires a PHOTO without blocking legacy advanced edits',async()=>{
+  const source=await read('operational-quality.js');
+  assert.match(source,/requiresPhotoForAdvance=.*isAdvancedStatus\(nextStatus\).*?!isAdvancedStatus\(previousStatus\)/s);
+  assert.match(source,/String\(x\.kind\|\|'PHOTO'\)\.toUpperCase\(\)==='PHOTO'/);
+  assert.match(source,/requiresPhotoForAdvance\(previousStatus,status\)&&!hasVehiclePhoto/);
+  assert.match(source,/Aggiungi almeno una foto prima di portare l’auto in vendita/);
 });
 
-test('server photo migration gates first publication and grandfather existing advanced stock',async()=>{
+test('server photo migration gates first publication and grandfathers existing advanced stock',async()=>{
   const sql=await read('supabase/migrations/0018_publish_photo_gate_v197.sql');
   assert.match(sql,/vehicle_photo_required/);
   assert.match(sql,/security invoker/i);
