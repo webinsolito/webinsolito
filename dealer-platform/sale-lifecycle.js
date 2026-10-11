@@ -1,0 +1,82 @@
+export const DELIVERY_CHECKLIST_TITLES=Object.freeze([
+  'Contratto firmato',
+  'Saldo verificato',
+  'Passaggio / documenti completati',
+  'Libretto e documenti pronti',
+  'Preparazione auto completata',
+  'Doppie chiavi presenti',
+  'Garanzia / documentazione consegnata'
+]);
+
+const active=rows=>(rows||[]).filter(row=>row&&!row.deleted_at&&row.status!=='CANCELLED');
+const cents=value=>Math.round(Number(value||0)*100);
+
+export function normalizedPaymentStatus(totalAmount,paidAmount){
+  const total=Math.max(0,cents(totalAmount));
+  const paid=Math.min(total,Math.max(0,cents(paidAmount)));
+  if(total<=0||paid<=0)return 'UNPAID';
+  if(paid>=total)return 'PAID';
+  return 'PARTIAL';
+}
+
+export function normalizeInvoicePayment(invoice={}){
+  const total=Math.max(0,Number(invoice.total_amount||0));
+  const paid=Math.min(total,Math.max(0,Number(invoice.paid_amount||0)));
+  const payment_status=normalizedPaymentStatus(total,paid);
+  return {...invoice,total_amount:total,paid_amount:paid,payment_status,paid_at:paid>0?invoice.paid_at||null:null};
+}
+
+export function selectSaleInvoice(contract,invoices=[]){
+  if(!contract)return null;
+  const sales=active(invoices).filter(i=>i.invoice_type==='SALE');
+  const linked=contract.sale_invoice_id?sales.find(i=>i.id===contract.sale_invoice_id):null;
+  if(linked)return linked;
+  return sales.filter(i=>i.vehicle_id===contract.vehicle_id&&i.customer_id===contract.customer_id)
+    .sort((a,b)=>String(b.issue_date||b.updated_at||b.created_at||'').localeCompare(String(a.issue_date||a.updated_at||a.created_at||'')))[0]||null;
+}
+
+export function saleInvoiceIntegrity(contract,invoice,{requirePaid=false}={}){
+  if(!contract)return {ok:false,code:'sale_contract_missing'};
+  if(!invoice)return {ok:false,code:'sale_invoice_missing'};
+  if(invoice.invoice_type!=='SALE')return {ok:false,code:'sale_invoice_wrong_type'};
+  if(invoice.vehicle_id!==contract.vehicle_id)return {ok:false,code:'sale_invoice_vehicle_mismatch'};
+  if(invoice.customer_id!==contract.customer_id)return {ok:false,code:'sale_invoice_customer_mismatch'};
+  if(Math.abs(cents(invoice.total_amount)-cents(contract.price))>1)return {ok:false,code:'sale_invoice_amount_mismatch'};
+  const normalized=normalizeInvoicePayment(invoice);
+  if(requirePaid&&normalized.payment_status!=='PAID')return {ok:false,code:'sale_balance_open',amount:Math.max(0,normalized.total_amount-normalized.paid_amount)};
+  return {ok:true,code:'ok',invoice:normalized};
+}
+
+export function saleDeliveryGate({contract,invoice,invoices=[],workItems=[]}={}){
+  if(!contract||contract.template_code!=='VENDITA')return {ready:false,code:'sale_contract_missing'};
+  if(contract.status!=='SIGNED')return {ready:false,code:'sale_contract_not_signed'};
+  const selected=invoice||selectSaleInvoice(contract,invoices);
+  const invoiceCheck=saleInvoiceIntegrity(contract,selected,{requirePaid:true});
+  if(!invoiceCheck.ok)return {ready:false,...invoiceCheck,invoice:selected||null};
+  if(Number(contract.financing_amount||0)>0&&contract.financing_status!=='PAID')return {ready:false,code:'sale_financing_not_paid',invoice:selected};
+
+  const items=active(workItems).filter(w=>w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA');
+  const byTitle=new Map(items.map(w=>[String(w.title||'').trim(),w]));
+  const missing=DELIVERY_CHECKLIST_TITLES.filter(title=>!byTitle.has(title));
+  if(missing.length)return {ready:false,code:'sale_checklist_missing',missing,invoice:selected,items};
+  const pending=DELIVERY_CHECKLIST_TITLES.map(title=>byTitle.get(title)).find(w=>w?.status!=='DONE')||null;
+  if(pending)return {ready:false,code:'sale_checklist_pending',workItem:pending,invoice:selected,items};
+  return {ready:true,code:'ready',invoice:selected,items};
+}
+
+export function saleDeliveryMessage(code){
+  return ({
+    sale_contract_missing:'Collega prima un contratto di vendita.',
+    sale_contract_not_signed:'Il contratto di vendita deve essere congelato e segnato come firmato.',
+    sale_invoice_missing:'Serve una fattura di vendita collegata alla stessa auto e allo stesso cliente.',
+    sale_invoice_wrong_type:'La fattura collegata non è una fattura di vendita.',
+    sale_invoice_vehicle_mismatch:'La fattura collegata appartiene a un altro veicolo.',
+    sale_invoice_customer_mismatch:'La fattura collegata appartiene a un altro cliente.',
+    sale_invoice_amount_mismatch:'Totale fattura e prezzo del contratto non coincidono.',
+    sale_balance_open:'Il saldo della fattura di vendita non risulta completamente incassato.',
+    sale_financing_not_paid:'Il finanziamento deve risultare liquidato prima della consegna.',
+    sale_checklist_missing:'Manca almeno un controllo obbligatorio della checklist consegna.',
+    sale_checklist_pending:'Completa tutti i controlli obbligatori prima della consegna.',
+    vehicle_delivery_contract_required:'Prima segna come consegnata la vendita collegata a questo veicolo.'
+  })[code]||'Operazione bloccata da una regola di coerenza della vendita.';
+}
