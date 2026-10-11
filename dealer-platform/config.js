@@ -77,8 +77,8 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./admin-safety.js?v=1.6.6').catch(err=>console.warn('Sicurezza Admin non caricata',err));
   import('./backup.js?v=1.9.5').catch(err=>console.warn('Backup non caricato',err));
   import('./data-quality.js?v=1.9.2').catch(err=>console.warn('Controllo qualità dati non caricato',err));
-  import('./operational-quality.js?v=1.9.3').catch(err=>console.warn('Controlli operativi non caricati',err));
-  import('./mobile-shell.js?v=1.9.3').catch(err=>console.warn('Navigazione mobile non caricata',err));
+  import('./operational-quality.js?v=1.9.6').catch(err=>console.warn('Controlli operativi non caricati',err));
+  import('./mobile-shell.js?v=1.9.6').catch(err=>console.warn('Navigazione mobile non caricata',err));
   import('./daily-ux.js?v=1.9.6').catch(err=>console.warn('UX operativa giornaliera non caricata',err));
-  import('./sync-recovery.js?v=1.9.5').catch(err=>console.warn('Recupero sincronizzazione non caricato',err));
+  import('./sync-recovery.js?v=1.9.6').catch(err=>console.warn('Recupero sincronizzazione non caricato',err));
 });
