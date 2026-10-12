@@ -1,0 +1,10 @@
+{
+  "name": "RISOLVI — WEBINSOLITO",
+  "short_name": "RISOLVI",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07131f",
+  "theme_color": "#07131f",
+  "description": "Trasforma un problema con un acquisto online nel prossimo passo concreto.",
+  "icons": [{"src":"logo.svg","sizes":"128x128","type":"image/svg+xml","purpose":"any maskable"}]
+}

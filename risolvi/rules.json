@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "pack": "it-consumer-online-goods-v0",
+  "version": "0.1.0",
+  "review_status": "prototype-not-legal-reviewed",
+  "sources": [
+    {
+      "id": "MIMIT-GARANZIA",
+      "title": "Garanzia legale",
+      "authority": "Ministero delle Imprese e del Made in Italy",
+      "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/garanzia-legale"
+    },
+    {
+      "id": "MIMIT-RECESSO",
+      "title": "Diritto di recesso - FAQ",
+      "authority": "Ministero delle Imprese e del Made in Italy",
+      "url": "https://www.mimit.gov.it/it/assistenza/domande-frequenti/diritto-di-recesso-domande-frequenti-faq"
+    }
+  ],
+  "rules": [
+    {
+      "id": "IT-GUARANTEE-SELLER-001",
+      "domain": "legal_guarantee",
+      "effective_from": "2022-01-01",
+      "temporal_basis": "delivery_date",
+      "requires": ["consumer", "professional_seller", "physical_good", "delivery_date"],
+      "source_ids": ["MIMIT-GARANZIA"]
+    },
+    {
+      "id": "IT-WITHDRAWAL-001",
+      "domain": "withdrawal",
+      "effective_from": "2022-01-01",
+      "temporal_basis": "delivery_date",
+      "requires": ["consumer", "professional_seller", "distance_purchase", "delivery_date"],
+      "source_ids": ["MIMIT-RECESSO"]
+    },
+    {
+      "id": "IT-NONDELIVERY-001",
+      "domain": "delivery",
+      "effective_from": "2022-01-01",
+      "temporal_basis": "promised_delivery_date",
+      "requires": ["consumer", "professional_seller", "distance_purchase"],
+      "source_ids": ["MIMIT-GARANZIA"]
+    }
+  ]
+}
