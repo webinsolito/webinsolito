@@ -53,9 +53,12 @@ def test_conflicting_dates_are_marked_and_not_prefilled():
 
 def test_client_ocr_endpoint_returns_structured_provenance():
     client = TestClient(app)
-    case = client.post("/v1/cases").json()
+    created = client.post("/v1/cases").json()
+    case_id = created["case"]["id"]
+    token = created["capability_token"]
     response = client.post(
-        f"/v1/cases/{case['id']}/documents/extract-text",
+        f"/v1/cases/{case_id}/documents/extract-text",
+        headers={"X-Case-Token": token},
         json={
             "documents": [{
                 "filename": "screenshot.png",

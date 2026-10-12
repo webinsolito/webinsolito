@@ -1,17 +1,20 @@
 [project]
 name = "webinsolito-risolvi-api"
-version = "0.2.0"
-description = "Case Engine and document extraction prototype for WEBINSOLITO RISOLVI"
+version = "0.3.0"
+description = "Privacy-first Case Engine and document extraction prototype for WEBINSOLITO RISOLVI"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115,<1",
   "pydantic>=2.9,<3",
   "pypdf>=5,<7",
   "python-multipart>=0.0.12,<1",
+  "sqlalchemy>=2.0.35,<3",
+  "psycopg[binary]>=3.2,<4",
   "uvicorn>=0.30,<1"
 ]
 
 [project.optional-dependencies]
+storage = ["boto3>=1.35,<2"]
 dev = ["pytest>=8,<9", "httpx>=0.27,<1"]
 
 [tool.pytest.ini_options]
