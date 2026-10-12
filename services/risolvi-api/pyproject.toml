@@ -1,11 +1,13 @@
 [project]
 name = "webinsolito-risolvi-api"
-version = "0.1.0"
-description = "Case Engine prototype for WEBINSOLITO RISOLVI"
+version = "0.2.0"
+description = "Case Engine and document extraction prototype for WEBINSOLITO RISOLVI"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115,<1",
   "pydantic>=2.9,<3",
+  "pypdf>=5,<7",
+  "python-multipart>=0.0.12,<1",
   "uvicorn>=0.30,<1"
 ]
 

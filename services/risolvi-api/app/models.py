@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import StrEnum
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -23,6 +24,68 @@ class Problem(StrEnum):
     OTHER = "other"
 
 
+class FactStatus(StrEnum):
+    EXTRACTED = "EXTRACTED"
+    USER_ASSERTED = "USER_ASSERTED"
+    CONFIRMED = "CONFIRMED"
+    CONFLICT = "CONFLICT"
+
+
+class ExtractionMethod(StrEnum):
+    PLAIN_TEXT = "PLAIN_TEXT"
+    EMAIL_TEXT = "EMAIL_TEXT"
+    PDF_TEXT = "PDF_TEXT"
+    CLIENT_OCR = "CLIENT_OCR"
+    CLIENT_PDF_TEXT = "CLIENT_PDF_TEXT"
+    HEURISTIC = "HEURISTIC"
+
+
+class EvidenceRef(BaseModel):
+    document_id: str
+    filename: str
+    page: int | None = None
+    span: str | None = None
+    method: ExtractionMethod
+
+
+class FactCandidate(BaseModel):
+    key: str
+    value: Any
+    status: FactStatus = FactStatus.EXTRACTED
+    confidence: str = "medium"
+    evidence: list[EvidenceRef] = Field(default_factory=list)
+
+
+class DocumentExtraction(BaseModel):
+    document_id: str
+    filename: str
+    mime_type: str
+    method: ExtractionMethod
+    text_chars: int
+    sha256: str | None = None
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ExtractionBundle(BaseModel):
+    documents: list[DocumentExtraction] = Field(default_factory=list)
+    candidates: list[FactCandidate] = Field(default_factory=list)
+    prefill: dict[str, Any] = Field(default_factory=dict)
+    conflicts: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ClientExtractedDocument(BaseModel):
+    filename: str
+    mime_type: str
+    text: str = Field(max_length=120_000)
+    method: ExtractionMethod
+    sha256: str | None = None
+
+
+class ClientExtractionRequest(BaseModel):
+    documents: list[ClientExtractedDocument] = Field(min_length=1, max_length=8)
+
+
 class CaseFacts(BaseModel):
     problem: Problem
     consumer: bool | None = None
@@ -42,7 +105,7 @@ class Case(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     status: CaseStatus = CaseStatus.DRAFT
     jurisdiction: str = "IT"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     facts: CaseFacts | None = None
 
 
