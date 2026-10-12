@@ -1,0 +1,53 @@
+{
+  "registry_version": "1.0",
+  "as_of": "2026-10-12",
+  "rules": {
+    "IT-GUARANTEE-SELLER-001:v0": {
+      "valid_from": "2026-10-12",
+      "valid_to": null,
+      "source_ids": ["MIMIT-GARANZIA"],
+      "technical_review": "approved",
+      "legal_review": "pending",
+      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+    },
+    "IT-WITHDRAWAL-001:v0": {
+      "valid_from": "2026-10-12",
+      "valid_to": null,
+      "source_ids": ["MIMIT-RECESSO"],
+      "technical_review": "approved",
+      "legal_review": "pending",
+      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+    },
+    "IT-NONDELIVERY-001:v0": {
+      "valid_from": "2026-10-12",
+      "valid_to": null,
+      "source_ids": ["MIMIT-VENDITA-DISTANZA"],
+      "technical_review": "approved",
+      "legal_review": "pending",
+      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+    }
+  },
+  "sources": {
+    "MIMIT-GARANZIA": {
+      "authority": "Ministero delle Imprese e del Made in Italy",
+      "official": true,
+      "topic": "garanzia legale",
+      "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/garanzia-legale",
+      "checked_at": "2026-10-12"
+    },
+    "MIMIT-RECESSO": {
+      "authority": "Ministero delle Imprese e del Made in Italy",
+      "official": true,
+      "topic": "diritto di recesso",
+      "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/diritto-di-recesso",
+      "checked_at": "2026-10-12"
+    },
+    "MIMIT-VENDITA-DISTANZA": {
+      "authority": "Ministero delle Imprese e del Made in Italy",
+      "official": true,
+      "topic": "vendita a distanza e consegna dei beni",
+      "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/vendita-a-distanza",
+      "checked_at": "2026-10-12"
+    }
+  }
+}
