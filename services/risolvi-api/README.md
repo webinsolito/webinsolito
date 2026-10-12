@@ -1,6 +1,47 @@
-# RISOLVI API
+# RISOLVI API v0.3
 
-Case Engine server-side di WEBINSOLITO RISOLVI.
+Case Engine privacy-first di WEBINSOLITO. La v0.3 sostituisce la memoria volatile con persistenza esplicita e introduce capability guest, retention e storage privato.
+
+## Modello di sicurezza
+
+- `POST /v1/cases` crea una pratica e restituisce **una sola volta** `capability_token`.
+- Il server conserva solo un HMAC-SHA256 del token; il token originale non viene salvato.
+- Tutti gli endpoint della pratica richiedono `X-Case-Token`.
+- Il token non viene letto dalla query string e non compare nell'export.
+- Un token valido per una pratica non dà accesso a nessun'altra pratica.
+- Accesso negato e ID inesistente restituiscono entrambi `404`, riducendo l'enumerazione degli ID.
+
+## Database
+
+In produzione `RISOLVI_DATABASE_URL` deve essere PostgreSQL (`postgresql+psycopg://...`). SQLite è supportato solo per sviluppo e test.
+
+Tabelle: `cases`, `facts`, `documents`, `recommendations`, `actions`, `outcomes`, `rules`, `sources`, `audit_events`.
+
+La v0.3 usa `create_all` per il prototipo: prima di una produzione reale va introdotto Alembic con migration reviewate.
+
+## Documenti
+
+Il flusso browser-local della v0.2 continua a funzionare. Se l'utente decide di salvare una pratica, `POST /v1/cases/{id}/documents` conserva l'originale in storage privato con chiave casuale che non contiene il nome del file.
+
+- sviluppo/test: directory privata fuori dagli asset pubblici;
+- produzione: backend S3-compatible privato (`.[storage]` installa boto3);
+- download: capability check prima di un presigned URL breve (30–900 s, default 300 s);
+- retention documenti: 24 ore di default, configurabile.
+
+## Retention
+
+Default proposto del prototipo:
+
+- originali: 24 ore;
+- pratica strutturata: 7 giorni.
+
+Eseguire periodicamente:
+
+```bash
+python -m app.retention
+```
+
+Il job è idempotente: elimina blob scaduti e record correlati; una seconda esecuzione non deve cambiare lo stato.
 
 ## Avvio locale
 
@@ -11,31 +52,14 @@ pip install -e '.[dev]'
 uvicorn app.main:app --reload
 ```
 
-Poi apri `http://127.0.0.1:8000/docs`.
+Per storage S3-compatible:
 
-## v0.2 — extraction pipeline
+```bash
+pip install -e '.[dev,storage]'
+```
 
-L'API mantiene ancora i casi in memoria, ma ora separa chiaramente **estrazione** e **decisione**:
+## Variabili principali
 
-1. `POST /v1/cases` crea un caso;
-2. `POST /v1/cases/{id}/documents/extract` legge lato server PDF testuali, EML, TXT e HTML senza conservare i file;
-3. `POST /v1/cases/{id}/documents/extract-text` riceve testo già estratto sul client (OCR/PDF locale) e restituisce candidate facts con provenance;
-4. l'utente conferma/corregge i fatti e li salva con `PUT /v1/cases/{id}/facts`;
-5. solo dopo `POST /v1/cases/{id}/analyse` applica il rule engine deterministico.
+`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_SIGNED_URL_SECONDS`.
 
-Le immagini non vengono mandate automaticamente all'API: il frontend statico RISOLVI usa Tesseract.js nel browser e può trasmettere in futuro soltanto il testo estratto, se viene configurato un backend. Per i PDF il frontend usa PDF.js e ricorre all'OCR locale per pagine senza testo.
-
-## Guardrail
-
-- massimo 8 documenti per richiesta;
-- massimo 8 MB per file server-side;
-- nessun fatto assente viene inventato;
-- ogni fatto candidato conserva documento, pagina/span e metodo di estrazione;
-- valori discordanti vengono marcati `CONFLICT` e non precompilati;
-- il testo estratto è considerato **dato non fidato**, non istruzione per un modello;
-- l'estrazione non modifica automaticamente i `CaseFacts` confermati;
-- nessun invio automatico di reclami o comunicazioni.
-
-## Limiti ancora aperti
-
-Persistenza PostgreSQL/object storage, retention automatica, auth guest robusta, seller-of-record più affidabile, legal review completa e benchmark da 200 gold cases restano gate separati prima di un pilot pubblico non supervisionato.
+In `production` il processo rifiuta SQLite, secret di sviluppo e storage locale.

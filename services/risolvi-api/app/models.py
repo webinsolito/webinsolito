@@ -66,6 +66,16 @@ class DocumentExtraction(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class DocumentMetadata(BaseModel):
+    id: str
+    filename: str
+    mime_type: str
+    sha256: str
+    size_bytes: int
+    created_at: datetime
+    expires_at: datetime
+
+
 class ExtractionBundle(BaseModel):
     documents: list[DocumentExtraction] = Field(default_factory=list)
     candidates: list[FactCandidate] = Field(default_factory=list)
@@ -106,7 +116,13 @@ class Case(BaseModel):
     status: CaseStatus = CaseStatus.DRAFT
     jurisdiction: str = "IT"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: datetime | None = None
     facts: CaseFacts | None = None
+
+
+class CaseCreated(BaseModel):
+    case: Case
+    capability_token: str
 
 
 class Recommendation(BaseModel):
@@ -119,3 +135,8 @@ class Recommendation(BaseModel):
     source_ids: list[str] = Field(default_factory=list)
     allowed_claims: list[str] = Field(default_factory=list)
     draft: str | None = None
+
+
+class OutcomeRequest(BaseModel):
+    outcome_type: str = Field(min_length=1, max_length=60)
+    payload: dict[str, Any] = Field(default_factory=dict)
