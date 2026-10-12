@@ -1,0 +1,27 @@
+{
+  "dataset_version": "1.0",
+  "as_of": "2026-10-12",
+  "case_count": 200,
+  "canonical_sha256": "541edb3632a273239735e9cd1e04c589b1ab5a0097298aaac0a0a7f29b288d9e",
+  "category_distribution": {
+    "guarantee": 70,
+    "delivery": 40,
+    "withdrawal": 45,
+    "out-of-scope": 25,
+    "adversarial": 20
+  },
+  "severity_distribution": {
+    "S0": 25,
+    "S1": 98,
+    "S2": 77,
+    "S3": 0,
+    "S4": 0
+  },
+  "gate": {
+    "critical_failures_S0_S1": 0,
+    "temporal_validity_percent": 100,
+    "source_coverage_percent": 100
+  },
+  "data_policy": "synthetic-only",
+  "legal_review": "pending"
+}
