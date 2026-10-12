@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-12T07:05:10.127769+00:00",
-  "count": 61,
+  "generated_at": "2026-10-12T15:56:07.379851+00:00",
+  "count": 62,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -14,7 +14,7 @@
       "name": "Visit Brescia",
       "ok": true,
       "links": 48,
-      "events": 46,
+      "events": 47,
       "errors": 0
     }
   ],
@@ -138,21 +138,6 @@
       "note": "Ogni anno da maggio a ottobre torna il programma di escursioni emozionali a Gargnano: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/gargnano.jpg"
-    },
-    {
-      "id": "auto-446f9d91a1c04e",
-      "title": "Mostra \"Alice sull'Isola delle Meraviglie\"",
-      "date": "2026-05-10",
-      "end_date": "2026-10-11",
-      "time": "",
-      "place": "Isola del Garda San Felice del Benaco",
-      "area": "Brescia e provincia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/mostra-isola-del-garda/",
-      "note": "Dal 10 maggio all'11 ottobre 2026 l'Isola del Garda ospita \"Alice sull'Isola delle Meraviglie\", una mostra immersiva tra arte contemporanea e panorami da sogno. Scopri!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/isola-del-garda.jpg"
     },
     {
       "id": "auto-edc396b25d346d",
@@ -320,6 +305,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/aperitivi-jazz-caffe-teatro-grande.jpg"
     },
     {
+      "id": "auto-f997906101ca1e",
+      "title": "Mostra \"Magnifica Eleganza\"",
+      "date": "2026-09-12",
+      "end_date": "2026-12-06",
+      "time": "",
+      "place": "Casa Museo Zani Via Fantasina, 8 , Cellatica",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mostra-magnifica-eleganza/",
+      "note": "Posegue fino al 6 dicembre 2026 presso Casa Museo Zani di Cellatica la mostra \"Magnifica Eleganza. Tiepolo, Longhi e Guardi tra arte e moda\"!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Pietro-Longhi-Pietro-Falca-detto-Venezia-1701-----1785-Il-Ridotto-in-Venezia-1750-ca.-olio-su-tela-2.jpg"
+    },
+    {
       "id": "auto-3c0abaf81de5b2",
       "title": "Visite alla Limonaia del Castel 2026",
       "date": "2026-09-28",
@@ -333,6 +333,21 @@
       "note": "Immergersi nel fascino delle antiche limonaie del Lago di Garda: ogni anno riapre la Limonaia del Castel di Limone sul Garda!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Limonaia-del-Castel-Limone.jpg"
+    },
+    {
+      "id": "auto-f5e3efede01fa2",
+      "title": "Mostra \"Padre Costantino Ruggeri. Sorella Luce\"",
+      "date": "2026-10-01",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Museo Diocesano di Brescia Via Gasparo da Salò, 13 , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mostra-padre-costantino-ruggeri-sorella-luce/",
+      "note": "Presso il Museo Diocesano di Brescia prosegue fino all'8 novembre 2026 la mostra \"Padre Costantino Ruggeri. Sorella Luce\": scopri di più!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Vetrata-Padre-Costantino-Ruggeri.webp"
     },
     {
       "id": "auto-2c018b8942377c",
@@ -363,81 +378,6 @@
       "note": "Ogni anno a Brescia e Bergamo torna il festival \"Settimane Barocche di Brescia\": scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana-dopo-il-restauro.jpg"
-    },
-    {
-      "id": "auto-e2554c3e4dc932",
-      "title": "Brescia Storia Festival 2026",
-      "date": "2026-10-09",
-      "end_date": "2026-10-11",
-      "time": "",
-      "place": "Teatro Grande Corso Zanardelli, 9/A , Brescia",
-      "area": "Brescia e provincia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/brescia-storia-festival/",
-      "note": "Un intero weekend dedicato ai principali eventi che hanno segnato la storia dell'umanità: ogni anno arriva Brescia Storia Festival!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Esterno-del-Teatro-Grande-foto-del-Comune-di-Brescia.jpg"
-    },
-    {
-      "id": "auto-430bae5765f499",
-      "title": "Festival dei Sapori 2026",
-      "date": "2026-10-09",
-      "end_date": "2026-10-11",
-      "time": "",
-      "place": "Brescia Varie location , Brescia",
-      "area": "Brescia e provincia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/festival-dei-sapori/",
-      "note": "Ogni anno Brescia si trasforma nella capitale del gusto con il Festival dei Sapori: scopri di più!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/sapori-tipici-brescia.jpg"
-    },
-    {
-      "id": "auto-8cb5887cad57b3",
-      "title": "Franciacorta in Bianco 2026",
-      "date": "2026-10-09",
-      "end_date": "2026-10-11",
-      "time": "",
-      "place": "Castegnato Piazza Dante , Castegnato",
-      "area": "Brescia e provincia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/franciacorta-in-bianco/",
-      "note": "A ottobre torna l’appuntamento con Franciacorta in Bianco, l'attesissima rassegna nazionale lattiero-casearia con protagonisti i formaggi di tutto il mondo!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/franciacorta-in-bianco.jpg"
-    },
-    {
-      "id": "auto-cf0bf454479a2e",
-      "title": "Rassegna Organistica Internazionale Città di Brescia 2026",
-      "date": "2026-10-11",
-      "end_date": "2026-10-11",
-      "time": "",
-      "place": "Brescia Varie chiese , Brescia",
-      "area": "Brescia e provincia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/rassegna-organistica-internazionale-brescia/",
-      "note": "Musica sacra e suggestioni in luoghi di culto della città: ogni anno arriva la Rassegna Organistica Internazionale Città di Brescia!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-Organistica-Internazionale-Citta-di-Brescia.jpg"
-    },
-    {
-      "id": "auto-a3262e2dbcae5c",
-      "title": "Visite guidate \"Sguardi su Breno\" 2026",
-      "date": "2026-10-11",
-      "end_date": "2026-10-11",
-      "time": "10:00",
-      "place": "Breno Varie location , Breno",
-      "area": "Brescia e provincia",
-      "cat": "Altro",
-      "price": 0,
-      "url": "https://www.visitbrescia.it/eventi/visite-guidate-breno/",
-      "note": "Un palinsesto di visite guidate gratuite alla scoperta del borgo camuno: al via fino a novembre 2026 la rassegna \"Sguardi su Breno\"!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/breno-con-castello.jpg"
     },
     {
       "id": "auto-0edb0610a70563",
@@ -680,6 +620,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/lugana-festival.jpg"
     },
     {
+      "id": "auto-9766eff5bf7944",
+      "title": "Escursione faunistica \"Il bramito dei cervi\" 2026",
+      "date": "2026-10-17",
+      "end_date": "2026-10-18",
+      "time": "",
+      "place": "Casa del Parco dell'Adamello di Vezza d'Oglio (partenza e arrivo) via Nazionale, 132 , Vezza d'Oglio",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/escursione-guidata-bramito-dei-cervi/",
+      "note": "A settembre e ottobre tornano le escursioni guidate \"Il bramito dei cervi\" con partenza e arrivo a Vezza d'Oglio. Scopri di più!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/bramito-dei-cervi-in-amore-Ph-Sefano-Sandrini-scaled.jpg"
+    },
+    {
       "id": "auto-4ee1b0ad627dfb",
       "title": "Mercantico a Lonato del Garda 2026",
       "date": "2026-10-18",
@@ -708,6 +663,21 @@
       "note": "Ogni terza domenica del mese al Castello di Padernello torna l'appuntamento con il cibo buono, pulito e giusto di Slow Food. Scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/004-Virginio-Gilberti-e1593527566978.jpg"
+    },
+    {
+      "id": "auto-b911590c62b883",
+      "title": "Rassegna Organistica Internazionale Città di Brescia 2026",
+      "date": "2026-10-18",
+      "end_date": "2026-10-18",
+      "time": "",
+      "place": "Brescia Varie chiese , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/rassegna-organistica-internazionale-brescia/",
+      "note": "Musica sacra e suggestioni in luoghi di culto della città: ogni anno arriva la Rassegna Organistica Internazionale Città di Brescia!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-Organistica-Internazionale-Citta-di-Brescia.jpg"
     },
     {
       "id": "auto-e3eb97df929970",
@@ -800,6 +770,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/camminanotte-villa-carcina.jpg"
     },
     {
+      "id": "auto-1dd690c00d35b7",
+      "title": "Cosa fare ad Halloween a Brescia e provincia 2026",
+      "date": "2026-10-25",
+      "end_date": "2026-11-01",
+      "time": "",
+      "place": "Brescia e provincia Varie location",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/halloween/",
+      "note": "La notte di Halloween anima ogni anno la provincia di Brescia, con eventi per bambini e famiglie!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
+    },
+    {
       "id": "auto-1fbee1db99fb48",
       "title": "Halloween in Miniera 2026",
       "date": "2026-10-31",
@@ -873,6 +858,36 @@
       "note": "Ogni anno a novembre Chiari si riempie di libri e di cultura con la Rassegna della MicroEditoria: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-della-Microeditoria.jpg"
+    },
+    {
+      "id": "auto-8faecb77c02d60",
+      "title": "Verolanuova inaspettata 2026/2027",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Verolanuova Varie location , Verolanuova",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/verolanuova-inaspettata/",
+      "note": "Un viaggio tra arte, storia e tradizione locale: al via il palinsesto 2026/2027 di Verolanuova inaspettata! Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Basilica-San-Lorenzo-Martire-Verolanuova.jpg"
+    },
+    {
+      "id": "auto-a365ae789ca478",
+      "title": "Visite guidate \"Sguardi su Breno\" 2026",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "10:00",
+      "place": "Breno Varie location , Breno",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": 0,
+      "url": "https://www.visitbrescia.it/eventi/visite-guidate-breno/",
+      "note": "Un palinsesto di visite guidate gratuite alla scoperta del borgo camuno: al via fino a novembre 2026 la rassegna \"Sguardi su Breno\"!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/breno-con-castello.jpg"
     },
     {
       "id": "auto-53614954f2909e",
