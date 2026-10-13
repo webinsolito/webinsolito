@@ -27,6 +27,8 @@ jobs:
       - run: pytest -q
       - name: Run 200-case RISOLVI evaluation gate
         run: python -m app.evaluation --strict
+      - name: Build production container
+        run: docker build -t webinsolito-risolvi-api:ci .
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
