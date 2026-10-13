@@ -264,7 +264,9 @@ jobs:
             --preflight .ci-artifacts/preflight.json \
             --smoke .ci-artifacts/smoke.json \
             --readiness .ci-artifacts/readiness.json \
-            --expected-commit "$GITHUB_SHA"
+            --storage-cleanup .ci-artifacts/storage-cleanup.json \
+            --expected-commit "$GITHUB_SHA" \
+            --expected-version "0.15.0"
 
       - name: Assert normalized artifacts contain no runtime credentials
         run: |
