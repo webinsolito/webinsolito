@@ -74,7 +74,7 @@ test('router usa allowlist stretta di rotte, metodi, origini e dimensioni',()=>{
   assert.doesNotMatch(router,/access-control-allow-origin['"]\s*:\s*['"]\*['"]/);
 });
 
-test('logout e cambio account eliminano cache tenant e mutazioni',()=>{
+test('logout e cambio account eliminano cache tenant mentre API sensibili bypassano il service worker',()=>{
   assert.match(session,/purgeAllCachedTenants/);
   assert.match(session,/OfflineDB\.clearTenant/);
   assert.match(session,/OfflineDB\.dealerIdsInStore\(store\)/);
@@ -84,5 +84,7 @@ test('logout e cambio account eliminano cache tenant e mutazioni',()=>{
   assert.match(sw,/dealer-platform-v1\.9\.8-static-only/);
   assert.match(sw,/session-security\.js\?v=1\.9\.6/);
   assert.match(sw,/authorization/);
-  assert.match(sw,/event\.respondWith\(fetch\(req\)\)/);
+  assert.match(sw,/sensitive\/external traffic bypass the SW entirely/);
+  assert.match(sw,/Without respondWith\(\), the browser performs a normal network request/);
+  assert.doesNotMatch(sw,/event\.respondWith\(fetch\(req\)\);/);
 });
