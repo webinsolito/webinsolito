@@ -1,6 +1,6 @@
-# RISOLVI API v0.14
+# RISOLVI API v0.15
 
-Case Engine privacy-first di WEBINSOLITO per il pilot supervisionato di RISOLVI. La v0.14 mantiene il gate di pilot-readiness fail-closed della v0.13 e aggiunge un **benchmark documentale separato dal benchmark legale**, provenance pagina-per-pagina e maggiore parità tra extractor browser e backend.
+Case Engine privacy-first di WEBINSOLITO per il pilot supervisionato di RISOLVI. La v0.15 mantiene il benchmark documentale/provenance della v0.14 e aggiunge una **integrazione production-like disposable** che verifica il container in configurazione production contro PostgreSQL, S3-compatible storage e ClamAV prima di qualunque provisioning cloud reale.
 
 ## Principio operativo
 
@@ -39,17 +39,17 @@ L'extractor browser conserva la struttura a righe di testo/OCR e, per i PDF, usa
 
 ## Evaluation documentale
 
-Il benchmark documentale è volutamente separato dai 200 casi di routing legale. Usa fixture sintetiche/de-identificate e verifica fatti, `null` espliciti, conflitti e provenance.
+Il benchmark documentale è separato dai 200 casi di routing legale. Usa fixture sintetiche/de-identificate e verifica fatti, `null` espliciti, conflitti e provenance.
 
 ```bash
 python -m app.document_evaluation --strict
-# oppure, dopo l'installazione del package
+# oppure
 document-evaluation --strict
 ```
 
-Il gate fallisce se anche un solo caso non corrisponde al gold oppure se provenance, missing facts o conflitti non raggiungono il 100% richiesto dal dataset corrente. Il report include il digest SHA-256 del dataset per rendere il risultato riproducibile.
+Il gate fallisce se anche un solo caso non corrisponde al gold oppure se provenance, missing facts o conflitti non raggiungono il 100% richiesto dal dataset corrente. Il report include il digest SHA-256 del dataset.
 
-La parità minima del parser locale/browser è verificata senza rete:
+La parità minima del parser browser è verificata senza rete:
 
 ```bash
 node risolvi/extractor-benchmark.mjs
@@ -59,7 +59,7 @@ Questo benchmark **non dimostra ancora la qualità su fotografie/PDF reali etero
 
 ## Build identity
 
-La readiness deve provare che preflight e smoke appartengono allo stesso deploy. Impostare:
+Preflight e smoke devono appartenere allo stesso deploy:
 
 ```bash
 RISOLVI_BUILD_SHA=<sha-git-esatto-del-deploy>
@@ -67,12 +67,12 @@ RISOLVI_BUILD_SHA=<sha-git-esatto-del-deploy>
 
 Il valore non è un segreto ed è esposto da `/v1/config` insieme a `environment` e `service_version`. `unknown` mantiene l'app avviabile, ma il report finale resta `NO-GO`.
 
-Build container consigliata:
+Build container:
 
 ```bash
 docker build \
   --build-arg RISOLVI_BUILD_SHA="$(git rev-parse HEAD)" \
-  -t webinsolito-risolvi-api:0.14.0 .
+  -t webinsolito-risolvi-api:0.15.0 .
 ```
 
 ## Preflight production
@@ -85,19 +85,13 @@ RISOLVI_PILOT_INTAKE_ENABLED=false
 python -m app.preflight --output preflight.json
 ```
 
-Il preflight verifica:
+Il preflight verifica configurazione production fail-closed, DB, schema/migrazioni, ClamAV su percorso clean + EICAR e private storage con `put → get → delete → get=not-found`.
 
-- configurazione production fail-closed;
-- DB raggiungibile;
-- schema/migrazioni;
-- ClamAV, sia percorso clean sia rilevazione EICAR;
-- private storage con `put → get → delete → get=not-found`.
+Il report contiene timestamp UTC, ambiente, versione, commit SHA e soli esiti normalizzati. Non contiene token o dati utente.
 
-Il report contiene timestamp UTC, ambiente, versione, commit SHA e soli esiti normalizzati. Non contiene hostname di errore provider, token o dati utente.
+## Smoke sintetico
 
-## Smoke test sintetico
-
-Solo su ambiente pilot dedicato/protetto. L'intake può essere aperto temporaneamente per il test e va richiuso subito dopo.
+Solo su ambiente pilot protetto. L'intake può essere aperto temporaneamente per il test e va richiuso subito dopo.
 
 ```bash
 export RISOLVI_SMOKE_BASE_URL='https://api-risolvi.example'
@@ -106,7 +100,48 @@ export RISOLVI_SMOKE_REVIEWER_SECRET='<credenziale-dedicata>'
 python -m app.remote_smoke --output smoke.json
 ```
 
-Lo smoke usa soltanto dati sintetici e verifica: health/ready, release identity, pratica, fatti, extraction server-side + provenance, consenso, upload originale, submit, Action Card assente prima della review, decisione umana e attribution, Action Card dopo review, outcome, export senza credenziali, delete e pratica non più raggiungibile. Il cleanup è best-effort anche su errore.
+Lo smoke verifica health/ready, release identity, pratica, fatti, extraction+provenance, consenso, upload originale, submit, Action Card assente prima della review, decisione umana e attribution, Action Card dopo review, outcome, export senza credenziali, delete e pratica non più raggiungibile.
+
+## Production-like integration CI
+
+La workflow `.github/workflows/risolvi-production-like.yml` costruisce il release candidate e avvia una stack **effimera** nel runner:
+
+```text
+RISOLVI container (production mode)
+        │
+        ├── PostgreSQL 16
+        ├── S3-compatible API / LocalStack
+        └── ClamAV / clamd
+```
+
+La sequenza è deliberatamente vicina al deploy reale:
+
+```text
+build exact SHA
+→ Alembic migrations
+→ preflight con intake chiuso
+→ API production mode
+→ smoke sintetico con review umana simulata
+→ verifica bucket vuoto dopo delete
+→ verifica PublicAccessBlock
+→ pilot-readiness
+→ validazione evidence bundle
+→ cleanup completo
+```
+
+`app.production_like_evidence` lega tra loro `preflight.json`, `smoke.json`, `readiness.json` e `storage-cleanup.json`. Il gate richiede:
+
+- stesso commit SHA e stessa service version;
+- ambiente `production`;
+- tutti i gate tecnici `PASS`;
+- zero oggetti residui nello storage dopo la cancellazione della pratica;
+- blocco accesso pubblico S3 verificato;
+- gate manuali `dedicated_infrastructure`, `legal_signoff`, `privacy_security` e `document_pipeline` ancora `UNKNOWN`;
+- decisione complessiva deliberatamente `NO-GO`.
+
+In altre parole, **una CI completamente verde non può trasformare automaticamente un sign-off umano in PASS**.
+
+La stack CI è provider-neutral e disposable. Non è l'ambiente dedicato reale e quindi **non chiude #101**, né sostituisce #79, #81 o #100.
 
 ## Pilot-readiness GO / NO-GO
 
@@ -114,7 +149,6 @@ Il comando aggrega evidenze tecniche e sign-off manuali senza copiare contenuto 
 
 ```bash
 cp readiness-evidence.example.json readiness-evidence.json
-# compilare con evidenze REALI; non trasformare UNKNOWN in PASS senza review
 
 pilot-readiness \
   --preflight preflight.json \
@@ -127,7 +161,7 @@ pilot-readiness \
 Gate principali:
 
 - stesso commit/versione/ambiente production tra preflight e smoke;
-- artefatti recenti (24h di default);
+- artefatti recenti;
 - infrastruttura dedicata;
 - migrazioni, DB, storage privato, ClamAV;
 - health, ready, upload, extraction+provenance, consenso;
@@ -137,11 +171,9 @@ Gate principali:
 - checklist privacy/security (#100);
 - validazione pipeline documentale (#81).
 
-**`UNKNOWN` blocca il GO esattamente come `FAIL`.** Il comando esce con codice 0 solo se ogni gate è `PASS`. Gli input sono rappresentati nel report tramite digest SHA-256, non incorporati integralmente.
+**`UNKNOWN` blocca il GO esattamente come `FAIL`.** La presenza del comando o di test CI verdi non chiude #111: per il vero GO servono un run sull'infrastruttura dedicata e i sign-off reali.
 
-La presenza del comando o di test CI verdi **non chiude #111**: per il vero GO servono un run sull'infrastruttura dedicata e i sign-off reali.
-
-Runbook completo: `docs/risolvi-pilot-readiness.md`.
+Runbook: `docs/risolvi-pilot-readiness.md`.
 
 ## Pilot Wizard-of-Oz
 
@@ -156,7 +188,7 @@ Runbook completo: `docs/risolvi-pilot-readiness.md`.
 
 Classificazioni: `PASS_AUTONOMOUS`, `MINOR_EDIT`, `MATERIAL_EDIT`, `WRONG_ROUTE`, `UNSUPPORTED_MISSED`, `LEGAL_REVIEW_REQUIRED`.
 
-## Database e migrazioni
+## Database, migrazioni e retention
 
 Production usa PostgreSQL e Alembic:
 
@@ -164,12 +196,9 @@ Production usa PostgreSQL e Alembic:
 alembic upgrade head
 ```
 
-`RISOLVI_AUTO_CREATE_SCHEMA=false` è obbligatorio in production. Si possono separare:
+`RISOLVI_AUTO_CREATE_SCHEMA=false` è obbligatorio in production. Si possono separare `RISOLVI_DATABASE_URL` per runtime e `RISOLVI_MIGRATION_DATABASE_URL` per Alembic.
 
-- `RISOLVI_DATABASE_URL` per runtime;
-- `RISOLVI_MIGRATION_DATABASE_URL` per Alembic.
-
-Il job retention è idempotente:
+Retention:
 
 ```bash
 python -m app.retention
@@ -206,6 +235,6 @@ pip install -e '.[dev,storage]'
 - sign-off consumer-law del rule pack (#79);
 - corpus documentale reale/de-identificato e verifica OCR/PDF difficile (#81);
 - privacy/security operativa su ambiente reale (#100);
-- provisioning dedicato + smoke production-like (#101);
+- provisioning dedicato + smoke sul provider/runtime reale (#101);
 - report #111 con tutti i gate realmente PASS;
 - solo dopo: pilot da 50–100 casi reali (#83).

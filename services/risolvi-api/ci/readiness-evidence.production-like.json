@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "environment_id": "ci-disposable-production-like",
+  "gates": {
+    "dedicated_infrastructure": {"status": "UNKNOWN"},
+    "legal_signoff": {"status": "UNKNOWN"},
+    "privacy_security": {"status": "UNKNOWN"},
+    "document_pipeline": {"status": "UNKNOWN"}
+  }
+}

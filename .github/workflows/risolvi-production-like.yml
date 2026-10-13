@@ -1,0 +1,298 @@
+name: RISOLVI production-like integration
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'services/risolvi-api/**'
+      - '.github/workflows/risolvi-production-like.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  production-like:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: services/risolvi-api
+    env:
+      RISOLVI_IMAGE: webinsolito-risolvi-api:production-like
+      RISOLVI_NETWORK: risolvi-ci
+      POSTGRES_USER: risolvi
+      POSTGRES_PASSWORD: risolvi-ci-db-password
+      POSTGRES_DB: risolvi
+      AWS_ACCESS_KEY_ID: risolvi-ci-access
+      AWS_SECRET_ACCESS_KEY: risolvi-ci-storage-password
+      AWS_DEFAULT_REGION: us-east-1
+      RISOLVI_BUCKET: risolvi-private
+      RISOLVI_CAPABILITY_SECRET: ci-capability-secret-0123456789abcdef0123456789abcdef
+      RISOLVI_REVIEWER_ID: rev-ci
+      RISOLVI_REVIEWER_TOKEN: ci-reviewer-token-0123456789abcdef0123456789abcdef
+      LOCALSTACK_IMAGE: localstack/localstack:4.8.1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: services/risolvi-api/pyproject.toml
+
+      - name: Install smoke/readiness and S3 client dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev,storage]'
+
+      - name: Build exact production candidate
+        run: |
+          docker build \
+            --build-arg RISOLVI_BUILD_SHA="$GITHUB_SHA" \
+            -t "$RISOLVI_IMAGE" .
+
+      - name: Start disposable private dependencies
+        run: |
+          set -euo pipefail
+          docker network create "$RISOLVI_NETWORK"
+
+          docker run -d --name risolvi-postgres --network "$RISOLVI_NETWORK" \
+            -e POSTGRES_USER="$POSTGRES_USER" \
+            -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+            -e POSTGRES_DB="$POSTGRES_DB" \
+            postgres:16-alpine
+
+          docker run -d --name risolvi-s3 --network "$RISOLVI_NETWORK" -p 4566:4566 \
+            -e SERVICES=s3 \
+            -e DEFAULT_REGION="$AWS_DEFAULT_REGION" \
+            "$LOCALSTACK_IMAGE"
+
+          docker run -d --name risolvi-clamav --network "$RISOLVI_NETWORK" \
+            clamav/clamav:stable
+
+      - name: Wait for PostgreSQL, S3 and ClamAV
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 60); do
+            if docker exec risolvi-postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              docker logs risolvi-postgres
+              exit 1
+            fi
+            sleep 2
+          done
+
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4566/_localstack/health | grep -q '"s3"'; then
+              break
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              docker logs risolvi-s3
+              exit 1
+            fi
+            sleep 2
+          done
+
+          for attempt in $(seq 1 90); do
+            if docker exec risolvi-clamav clamdscan --ping 1 >/dev/null 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 90 ]; then
+              docker logs risolvi-clamav
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Create private disposable S3 bucket
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import boto3
+          import os
+
+          client = boto3.client(
+              "s3",
+              endpoint_url="http://127.0.0.1:4566",
+              region_name=os.environ["AWS_DEFAULT_REGION"],
+          )
+          bucket = os.environ["RISOLVI_BUCKET"]
+          client.create_bucket(Bucket=bucket)
+          client.put_public_access_block(
+              Bucket=bucket,
+              PublicAccessBlockConfiguration={
+                  "BlockPublicAcls": True,
+                  "IgnorePublicAcls": True,
+                  "BlockPublicPolicy": True,
+                  "RestrictPublicBuckets": True,
+              },
+          )
+          block = client.get_public_access_block(Bucket=bucket)["PublicAccessBlockConfiguration"]
+          if not all(block.values()):
+              raise SystemExit("s3_public_access_block_not_enabled")
+          PY
+
+      - name: Apply Alembic migrations against PostgreSQL
+        run: |
+          set -euo pipefail
+          docker run --rm --network "$RISOLVI_NETWORK" \
+            -e RISOLVI_MIGRATION_DATABASE_URL="postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@risolvi-postgres:5432/$POSTGRES_DB" \
+            "$RISOLVI_IMAGE" \
+            alembic upgrade head
+
+      - name: Production preflight with intake closed
+        run: |
+          set -euo pipefail
+          mkdir -p .ci-artifacts
+          docker run --rm --network "$RISOLVI_NETWORK" \
+            -e RISOLVI_ENV=production \
+            -e RISOLVI_AUTO_CREATE_SCHEMA=false \
+            -e RISOLVI_PILOT_ENABLED=true \
+            -e RISOLVI_PILOT_INTAKE_ENABLED=false \
+            -e RISOLVI_CAPABILITY_SECRET="$RISOLVI_CAPABILITY_SECRET" \
+            -e RISOLVI_REVIEWER_CREDENTIALS_JSON="{\"$RISOLVI_REVIEWER_ID\":\"$RISOLVI_REVIEWER_TOKEN\"}" \
+            -e RISOLVI_DATABASE_URL="postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@risolvi-postgres:5432/$POSTGRES_DB" \
+            -e RISOLVI_STORAGE_BACKEND=s3 \
+            -e RISOLVI_S3_BUCKET="$RISOLVI_BUCKET" \
+            -e RISOLVI_S3_REGION="$AWS_DEFAULT_REGION" \
+            -e RISOLVI_S3_ENDPOINT_URL=http://risolvi-s3:4566 \
+            -e RISOLVI_S3_FORCE_PATH_STYLE=true \
+            -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+            -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+            -e RISOLVI_MALWARE_SCANNER=clamav \
+            -e RISOLVI_CLAMAV_HOST=risolvi-clamav \
+            -e RISOLVI_CLAMAV_PORT=3310 \
+            "$RISOLVI_IMAGE" \
+            python -m app.preflight \
+            > .ci-artifacts/preflight.json
+
+      - name: Start API in production mode for synthetic smoke only
+        run: |
+          set -euo pipefail
+          docker run -d --name risolvi-api --network "$RISOLVI_NETWORK" -p 8000:8000 \
+            -e RISOLVI_ENV=production \
+            -e RISOLVI_AUTO_CREATE_SCHEMA=false \
+            -e RISOLVI_PILOT_ENABLED=true \
+            -e RISOLVI_PILOT_INTAKE_ENABLED=true \
+            -e RISOLVI_CAPABILITY_SECRET="$RISOLVI_CAPABILITY_SECRET" \
+            -e RISOLVI_REVIEWER_CREDENTIALS_JSON="{\"$RISOLVI_REVIEWER_ID\":\"$RISOLVI_REVIEWER_TOKEN\"}" \
+            -e RISOLVI_DATABASE_URL="postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@risolvi-postgres:5432/$POSTGRES_DB" \
+            -e RISOLVI_STORAGE_BACKEND=s3 \
+            -e RISOLVI_S3_BUCKET="$RISOLVI_BUCKET" \
+            -e RISOLVI_S3_REGION="$AWS_DEFAULT_REGION" \
+            -e RISOLVI_S3_ENDPOINT_URL=http://risolvi-s3:4566 \
+            -e RISOLVI_S3_FORCE_PATH_STYLE=true \
+            -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+            -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+            -e RISOLVI_MALWARE_SCANNER=clamav \
+            -e RISOLVI_CLAMAV_HOST=risolvi-clamav \
+            -e RISOLVI_CLAMAV_PORT=3310 \
+            "$RISOLVI_IMAGE"
+
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/ready >/dev/null; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              docker logs risolvi-api
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Run destructive synthetic smoke
+        env:
+          RISOLVI_SMOKE_BASE_URL: http://127.0.0.1:8000
+          RISOLVI_SMOKE_REVIEWER_ID: ${{ env.RISOLVI_REVIEWER_ID }}
+          RISOLVI_SMOKE_REVIEWER_SECRET: ${{ env.RISOLVI_REVIEWER_TOKEN }}
+        run: |
+          set -euo pipefail
+          python -m app.remote_smoke --output .ci-artifacts/smoke.json >/dev/null
+
+      - name: Verify case blob cleanup in S3-compatible storage
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import boto3
+          import json
+          import os
+          from pathlib import Path
+
+          client = boto3.client(
+              "s3",
+              endpoint_url="http://127.0.0.1:4566",
+              region_name=os.environ["AWS_DEFAULT_REGION"],
+          )
+          bucket = os.environ["RISOLVI_BUCKET"]
+          response = client.list_objects_v2(Bucket=bucket)
+          remaining = int(response.get("KeyCount", 0))
+          if remaining != 0:
+              raise SystemExit("synthetic_smoke_left_objects_in_private_storage")
+          block = client.get_public_access_block(Bucket=bucket)["PublicAccessBlockConfiguration"]
+          payload = {
+              "kind": "storage_cleanup",
+              "status": "ok",
+              "remaining_objects": remaining,
+              "public_access_block": bool(block) and all(block.values()),
+          }
+          Path(".ci-artifacts/storage-cleanup.json").write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Aggregate readiness and require fail-closed NO-GO
+        run: |
+          set -euo pipefail
+          set +e
+          python -m app.pilot_readiness \
+            --preflight .ci-artifacts/preflight.json \
+            --smoke .ci-artifacts/smoke.json \
+            --evidence ci/readiness-evidence.production-like.json \
+            --json-out .ci-artifacts/readiness.json \
+            --markdown-out .ci-artifacts/readiness.md \
+            >/dev/null
+          readiness_exit=$?
+          set -e
+          if [ "$readiness_exit" -ne 1 ]; then
+            echo "Disposable stack must remain NO-GO because manual gates are UNKNOWN" >&2
+            exit 1
+          fi
+
+          python -m app.production_like_evidence \
+            --preflight .ci-artifacts/preflight.json \
+            --smoke .ci-artifacts/smoke.json \
+            --readiness .ci-artifacts/readiness.json \
+            --storage-cleanup .ci-artifacts/storage-cleanup.json \
+            --expected-commit "$GITHUB_SHA" \
+            --expected-version "0.15.0"
+
+      - name: Assert normalized artifacts contain no runtime credentials
+        run: |
+          set -euo pipefail
+          for value in \
+            "$RISOLVI_CAPABILITY_SECRET" \
+            "$RISOLVI_REVIEWER_TOKEN" \
+            "$POSTGRES_PASSWORD" \
+            "$AWS_SECRET_ACCESS_KEY"; do
+            if grep -R -F -q "$value" .ci-artifacts; then
+              echo "A normalized CI artifact contains runtime credential material" >&2
+              exit 1
+            fi
+          done
+
+      - name: Upload normalized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: risolvi-production-like-evidence-${{ github.run_id }}
+          path: services/risolvi-api/.ci-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Cleanup disposable stack
+        if: always()
+        run: |
+          docker rm -f risolvi-api risolvi-clamav risolvi-s3 risolvi-postgres >/dev/null 2>&1 || true
+          docker network rm "$RISOLVI_NETWORK" >/dev/null 2>&1 || true
