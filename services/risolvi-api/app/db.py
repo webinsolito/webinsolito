@@ -89,6 +89,7 @@ class PilotReviewRecord(Base):
     classification: Mapped[str | None] = mapped_column(String(40), nullable=True, index=True)
     error_severity: Mapped[str | None] = mapped_column(String(4), nullable=True, index=True)
     final_recommendation: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    reviewer_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     reviewer_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -120,6 +121,9 @@ class AuditEventRecord(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     case_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     event: Mapped[str] = mapped_column(String(80), nullable=False)
+    actor_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    actor_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 

@@ -7,6 +7,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 
 from .db import (
+    AuditEventRecord,
     CaseRecord,
     Database,
     DocumentRecord,
@@ -92,6 +93,7 @@ class PilotService:
                 classification=None,
                 error_severity=None,
                 final_recommendation=None,
+                reviewer_id=None,
                 reviewer_note=None,
                 created_at=now,
                 decided_at=None,
@@ -129,6 +131,7 @@ class PilotService:
                 Recommendation.model_validate(row.final_recommendation)
                 if row.final_recommendation else None
             ),
+            reviewer_id=row.reviewer_id,
             reviewer_note=row.reviewer_note,
             document_metadata=[_document_metadata(document) for document in documents],
         )
@@ -149,7 +152,7 @@ class PilotService:
             ).all())
             return [self._view(session, row) for row in rows]
 
-    def decide(self, review_id: int, request: PilotReviewDecisionRequest) -> PilotReviewView:
+    def decide(self, review_id: int, request: PilotReviewDecisionRequest, reviewer_id: str) -> PilotReviewView:
         now = utcnow()
         with self.database.session() as session:
             row = session.get(PilotReviewRecord, review_id)
@@ -167,8 +170,21 @@ class PilotService:
             row.classification = request.classification.value
             row.error_severity = request.error_severity.value if request.error_severity else None
             row.final_recommendation = final.model_dump(mode="json") if final else None
+            row.reviewer_id = reviewer_id
             row.reviewer_note = request.reviewer_note
             row.decided_at = now
+            session.add(AuditEventRecord(
+                case_id=row.case_id,
+                event="pilot.review.decided",
+                actor_type="REVIEWER",
+                actor_id=reviewer_id,
+                payload={
+                    "review_id": row.id,
+                    "classification": request.classification.value,
+                    "error_severity": request.error_severity.value if request.error_severity else None,
+                },
+                created_at=now,
+            ))
             session.flush()
             return self._view(session, row)
 

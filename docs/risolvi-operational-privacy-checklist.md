@@ -17,13 +17,17 @@ L'intake viene aperto **solo** dopo migrazioni, preflight, smoke test sintetico,
 
 - [ ] Database PostgreSQL dedicato a RISOLVI; nessun riuso di DB di altri prodotti.
 - [ ] `alembic upgrade head` eseguito con `RISOLVI_MIGRATION_DATABASE_URL` su endpoint adatto alle migrazioni.
+- [ ] Migrazione `20261013_0002_reviewer_audit` applicata e colonne reviewer/audit presenti.
 - [ ] `python -m app.preflight` restituisce `status=ok` mentre intake è chiuso.
 - [ ] Bucket object storage dedicato e **privato**.
 - [ ] Access key storage solo nel runtime server; assente da HTML/JS, GitHub, log e analytics.
 - [ ] Round-trip sintetico storage (put/get/delete) riuscito.
+- [ ] ClamAV supera sia percorso CLEAN sia self-test EICAR senza persistere il payload di test.
 - [ ] `/health` e `/ready` entrambi verdi.
-- [ ] CORS limitato esclusivamente alle origini previste; nessun `*`.
-- [ ] `RISOLVI_CAPABILITY_SECRET` e `RISOLVI_REVIEWER_SECRET` distinti e casuali.
+- [ ] CORS limitato esclusivamente alle origini previste; nessun `*`; `X-Reviewer-Id`/`X-Reviewer-Token` ammessi solo dove necessario.
+- [ ] `RISOLVI_CAPABILITY_SECRET` casuale e distinto dalle credenziali reviewer.
+- [ ] `RISOLVI_REVIEWER_CREDENTIALS_JSON` contiene una credenziale distinta per ciascun reviewer autorizzato.
+- [ ] Nessun reviewer ID contiene nome, cognome, email o altro PII libero: usare alias come `rev-01`.
 - [ ] Console reviewer protetta e non indicizzata pubblicamente.
 - [ ] Nessun invio automatico verso venditore, marketplace, corriere o autorità.
 
@@ -38,30 +42,35 @@ Checklist:
 
 - [ ] Job `python -m app.retention` schedulato almeno ogni ora durante il pilot.
 - [ ] Il job è monitorato: un fallimento non deve restare invisibile.
-- [ ] Cancellazione manuale di una pratica di test elimina record DB, consenso/review pilot e blob.
+- [ ] Cancellazione manuale di una pratica di test elimina record DB, consenso/review pilot, audit collegato e blob.
 - [ ] Un secondo passaggio del retention job è idempotente.
 - [ ] Backup e snapshot sono configurati in modo coerente con la retention dichiarata; non devono trasformarsi in un archivio permanente degli originali.
 - [ ] Log applicativi non contengono corpo documenti, capability token, reviewer token o testo OCR integrale.
+- [ ] Audit reviewer contiene solo alias pseudonimo e metadati minimali della decisione, non note/documenti/testo caso.
 
 ## Accesso reviewer
 
-- [ ] Token reviewer distribuito solo ai revisori autorizzati.
-- [ ] Token non inserito nel bundle statico e non persistito oltre `sessionStorage` nella console.
-- [ ] Revoca/rotazione testata prima del pilot.
-- [ ] Ogni decisione reviewer resta attribuibile tramite audit operativo esterno o procedura documentata.
+- [ ] Ogni reviewer riceve un **ID pseudonimo + token personale**; niente secret condiviso in production pilot.
+- [ ] Token non inseriti nel bundle statico e non persistiti oltre `sessionStorage` nella console.
+- [ ] Revoca testata rimuovendo la singola coppia ID/token senza cambiare le credenziali degli altri reviewer.
+- [ ] Rotazione di una singola credenziale testata prima del pilot.
+- [ ] Richiesta con reviewer ID corretto ma token di un altro reviewer restituisce `404`.
+- [ ] Richiesta con token corretto ma reviewer ID assente/errato restituisce `404`.
+- [ ] Ogni decisione persiste `pilot_reviews.reviewer_id`.
+- [ ] Ogni decisione genera `audit_events.event=pilot.review.decided` con `actor_type=REVIEWER` e stesso `actor_id`.
 - [ ] Nessuna Action Card è visibile all'utente prima della decisione umana.
 
 ## Incident severity e stop-pilot
 
 ### S0 — stop immediato
 
-Esempi: accesso non autorizzato a documenti/casi, leak di secret, dati di una pratica visibili in un'altra, cancellazione non effettiva, Action Card bypassando la review, raccomandazione potenzialmente dannosa rilasciata senza controllo.
+Esempi: accesso non autorizzato a documenti/casi, leak di secret, dati di una pratica visibili in un'altra, cancellazione non effettiva, Action Card bypassando la review, raccomandazione potenzialmente dannosa rilasciata senza controllo, decisione attribuita al reviewer sbagliato.
 
 Azione: impostare `RISOLVI_PILOT_INTAKE_ENABLED=false`, bloccare nuova acquisizione, preservare evidenze tecniche minimali e avviare incident review. Non riaprire l'intake finché causa e remediation non sono verificate.
 
 ### S1 — pausa intake
 
-Esempi: errori di routing materiali ripetuti, storage/DB instabile, retention job non affidabile, source/rule pack non aggiornato, aumento inatteso dei casi `UNSUPPORTED_MISSED`.
+Esempi: errori di routing materiali ripetuti, storage/DB instabile, retention job non affidabile, source/rule pack non aggiornato, aumento inatteso dei casi `UNSUPPORTED_MISSED`, audit reviewer incompleto.
 
 Azione: chiudere intake, completare le pratiche già in review solo se sicuro, correggere e rieseguire benchmark + smoke test.
 
@@ -76,11 +85,13 @@ Azione: mantenere pilot limitato, correggere e misurare trend.
 1. Deploy con intake chiuso.
 2. Migrazioni.
 3. `python -m app.preflight`.
-4. Smoke test end-to-end con dati sintetici e ambiente protetto.
-5. Verifica cancellazione + retention.
-6. Verifica rule/source pack e stato del gate legale (#79).
-7. Aprire `RISOLVI_PILOT_INTAKE_ENABLED=true` per coorte limitata.
-8. Monitorare giornalmente errori S0/S1, classificazioni reviewer, action usage e outcome.
+4. Smoke test end-to-end con reviewer ID dedicato `rev-smoke` e dati sintetici.
+5. Verifica che lo smoke ritorni lo stesso `reviewer_id` usato per autenticare la decisione.
+6. Verifica cancellazione + retention.
+7. Verifica revoca/rotazione di una credenziale reviewer.
+8. Verifica rule/source pack e stato del gate legale (#79).
+9. Aprire `RISOLVI_PILOT_INTAKE_ENABLED=true` per coorte limitata.
+10. Monitorare giornalmente errori S0/S1, classificazioni reviewer, action usage e outcome.
 
 ## Sequenza di chiusura
 

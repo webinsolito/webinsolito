@@ -27,11 +27,11 @@ def _expect(response: httpx.Response, status: int, label: str) -> Any:
     return response.json() if "application/json" in content_type else response.text
 
 
-def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
+def run(base_url: str, reviewer_id: str, reviewer_secret: str) -> dict[str, str]:
     """Run a destructive synthetic E2E against a protected pilot environment.
 
     The function creates and deletes one synthetic case. It never prints or
-    returns the capability token or reviewer secret.
+    returns the capability token or reviewer credential.
     """
 
     base_url = base_url.rstrip("/")
@@ -52,7 +52,10 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
             case_id = created["case"]["id"]
             case_token = created["capability_token"]
             case_headers = {"X-Case-Token": case_token}
-            reviewer_headers = {"X-Reviewer-Token": reviewer_secret}
+            reviewer_headers = {
+                "X-Reviewer-Id": reviewer_id,
+                "X-Reviewer-Token": reviewer_secret,
+            }
             facts = {**SYNTHETIC_FACTS_BASE, "delivery_date": date.today().isoformat()}
 
             _expect(
@@ -93,7 +96,7 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
             if pending.get("status") != "PENDING_REVIEW" or pending.get("recommendation") is not None:
                 raise RuntimeError("action_exposed_before_review")
 
-            _expect(
+            decided = _expect(
                 client.post(
                     f"/v1/pilot/reviews/{review_id}/decision",
                     headers=reviewer_headers,
@@ -102,6 +105,9 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
                 200,
                 "review_decision",
             )
+            if decided.get("reviewer_id") != reviewer_id:
+                raise RuntimeError("reviewer_attribution_mismatch")
+
             approved = _expect(
                 client.get(f"/v1/cases/{case_id}/pilot/action", headers=case_headers),
                 200,
@@ -128,6 +134,8 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
             serialized = json.dumps(exported).lower()
             if "capability" in serialized or case_token.lower() in serialized:
                 raise RuntimeError("secret_material_in_export")
+            if reviewer_secret.lower() in serialized:
+                raise RuntimeError("reviewer_credential_in_export")
 
             _expect(client.delete(f"/v1/cases/{case_id}", headers=case_headers), 204, "delete_case")
             deleted = client.get(f"/v1/cases/{case_id}", headers=case_headers)
@@ -152,13 +160,16 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
 
 def main() -> None:
     base_url = os.getenv("RISOLVI_SMOKE_BASE_URL", "").strip()
-    reviewer_secret = os.getenv("RISOLVI_REVIEWER_SECRET", "")
+    reviewer_id = os.getenv("RISOLVI_SMOKE_REVIEWER_ID", "").strip()
+    reviewer_secret = os.getenv("RISOLVI_SMOKE_REVIEWER_SECRET", "") or os.getenv("RISOLVI_REVIEWER_SECRET", "")
     if not base_url:
         raise SystemExit("RISOLVI_SMOKE_BASE_URL is required")
+    if not reviewer_id:
+        raise SystemExit("RISOLVI_SMOKE_REVIEWER_ID is required")
     if len(reviewer_secret) < 24:
-        raise SystemExit("RISOLVI_REVIEWER_SECRET is required")
+        raise SystemExit("RISOLVI_SMOKE_REVIEWER_SECRET is required")
     try:
-        result = run(base_url, reviewer_secret)
+        result = run(base_url, reviewer_id, reviewer_secret)
     except Exception as exc:
         print(json.dumps({"status": "blocked", "error": str(exc)[:500]}))
         raise SystemExit(1) from exc

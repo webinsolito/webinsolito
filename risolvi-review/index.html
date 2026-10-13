@@ -16,10 +16,11 @@
 
 <main class="layout">
   <section class="connect panel">
-    <div><h1>Console di review</h1><p>Il token reviewer non viene salvato nel repository né in localStorage: resta soltanto nella sessione del browser.</p></div>
+    <div><h1>Console di review</h1><p>Reviewer ID e token restano soltanto nella sessione del browser. In produzione ogni reviewer usa un ID pseudonimo e una credenziale distinta, così decisioni e revoca sono attribuibili senza inserire nomi o email nei log.</p></div>
     <div class="connectForm">
       <label>API base<input id="apiBase" placeholder="https://api.example.it oppure vuoto per same-origin"></label>
-      <label>Reviewer token<input id="reviewerToken" type="password" autocomplete="off" placeholder="RISOLVI_REVIEWER_SECRET"></label>
+      <label>Reviewer ID<input id="reviewerId" autocomplete="off" spellcheck="false" placeholder="es. rev-01" maxlength="64"></label>
+      <label>Reviewer token<input id="reviewerToken" type="password" autocomplete="off" placeholder="credenziale personale"></label>
       <button id="connectBtn" class="btn primary" type="button">Connetti</button>
     </div>
     <div id="connectionStatus" class="status"></div>

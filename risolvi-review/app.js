@@ -1,7 +1,8 @@
 const $ = id => document.getElementById(id);
 const TOKEN_KEY = 'webinsolito.risolvi.reviewer.token';
+const REVIEWER_ID_KEY = 'webinsolito.risolvi.reviewer.id';
 const API_KEY = 'webinsolito.risolvi.reviewer.api';
-const state = { apiBase: '', token: '', queue: [], selected: null, timer: null };
+const state = { apiBase: '', reviewerId: '', token: '', queue: [], selected: null, timer: null };
 
 function apiUrl(path) { return `${state.apiBase}${path}`; }
 function splitCsv(value) { return String(value || '').split(',').map(v => v.trim()).filter(Boolean); }
@@ -9,6 +10,7 @@ function fmtDate(value) { return value ? new Date(value).toLocaleString('it-IT')
 
 async function api(path, options = {}) {
   const headers = new Headers(options.headers || {});
+  if (state.reviewerId) headers.set('X-Reviewer-Id', state.reviewerId);
   if (state.token) headers.set('X-Reviewer-Token', state.token);
   if (options.json !== undefined) headers.set('Content-Type', 'application/json');
   const response = await fetch(apiUrl(path), {
@@ -97,7 +99,7 @@ function renderCandidate(root, rec) {
 async function downloadDocument(reviewId, metadata) {
   try {
     const response = await fetch(apiUrl(`/v1/pilot/reviews/${reviewId}/documents/${metadata.id}/download`), {
-      headers: { 'X-Reviewer-Token': state.token }, cache: 'no-store',
+      headers: { 'X-Reviewer-Id': state.reviewerId, 'X-Reviewer-Token': state.token }, cache: 'no-store',
     });
     if (!response.ok) throw new Error(`http_${response.status}`);
     const blob = await response.blob();
@@ -165,11 +167,12 @@ async function submitDecision() {
   if (classification !== 'PASS_AUTONOMOUS' && !severity) { error.textContent = 'Per una modifica/escalation indica la severity.'; return; }
   const button = detail.querySelector('[data-action="submit"]'); button.disabled = true;
   try {
-    await api(`/v1/pilot/reviews/${state.selected.id}/decision`, { method: 'POST', json: {
+    const decided = await api(`/v1/pilot/reviews/${state.selected.id}/decision`, { method: 'POST', json: {
       classification, error_severity: severity, reviewer_note: note,
       final_recommendation: classification === 'PASS_AUTONOMOUS' ? null : buildFinalRecommendation(detail),
     }});
-    setConnection(`Review #${state.selected.id} completata.`, 'good'); state.selected = null;
+    if (decided.reviewer_id !== state.reviewerId) throw new Error('reviewer_attribution_mismatch');
+    setConnection(`Review #${state.selected.id} completata da ${state.reviewerId}.`, 'good'); state.selected = null;
     await refreshAll(); $('detail').innerHTML = '<div class="empty">Decisione salvata. Seleziona il prossimo caso.</div>';
   } catch (err) { error.textContent = `Decisione non salvata: ${err.message}`; }
   finally { button.disabled = false; }
@@ -186,7 +189,12 @@ async function refreshAll() {
 }
 
 async function connect() {
-  state.apiBase = $('apiBase').value.trim().replace(/\/$/, ''); state.token = $('reviewerToken').value.trim();
+  state.apiBase = $('apiBase').value.trim().replace(/\/$/, '');
+  state.reviewerId = $('reviewerId').value.trim();
+  state.token = $('reviewerToken').value.trim();
+  if (!/^[a-z0-9][a-z0-9._-]{2,63}$/.test(state.reviewerId)) {
+    setConnection('Inserisci un reviewer ID valido (3–64 caratteri: a-z, 0-9, punto, trattino, underscore).', 'bad'); return;
+  }
   if (!state.token) { setConnection('Inserisci il reviewer token.', 'bad'); return; }
   $('connectBtn').disabled = true;
   try {
@@ -194,20 +202,24 @@ async function connect() {
       if (!response.ok) throw new Error(`config_http_${response.status}`); return response.json();
     });
     if (!config.pilot_enabled) throw new Error('pilot_not_enabled');
-    await refreshAll(); sessionStorage.setItem(TOKEN_KEY, state.token); localStorage.setItem(API_KEY, state.apiBase);
-    $('refreshBtn').disabled = false; setConnection(`Connesso a RISOLVI ${config.service_version}.`, 'good'); startPolling();
+    await refreshAll();
+    sessionStorage.setItem(REVIEWER_ID_KEY, state.reviewerId);
+    sessionStorage.setItem(TOKEN_KEY, state.token);
+    localStorage.setItem(API_KEY, state.apiBase);
+    $('refreshBtn').disabled = false; setConnection(`Connesso come ${state.reviewerId} a RISOLVI ${config.service_version}.`, 'good'); startPolling();
   } catch (error) { setConnection(`Connessione rifiutata: ${error.message}`, 'bad'); $('refreshBtn').disabled = true; }
   finally { $('connectBtn').disabled = false; }
 }
 
 function startPolling() {
   if (state.timer) clearInterval(state.timer);
-  state.timer = setInterval(() => { if (document.visibilityState === 'visible' && state.token) refreshAll().catch(() => {}); }, 15000);
+  state.timer = setInterval(() => { if (document.visibilityState === 'visible' && state.token && state.reviewerId) refreshAll().catch(() => {}); }, 15000);
 }
 
 $('connectBtn').addEventListener('click', connect);
 $('refreshBtn').addEventListener('click', () => refreshAll().catch(error => setConnection(error.message, 'bad')));
 window.addEventListener('pagehide', () => { if (state.timer) clearInterval(state.timer); });
 $('apiBase').value = localStorage.getItem(API_KEY) || '';
+$('reviewerId').value = sessionStorage.getItem(REVIEWER_ID_KEY) || '';
 $('reviewerToken').value = sessionStorage.getItem(TOKEN_KEY) || '';
-if ($('reviewerToken').value) connect();
+if ($('reviewerId').value && $('reviewerToken').value) connect();

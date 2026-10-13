@@ -9,6 +9,8 @@ from app.db import Database
 from app.main import create_app
 from app.storage import LocalPrivateStorage
 
+REVIEWER_CREDENTIALS = (("reviewer-a", "a" * 40), ("reviewer-b", "b" * 40))
+
 
 def make_client(tmp_path, *, pilot_enabled: bool = True, intake_enabled: bool | None = None):
     if intake_enabled is None:
@@ -25,6 +27,7 @@ def make_client(tmp_path, *, pilot_enabled: bool = True, intake_enabled: bool | 
         pilot_enabled=pilot_enabled,
         pilot_intake_enabled=intake_enabled,
         reviewer_secret="r" * 40,
+        reviewer_credentials=REVIEWER_CREDENTIALS,
     )
     database = Database(settings.database_url)
     storage = LocalPrivateStorage(settings.local_storage_dir)
@@ -40,8 +43,10 @@ def case_auth(token: str):
     return {"X-Case-Token": token}
 
 
-def reviewer_auth():
-    return {"X-Reviewer-Token": "r" * 40}
+def reviewer_auth(reviewer_id: str = "reviewer-a", token: str | None = None):
+    if token is None:
+        token = dict(REVIEWER_CREDENTIALS)[reviewer_id]
+    return {"X-Reviewer-Id": reviewer_id, "X-Reviewer-Token": token}
 
 
 def valid_facts():
@@ -58,8 +63,20 @@ def valid_facts():
     }
 
 
+def submit_review(client: TestClient, case_id: str, token: str) -> int:
+    client.put(f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts())
+    client.post(
+        f"/v1/cases/{case_id}/pilot/consent",
+        headers=case_auth(token),
+        json={"notice_version": "pilot-2026-10-v1"},
+    )
+    return client.post(
+        f"/v1/cases/{case_id}/pilot/submit", headers=case_auth(token)
+    ).json()["review_id"]
+
+
 def test_pilot_requires_consent_and_human_decision_before_action(tmp_path):
-    client, _ = make_client(tmp_path)
+    client, database = make_client(tmp_path)
     case_id, token = create_case(client)
     assert client.put(
         f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts()
@@ -79,36 +96,71 @@ def test_pilot_requires_consent_and_human_decision_before_action(tmp_path):
     assert submitted.status_code == 200
     review_id = submitted.json()["review_id"]
 
-    # The raw engine output is not released through the pilot action endpoint.
     pending = client.get(f"/v1/cases/{case_id}/pilot/action", headers=case_auth(token))
     assert pending.status_code == 200
     assert pending.json() == {"status": "PENDING_REVIEW", "recommendation": None}
 
-    # In pilot mode the legacy direct-analysis route is blocked to prevent bypass.
     bypass = client.post(f"/v1/cases/{case_id}/analyse", headers=case_auth(token))
     assert bypass.status_code == 409
     assert bypass.json()["detail"] == "pilot_review_required_use_pilot_submit"
 
-    assert client.get("/v1/pilot/reviews/pending", headers={"X-Reviewer-Token": "wrong"}).status_code == 404
+    assert client.get(
+        "/v1/pilot/reviews/pending",
+        headers=reviewer_auth(token="wrong"),
+    ).status_code == 404
+    assert client.get(
+        "/v1/pilot/reviews/pending",
+        headers={"X-Reviewer-Token": "a" * 40},
+    ).status_code == 404
+    assert client.get(
+        "/v1/pilot/reviews/pending",
+        headers=reviewer_auth("reviewer-b", token="a" * 40),
+    ).status_code == 404
+
     queue = client.get("/v1/pilot/reviews/pending", headers=reviewer_auth())
     assert queue.status_code == 200
     assert [item["id"] for item in queue.json()] == [review_id]
 
     decided = client.post(
         f"/v1/pilot/reviews/{review_id}/decision",
-        headers=reviewer_auth(),
+        headers=reviewer_auth("reviewer-a"),
         json={"classification": "PASS_AUTONOMOUS", "reviewer_note": "Nessuna modifica"},
     )
     assert decided.status_code == 200
     assert decided.json()["classification"] == "PASS_AUTONOMOUS"
     assert decided.json()["final_recommendation"]["route"] == "LEGAL_GUARANTEE"
+    assert decided.json()["reviewer_id"] == "reviewer-a"
+
+    from sqlalchemy import select
+    from app.db import AuditEventRecord, PilotReviewRecord
+
+    with database.session() as session:
+        row = session.get(PilotReviewRecord, review_id)
+        assert row is not None
+        assert row.reviewer_id == "reviewer-a"
+        audit = session.scalars(
+            select(AuditEventRecord)
+            .where(AuditEventRecord.event == "pilot.review.decided")
+            .order_by(AuditEventRecord.id.desc())
+        ).first()
+        assert audit is not None
+        assert audit.case_id == case_id
+        assert audit.actor_type == "REVIEWER"
+        assert audit.actor_id == "reviewer-a"
+        assert audit.payload == {
+            "review_id": review_id,
+            "classification": "PASS_AUTONOMOUS",
+            "error_severity": None,
+        }
+        assert "Nessuna modifica" not in str(audit.payload)
+        assert "a" * 40 not in str(audit.payload)
 
     approved = client.get(f"/v1/cases/{case_id}/pilot/action", headers=case_auth(token))
     assert approved.status_code == 200
     assert approved.json()["status"] == "APPROVED"
     assert approved.json()["recommendation"]["route"] == "LEGAL_GUARANTEE"
 
-    metrics = client.get("/v1/pilot/metrics", headers=reviewer_auth())
+    metrics = client.get("/v1/pilot/metrics", headers=reviewer_auth("reviewer-b"))
     assert metrics.status_code == 200
     data = metrics.json()
     assert data["consented_cases"] == 1
@@ -122,15 +174,7 @@ def test_pilot_requires_consent_and_human_decision_before_action(tmp_path):
 def test_material_decision_requires_explicit_final_recommendation(tmp_path):
     client, _ = make_client(tmp_path)
     case_id, token = create_case(client)
-    client.put(f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts())
-    client.post(
-        f"/v1/cases/{case_id}/pilot/consent",
-        headers=case_auth(token),
-        json={"notice_version": "pilot-2026-10-v1"},
-    )
-    review_id = client.post(
-        f"/v1/cases/{case_id}/pilot/submit", headers=case_auth(token)
-    ).json()["review_id"]
+    review_id = submit_review(client, case_id, token)
 
     response = client.post(
         f"/v1/pilot/reviews/{review_id}/decision",
@@ -144,13 +188,7 @@ def test_material_decision_requires_explicit_final_recommendation(tmp_path):
 def test_case_delete_removes_pilot_rows(tmp_path):
     client, database = make_client(tmp_path)
     case_id, token = create_case(client)
-    client.put(f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts())
-    client.post(
-        f"/v1/cases/{case_id}/pilot/consent",
-        headers=case_auth(token),
-        json={"notice_version": "pilot-2026-10-v1"},
-    )
-    client.post(f"/v1/cases/{case_id}/pilot/submit", headers=case_auth(token))
+    submit_review(client, case_id, token)
     assert client.delete(f"/v1/cases/{case_id}", headers=case_auth(token)).status_code == 204
 
     from sqlalchemy import func, select
@@ -200,6 +238,7 @@ def test_intake_pause_blocks_new_user_writes_but_not_existing_review_delivery(tm
         pilot_enabled=True,
         pilot_intake_enabled=False,
         reviewer_secret="r" * 40,
+        reviewer_credentials=REVIEWER_CREDENTIALS,
     )
     paused = TestClient(create_app(paused_settings, database, LocalPrivateStorage(paused_settings.local_storage_dir)))
 
@@ -211,13 +250,13 @@ def test_intake_pause_blocks_new_user_writes_but_not_existing_review_delivery(tm
     )
     assert blocked_facts.status_code == 503
 
-    # Pause intake without stranding cases already submitted for human review.
     decided = paused.post(
         f"/v1/pilot/reviews/{review_id}/decision",
         headers=reviewer_auth(),
         json={"classification": "PASS_AUTONOMOUS"},
     )
     assert decided.status_code == 200
+    assert decided.json()["reviewer_id"] == "reviewer-a"
     delivered = paused.get(f"/v1/cases/{case_id}/pilot/action", headers=case_auth(token))
     assert delivered.status_code == 200
     assert delivered.json()["status"] == "APPROVED"
