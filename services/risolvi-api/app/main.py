@@ -17,7 +17,7 @@ from .document_pipeline import (
     parse_client_document,
     parse_server_document,
 )
-from .config import Settings
+from .config import SERVICE_VERSION, Settings
 from .db import Database
 from .repository import Repository
 from .security import hash_capability, new_capability_token
@@ -59,12 +59,13 @@ def create_app(
     settings.validate()
     settings.ensure_local_dirs()
     database = database or Database(settings.database_url)
-    database.create_all()
+    if settings.auto_create_schema:
+        database.create_all()
     storage = storage or build_storage(settings)
     repo = Repository(database, settings.capability_secret)
     pilot = PilotService(database)
 
-    app = FastAPI(title="WEBINSOLITO RISOLVI API", version="0.6.0")
+    app = FastAPI(title="WEBINSOLITO RISOLVI API", version=SERVICE_VERSION)
     if settings.allowed_origins:
         app.add_middleware(
             CORSMiddleware,
@@ -111,12 +112,20 @@ def create_app(
 
     @app.get("/health")
     def health() -> dict[str, str]:
-        return {"status": "ok", "service": "risolvi-api", "version": "0.6.0"}
+        return {"status": "ok", "service": "risolvi-api", "version": SERVICE_VERSION}
+
+    @app.get("/ready")
+    def ready() -> dict[str, str]:
+        try:
+            database.ping()
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail="database_not_ready") from exc
+        return {"status": "ready", "service": "risolvi-api", "version": SERVICE_VERSION}
 
     @app.get("/v1/config")
     def public_config() -> dict[str, object]:
         return {
-            "service_version": "0.6.0",
+            "service_version": SERVICE_VERSION,
             "pilot_enabled": settings.pilot_enabled,
             "pilot_notice_version": settings.pilot_notice_version,
             "case_retention_days": settings.case_retention_days,

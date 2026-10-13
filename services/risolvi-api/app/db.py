@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterator
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, event
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -145,6 +145,10 @@ class Database:
 
     def create_all(self) -> None:
         Base.metadata.create_all(self.engine)
+
+    def ping(self) -> None:
+        with self.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
 
     @contextmanager
     def session(self) -> Iterator[Session]:
