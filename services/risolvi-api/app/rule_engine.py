@@ -5,6 +5,8 @@ from datetime import date, timedelta
 
 from .models import CaseFacts, CaseStatus, Problem, Recommendation
 
+REPAIR_DIRECTIVE_RULEPACK_CUTOVER = date(2026, 10, 22)
+
 
 def _anniversary(value: date, years: int) -> date:
     """Calendar anniversary without approximating a year as a fixed day count."""
@@ -87,6 +89,23 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
                 title="Data non valida",
                 explanation="La consegna risulta futura.",
                 missing_facts=["delivery_date"],
+            )
+
+        # D.Lgs. 176/2026 entra in vigore il 22/10/2026. Finché il rule pack v1
+        # non riceve sign-off specialistico, il motore non continua a usare in
+        # silenzio la versione precedente oltre il suo intervallo dichiarato.
+        if today >= REPAIR_DIRECTIVE_RULEPACK_CUTOVER:
+            return Recommendation(
+                status=CaseStatus.NEEDS_INFORMATION,
+                route="LEGAL_RULEPACK_REVIEW_2026_10_22",
+                title="Rule pack garanzia in aggiornamento",
+                explanation=(
+                    "Dal 22 ottobre 2026 è efficace un nuovo regime normativo rilevante per "
+                    "riparazione e garanzia. RISOLVI richiede revisione del rule pack v1 "
+                    "prima di produrre automaticamente questa raccomandazione."
+                ),
+                rule_ids=["IT-GUARANTEE-SELLER-001:v1"],
+                source_ids=["NORMATTIVA-DLGS176-2026"],
             )
 
         manifestation = f.defect_manifested_date or today
