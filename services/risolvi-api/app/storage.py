@@ -80,11 +80,13 @@ class S3PrivateStorage:
         self.client.delete_object(Bucket=self.bucket, Key=key)
 
     def signed_get_url(self, key: str, expires_seconds: int) -> str | None:
-        return self.client.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": self.bucket, "Key": key},
-            ExpiresIn=expires_seconds,
-        )
+        # Authenticated downloads currently carry capability/reviewer tokens in
+        # request headers. Redirecting that request to a different storage origin
+        # risks forwarding custom auth headers or breaking on CORS. During the
+        # controlled pilot we therefore proxy bytes through the API after auth.
+        # A future presigned-URL flow should return the URL in a separate JSON
+        # response so the storage request is made without any RISOLVI token.
+        return None
 
 
 def build_storage(settings: Settings) -> PrivateStorage:
