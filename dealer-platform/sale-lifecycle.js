@@ -28,7 +28,9 @@ export function saleContractStatusTransition(previousStatus,nextStatus){
 export function saleContractTermsChanged(previous,next){
   if(!previous)return false;
   if(!saleContractStatusTransition(previous.status,next?.status).ok)return true;
-  if(previous.status==='DRAFT')return false;
+  const delivered=previous.template_code==='VENDITA'&&previous.sale_stage==='DELIVERED';
+  if(delivered&&String(previous.status||'')!==String(next?.status||''))return true;
+  if(previous.status==='DRAFT'&&!delivered)return false;
   return LOCKED_SALE_TERMS.some(field=>!sameTerm(field,previous?.[field],next?.[field]));
 }
 
