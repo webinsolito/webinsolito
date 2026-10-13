@@ -1,0 +1,29 @@
+{
+  "environment_id": "pilot-eu-dedicated-01",
+  "gates": {
+    "dedicated_infrastructure": {
+      "status": "UNKNOWN",
+      "reference_id": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    },
+    "legal_signoff": {
+      "status": "UNKNOWN",
+      "reference_id": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    },
+    "privacy_security": {
+      "status": "UNKNOWN",
+      "reference_id": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    },
+    "document_pipeline": {
+      "status": "UNKNOWN",
+      "reference_id": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    }
+  }
+}
