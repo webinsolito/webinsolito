@@ -8,7 +8,7 @@ const cases = [
       pages: [{
         page: 1,
         method: 'PLAIN_TEXT',
-        text: 'Venditore: Demo Store S.r.l.\nNumero ordine: IT-2026/778\nData ordine: 12/10/2026\nProdotto: Cuffie Wireless X2\nConsegnato il 13/10/2026\nAcquisto online. Il prodotto non funziona.',
+        text: 'Venditore: Demo Store S.r.l.\nOrdine numero IT-2026/778\nData ordine: 12/10/2026\nProdotto: Cuffie Wireless X2\nConsegnato il 13/10/2026\nAcquisto online. Il prodotto non funziona.',
       }],
     }],
     expectedFacts: {
@@ -20,6 +20,9 @@ const cases = [
       problem: 'defect',
     },
     expectedConflicts: [],
+    provenance: {
+      order_reference: { page: 1, method: 'PLAIN_TEXT' },
+    },
   },
   {
     id: 'js-002-mixed-pages',
