@@ -77,12 +77,19 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('runtime 1.9.7 loads hardened operational modules',async()=>{
+test('runtime 1.9.7 loads hardened operational modules and preview has no production storage/API hooks',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
   assert.match(config,/version: '1\.9\.7'/);
   assert.match(config,/operational-quality\.js\?v=1\.9\.7/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
   assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
   assert.match(sw,/operational-quality\.js\?v=1\.9\.7/);
-  assert.match(preview,/V1\.9\.7/);
+  assert.match(preview,/DATI DEMO · V1\.9\.7/);
+  assert.doesNotMatch(preview,/dealer-platform-session/);
+  assert.doesNotMatch(preview,/localStorage/);
+  assert.doesNotMatch(preview,/indexedDB/);
+  assert.doesNotMatch(preview,/supabase/);
+  assert.doesNotMatch(preview,/serviceWorker/);
+  assert.doesNotMatch(preview,/api\.js/);
+  assert.doesNotMatch(preview,/offline\.js/);
 });
