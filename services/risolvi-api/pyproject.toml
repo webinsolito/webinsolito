@@ -1,7 +1,7 @@
 [project]
 name = "webinsolito-risolvi-api"
-version = "0.14.0"
-description = "Privacy-first Case Engine, guarded consumer-law routing, document provenance evaluation and human-review pilot for WEBINSOLITO RISOLVI"
+version = "0.15.0"
+description = "Privacy-first Case Engine, guarded consumer-law routing, document provenance evaluation and fail-closed production-like pilot evidence for WEBINSOLITO RISOLVI"
 requires-python = ">=3.11"
 dependencies = [
   "alembic>=1.14,<2",
