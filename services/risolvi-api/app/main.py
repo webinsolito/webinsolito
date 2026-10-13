@@ -19,9 +19,16 @@ from .document_pipeline import (
 )
 from .config import SERVICE_VERSION, Settings
 from .db import Database
+from .malware import (
+    MalwareDetected,
+    MalwareScanner,
+    MalwareScanError,
+    build_malware_scanner,
+)
 from .repository import Repository
 from .security import hash_capability, new_capability_token
 from .storage import PrivateStorage, build_storage
+from .upload_security import validate_upload_type
 from .models import (
     Case,
     CaseCreated,
@@ -54,6 +61,7 @@ def create_app(
     settings: Settings | None = None,
     database: Database | None = None,
     storage: PrivateStorage | None = None,
+    malware_scanner: MalwareScanner | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.validate()
@@ -62,6 +70,7 @@ def create_app(
     if settings.auto_create_schema:
         database.create_all()
     storage = storage or build_storage(settings)
+    malware_scanner = malware_scanner or build_malware_scanner(settings)
     repo = Repository(database, settings.capability_secret)
     pilot = PilotService(database)
 
@@ -78,6 +87,7 @@ def create_app(
     app.state.settings = settings
     app.state.database = database
     app.state.storage = storage
+    app.state.malware_scanner = malware_scanner
     app.state.repository = repo
     app.state.pilot = pilot
 
@@ -104,6 +114,15 @@ def create_app(
         require_pilot()
         if not token or not compare_digest(token, settings.reviewer_secret):
             raise HTTPException(status_code=404, detail="review_not_found")
+
+    def scan_bytes(data: bytes) -> None:
+        try:
+            malware_scanner.scan(data)
+        except MalwareDetected as exc:
+            raise HTTPException(status_code=422, detail="malware_detected") from exc
+        except MalwareScanError as exc:
+            # Scanner errors fail closed. Do not echo daemon/provider details.
+            raise HTTPException(status_code=503, detail="malware_scan_unavailable") from exc
 
     def document_response(document) -> Response:
         signed = storage.signed_get_url(document.storage_key, settings.signed_url_seconds)
@@ -178,9 +197,13 @@ def create_app(
         for upload in files:
             try:
                 data = await upload.read(MAX_FILE_BYTES + 1)
-                parsed.append(parse_server_document(upload.filename or "documento", upload.content_type, data))
+                if len(data) > MAX_FILE_BYTES:
+                    raise HTTPException(status_code=413, detail="document_too_large")
+                canonical_mime = validate_upload_type(upload.filename or "documento", upload.content_type, data)
+                scan_bytes(data)
+                parsed.append(parse_server_document(upload.filename or "documento", canonical_mime, data))
             except DocumentError as exc:
-                raise HTTPException(status_code=422, detail={"filename": upload.filename, "error": str(exc)}) from exc
+                raise HTTPException(status_code=422, detail={"error": str(exc)}) from exc
             finally:
                 await upload.close()
         return build_bundle(parsed)
@@ -207,19 +230,18 @@ def create_app(
     ) -> DocumentMetadata:
         require_user_intake_if_pilot()
         require_case(case_id, x_case_token)
+        if len(repo.list_documents(case_id)) >= MAX_FILES:
+            raise HTTPException(status_code=409, detail="max_documents_per_case")
         data = await file.read(MAX_FILE_BYTES + 1)
         await file.close()
-        if not data:
-            raise HTTPException(status_code=422, detail="empty_document")
         if len(data) > MAX_FILE_BYTES:
             raise HTTPException(status_code=413, detail="document_too_large")
-        mime = (file.content_type or "application/octet-stream").split(";", 1)[0][:120]
         filename = _safe_filename(file.filename or "documento")
-        suffix = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
-        allowed_mimes = {"application/pdf", "message/rfc822", "text/plain", "text/html", "image/png", "image/jpeg", "image/webp", "image/heic"}
-        allowed_suffixes = {"pdf", "eml", "txt", "html", "htm", "png", "jpg", "jpeg", "webp", "heic"}
-        if mime not in allowed_mimes and suffix not in allowed_suffixes:
-            raise HTTPException(status_code=415, detail="unsupported_document_type")
+        try:
+            mime = validate_upload_type(filename, file.content_type, data)
+        except DocumentError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        scan_bytes(data)
         storage_key = f"cases/{case_id}/{uuid4().hex}"
         storage.put(storage_key, data, mime)
         try:
