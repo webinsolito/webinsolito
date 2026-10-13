@@ -1,53 +1,149 @@
 {
-  "registry_version": "1.0",
-  "as_of": "2026-10-12",
+  "registry_version": "1.1",
+  "as_of": "2026-10-13",
   "rules": {
     "IT-GUARANTEE-SELLER-001:v0": {
       "valid_from": "2026-10-12",
-      "valid_to": null,
-      "source_ids": ["MIMIT-GARANZIA"],
+      "valid_to": "2026-10-21",
+      "effective_from": "2022-01-01",
+      "effective_to": "2026-10-21",
+      "temporal_basis": "D.Lgs. 170/2021: le modifiche acquistano efficacia dal 1 gennaio 2022 per i contratti conclusi successivamente; il rule pack v0 viene chiuso al 21 ottobre 2026 perché D.Lgs. 176/2026 entra in vigore il 22 ottobre 2026 e richiede una nuova versione revisionata.",
+      "source_ids": [
+        "MIMIT-GARANZIA",
+        "NORMATTIVA-DLGS170-2021",
+        "NORMATTIVA-DLGS176-2026"
+      ],
       "technical_review": "approved",
-      "legal_review": "pending",
-      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+      "legal_review": "pending_specialist",
+      "activation_status": "active_until_2026-10-21"
+    },
+    "IT-GUARANTEE-SELLER-001:v1": {
+      "valid_from": "2026-10-22",
+      "valid_to": null,
+      "effective_from": "2026-10-22",
+      "effective_to": null,
+      "temporal_basis": "D.Lgs. 176/2026 entra in vigore il 22 ottobre 2026. Questa versione è registrata ma non deve essere attivata prima di legal review specialistica e test dedicati.",
+      "source_ids": [
+        "NORMATTIVA-DLGS176-2026",
+        "GAZZETTA-DLGS176-2026",
+        "MIMIT-GARANZIA"
+      ],
+      "technical_review": "draft",
+      "legal_review": "pending_specialist",
+      "activation_status": "blocked_pending_legal_review"
+    },
+    "IT-REPAIR-EXTENSION-001:v1": {
+      "valid_from": "2026-10-22",
+      "valid_to": null,
+      "effective_from": "2026-10-22",
+      "effective_to": null,
+      "temporal_basis": "D.Lgs. 176/2026 modifica l'art. 133 del Codice del consumo introducendo una estensione una tantum di dodici mesi del periodo di responsabilità quando la riparazione è effettuata come rimedio ai sensi dell'art. 135-bis, comma 2.",
+      "source_ids": [
+        "NORMATTIVA-DLGS176-2026",
+        "GAZZETTA-DLGS176-2026"
+      ],
+      "technical_review": "draft",
+      "legal_review": "pending_specialist",
+      "activation_status": "blocked_pending_legal_review"
     },
     "IT-WITHDRAWAL-001:v0": {
       "valid_from": "2026-10-12",
       "valid_to": null,
-      "source_ids": ["MIMIT-RECESSO"],
+      "effective_from": "2014-06-13",
+      "effective_to": null,
+      "temporal_basis": "D.Lgs. 21/2014 ha reso applicabili dal 13 giugno 2014 le modifiche ai contratti conclusi dopo tale data; il testo corrente va letto con le successive modifiche, incluso D.Lgs. 26/2023.",
+      "source_ids": [
+        "MIMIT-RECESSO",
+        "NORMATTIVA-DLGS21-2014",
+        "NORMATTIVA-DLGS26-2023"
+      ],
       "technical_review": "approved",
-      "legal_review": "pending",
-      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+      "legal_review": "pending_specialist",
+      "activation_status": "active_guarded"
     },
     "IT-NONDELIVERY-001:v0": {
       "valid_from": "2026-10-12",
       "valid_to": null,
-      "source_ids": ["MIMIT-VENDITA-DISTANZA"],
+      "effective_from": "2014-06-13",
+      "effective_to": null,
+      "temporal_basis": "L'art. 61 del Codice del consumo, introdotto dal D.Lgs. 21/2014, disciplina la consegna: salvo diverso accordo, massimo trenta giorni; normalmente prima della risoluzione va concesso un termine supplementare appropriato, salvo le eccezioni previste dal comma 4.",
+      "source_ids": [
+        "MIMIT-VENDITA-DISTANZA",
+        "NORMATTIVA-DLGS21-2014"
+      ],
       "technical_review": "approved",
-      "legal_review": "pending",
-      "note": "Version validity refers to the RISOLVI v0 rule-pack release, not the original statutory effective date."
+      "legal_review": "pending_specialist",
+      "activation_status": "active_guarded"
     }
   },
   "sources": {
     "MIMIT-GARANZIA": {
       "authority": "Ministero delle Imprese e del Made in Italy",
       "official": true,
+      "level": "institutional_guidance",
       "topic": "garanzia legale",
       "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/garanzia-legale",
-      "checked_at": "2026-10-12"
+      "checked_at": "2026-10-13"
     },
     "MIMIT-RECESSO": {
       "authority": "Ministero delle Imprese e del Made in Italy",
       "official": true,
+      "level": "institutional_guidance",
       "topic": "diritto di recesso",
       "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/diritto-di-recesso",
-      "checked_at": "2026-10-12"
+      "checked_at": "2026-10-13"
     },
     "MIMIT-VENDITA-DISTANZA": {
       "authority": "Ministero delle Imprese e del Made in Italy",
       "official": true,
-      "topic": "vendita a distanza e consegna dei beni",
+      "level": "institutional_guidance",
+      "topic": "vendita a distanza",
       "url": "https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/vendita-a-distanza",
-      "checked_at": "2026-10-12"
+      "checked_at": "2026-10-13"
+    },
+    "NORMATTIVA-DLGS170-2021": {
+      "authority": "Normattiva",
+      "official": true,
+      "level": "primary_law",
+      "topic": "garanzia legale e vendita di beni",
+      "url": "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:DECRETO.LEGISLATIVO:2021-11-04;170!vig=",
+      "checked_at": "2026-10-13"
+    },
+    "NORMATTIVA-DLGS21-2014": {
+      "authority": "Normattiva",
+      "official": true,
+      "level": "primary_law",
+      "topic": "diritti dei consumatori, recesso e consegna",
+      "url": "https://www.normattiva.it/atto/caricaDettaglioAtto?atto.codiceRedazionale=14G00033&atto.dataPubblicazioneGazzetta=2014-03-11",
+      "checked_at": "2026-10-13"
+    },
+    "NORMATTIVA-DLGS26-2023": {
+      "authority": "Normattiva",
+      "official": true,
+      "level": "primary_law",
+      "topic": "modifiche al Codice del consumo incluse disposizioni sul recesso",
+      "url": "https://www.normattiva.it/atto/caricaDettaglioAtto?atto.codiceRedazionale=23G00033&atto.dataPubblicazioneGazzetta=2023-03-18",
+      "checked_at": "2026-10-13"
+    },
+    "NORMATTIVA-DLGS176-2026": {
+      "authority": "Normattiva",
+      "official": true,
+      "level": "primary_law",
+      "topic": "riparazione dei beni e modifiche alla garanzia legale",
+      "url": "https://www.normattiva.it/eli/id/2026/10/07/26G00191/ORIGINAL",
+      "published_at": "2026-10-07",
+      "effective_from": "2026-10-22",
+      "checked_at": "2026-10-13"
+    },
+    "GAZZETTA-DLGS176-2026": {
+      "authority": "Gazzetta Ufficiale della Repubblica Italiana",
+      "official": true,
+      "level": "primary_law_publication",
+      "topic": "D.Lgs. 25 settembre 2026 n. 176",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaDettaglioAtto/originario?atto.codiceRedazionale=26G00191&atto.dataPubblicazioneGazzetta=2026-10-07&elenco30giorni=false",
+      "published_at": "2026-10-07",
+      "effective_from": "2026-10-22",
+      "checked_at": "2026-10-13"
     }
   }
 }
