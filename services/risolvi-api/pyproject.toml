@@ -1,6 +1,6 @@
 [project]
 name = "webinsolito-risolvi-api"
-version = "0.10.0"
+version = "0.11.0"
 description = "Privacy-first Case Engine, guarded consumer-law routing, evaluation suite and human-review pilot for WEBINSOLITO RISOLVI"
 requires-python = ">=3.11"
 dependencies = [
