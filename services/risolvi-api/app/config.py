@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
-SERVICE_VERSION = "0.11.0"
+SERVICE_VERSION = "0.12.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
+REVIEWER_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,63}$")
 
 
 def _int_env(name: str, default: int) -> int:
@@ -27,6 +30,24 @@ def _bool_env(name: str, default: bool = False) -> bool:
 def _csv_env(name: str) -> tuple[str, ...]:
     raw = os.getenv(name, "")
     return tuple(item.strip().rstrip("/") for item in raw.split(",") if item.strip())
+
+
+def _reviewer_credentials_env(name: str = "RISOLVI_REVIEWER_CREDENTIALS_JSON") -> tuple[tuple[str, str], ...]:
+    raw = os.getenv(name, "").strip()
+    if not raw:
+        return ()
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError("reviewer_credentials_json_invalid") from exc
+    if not isinstance(value, dict):
+        raise ValueError("reviewer_credentials_must_be_object")
+    credentials: list[tuple[str, str]] = []
+    for reviewer_id, token in value.items():
+        if not isinstance(reviewer_id, str) or not isinstance(token, str):
+            raise ValueError("reviewer_credentials_must_be_string_pairs")
+        credentials.append((reviewer_id.strip(), token))
+    return tuple(sorted(credentials))
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,6 +71,7 @@ class Settings:
     pilot_enabled: bool = False
     pilot_intake_enabled: bool = False
     reviewer_secret: str = DEV_REVIEWER_SECRET
+    reviewer_credentials: tuple[tuple[str, str], ...] = ()
     allowed_origins: tuple[str, ...] = ()
     pilot_notice_version: str = PILOT_NOTICE_VERSION
     auto_create_schema: bool = True
@@ -77,12 +99,23 @@ class Settings:
             pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
             pilot_intake_enabled=_bool_env("RISOLVI_PILOT_INTAKE_ENABLED", False),
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
+            reviewer_credentials=_reviewer_credentials_env(),
             allowed_origins=_csv_env("RISOLVI_ALLOWED_ORIGINS"),
             pilot_notice_version=os.getenv("RISOLVI_PILOT_NOTICE_VERSION", PILOT_NOTICE_VERSION).strip(),
             auto_create_schema=_bool_env("RISOLVI_AUTO_CREATE_SCHEMA", environment != "production"),
         )
         settings.validate()
         return settings
+
+    @property
+    def reviewer_credentials_map(self) -> dict[str, str]:
+        return dict(self.reviewer_credentials)
+
+    def validate_reviewer_id(self, reviewer_id: str) -> str:
+        value = reviewer_id.strip()
+        if not REVIEWER_ID_PATTERN.fullmatch(value):
+            raise ValueError("invalid_reviewer_id")
+        return value
 
     def validate(self) -> None:
         if self.storage_backend not in {"local", "s3"}:
@@ -100,7 +133,21 @@ class Settings:
             raise ValueError("signed_url_seconds_must_be_between_30_and_900")
         if self.pilot_intake_enabled and not self.pilot_enabled:
             raise ValueError("pilot_intake_requires_pilot")
-        if self.pilot_enabled and len(self.reviewer_secret) < 24:
+
+        reviewer_ids: set[str] = set()
+        reviewer_tokens: set[str] = set()
+        for reviewer_id, token in self.reviewer_credentials:
+            self.validate_reviewer_id(reviewer_id)
+            if reviewer_id in reviewer_ids:
+                raise ValueError("duplicate_reviewer_id")
+            reviewer_ids.add(reviewer_id)
+            if len(token) < 24:
+                raise ValueError("reviewer_credential_too_short")
+            if token in reviewer_tokens:
+                raise ValueError("reviewer_credentials_must_be_distinct")
+            reviewer_tokens.add(token)
+
+        if self.pilot_enabled and not self.reviewer_credentials and len(self.reviewer_secret) < 24:
             raise ValueError("pilot_requires_strong_reviewer_secret")
         if self.pilot_notice_version != PILOT_NOTICE_VERSION:
             raise ValueError("unsupported_pilot_notice_version")
@@ -116,10 +163,11 @@ class Settings:
                 raise ValueError("production_requires_private_s3_storage")
             if self.malware_scanner != "clamav":
                 raise ValueError("production_requires_malware_scanner")
-            if self.pilot_enabled and (
-                self.reviewer_secret == DEV_REVIEWER_SECRET or len(self.reviewer_secret) < 32
-            ):
-                raise ValueError("production_pilot_requires_strong_reviewer_secret")
+            if self.pilot_enabled:
+                if not self.reviewer_credentials:
+                    raise ValueError("production_pilot_requires_per_reviewer_credentials")
+                if any(len(token) < 32 for _, token in self.reviewer_credentials):
+                    raise ValueError("production_reviewer_credentials_must_be_strong")
             if self.auto_create_schema:
                 raise ValueError("production_requires_migrations_not_create_all")
         if self.storage_backend == "s3" and not self.s3_bucket:
