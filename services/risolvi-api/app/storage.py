@@ -52,24 +52,36 @@ class S3PrivateStorage:
     def __init__(self, settings: Settings):
         try:
             import boto3
+            from botocore.config import Config
         except ImportError as exc:
             raise RuntimeError("install_webinsolito_risolvi_storage_extra") from exc
+
         self.bucket = settings.s3_bucket
         if not self.bucket:
             raise ValueError("s3_bucket_required")
-        self.client = boto3.client(
-            "s3",
-            region_name=settings.s3_region,
-            endpoint_url=settings.s3_endpoint_url,
-        )
+
+        client_kwargs: dict[str, object] = {
+            "region_name": settings.s3_region,
+            "endpoint_url": settings.s3_endpoint_url,
+        }
+        if settings.s3_force_path_style:
+            # Supabase Storage S3 and several S3-compatible providers require
+            # path-style addressing. Keep this opt-in so native AWS S3 can use
+            # its normal addressing behaviour.
+            client_kwargs["config"] = Config(s3={"addressing_style": "path"})
+
+        self.client = boto3.client("s3", **client_kwargs)
 
     def put(self, key: str, data: bytes, content_type: str) -> None:
+        # Do not send x-amz-server-side-encryption here. Some compatible
+        # providers (including Supabase Storage S3) reject that header. At-rest
+        # encryption must be configured and verified at the provider/bucket
+        # layer instead of being assumed per object.
         self.client.put_object(
             Bucket=self.bucket,
             Key=key,
             Body=data,
             ContentType=content_type,
-            ServerSideEncryption="AES256",
         )
 
     def get(self, key: str) -> bytes:
