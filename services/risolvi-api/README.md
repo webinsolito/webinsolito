@@ -1,6 +1,6 @@
-# RISOLVI API v0.7
+# RISOLVI API v0.8
 
-Case Engine privacy-first di WEBINSOLITO. La v0.7 mantiene persistenza, capability, retention, benchmark da 200 casi e review umana obbligatoria; aggiunge il pacchetto di deploy del pilot: migrazioni Alembic, container production-ready, readiness probe e guardrail che impedisce `create_all()` in produzione.
+Case Engine privacy-first di WEBINSOLITO. La v0.8 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, container production-ready e review umana obbligatoria; aggiunge hardening specifico per deploy con PostgreSQL + storage S3-compatible, inclusa compatibilità Supabase.
 
 ## Modello di sicurezza
 
@@ -37,6 +37,11 @@ alembic upgrade head
 
 `RISOLVI_AUTO_CREATE_SCHEMA` deve essere `false` in produzione. L'app rifiuta di avviarsi in configurazione production se si tenta di riabilitare `create_all()`.
 
+Quando runtime e migrazioni richiedono endpoint differenti, usare:
+
+- `RISOLVI_DATABASE_URL` per l'API;
+- `RISOLVI_MIGRATION_DATABASE_URL` per Alembic. Se assente, Alembic usa il runtime URL.
+
 Originali salvati:
 
 - sviluppo/test: directory privata fuori dagli asset pubblici;
@@ -44,11 +49,15 @@ Originali salvati:
 - retention documenti: 24 ore di default, configurabile;
 - retention pratica: 7 giorni di default, configurabile.
 
+Per provider che richiedono path-style S3 addressing, impostare `RISOLVI_S3_FORCE_PATH_STYLE=true`. L'adapter non forza header SSE per-oggetto: alcuni provider S3-compatible li rifiutano; la cifratura a riposo va garantita a livello di provider/bucket.
+
 ```bash
 python -m app.retention
 ```
 
 Il job è idempotente. La cancellazione del caso elimina esplicitamente anche consenso e review del pilot.
+
+Per Supabase: `docs/risolvi-supabase-production.md`.
 
 ## Probe operativi
 
@@ -68,7 +77,7 @@ python -m app.evaluation --strict
 
 Il benchmark è un **gold tecnico**, non una validazione legale. Le fonti/regole sono versionate in `evals/registry.json`.
 
-Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.7 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
+Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.8 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
 
 Vedi `docs/risolvi-legal-preflight-2026-10-13.md`.
 
@@ -110,7 +119,7 @@ pip install -e '.[dev,storage]'
 ## Container
 
 ```bash
-docker build -t webinsolito-risolvi-api:0.7.0 .
+docker build -t webinsolito-risolvi-api:0.8.0 .
 ```
 
 L'immagine gira come utente non-root e include un healthcheck su `/health`. Le migrazioni **non** vengono eseguite automaticamente dal container: vanno lanciate come release/pre-deploy step con `alembic upgrade head`.
@@ -119,7 +128,7 @@ Per il deploy controllato completo: `docs/risolvi-pilot-deploy.md`.
 
 ## Variabili principali
 
-`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_SIGNED_URL_SECONDS`, `RISOLVI_PILOT_ENABLED`, `RISOLVI_REVIEWER_SECRET`, `RISOLVI_ALLOWED_ORIGINS`, `RISOLVI_PILOT_NOTICE_VERSION`, `RISOLVI_AUTO_CREATE_SCHEMA`.
+`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_MIGRATION_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_S3_FORCE_PATH_STYLE`, `RISOLVI_SIGNED_URL_SECONDS`, `RISOLVI_PILOT_ENABLED`, `RISOLVI_REVIEWER_SECRET`, `RISOLVI_ALLOWED_ORIGINS`, `RISOLVI_PILOT_NOTICE_VERSION`, `RISOLVI_AUTO_CREATE_SCHEMA`.
 
 Vedi `.env.production.example` per un template senza segreti.
 
@@ -127,7 +136,8 @@ Vedi `.env.production.example` per un template senza segreti.
 
 - legal review specialistica del rule pack (#79);
 - split autonomo `REFUND` vs esercizio del recesso;
-- provisioning effettivo delle risorse cloud dedicate e smoke test dell'ambiente pilot;
+- provisioning effettivo delle risorse cloud dedicate e smoke test dell'ambiente pilot (#99, #101);
+- checklist privacy/operativa (#100);
 - pilot reale da 50–100 casi con consenso e decisione GO/RESCOPE/KILL (#83).
 
 Il servizio B2C RISOLVI resta progettato come **gratuito end-to-end**: nessun account obbligatorio, credito, abbonamento o paywall per ottenere l'azione e il follow-up.
