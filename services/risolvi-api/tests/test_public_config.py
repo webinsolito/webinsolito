@@ -7,6 +7,9 @@ from app.db import Database
 from app.main import create_app
 from app.storage import LocalPrivateStorage
 
+REVIEWER_ID = "reviewer-a"
+REVIEWER_TOKEN = "r" * 40
+
 
 def make_client(tmp_path, *, origins: tuple[str, ...] = ("https://webinsolito.example",)) -> TestClient:
     settings = Settings(
@@ -20,7 +23,8 @@ def make_client(tmp_path, *, origins: tuple[str, ...] = ("https://webinsolito.ex
         signed_url_seconds=60,
         pilot_enabled=True,
         pilot_intake_enabled=True,
-        reviewer_secret="r" * 40,
+        reviewer_secret=REVIEWER_TOKEN,
+        reviewer_credentials=((REVIEWER_ID, REVIEWER_TOKEN),),
         allowed_origins=origins,
     )
     return TestClient(create_app(settings, Database(settings.database_url), LocalPrivateStorage(settings.local_storage_dir)))
@@ -31,7 +35,7 @@ def case_auth(token: str) -> dict[str, str]:
 
 
 def reviewer_auth() -> dict[str, str]:
-    return {"X-Reviewer-Token": "r" * 40}
+    return {"X-Reviewer-Id": REVIEWER_ID, "X-Reviewer-Token": REVIEWER_TOKEN}
 
 
 def test_public_config_exposes_only_non_secret_runtime_contract(tmp_path):
@@ -52,6 +56,8 @@ def test_public_config_exposes_only_non_secret_runtime_contract(tmp_path):
     body = response.text.lower()
     assert "secret" not in body
     assert "reviewer" not in body
+    assert REVIEWER_ID not in body
+    assert REVIEWER_TOKEN not in response.text
 
 
 def test_cors_allows_only_explicit_configured_origin(tmp_path):
@@ -61,10 +67,14 @@ def test_cors_allows_only_explicit_configured_origin(tmp_path):
         headers={
             "Origin": "https://webinsolito.example",
             "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "X-Reviewer-Id,X-Reviewer-Token",
         },
     )
     assert allowed.status_code == 200
     assert allowed.headers["access-control-allow-origin"] == "https://webinsolito.example"
+    allow_headers = allowed.headers.get("access-control-allow-headers", "").lower()
+    assert "x-reviewer-id" in allow_headers
+    assert "x-reviewer-token" in allow_headers
 
     denied = client.options(
         "/v1/config",
@@ -99,11 +109,13 @@ def test_outcome_events_appear_in_pilot_metrics(tmp_path):
         json={"notice_version": "pilot-2026-10-v1"},
     ).status_code == 204
     review_id = client.post(f"/v1/cases/{case_id}/pilot/submit", headers=case_auth(token)).json()["review_id"]
-    assert client.post(
+    decided = client.post(
         f"/v1/pilot/reviews/{review_id}/decision",
         headers=reviewer_auth(),
         json={"classification": "PASS_AUTONOMOUS"},
-    ).status_code == 200
+    )
+    assert decided.status_code == 200
+    assert decided.json()["reviewer_id"] == REVIEWER_ID
     assert client.get(f"/v1/cases/{case_id}/pilot/action", headers=case_auth(token)).json()["status"] == "APPROVED"
     assert client.post(
         f"/v1/cases/{case_id}/outcomes",
