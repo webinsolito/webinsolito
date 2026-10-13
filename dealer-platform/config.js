@@ -81,4 +81,5 @@ window.addEventListener('DOMContentLoaded',async()=>{
   import('./mobile-shell.js?v=1.9.6').catch(err=>console.warn('Navigazione mobile non caricata',err));
   import('./daily-ux.js?v=1.9.6').catch(err=>console.warn('UX operativa giornaliera non caricata',err));
   import('./sync-recovery.js?v=1.9.6').catch(err=>console.warn('Recupero sincronizzazione non caricato',err));
+  import('./premium-ux.js?v=1.0.0').catch(err=>console.warn('Interfaccia premium non caricata',err));
 });

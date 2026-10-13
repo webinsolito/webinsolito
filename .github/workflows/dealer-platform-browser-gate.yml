@@ -15,6 +15,7 @@ on:
       - 'dealer-platform/**'
       - 'tests/e2e/dealer-platform-release.spec.js'
       - 'tests/e2e/dealer-platform-bootstrap.spec.js'
+      - 'tests/e2e/dealer-platform-premium.spec.js'
       - 'playwright.config.js'
       - 'package.json'
       - '.github/workflows/dealer-platform-browser-gate.yml'
@@ -44,7 +45,7 @@ jobs:
       - name: Bootstrap diagnostics
         run: npx playwright test tests/e2e/dealer-platform-bootstrap.spec.js --project=desktop-chromium
       - name: Desktop and iPhone release gate
-        run: npx playwright test tests/e2e/dealer-platform-release.spec.js --project=desktop-chromium --project=iphone
+        run: npx playwright test tests/e2e/dealer-platform-release.spec.js tests/e2e/dealer-platform-premium.spec.js --project=desktop-chromium --project=iphone
       - name: Upload browser failures
         if: failure()
         uses: actions/upload-artifact@v4
