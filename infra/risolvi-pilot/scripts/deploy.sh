@@ -49,5 +49,5 @@ for attempt in $(seq 1 60); do
   sleep 5
 done
 
-"$ROOT/scripts/preflight.sh"
+bash "$ROOT/scripts/preflight.sh"
 echo "RISOLVI dedicated pilot stack deployed with intake CLOSED at https://${DOMAIN}"
