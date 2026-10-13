@@ -107,7 +107,7 @@ def _technical_gate(
     return Gate(name, GateStatus.PASS, success_detail)
 
 
-def _manual_gate(manifest: dict[str, Any] | None, key: str) -> Gate:
+def _manual_gate(manifest: dict[str, Any] | None, key: str, *, now: datetime) -> Gate:
     if manifest is None:
         return Gate(key, GateStatus.UNKNOWN, "evidence_manifest_missing")
     gates = manifest.get("gates")
@@ -132,7 +132,7 @@ def _manual_gate(manifest: dict[str, Any] | None, key: str) -> Gate:
         return Gate(key, GateStatus.FAIL, "pass_evidence_reviewer_invalid")
     if reviewed_at is None:
         return Gate(key, GateStatus.FAIL, "pass_evidence_timestamp_invalid")
-    if reviewed_at > _utcnow() + timedelta(minutes=5):
+    if reviewed_at > now + timedelta(minutes=5):
         return Gate(key, GateStatus.FAIL, "pass_evidence_timestamp_in_future")
     return Gate(key, GateStatus.PASS, f"attested:{reference_id}:{reviewed_by}:{_iso(reviewed_at)}")
 
@@ -209,7 +209,7 @@ def build_report(
         identity_gate,
         consistency_gate,
         _artifact_freshness(preflight, smoke, now=now, max_age_hours=max_age_hours),
-        _manual_gate(evidence, "dedicated_infrastructure"),
+        _manual_gate(evidence, "dedicated_infrastructure", now=now),
         _technical_gate("production_config", preflight, ("config",), success_detail="production_config_valid"),
         _technical_gate("migrations", preflight, ("database_schema",), success_detail="alembic_schema_present"),
         _technical_gate("database", preflight, ("database_ping",), success_detail="database_reachable"),
@@ -256,9 +256,9 @@ def build_report(
 
     gates.extend(
         [
-            _manual_gate(evidence, "legal_signoff"),
-            _manual_gate(evidence, "privacy_security"),
-            _manual_gate(evidence, "document_pipeline"),
+            _manual_gate(evidence, "legal_signoff", now=now),
+            _manual_gate(evidence, "privacy_security", now=now),
+            _manual_gate(evidence, "document_pipeline", now=now),
         ]
     )
 
