@@ -25,6 +25,10 @@ async function seedSession(page,role){
   await page.addInitScript(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'dealer-platform-session',value});
 }
 
+async function blockServiceWorker(page){
+  await page.route('**/dealer-platform/sw.js*',route=>route.fulfill({status:404,contentType:'application/javascript',body:''}));
+}
+
 function fixtureFor(path){
   const now='2026-10-11T12:00:00.000Z';
   if(path==='vehicles')return [{id:'veh-1',dealer_id:DEALER_ID,brand:'Fiat',model:'500',plate:'QA123AA',vin:'ZFA12345678901234',status:'IN_VENDITA',asking_price:12900,purchase_date:'2026-10-01',created_at:now,updated_at:now}];
@@ -99,6 +103,7 @@ test.describe('MALÙ23 release gate',()=>{
 
   test('VENDITORE never requests finance endpoints',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','role/network gate runs once');
+    await blockServiceWorker(page);
     const seen=[];await seedSession(page,'VENDITORE');await mockExternalRuntime(page,seen);
     await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
@@ -113,6 +118,7 @@ test.describe('MALÙ23 release gate',()=>{
 
   test('ADMIN loads authorized finance endpoints',async({page},testInfo)=>{
     test.skip(testInfo.project.name!=='desktop-chromium','role/network gate runs once');
+    await blockServiceWorker(page);
     const seen=[];await seedSession(page,'ADMIN');await mockExternalRuntime(page,seen);
     await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
