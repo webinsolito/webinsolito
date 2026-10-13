@@ -1,10 +1,10 @@
-# RISOLVI API v0.13
+# RISOLVI API v0.14
 
-Case Engine privacy-first di WEBINSOLITO per il pilot supervisionato di RISOLVI. La v0.13 mantiene persistenza, capability guest, retention, benchmark da 200 casi, migrazioni Alembic, PostgreSQL/S3, review umana obbligatoria, kill switch intake, type sniffing, ClamAV e audit minimale; aggiunge un **gate di pilot-readiness fail-closed** che impedisce di confondere “CI verde” con “pronto per utenti reali”.
+Case Engine privacy-first di WEBINSOLITO per il pilot supervisionato di RISOLVI. La v0.14 mantiene il gate di pilot-readiness fail-closed della v0.13 e aggiunge un **benchmark documentale separato dal benchmark legale**, provenance pagina-per-pagina e maggiore parità tra extractor browser e backend.
 
 ## Principio operativo
 
-L'AI/estrazione comprende i documenti; le regole deterministiche decidono il percorso; le fonti supportano la raccomandazione; il reviewer umano controlla l'Action Card durante il Wizard-of-Oz. Nessun invio automatico al venditore.
+L'estrazione comprende i documenti; le regole deterministiche decidono il percorso; le fonti supportano la raccomandazione; il reviewer umano controlla l'Action Card durante il Wizard-of-Oz. Nessun invio automatico al venditore.
 
 Il B2C resta **gratuito end-to-end**: niente account obbligatorio, abbonamenti, crediti o paywall.
 
@@ -19,11 +19,43 @@ Il B2C resta **gratuito end-to-end**: niente account obbligatorio, abbonamenti, 
 - Risposte API: `Cache-Control: no-store`, `nosniff`, no-referrer, frame deny; HSTS in production.
 - Retention pilot default: originali 24 ore, pratica 7 giorni.
 
-## Extraction: fatti espliciti e documenti non fidati
+## Extraction: fatti espliciti, provenance e documenti non fidati
 
-`ExtractionBundle` conserva `prefill` per compatibilità e aggiunge `structured_facts`: ogni fatto critico è presente con valore estratto oppure `null`. Un conflitto produce `null`, non una scelta arbitraria.
+`ExtractionBundle` conserva `prefill` per compatibilità e `structured_facts`: ogni fatto critico è presente con valore estratto oppure `null`. Un conflitto produce `null`, non una scelta arbitraria.
 
-Ogni candidato estratto mantiene provenance (`document_id`, filename, pagina, span, metodo). Il parser estrae anche `order_date` quando è supportata dal testo. Stringhe che assomigliano a prompt (`ignore previous instructions`, `system prompt`, varianti italiane, ecc.) restano **contenuto del documento**, non istruzioni: il bundle aggiunge un warning e non crea diritti, route o fatti non supportati.
+I fatti documentali coperti dal prototipo includono, quando supportati dall'evidenza:
+
+- tipo di problema;
+- venditore;
+- data ordine;
+- riferimento ordine;
+- prodotto;
+- data di consegna e consegna promessa;
+- indicatori di acquisto a distanza, venditore professionale e bene fisico.
+
+Ogni candidato mantiene provenance (`document_id`, filename, pagina, span, metodo). Gli input client possono conservare pagine separate e il metodo effettivo per pagina, per esempio `CLIENT_PDF_TEXT` sulla pagina 1 e `CLIENT_OCR` sulla pagina 2. I fatti mancanti non vengono inventati e i conflitti non vengono precompilati.
+
+L'extractor browser conserva la struttura a righe di testo/OCR e, per i PDF, usa i separatori pagina/linea disponibili prima di applicare le euristiche. Stringhe che assomigliano a prompt (`ignore previous instructions`, `system prompt`, varianti italiane, ecc.) restano **contenuto del documento**, non istruzioni: non possono creare diritti, route o fatti non supportati.
+
+## Evaluation documentale
+
+Il benchmark documentale è volutamente separato dai 200 casi di routing legale. Usa fixture sintetiche/de-identificate e verifica fatti, `null` espliciti, conflitti e provenance.
+
+```bash
+python -m app.document_evaluation --strict
+# oppure, dopo l'installazione del package
+document-evaluation --strict
+```
+
+Il gate fallisce se anche un solo caso non corrisponde al gold oppure se provenance, missing facts o conflitti non raggiungono il 100% richiesto dal dataset corrente. Il report include il digest SHA-256 del dataset per rendere il risultato riproducibile.
+
+La parità minima del parser locale/browser è verificata senza rete:
+
+```bash
+node risolvi/extractor-benchmark.mjs
+```
+
+Questo benchmark **non dimostra ancora la qualità su fotografie/PDF reali eterogenei**. La chiusura completa di #81 richiede ancora un corpus de-identificato controllato e una verifica manuale dei casi OCR difficili.
 
 ## Build identity
 
@@ -40,7 +72,7 @@ Build container consigliata:
 ```bash
 docker build \
   --build-arg RISOLVI_BUILD_SHA="$(git rev-parse HEAD)" \
-  -t webinsolito-risolvi-api:0.13.0 .
+  -t webinsolito-risolvi-api:0.14.0 .
 ```
 
 ## Preflight production
@@ -143,7 +175,7 @@ Il job retention è idempotente:
 python -m app.retention
 ```
 
-## Evaluation
+## Evaluation del routing
 
 ```bash
 python -m app.evaluation --strict
@@ -172,10 +204,8 @@ pip install -e '.[dev,storage]'
 ## Gate ancora aperti
 
 - sign-off consumer-law del rule pack (#79);
-- verifica completa della pipeline documentale (#81);
+- corpus documentale reale/de-identificato e verifica OCR/PDF difficile (#81);
 - privacy/security operativa su ambiente reale (#100);
 - provisioning dedicato + smoke production-like (#101);
 - report #111 con tutti i gate realmente PASS;
 - solo dopo: pilot da 50–100 casi reali (#83).
-
-Non riutilizzare progetti cloud condivisi per aggirare questi gate e non aprire il pilot sulla sola base della CI.
