@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime
 from statistics import median
 from uuid import UUID
 
@@ -12,6 +11,7 @@ from .db import (
     Database,
     DocumentRecord,
     FactRecord,
+    OutcomeRecord,
     PilotParticipationRecord,
     PilotReviewRecord,
 )
@@ -45,12 +45,7 @@ def _document_metadata(row: DocumentRecord) -> DocumentMetadata:
 
 
 class PilotService:
-    """Human-review gate for the controlled Wizard-of-Oz pilot.
-
-    The pilot is deliberately separate from the public recommendation path.
-    No recommendation submitted through this service is released to the user
-    until a reviewer has made an explicit decision.
-    """
+    """Human-review gate for the controlled Wizard-of-Oz pilot."""
 
     def __init__(self, database: Database):
         self.database = database
@@ -199,13 +194,13 @@ class PilotService:
         with self.database.session() as session:
             consented = session.scalar(select(func.count()).select_from(PilotParticipationRecord)) or 0
             reviews = list(session.scalars(select(PilotReviewRecord).order_by(PilotReviewRecord.id)).all())
-            cases = {
-                row.id: row for row in session.scalars(select(CaseRecord)).all()
-            }
+            cases = {row.id: row for row in session.scalars(select(CaseRecord)).all()}
+            outcomes = list(session.scalars(select(OutcomeRecord)).all())
 
         decided = [row for row in reviews if row.classification]
         delivered = [row for row in reviews if row.delivered_at]
         classifications = Counter(row.classification for row in decided if row.classification)
+        outcome_counts = Counter(row.outcome_type for row in outcomes if row.outcome_type)
         material_classes = {
             PilotClassification.MATERIAL_EDIT.value,
             PilotClassification.WRONG_ROUTE.value,
@@ -228,6 +223,7 @@ class PilotService:
             decided_reviews=len(decided),
             delivered_actions=len(delivered),
             classifications=dict(classifications),
+            outcomes=dict(outcome_counts),
             material_or_worse_rate=material_rate,
             median_seconds_case_to_action=median(latencies) if latencies else None,
             s0_s1_errors=s0_s1,
