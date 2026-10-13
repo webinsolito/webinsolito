@@ -191,6 +191,7 @@ class PilotReviewView(BaseModel):
     classification: PilotClassification | None = None
     error_severity: ErrorSeverity | None = None
     final_recommendation: Recommendation | None = None
+    reviewer_id: str | None = None
     reviewer_note: str | None = None
     document_metadata: list[DocumentMetadata] = Field(default_factory=list)
 
