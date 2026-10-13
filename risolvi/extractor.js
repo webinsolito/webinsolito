@@ -258,13 +258,14 @@ export function inferFacts(documents) {
 
   const facts = {};
   const conflicts = [];
+  const confidenceRank = { high: 2, medium: 1, low: 0 };
   for (const [key, values] of byKey.entries()) {
     const distinct = [...new Set(values.map(item => String(item.value).toLowerCase()))];
     if (distinct.length > 1) {
       conflicts.push(key);
       continue;
     }
-    const best = values.sort((a, b) => ({ high: 2, medium: 1, low: 0 }[b.confidence] - ({ high: 2, medium: 1, low: 0 }[a.confidence]))[0];
+    const best = values.sort((a, b) => (confidenceRank[b.confidence] ?? 0) - (confidenceRank[a.confidence] ?? 0))[0];
     facts[key] = best.value;
   }
   return { facts, candidates, conflicts };
