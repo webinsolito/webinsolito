@@ -40,11 +40,13 @@ test('seller sync skips finance endpoints, purges finance physically and blocks 
   assert.match(src,/financial_entity_forbidden/);
 });
 
-test('service worker never caches external or authenticated traffic',()=>{
+test('service worker never caches or proxies external/authenticated traffic',()=>{
   const src=read('sw.js');
   assert.match(src,/url\.origin!==self\.location\.origin/);
   assert.match(src,/authorization/);
-  assert.match(src,/API, Supabase, Telegram and every other external\/sensitive request are network-only/);
+  assert.match(src,/sensitive\/external traffic bypass the SW entirely/);
+  assert.match(src,/Without respondWith\(\), the browser performs a normal network request/);
+  assert.doesNotMatch(src,/event\.respondWith\(fetch\(req\)\);/);
   assert.doesNotMatch(src,/if\(res\.ok&&res\.type!=='opaque'\).*caches\.open\(CACHE\)/s);
 });
 
