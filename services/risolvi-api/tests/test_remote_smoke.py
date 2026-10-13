@@ -64,7 +64,7 @@ def test_remote_smoke_emits_granular_secret_free_artifact(tmp_path, monkeypatch)
     monkeypatch.setattr(remote_smoke.httpx, "Client", client_factory)
     report = remote_smoke.run("https://risolvi.test", reviewer_id, reviewer_secret)
 
-    assert report["status"] == "ok"
+    assert report["status"] == "ok", report
     assert report["environment"] == "test"
     assert report["service_version"] == SERVICE_VERSION
     assert report["commit_sha"] == build_sha
