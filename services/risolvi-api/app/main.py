@@ -26,6 +26,7 @@ from .malware import (
     build_malware_scanner,
 )
 from .repository import Repository
+from .response_security import ResponseSecurityMiddleware
 from .security import hash_capability, new_capability_token
 from .storage import PrivateStorage, build_storage
 from .upload_security import validate_upload_type
@@ -84,6 +85,12 @@ def create_app(
             allow_headers=["Content-Type", "X-Case-Token", "X-Reviewer-Token"],
             max_age=600,
         )
+    # Added after CORS so this becomes the outer user middleware and therefore
+    # also hardens generated CORS responses. All API responses are no-store.
+    app.add_middleware(
+        ResponseSecurityMiddleware,
+        production=settings.environment == "production",
+    )
     app.state.settings = settings
     app.state.database = database
     app.state.storage = storage
