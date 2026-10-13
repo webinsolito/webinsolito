@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-SERVICE_VERSION = "0.8.0"
+SERVICE_VERSION = "0.9.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
@@ -44,6 +44,7 @@ class Settings:
     s3_force_path_style: bool = False
     signed_url_seconds: int = 300
     pilot_enabled: bool = False
+    pilot_intake_enabled: bool = False
     reviewer_secret: str = DEV_REVIEWER_SECRET
     allowed_origins: tuple[str, ...] = ()
     pilot_notice_version: str = PILOT_NOTICE_VERSION
@@ -66,6 +67,7 @@ class Settings:
             s3_force_path_style=_bool_env("RISOLVI_S3_FORCE_PATH_STYLE", False),
             signed_url_seconds=_int_env("RISOLVI_SIGNED_URL_SECONDS", 300),
             pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
+            pilot_intake_enabled=_bool_env("RISOLVI_PILOT_INTAKE_ENABLED", False),
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
             allowed_origins=_csv_env("RISOLVI_ALLOWED_ORIGINS"),
             pilot_notice_version=os.getenv("RISOLVI_PILOT_NOTICE_VERSION", PILOT_NOTICE_VERSION).strip(),
@@ -79,6 +81,8 @@ class Settings:
             raise ValueError("unsupported_storage_backend")
         if self.signed_url_seconds < 30 or self.signed_url_seconds > 900:
             raise ValueError("signed_url_seconds_must_be_between_30_and_900")
+        if self.pilot_intake_enabled and not self.pilot_enabled:
+            raise ValueError("pilot_intake_requires_pilot")
         if self.pilot_enabled and len(self.reviewer_secret) < 24:
             raise ValueError("pilot_requires_strong_reviewer_secret")
         if self.pilot_notice_version != PILOT_NOTICE_VERSION:
