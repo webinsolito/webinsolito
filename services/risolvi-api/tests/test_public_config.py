@@ -19,6 +19,7 @@ def make_client(tmp_path, *, origins: tuple[str, ...] = ("https://webinsolito.ex
         local_storage_dir=str(tmp_path / "private"),
         signed_url_seconds=60,
         pilot_enabled=True,
+        pilot_intake_enabled=True,
         reviewer_secret="r" * 40,
         allowed_origins=origins,
     )
@@ -41,6 +42,7 @@ def test_public_config_exposes_only_non_secret_runtime_contract(tmp_path):
     assert data == {
         "service_version": SERVICE_VERSION,
         "pilot_enabled": True,
+        "pilot_intake_enabled": True,
         "pilot_notice_version": "pilot-2026-10-v1",
         "case_retention_days": 7,
         "document_retention_hours": 24,
