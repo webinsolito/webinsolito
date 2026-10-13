@@ -6,6 +6,7 @@ from typing import Annotated
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, File, Header, HTTPException, Response, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from .document_pipeline import (
@@ -63,7 +64,16 @@ def create_app(
     repo = Repository(database, settings.capability_secret)
     pilot = PilotService(database)
 
-    app = FastAPI(title="WEBINSOLITO RISOLVI API", version="0.5.0")
+    app = FastAPI(title="WEBINSOLITO RISOLVI API", version="0.6.0")
+    if settings.allowed_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(settings.allowed_origins),
+            allow_credentials=False,
+            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allow_headers=["Content-Type", "X-Case-Token", "X-Reviewer-Token"],
+            max_age=600,
+        )
     app.state.settings = settings
     app.state.database = database
     app.state.storage = storage
@@ -101,7 +111,19 @@ def create_app(
 
     @app.get("/health")
     def health() -> dict[str, str]:
-        return {"status": "ok", "service": "risolvi-api", "version": "0.5.0"}
+        return {"status": "ok", "service": "risolvi-api", "version": "0.6.0"}
+
+    @app.get("/v1/config")
+    def public_config() -> dict[str, object]:
+        return {
+            "service_version": "0.6.0",
+            "pilot_enabled": settings.pilot_enabled,
+            "pilot_notice_version": settings.pilot_notice_version,
+            "case_retention_days": settings.case_retention_days,
+            "document_retention_hours": settings.document_retention_hours,
+            "max_files": MAX_FILES,
+            "max_file_bytes": MAX_FILE_BYTES,
+        }
 
     @app.post("/v1/cases", response_model=CaseCreated)
     def create_case() -> CaseCreated:
@@ -205,8 +227,6 @@ def create_app(
     def analyse_case(case_id: UUID, x_case_token: CaseToken = None) -> Recommendation:
         require_case(case_id, x_case_token)
         if settings.pilot_enabled:
-            # During the controlled Wizard-of-Oz pilot no Action Card may bypass
-            # the explicit review queue. The raw engine output stays server-side.
             raise HTTPException(status_code=409, detail="pilot_review_required_use_pilot_submit")
         facts = repo.latest_facts(case_id)
         if facts is None:
