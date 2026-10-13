@@ -14,13 +14,15 @@ from app.main import create_app
 from app.storage import LocalPrivateStorage
 
 
-def production_settings(*, auto_create_schema: bool) -> Settings:
+def production_settings(*, auto_create_schema: bool, malware_scanner: str = "clamav") -> Settings:
     return Settings(
         environment="production",
         database_url="postgresql+psycopg://user:password@example.invalid:5432/risolvi",
         capability_secret="c" * 40,
         storage_backend="s3",
         s3_bucket="risolvi-private",
+        malware_scanner=malware_scanner,
+        clamav_host="clamav.internal",
         pilot_enabled=True,
         reviewer_secret="r" * 40,
         allowed_origins=("https://www.webinsolito.it", "https://review.webinsolito.it"),
@@ -31,6 +33,11 @@ def production_settings(*, auto_create_schema: bool) -> Settings:
 def test_production_refuses_create_all_mode():
     with pytest.raises(ValueError, match="production_requires_migrations_not_create_all"):
         production_settings(auto_create_schema=True).validate()
+
+
+def test_production_requires_malware_scanner():
+    with pytest.raises(ValueError, match="production_requires_malware_scanner"):
+        production_settings(auto_create_schema=False, malware_scanner="disabled").validate()
 
 
 def test_production_accepts_explicit_migration_mode():

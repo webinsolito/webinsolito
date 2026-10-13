@@ -8,6 +8,7 @@ from sqlalchemy import inspect
 
 from .config import Settings
 from .db import Database
+from .malware import MalwareScanner, build_malware_scanner
 from .storage import PrivateStorage, build_storage
 
 REQUIRED_TABLES = {
@@ -34,8 +35,8 @@ class Check:
 
 def _safe_error(exc: Exception) -> str:
     # RuntimeError/ValueError messages below are controlled by this module/config.
-    # Provider/DB exceptions may contain hostnames or connection metadata, so only
-    # expose their class name in preflight output.
+    # Provider/DB/scanner exceptions may contain hostnames or connection metadata,
+    # so only expose their class name for other exception families.
     if isinstance(exc, (RuntimeError, ValueError)):
         return f"{type(exc).__name__}:{str(exc)[:160]}"
     return type(exc).__name__
@@ -53,6 +54,7 @@ def run_preflight(
     settings: Settings,
     database: Database,
     storage: PrivateStorage,
+    malware_scanner: MalwareScanner | None = None,
     *,
     require_production: bool = True,
     require_migrations: bool = True,
@@ -60,10 +62,11 @@ def run_preflight(
 ) -> list[Check]:
     """Verify production-like dependencies before opening pilot intake.
 
-    The storage check writes only a tiny synthetic object under `_preflight/` and
-    deletes it in `finally`. No user data is read or created.
+    Storage and malware checks use only tiny synthetic payloads. No user data is
+    read or created.
     """
 
+    malware_scanner = malware_scanner or build_malware_scanner(settings)
     checks: list[Check] = []
 
     def config_check() -> str:
@@ -90,6 +93,12 @@ def run_preflight(
 
     checks.append(_check("database_schema", schema_check))
 
+    def malware_check() -> str:
+        malware_scanner.scan(b"WEBINSOLITO-RISOLVI-PREFLIGHT-CLEAN")
+        return "malware_scanner_reachable"
+
+    checks.append(_check("malware_scanner", malware_check))
+
     def storage_check() -> str:
         key = f"_preflight/{uuid4().hex}.txt"
         payload = b"WEBINSOLITO-RISOLVI-PREFLIGHT"
@@ -110,7 +119,8 @@ def main() -> None:
     settings = Settings.from_env()
     database = Database(settings.database_url)
     storage = build_storage(settings)
-    checks = run_preflight(settings, database, storage)
+    scanner = build_malware_scanner(settings)
+    checks = run_preflight(settings, database, storage, scanner)
     ok = all(item.ok for item in checks)
     print(json.dumps({"status": "ok" if ok else "blocked", "checks": [asdict(item) for item in checks]}, indent=2))
     raise SystemExit(0 if ok else 1)
