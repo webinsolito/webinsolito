@@ -85,8 +85,6 @@ class Settings:
             if origin == "*" or not origin.startswith(("https://", "http://localhost", "http://127.0.0.1")):
                 raise ValueError("allowed_origins_must_be_explicit_http_origins")
         if self.environment == "production":
-            if self.auto_create_schema:
-                raise ValueError("production_requires_migrations_not_create_all")
             if not self.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
                 raise ValueError("production_requires_postgresql")
             if self.capability_secret == DEV_SECRET or len(self.capability_secret) < 32:
@@ -97,6 +95,8 @@ class Settings:
                 self.reviewer_secret == DEV_REVIEWER_SECRET or len(self.reviewer_secret) < 32
             ):
                 raise ValueError("production_pilot_requires_strong_reviewer_secret")
+            if self.auto_create_schema:
+                raise ValueError("production_requires_migrations_not_create_all")
         if self.storage_backend == "s3" and not self.s3_bucket:
             raise ValueError("s3_bucket_required")
 
