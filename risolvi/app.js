@@ -169,8 +169,14 @@ async function processFiles() {
 }
 
 function continueWithoutDocuments() {
+  // This action is a privacy boundary, not merely a visual choice: clear the
+  // native file input so uploadPilotDocuments() cannot later send files the
+  // user explicitly chose not to include in the pilot.
+  $('files').value = '';
+  renderFiles([]);
   state.documents = [];
   state.inference = { facts: {}, candidates: [], conflicts: [] };
+  state.uploaded = false;
   renderExtraction();
   setStatus('Va bene: inserisci solo i fatti che conosci. Nessun documento verrà inviato.', 'good');
   openReviewCard();
