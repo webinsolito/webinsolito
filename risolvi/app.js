@@ -298,6 +298,10 @@ async function submitForReview() {
     $('confirmError').textContent = 'Il pilot non è attivo sul motore configurato.';
     return;
   }
+  if (!state.apiConfig?.pilot_intake_enabled) {
+    $('confirmError').textContent = 'Le nuove pratiche sono temporaneamente in pausa. Le pratiche già inviate continuano a essere revisionate.';
+    return;
+  }
 
   $('analyseBtn').disabled = true;
   try {
@@ -313,9 +317,12 @@ async function submitForReview() {
     showPending(submitted.review_id);
     await checkAction();
   } catch (error) {
-    $('confirmError').textContent = `Non riesco a inviare la pratica: ${error.message}`;
+    const message = error.message === 'pilot_intake_paused'
+      ? 'Le nuove pratiche sono temporaneamente in pausa. Riprova più tardi.'
+      : `Non riesco a inviare la pratica: ${error.message}`;
+    $('confirmError').textContent = message;
   } finally {
-    $('analyseBtn').disabled = false;
+    $('analyseBtn').disabled = !(state.apiConfig?.pilot_enabled && state.apiConfig?.pilot_intake_enabled);
   }
 }
 
@@ -343,10 +350,19 @@ async function loadApiConfig() {
   try {
     state.apiConfig = await apiRequest('/v1/config', { caseAuth: false });
     const enabled = Boolean(state.apiConfig.pilot_enabled);
-    apiState.textContent = enabled ? `Motore ${state.apiConfig.service_version} · pilot attivo` : `Motore ${state.apiConfig.service_version} · pilot non attivo`;
-    apiState.className = `apiState ${enabled ? 'good' : 'bad'}`;
+    const intake = Boolean(state.apiConfig.pilot_intake_enabled);
+    if (enabled && intake) {
+      apiState.textContent = `Motore ${state.apiConfig.service_version} · pilot attivo`;
+      apiState.className = 'apiState good';
+    } else if (enabled) {
+      apiState.textContent = `Motore ${state.apiConfig.service_version} · nuove pratiche in pausa`;
+      apiState.className = 'apiState bad';
+    } else {
+      apiState.textContent = `Motore ${state.apiConfig.service_version} · pilot non attivo`;
+      apiState.className = 'apiState bad';
+    }
     $('pilotMeta').innerHTML = `<span>documenti: ${state.apiConfig.document_retention_hours}h</span><span>pratica: ${state.apiConfig.case_retention_days} giorni</span><span>consenso: ${escapeHtml(state.apiConfig.pilot_notice_version)}</span>`;
-    $('analyseBtn').disabled = !enabled;
+    $('analyseBtn').disabled = !(enabled && intake);
   } catch (error) {
     apiState.textContent = `Motore non raggiungibile · ${error.message}`;
     apiState.className = 'apiState bad';
