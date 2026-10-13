@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import argparse
 import json
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
 from sqlalchemy import inspect
 
-from .config import Settings
+from .config import SERVICE_VERSION, Settings
 from .db import Database
 from .malware import MalwareDetected, MalwareScanner, build_malware_scanner
 from .storage import PrivateStorage, build_storage
@@ -123,21 +126,47 @@ def run_preflight(
                 raise RuntimeError("storage_roundtrip_mismatch")
         finally:
             storage.delete(key)
-        return "storage_roundtrip_ok"
+
+        try:
+            storage.get(key)
+        except FileNotFoundError:
+            return "storage_roundtrip_delete_ok"
+        raise RuntimeError("storage_delete_not_effective")
 
     checks.append(_check("private_storage", storage_check))
     return checks
 
 
+def build_report(settings: Settings, checks: list[Check], *, generated_at: datetime | None = None) -> dict[str, object]:
+    generated_at = (generated_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    return {
+        "schema": 1,
+        "kind": "preflight",
+        "generated_at": generated_at.isoformat().replace("+00:00", "Z"),
+        "status": "ok" if all(item.ok for item in checks) else "blocked",
+        "environment": settings.environment,
+        "service_version": SERVICE_VERSION,
+        "commit_sha": settings.build_sha,
+        "checks": [asdict(item) for item in checks],
+    }
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Fail-closed RISOLVI production preflight")
+    parser.add_argument("--output", help="Write the JSON artifact to this path in addition to stdout")
+    args = parser.parse_args()
+
     settings = Settings.from_env()
     database = Database(settings.database_url)
     storage = build_storage(settings)
     scanner = build_malware_scanner(settings)
     checks = run_preflight(settings, database, storage, scanner)
-    ok = all(item.ok for item in checks)
-    print(json.dumps({"status": "ok" if ok else "blocked", "checks": [asdict(item) for item in checks]}, indent=2))
-    raise SystemExit(0 if ok else 1)
+    report = build_report(settings, checks)
+    encoded = json.dumps(report, indent=2, sort_keys=True)
+    if args.output:
+        Path(args.output).write_text(encoded + "\n", encoding="utf-8")
+    print(encoded)
+    raise SystemExit(0 if report["status"] == "ok" else 1)
 
 
 if __name__ == "__main__":
