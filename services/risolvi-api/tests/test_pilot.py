@@ -10,7 +10,9 @@ from app.main import create_app
 from app.storage import LocalPrivateStorage
 
 
-def make_client(tmp_path, *, pilot_enabled: bool = True):
+def make_client(tmp_path, *, pilot_enabled: bool = True, intake_enabled: bool | None = None):
+    if intake_enabled is None:
+        intake_enabled = pilot_enabled
     settings = Settings(
         environment="test",
         database_url=f"sqlite+pysqlite:///{tmp_path / 'pilot.db'}",
@@ -21,6 +23,7 @@ def make_client(tmp_path, *, pilot_enabled: bool = True):
         local_storage_dir=str(tmp_path / "private"),
         signed_url_seconds=60,
         pilot_enabled=pilot_enabled,
+        pilot_intake_enabled=intake_enabled,
         reviewer_secret="r" * 40,
     )
     database = Database(settings.database_url)
@@ -168,3 +171,63 @@ def test_pilot_routes_are_hidden_when_disabled(tmp_path):
     )
     assert response.status_code == 404
     assert client.get("/v1/pilot/reviews/pending", headers=reviewer_auth()).status_code == 404
+
+
+def test_intake_pause_blocks_new_user_writes_but_not_existing_review_delivery(tmp_path):
+    open_client, database = make_client(tmp_path, intake_enabled=True)
+    case_id, token = create_case(open_client)
+    assert open_client.put(
+        f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts()
+    ).status_code == 200
+    assert open_client.post(
+        f"/v1/cases/{case_id}/pilot/consent",
+        headers=case_auth(token),
+        json={"notice_version": "pilot-2026-10-v1"},
+    ).status_code == 204
+    review_id = open_client.post(
+        f"/v1/cases/{case_id}/pilot/submit", headers=case_auth(token)
+    ).json()["review_id"]
+
+    paused_settings = Settings(
+        environment="test",
+        database_url=f"sqlite+pysqlite:///{tmp_path / 'pilot.db'}",
+        capability_secret="test-capability-secret-that-is-long-enough",
+        case_retention_days=7,
+        document_retention_hours=24,
+        storage_backend="local",
+        local_storage_dir=str(tmp_path / "private"),
+        signed_url_seconds=60,
+        pilot_enabled=True,
+        pilot_intake_enabled=False,
+        reviewer_secret="r" * 40,
+    )
+    paused = TestClient(create_app(paused_settings, database, LocalPrivateStorage(paused_settings.local_storage_dir)))
+
+    blocked = paused.post("/v1/cases")
+    assert blocked.status_code == 503
+    assert blocked.json()["detail"] == "pilot_intake_paused"
+    blocked_facts = paused.put(
+        f"/v1/cases/{case_id}/facts", headers=case_auth(token), json=valid_facts()
+    )
+    assert blocked_facts.status_code == 503
+
+    # Pause intake without stranding cases already submitted for human review.
+    decided = paused.post(
+        f"/v1/pilot/reviews/{review_id}/decision",
+        headers=reviewer_auth(),
+        json={"classification": "PASS_AUTONOMOUS"},
+    )
+    assert decided.status_code == 200
+    delivered = paused.get(f"/v1/cases/{case_id}/pilot/action", headers=case_auth(token))
+    assert delivered.status_code == 200
+    assert delivered.json()["status"] == "APPROVED"
+
+
+def test_intake_cannot_be_enabled_without_pilot():
+    settings = Settings(pilot_enabled=False, pilot_intake_enabled=True)
+    try:
+        settings.validate()
+    except ValueError as exc:
+        assert str(exc) == "pilot_intake_requires_pilot"
+    else:
+        raise AssertionError("intake must not be enabled without pilot mode")
