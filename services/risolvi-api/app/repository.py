@@ -14,6 +14,8 @@ from .db import (
     DocumentRecord,
     FactRecord,
     OutcomeRecord,
+    PilotParticipationRecord,
+    PilotReviewRecord,
     RecommendationRecord,
 )
 from .models import Case, CaseFacts, CaseStatus, DocumentMetadata, Recommendation
@@ -190,7 +192,18 @@ class Repository:
     def delete_case(self, case_id: UUID) -> None:
         cid = str(case_id)
         with self.database.session() as session:
-            for model in (FactRecord, DocumentRecord, RecommendationRecord, ActionRecord, OutcomeRecord, AuditEventRecord):
+            # Explicit deletion keeps behavior deterministic even on databases where
+            # FK cascade configuration is accidentally weakened.
+            for model in (
+                PilotReviewRecord,
+                PilotParticipationRecord,
+                FactRecord,
+                DocumentRecord,
+                RecommendationRecord,
+                ActionRecord,
+                OutcomeRecord,
+                AuditEventRecord,
+            ):
                 session.execute(delete(model).where(model.case_id == cid))
             session.execute(delete(CaseRecord).where(CaseRecord.id == cid))
 

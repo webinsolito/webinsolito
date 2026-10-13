@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DEV_SECRET = "dev-only-change-me"
+DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 
 
 def _int_env(name: str, default: int) -> int:
@@ -12,6 +13,13 @@ def _int_env(name: str, default: int) -> int:
     if value < 0:
         raise ValueError(f"{name}_must_be_non_negative")
     return value
+
+
+def _bool_env(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,6 +35,8 @@ class Settings:
     s3_region: str | None = None
     s3_endpoint_url: str | None = None
     signed_url_seconds: int = 300
+    pilot_enabled: bool = False
+    reviewer_secret: str = DEV_REVIEWER_SECRET
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -42,6 +52,8 @@ class Settings:
             s3_region=os.getenv("RISOLVI_S3_REGION") or None,
             s3_endpoint_url=os.getenv("RISOLVI_S3_ENDPOINT_URL") or None,
             signed_url_seconds=_int_env("RISOLVI_SIGNED_URL_SECONDS", 300),
+            pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
+            reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
         )
         settings.validate()
         return settings
@@ -51,6 +63,8 @@ class Settings:
             raise ValueError("unsupported_storage_backend")
         if self.signed_url_seconds < 30 or self.signed_url_seconds > 900:
             raise ValueError("signed_url_seconds_must_be_between_30_and_900")
+        if self.pilot_enabled and len(self.reviewer_secret) < 24:
+            raise ValueError("pilot_requires_strong_reviewer_secret")
         if self.environment == "production":
             if not self.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
                 raise ValueError("production_requires_postgresql")
@@ -58,6 +72,10 @@ class Settings:
                 raise ValueError("production_requires_strong_capability_secret")
             if self.storage_backend != "s3" or not self.s3_bucket:
                 raise ValueError("production_requires_private_s3_storage")
+            if self.pilot_enabled and (
+                self.reviewer_secret == DEV_REVIEWER_SECRET or len(self.reviewer_secret) < 32
+            ):
+                raise ValueError("production_pilot_requires_strong_reviewer_secret")
         if self.storage_backend == "s3" and not self.s3_bucket:
             raise ValueError("s3_bucket_required")
 

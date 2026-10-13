@@ -76,8 +76,10 @@ def test_case_persists_across_app_recreation(tmp_path):
 def test_facts_analysis_export_and_outcome_do_not_export_secret(tmp_path):
     _, _, _, client = make_stack(tmp_path)
     case_id, token = create_case(client)
+    # This persistence test intentionally uses withdrawal rather than the guarantee
+    # route so it remains stable across the scheduled 22/10/2026 guarantee cutover.
     facts = {
-        "problem": "defect",
+        "problem": "withdrawal",
         "consumer": True,
         "professional_seller": True,
         "seller_country": "IT",
@@ -89,7 +91,7 @@ def test_facts_analysis_export_and_outcome_do_not_export_secret(tmp_path):
     assert client.put(f"/v1/cases/{case_id}/facts", headers=auth(token), json=facts).status_code == 200
     analysed = client.post(f"/v1/cases/{case_id}/analyse", headers=auth(token))
     assert analysed.status_code == 200
-    assert analysed.json()["route"] == "LEGAL_GUARANTEE"
+    assert analysed.json()["route"] == "WITHDRAWAL"
     assert client.post(
         f"/v1/cases/{case_id}/outcomes",
         headers=auth(token),

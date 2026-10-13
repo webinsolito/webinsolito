@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, timedelta
 
 from .models import CaseFacts, CaseStatus, Problem, Recommendation
 
+REPAIR_DIRECTIVE_RULEPACK_CUTOVER = date(2026, 10, 22)
 
-def _months_between(a: date, b: date) -> float:
-    return (b - a).days / 30.4375
+
+def _anniversary(value: date, years: int) -> date:
+    """Calendar anniversary without approximating a year as a fixed day count."""
+    try:
+        return value.replace(year=value.year + years)
+    except ValueError:
+        # 29 February -> 28 February in a non-leap target year.
+        return value.replace(month=2, day=28, year=value.year + years)
 
 
 def _safe_party_label(value: str | None) -> str:
@@ -76,8 +83,7 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
                 missing_facts=["delivery_date"],
             )
 
-        months = _months_between(f.delivery_date, today)
-        if months < 0:
+        if f.delivery_date > today:
             return Recommendation(
                 status=CaseStatus.NEEDS_INFORMATION,
                 title="Data non valida",
@@ -85,14 +91,44 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
                 missing_facts=["delivery_date"],
             )
 
-        if months > 24:
+        # D.Lgs. 176/2026 entra in vigore il 22/10/2026. Finché il rule pack v1
+        # non riceve sign-off specialistico, il motore non continua a usare in
+        # silenzio la versione precedente oltre il suo intervallo dichiarato.
+        if today >= REPAIR_DIRECTIVE_RULEPACK_CUTOVER:
+            return Recommendation(
+                status=CaseStatus.NEEDS_INFORMATION,
+                route="LEGAL_RULEPACK_REVIEW_2026_10_22",
+                title="Rule pack garanzia in aggiornamento",
+                explanation=(
+                    "Dal 22 ottobre 2026 è efficace un nuovo regime normativo rilevante per "
+                    "riparazione e garanzia. RISOLVI richiede revisione del rule pack v1 "
+                    "prima di produrre automaticamente questa raccomandazione."
+                ),
+                rule_ids=["IT-GUARANTEE-SELLER-001:v1"],
+                source_ids=["NORMATTIVA-DLGS176-2026"],
+            )
+
+        manifestation = f.defect_manifested_date or today
+        if manifestation < f.delivery_date or manifestation > today:
+            return Recommendation(
+                status=CaseStatus.NEEDS_INFORMATION,
+                route="LEGAL_GUARANTEE_REVIEW",
+                title="Data di manifestazione da verificare",
+                explanation=(
+                    "La data indicata per la manifestazione del difetto non è coerente con "
+                    "la consegna o con la data odierna."
+                ),
+                missing_facts=["defect_manifested_date"],
+            )
+
+        if manifestation > _anniversary(f.delivery_date, 2):
             return Recommendation(
                 status=CaseStatus.NEEDS_INFORMATION,
                 route="LEGAL_GUARANTEE_REVIEW",
                 title="Copertura ordinaria non affermata automaticamente",
                 explanation=(
-                    "La consegna risulta oltre 24 mesi fa; la v0 richiede revisione "
-                    "invece di dedurre un diritto certo."
+                    "Il difetto risulta manifestato oltre il periodo ordinario di due anni; "
+                    "la v0 richiede revisione invece di dedurre un diritto certo."
                 ),
                 rule_ids=["IT-GUARANTEE-SELLER-001:v0"],
                 source_ids=["MIMIT-GARANZIA"],
@@ -100,7 +136,7 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
 
         seller = _safe_party_label(f.seller_name)
         claims = ["seller_is_primary_counterparty", "legal_guarantee_route_candidate"]
-        if months <= 12:
+        if manifestation <= _anniversary(f.delivery_date, 1):
             claims.append("first_year_presumption_may_apply")
 
         return Recommendation(
@@ -201,24 +237,39 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
                 explanation="La v0 tratta la mancata consegna negli acquisti a distanza.",
             )
 
-        if f.promised_delivery_date is None:
+        delivery_deadline = f.promised_delivery_date
+        deadline_basis = "promesso"
+        if delivery_deadline is None and f.order_date is not None:
+            if f.order_date > today:
+                return Recommendation(
+                    status=CaseStatus.NEEDS_INFORMATION,
+                    route="DELIVERY",
+                    title="Data ordine non valida",
+                    explanation="La data dell'ordine risulta futura.",
+                    missing_facts=["order_date"],
+                )
+            delivery_deadline = f.order_date + timedelta(days=30)
+            deadline_basis = "ordinario di 30 giorni"
+
+        if delivery_deadline is None:
             return Recommendation(
                 status=CaseStatus.NEEDS_INFORMATION,
                 route="DELIVERY",
-                title="Serve il termine di consegna promesso",
+                title="Serve il termine di consegna o la data dell'ordine",
                 explanation=(
-                    "Il motore non qualifica il ritardo senza la data/termine promesso."
+                    "Il motore non qualifica il ritardo senza il termine concordato oppure, "
+                    "se non ne risulta uno, senza la data dell'ordine."
                 ),
                 missing_facts=["promised_delivery_date"],
             )
 
-        # A promise for "today" is not treated as overdue before the day has ended.
-        if f.promised_delivery_date >= today:
+        # A deadline for "today" is not treated as overdue before the day has ended.
+        if delivery_deadline >= today:
             return Recommendation(
                 status=CaseStatus.NEEDS_INFORMATION,
                 route="DELIVERY",
                 title="Il termine non è ancora trascorso",
-                explanation="La data promessa non risulta ancora trascorsa.",
+                explanation=f"Il termine {deadline_basis} non risulta ancora trascorso.",
             )
 
         return Recommendation(
@@ -226,15 +277,21 @@ def analyse(f: CaseFacts, today: date | None = None) -> Recommendation:
             route="DELIVERY",
             title="Prepara una contestazione della mancata consegna",
             explanation=(
-                "Il termine promesso risulta trascorso; la v0 prepara una richiesta al "
-                "venditore senza dedurre automaticamente un rimborso immediato."
+                "Il termine di consegna risulta trascorso; la v0 prepara una richiesta al "
+                "venditore senza dedurre automaticamente un rimborso immediato o la "
+                "risoluzione automatica del contratto."
             ),
             rule_ids=["IT-NONDELIVERY-001:v0"],
             source_ids=["MIMIT-VENDITA-DISTANZA"],
-            allowed_claims=["delivery_deadline_passed", "contact_seller"],
+            allowed_claims=[
+                "delivery_deadline_passed",
+                "contact_seller",
+                "additional_period_may_be_required_before_termination",
+            ],
             draft=(
-                "L'ordine non risulta consegnato nonostante il termine indicato sia "
-                "trascorso. Chiedo stato effettivo e un termine certo per la consegna."
+                "L'ordine non risulta consegnato nonostante il termine di consegna sia "
+                "trascorso. Chiedo di effettuare la consegna entro un termine supplementare "
+                "appropriato e di confermarmi per iscritto la nuova data."
             ),
         )
 

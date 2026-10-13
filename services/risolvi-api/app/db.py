@@ -74,6 +74,27 @@ class OutcomeRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class PilotParticipationRecord(Base):
+    __tablename__ = "pilot_participations"
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id", ondelete="CASCADE"), primary_key=True)
+    notice_version: Mapped[str] = mapped_column(String(80), nullable=False)
+    consented_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class PilotReviewRecord(Base):
+    __tablename__ = "pilot_reviews"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id", ondelete="CASCADE"), nullable=False, index=True)
+    original_recommendation: Mapped[dict] = mapped_column(JSON, nullable=False)
+    classification: Mapped[str | None] = mapped_column(String(40), nullable=True, index=True)
+    error_severity: Mapped[str | None] = mapped_column(String(4), nullable=True, index=True)
+    final_recommendation: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    reviewer_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 class RuleRecord(Base):
     __tablename__ = "rules"
     id: Mapped[str] = mapped_column(String(120), primary_key=True)

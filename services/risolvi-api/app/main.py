@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from secrets import compare_digest
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -28,11 +29,19 @@ from .models import (
     DocumentMetadata,
     ExtractionBundle,
     OutcomeRequest,
+    PilotActionResponse,
+    PilotConsentRequest,
+    PilotMetrics,
+    PilotReviewDecisionRequest,
+    PilotReviewView,
+    PilotSubmitResponse,
     Recommendation,
 )
+from .pilot import PilotError, PilotService
 from .rule_engine import analyse
 
 CaseToken = Annotated[str | None, Header(alias="X-Case-Token")]
+ReviewerToken = Annotated[str | None, Header(alias="X-Reviewer-Token")]
 
 
 def _safe_filename(value: str) -> str:
@@ -52,12 +61,14 @@ def create_app(
     database.create_all()
     storage = storage or build_storage(settings)
     repo = Repository(database, settings.capability_secret)
+    pilot = PilotService(database)
 
-    app = FastAPI(title="WEBINSOLITO RISOLVI API", version="0.3.0")
+    app = FastAPI(title="WEBINSOLITO RISOLVI API", version="0.5.0")
     app.state.settings = settings
     app.state.database = database
     app.state.storage = storage
     app.state.repository = repo
+    app.state.pilot = pilot
 
     def require_case(case_id: UUID, token: str | None) -> Case:
         case = repo.get_case(case_id, token)
@@ -65,9 +76,32 @@ def create_app(
             raise HTTPException(status_code=404, detail="case_not_found")
         return case
 
+    def require_pilot() -> None:
+        if not settings.pilot_enabled:
+            raise HTTPException(status_code=404, detail="pilot_not_enabled")
+
+    def require_reviewer(token: str | None) -> None:
+        require_pilot()
+        if not token or not compare_digest(token, settings.reviewer_secret):
+            raise HTTPException(status_code=404, detail="review_not_found")
+
+    def document_response(document) -> Response:
+        signed = storage.signed_get_url(document.storage_key, settings.signed_url_seconds)
+        if signed:
+            return RedirectResponse(signed, status_code=307)
+        try:
+            content = storage.get(document.storage_key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="document_blob_not_found") from exc
+        return Response(
+            content=content,
+            media_type=document.mime_type,
+            headers={"Content-Disposition": f'attachment; filename="{_safe_filename(document.filename)}"'},
+        )
+
     @app.get("/health")
     def health() -> dict[str, str]:
-        return {"status": "ok", "service": "risolvi-api", "version": "0.3.0"}
+        return {"status": "ok", "service": "risolvi-api", "version": "0.5.0"}
 
     @app.post("/v1/cases", response_model=CaseCreated)
     def create_case() -> CaseCreated:
@@ -165,28 +199,110 @@ def create_app(
         document = repo.get_document(case_id, document_id)
         if document is None:
             raise HTTPException(status_code=404, detail="document_not_found")
-        signed = storage.signed_get_url(document.storage_key, settings.signed_url_seconds)
-        if signed:
-            return RedirectResponse(signed, status_code=307)
-        try:
-            content = storage.get(document.storage_key)
-        except FileNotFoundError as exc:
-            raise HTTPException(status_code=404, detail="document_blob_not_found") from exc
-        return Response(
-            content=content,
-            media_type=document.mime_type,
-            headers={"Content-Disposition": f'attachment; filename="{_safe_filename(document.filename)}"'},
-        )
+        return document_response(document)
 
     @app.post("/v1/cases/{case_id}/analyse", response_model=Recommendation)
     def analyse_case(case_id: UUID, x_case_token: CaseToken = None) -> Recommendation:
         require_case(case_id, x_case_token)
+        if settings.pilot_enabled:
+            # During the controlled Wizard-of-Oz pilot no Action Card may bypass
+            # the explicit review queue. The raw engine output stays server-side.
+            raise HTTPException(status_code=409, detail="pilot_review_required_use_pilot_submit")
         facts = repo.latest_facts(case_id)
         if facts is None:
             raise HTTPException(status_code=409, detail="facts_not_confirmed")
         recommendation = analyse(facts)
         repo.save_recommendation(case_id, recommendation)
         return recommendation
+
+    @app.post("/v1/cases/{case_id}/pilot/consent", status_code=204)
+    def pilot_consent(
+        case_id: UUID,
+        request: PilotConsentRequest,
+        x_case_token: CaseToken = None,
+    ) -> Response:
+        require_pilot()
+        require_case(case_id, x_case_token)
+        pilot.consent(case_id, request.notice_version)
+        return Response(status_code=204)
+
+    @app.post("/v1/cases/{case_id}/pilot/submit", response_model=PilotSubmitResponse)
+    def pilot_submit(case_id: UUID, x_case_token: CaseToken = None) -> PilotSubmitResponse:
+        require_pilot()
+        require_case(case_id, x_case_token)
+        facts = repo.latest_facts(case_id)
+        if facts is None:
+            raise HTTPException(status_code=409, detail="facts_not_confirmed")
+        try:
+            review_id = pilot.submit(case_id, analyse(facts))
+        except PilotError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        return PilotSubmitResponse(review_id=review_id)
+
+    @app.get("/v1/cases/{case_id}/pilot/action", response_model=PilotActionResponse)
+    def pilot_action(case_id: UUID, x_case_token: CaseToken = None) -> PilotActionResponse:
+        require_pilot()
+        require_case(case_id, x_case_token)
+        review = pilot.latest_for_case(case_id)
+        if review is None or review.final_recommendation is None:
+            return PilotActionResponse(status="PENDING_REVIEW")
+        if review.delivered_at is None:
+            repo.save_recommendation(case_id, review.final_recommendation)
+            pilot.mark_delivered(review.id)
+        return PilotActionResponse(status="APPROVED", recommendation=review.final_recommendation)
+
+    @app.get("/v1/pilot/reviews/pending", response_model=list[PilotReviewView])
+    def pending_reviews(
+        limit: int = 50,
+        x_reviewer_token: ReviewerToken = None,
+    ) -> list[PilotReviewView]:
+        require_reviewer(x_reviewer_token)
+        return pilot.list_pending(limit)
+
+    @app.get("/v1/pilot/reviews/{review_id}", response_model=PilotReviewView)
+    def get_pilot_review(
+        review_id: int,
+        x_reviewer_token: ReviewerToken = None,
+    ) -> PilotReviewView:
+        require_reviewer(x_reviewer_token)
+        review = pilot.get_review(review_id)
+        if review is None:
+            raise HTTPException(status_code=404, detail="review_not_found")
+        return review
+
+    @app.post("/v1/pilot/reviews/{review_id}/decision", response_model=PilotReviewView)
+    def decide_pilot_review(
+        review_id: int,
+        request: PilotReviewDecisionRequest,
+        x_reviewer_token: ReviewerToken = None,
+    ) -> PilotReviewView:
+        require_reviewer(x_reviewer_token)
+        try:
+            return pilot.decide(review_id, request)
+        except PilotError as exc:
+            detail = str(exc)
+            code = 404 if detail == "review_not_found" else 409
+            raise HTTPException(status_code=code, detail=detail) from exc
+
+    @app.get("/v1/pilot/reviews/{review_id}/documents/{document_id}/download")
+    def reviewer_download_document(
+        review_id: int,
+        document_id: str,
+        x_reviewer_token: ReviewerToken = None,
+    ) -> Response:
+        require_reviewer(x_reviewer_token)
+        review = pilot.get_review(review_id)
+        if review is None:
+            raise HTTPException(status_code=404, detail="review_not_found")
+        document = repo.get_document(review.case_id, document_id)
+        if document is None:
+            raise HTTPException(status_code=404, detail="document_not_found")
+        return document_response(document)
+
+    @app.get("/v1/pilot/metrics", response_model=PilotMetrics)
+    def pilot_metrics(x_reviewer_token: ReviewerToken = None) -> PilotMetrics:
+        require_reviewer(x_reviewer_token)
+        return pilot.metrics()
 
     @app.post("/v1/cases/{case_id}/outcomes", status_code=204)
     def add_outcome(
