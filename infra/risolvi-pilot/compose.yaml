@@ -1,0 +1,246 @@
+name: risolvi-pilot
+
+x-api-env: &api-env
+  RISOLVI_ENV: production
+  RISOLVI_BUILD_SHA: ${RISOLVI_BUILD_SHA}
+  RISOLVI_AUTO_CREATE_SCHEMA: "false"
+  RISOLVI_PILOT_ENABLED: "true"
+  RISOLVI_PILOT_INTAKE_ENABLED: ${RISOLVI_PILOT_INTAKE_ENABLED:-false}
+  RISOLVI_CAPABILITY_SECRET: ${RISOLVI_CAPABILITY_SECRET}
+  RISOLVI_REVIEWER_CREDENTIALS_JSON: ${RISOLVI_REVIEWER_CREDENTIALS_JSON}
+  RISOLVI_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+  RISOLVI_STORAGE_BACKEND: s3
+  RISOLVI_S3_BUCKET: ${RISOLVI_S3_BUCKET}
+  RISOLVI_S3_REGION: ${RISOLVI_S3_REGION}
+  RISOLVI_S3_ENDPOINT_URL: ${RISOLVI_S3_ENDPOINT_URL:-}
+  RISOLVI_S3_FORCE_PATH_STYLE: ${RISOLVI_S3_FORCE_PATH_STYLE:-false}
+  RISOLVI_SIGNED_URL_SECONDS: ${RISOLVI_SIGNED_URL_SECONDS:-300}
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  RISOLVI_MALWARE_SCANNER: clamav
+  RISOLVI_CLAMAV_HOST: clamav
+  RISOLVI_CLAMAV_PORT: "3310"
+  RISOLVI_CLAMAV_TIMEOUT_SECONDS: ${RISOLVI_CLAMAV_TIMEOUT_SECONDS:-10}
+  RISOLVI_CASE_RETENTION_DAYS: ${RISOLVI_CASE_RETENTION_DAYS:-7}
+  RISOLVI_DOCUMENT_RETENTION_HOURS: ${RISOLVI_DOCUMENT_RETENTION_HOURS:-24}
+  RISOLVI_ALLOWED_ORIGINS: ${RISOLVI_ALLOWED_ORIGINS:-}
+
+x-api-build: &api-build
+  context: ../../services/risolvi-api
+  dockerfile: Dockerfile
+  args:
+    RISOLVI_BUILD_SHA: ${RISOLVI_BUILD_SHA}
+
+x-api-runtime: &api-runtime
+  build: *api-build
+  image: webinsolito-risolvi-api:${RISOLVI_BUILD_SHA}
+  restart: unless-stopped
+  init: true
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  environment: *api-env
+  networks:
+    - private
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: --data-checksums
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  clamav:
+    image: clamav/clamav:stable
+    restart: unless-stopped
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping 1 >/dev/null 2>&1"]
+      interval: 20s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  migrate:
+    <<: *api-runtime
+    restart: "no"
+    environment:
+      <<: *api-env
+      RISOLVI_MIGRATION_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *api-runtime
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2).read()"]
+      interval: 15s
+      timeout: 4s
+      retries: 12
+      start_period: 20s
+
+  retention:
+    <<: *api-runtime
+    command: ["/bin/sh", "-c", "while true; do python -m app.retention; sleep 3600; done"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      RISOLVI_DOMAIN: ${RISOLVI_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - edge
+      - private
+    depends_on:
+      api:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  preflight:
+    <<: *api-runtime
+    profiles: ["ops"]
+    restart: "no"
+    volumes:
+      - ./evidence:/evidence
+    command: ["python", "-m", "app.preflight", "--output", "/evidence/preflight.json"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  smoke:
+    <<: *api-runtime
+    profiles: ["ops"]
+    restart: "no"
+    environment:
+      RISOLVI_SMOKE_BASE_URL: https://${RISOLVI_DOMAIN}
+      RISOLVI_SMOKE_REVIEWER_ID: ${RISOLVI_SMOKE_REVIEWER_ID}
+      RISOLVI_SMOKE_REVIEWER_SECRET: ${RISOLVI_SMOKE_REVIEWER_SECRET}
+    volumes:
+      - ./evidence:/evidence
+    command: ["python", "-m", "app.remote_smoke", "--output", "/evidence/smoke.json"]
+    networks:
+      - edge
+    depends_on:
+      caddy:
+        condition: service_started
+
+  minio:
+    profiles: ["self-hosted-s3"]
+    image: ${RISOLVI_MINIO_IMAGE:-minio/minio:latest}
+    restart: unless-stopped
+    command: ["server", "/data"]
+    environment:
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - minio-data:/data
+    networks:
+      - private
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  minio-init:
+    profiles: ["self-hosted-s3"]
+    image: ${RISOLVI_MINIO_MC_IMAGE:-minio/mc:latest}
+    restart: "no"
+    depends_on:
+      - minio
+    networks:
+      - private
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        until mc alias set pilot http://minio:9000 "$${AWS_ACCESS_KEY_ID}" "$${AWS_SECRET_ACCESS_KEY}"; do sleep 2; done;
+        mc mb --ignore-existing pilot/"$${RISOLVI_S3_BUCKET}";
+        mc anonymous set none pilot/"$${RISOLVI_S3_BUCKET}"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      RISOLVI_S3_BUCKET: ${RISOLVI_S3_BUCKET}
+
+networks:
+  edge:
+  private:
+    internal: true
+
+volumes:
+  postgres-data:
+  caddy-data:
+  caddy-config:
+  minio-data:
