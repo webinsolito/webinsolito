@@ -51,6 +51,7 @@ from .rule_engine import analyse
 
 CaseToken = Annotated[str | None, Header(alias="X-Case-Token")]
 ReviewerToken = Annotated[str | None, Header(alias="X-Reviewer-Token")]
+ReviewerId = Annotated[str | None, Header(alias="X-Reviewer-Id")]
 
 
 def _safe_filename(value: str) -> str:
@@ -82,11 +83,9 @@ def create_app(
             allow_origins=list(settings.allowed_origins),
             allow_credentials=False,
             allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allow_headers=["Content-Type", "X-Case-Token", "X-Reviewer-Token"],
+            allow_headers=["Content-Type", "X-Case-Token", "X-Reviewer-Id", "X-Reviewer-Token"],
             max_age=600,
         )
-    # Added after CORS so this becomes the outer user middleware and therefore
-    # also hardens generated CORS responses. All API responses are no-store.
     app.add_middleware(
         ResponseSecurityMiddleware,
         production=settings.environment == "production",
@@ -117,10 +116,25 @@ def create_app(
         if settings.pilot_enabled:
             require_pilot_intake()
 
-    def require_reviewer(token: str | None) -> None:
+    def require_reviewer(reviewer_id: str | None, token: str | None) -> str:
         require_pilot()
-        if not token or not compare_digest(token, settings.reviewer_secret):
+        try:
+            normalized_id = settings.validate_reviewer_id(reviewer_id or "")
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail="review_not_found") from exc
+
+        credentials = settings.reviewer_credentials_map
+        if credentials:
+            known = normalized_id in credentials
+            expected = credentials.get(normalized_id, "invalid-reviewer-credential")
+        else:
+            # Development/test compatibility only. Production pilot validation
+            # requires reviewer_credentials and therefore never uses this fallback.
+            known = True
+            expected = settings.reviewer_secret
+        if not token or not known or not compare_digest(token, expected):
             raise HTTPException(status_code=404, detail="review_not_found")
+        return normalized_id
 
     def scan_bytes(data: bytes) -> None:
         try:
@@ -128,7 +142,6 @@ def create_app(
         except MalwareDetected as exc:
             raise HTTPException(status_code=422, detail="malware_detected") from exc
         except MalwareScanError as exc:
-            # Scanner errors fail closed. Do not echo daemon/provider details.
             raise HTTPException(status_code=503, detail="malware_scan_unavailable") from exc
 
     def document_response(document) -> Response:
@@ -327,17 +340,19 @@ def create_app(
     @app.get("/v1/pilot/reviews/pending", response_model=list[PilotReviewView])
     def pending_reviews(
         limit: int = 50,
+        x_reviewer_id: ReviewerId = None,
         x_reviewer_token: ReviewerToken = None,
     ) -> list[PilotReviewView]:
-        require_reviewer(x_reviewer_token)
+        require_reviewer(x_reviewer_id, x_reviewer_token)
         return pilot.list_pending(limit)
 
     @app.get("/v1/pilot/reviews/{review_id}", response_model=PilotReviewView)
     def get_pilot_review(
         review_id: int,
+        x_reviewer_id: ReviewerId = None,
         x_reviewer_token: ReviewerToken = None,
     ) -> PilotReviewView:
-        require_reviewer(x_reviewer_token)
+        require_reviewer(x_reviewer_id, x_reviewer_token)
         review = pilot.get_review(review_id)
         if review is None:
             raise HTTPException(status_code=404, detail="review_not_found")
@@ -347,11 +362,12 @@ def create_app(
     def decide_pilot_review(
         review_id: int,
         request: PilotReviewDecisionRequest,
+        x_reviewer_id: ReviewerId = None,
         x_reviewer_token: ReviewerToken = None,
     ) -> PilotReviewView:
-        require_reviewer(x_reviewer_token)
+        reviewer_id = require_reviewer(x_reviewer_id, x_reviewer_token)
         try:
-            return pilot.decide(review_id, request)
+            return pilot.decide(review_id, request, reviewer_id)
         except PilotError as exc:
             detail = str(exc)
             code = 404 if detail == "review_not_found" else 409
@@ -361,9 +377,10 @@ def create_app(
     def reviewer_download_document(
         review_id: int,
         document_id: str,
+        x_reviewer_id: ReviewerId = None,
         x_reviewer_token: ReviewerToken = None,
     ) -> Response:
-        require_reviewer(x_reviewer_token)
+        require_reviewer(x_reviewer_id, x_reviewer_token)
         review = pilot.get_review(review_id)
         if review is None:
             raise HTTPException(status_code=404, detail="review_not_found")
@@ -373,8 +390,11 @@ def create_app(
         return document_response(document)
 
     @app.get("/v1/pilot/metrics", response_model=PilotMetrics)
-    def pilot_metrics(x_reviewer_token: ReviewerToken = None) -> PilotMetrics:
-        require_reviewer(x_reviewer_token)
+    def pilot_metrics(
+        x_reviewer_id: ReviewerId = None,
+        x_reviewer_token: ReviewerToken = None,
+    ) -> PilotMetrics:
+        require_reviewer(x_reviewer_id, x_reviewer_token)
         return pilot.metrics()
 
     @app.post("/v1/cases/{case_id}/outcomes", status_code=204)
