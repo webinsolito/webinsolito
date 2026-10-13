@@ -13,6 +13,16 @@ function safeText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
+function normalizeDocumentText(value) {
+  return String(value || '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map(line => line.replace(/[\t ]+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
+    .slice(0, MAX_TEXT);
+}
+
 async function digestFile(file) {
   if (!crypto?.subtle) return null;
   const bytes = await file.arrayBuffer();
@@ -64,7 +74,7 @@ async function getPdfJs() {
 async function ocrSource(source, onStatus) {
   const worker = await getTesseractWorker(onStatus);
   const result = await worker.recognize(source);
-  return safeText(result?.data?.text || '');
+  return normalizeDocumentText(result?.data?.text || '');
 }
 
 async function extractPdf(file, onStatus) {
@@ -80,7 +90,9 @@ async function extractPdf(file, onStatus) {
     onStatus(`Leggo PDF · pagina ${pageNumber}/${pageCount}`);
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    let text = safeText(content.items.map(item => item.str || '').join(' '));
+    let text = normalizeDocumentText(
+      content.items.map(item => `${item.str || ''}${item.hasEOL ? '\n' : ' '}`).join('')
+    );
     let method = 'CLIENT_PDF_TEXT';
 
     if (text.length < 30) {
@@ -113,7 +125,9 @@ async function extractTextLike(file) {
     const doc = new DOMParser().parseFromString(text, 'text/html');
     text = doc.body?.innerText || text;
   }
-  return { text: safeText(text).slice(0, MAX_TEXT), pages: [{ page: 1, text: safeText(text), method: 'PLAIN_TEXT' }], method: /\.eml$/i.test(file.name) ? 'EMAIL_TEXT' : 'PLAIN_TEXT', warnings: [] };
+  const method = /\.eml$/i.test(file.name) || file.type === 'message/rfc822' ? 'EMAIL_TEXT' : 'PLAIN_TEXT';
+  const normalized = normalizeDocumentText(text);
+  return { text: normalized, pages: [{ page: 1, text: normalized, method }], method, warnings: [] };
 }
 
 export async function extractFile(file, onStatus = () => {}) {
@@ -123,13 +137,13 @@ export async function extractFile(file, onStatus = () => {}) {
 
   const lower = file.name.toLowerCase();
   let extracted;
-  if (file.type.startsWith('image/') || /\.(png|jpe?g|webp|bmp)$/i.test(lower)) {
+  if (file.type.startsWith('image/') || /\.(png|jpe?g|webp)$/i.test(lower)) {
     onStatus(`OCR locale · ${file.name}`);
     const text = await ocrSource(file, onStatus);
     extracted = { text, pages: [{ page: 1, text, method: 'CLIENT_OCR' }], method: 'CLIENT_OCR', warnings: [] };
   } else if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
     extracted = await extractPdf(file, onStatus);
-  } else if (file.type.startsWith('text/') || /\.(txt|eml|html?)$/i.test(lower)) {
+  } else if (file.type.startsWith('text/') || file.type === 'message/rfc822' || /\.(txt|eml|html?)$/i.test(lower)) {
     extracted = await extractTextLike(file);
   } else {
     throw new Error('unsupported_file_type');
@@ -192,6 +206,10 @@ function evidence(document, page, match, key, value, confidence) {
   };
 }
 
+function cleanLabelValue(value, limit = 120) {
+  return safeText(value).replace(/[\s,;.]+$/, '').slice(0, limit);
+}
+
 function candidatesForPage(document, page) {
   const text = page.text || '';
   const lower = text.toLowerCase();
@@ -209,7 +227,19 @@ function candidatesForPage(document, page) {
   }
 
   let match = text.match(/(?:venditore|seller|merchant|venduto\s+da|ragione\s+sociale)\s*[:\-]\s*([^\n\r]{2,100})/i);
-  if (match) out.push(evidence(document, page, match, 'seller_name', match[1].trim().replace(/[\s,;.]+$/, ''), 'high'));
+  if (match) out.push(evidence(document, page, match, 'seller_name', cleanLabelValue(match[1], 100), 'high'));
+
+  match = text.match(/(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:numero|codice|id|n\.?|#))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})/i);
+  if (match) out.push(evidence(document, page, match, 'order_reference', cleanLabelValue(match[1], 40), 'high'));
+
+  match = text.match(/(?:prodotto|articolo|product|item)\s*[:\-]\s*([^\n\r]{2,120})/i);
+  if (match) out.push(evidence(document, page, match, 'product_name', cleanLabelValue(match[1], 120), 'high'));
+
+  match = text.match(new RegExp(`(?:data\\s+(?:ordine|acquisto)|ordinato\\s+il|acquistato\\s+il)\\s*[:\\-]?\\s*(${dateToken})`, 'i'));
+  if (match) {
+    const value = parseItalianDate(match[1]);
+    if (value) out.push(evidence(document, page, match, 'order_date', value, 'high'));
+  }
 
   match = text.match(new RegExp(`(?:consegnat[oa]|data\\s+di\\s+consegna)\\s*(?:il|:)?\\s*(${dateToken})`, 'i'));
   if (match) {
@@ -223,11 +253,12 @@ function candidatesForPage(document, page) {
     if (value) out.push(evidence(document, page, match, 'promised_delivery_date', value, 'high'));
   }
 
-  if (/\b(acquisto\s+online|ordine\s+(?:n\.?|numero|#)|e-?commerce|spedizione)\b/i.test(lower)) out.push(evidence(document, page, null, 'distance_purchase', true, 'medium'));
+  if (/\b(acquisto\s+online|ordine\s+(?:numero|n\.?|#)|e-?commerce|spedizione)\b/i.test(lower)) out.push(evidence(document, page, null, 'distance_purchase', true, 'medium'));
   if (/\b(s\.?r\.?l\.?|s\.?p\.?a\.?|s\.?n\.?c\.?|s\.?a\.?s\.?|partita\s+iva|p\.?iva)\b/i.test(lower)) out.push(evidence(document, page, null, 'professional_seller', true, 'medium'));
   if (/\b(prodotto|articolo|bene|spedizione|pacco|consegna)\b/i.test(lower)) out.push(evidence(document, page, null, 'physical_good', true, 'medium'));
   if (/\b(personalizzat[oa]|su\s+misura|incis[oa])\b/i.test(lower)) out.push(evidence(document, page, null, 'customised', true, 'high'));
   if (/\b(deperibile|scadenza\s+breve|deteriorarsi\s+rapidamente)\b/i.test(lower)) out.push(evidence(document, page, null, 'perishable', true, 'high'));
+  if (/\b(sigillat[oa].{0,35}(igiene|igienic|salute).{0,45}(apert[oa]|rimosso|rotto))\b/i.test(lower)) out.push(evidence(document, page, null, 'sealed_hygiene_opened', true, 'high'));
   return out;
 }
 
@@ -241,13 +272,14 @@ export function inferFacts(documents) {
 
   const facts = {};
   const conflicts = [];
+  const confidenceRank = { high: 2, medium: 1, low: 0 };
   for (const [key, values] of byKey.entries()) {
     const distinct = [...new Set(values.map(item => String(item.value).toLowerCase()))];
     if (distinct.length > 1) {
       conflicts.push(key);
       continue;
     }
-    const best = values.sort((a, b) => ({ high: 2, medium: 1, low: 0 }[b.confidence] - ({ high: 2, medium: 1, low: 0 }[a.confidence]))[0];
+    const best = values.sort((a, b) => (confidenceRank[b.confidence] ?? 0) - (confidenceRank[a.confidence] ?? 0))[0];
     facts[key] = best.value;
   }
   return { facts, candidates, conflicts };

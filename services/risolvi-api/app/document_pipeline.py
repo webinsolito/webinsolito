@@ -26,10 +26,18 @@ from .models import (
 MAX_FILE_BYTES = 8 * 1024 * 1024
 MAX_FILES = 8
 MAX_TEXT_CHARS = 120_000
+ALLOWED_CLIENT_METHODS = {
+    ExtractionMethod.CLIENT_OCR,
+    ExtractionMethod.CLIENT_PDF_TEXT,
+    ExtractionMethod.PLAIN_TEXT,
+    ExtractionMethod.EMAIL_TEXT,
+}
 CRITICAL_FACT_KEYS = (
     "problem",
     "seller_name",
     "order_date",
+    "order_reference",
+    "product_name",
     "delivery_date",
     "promised_delivery_date",
     "consumer",
@@ -76,10 +84,17 @@ class ParsedDocument:
     pages: list[str]
     sha256: str | None = None
     warnings: list[str] = field(default_factory=list)
+    page_methods: list[ExtractionMethod] = field(default_factory=list)
 
     @property
     def text(self) -> str:
         return "\n\n".join(self.pages)[:MAX_TEXT_CHARS]
+
+    def method_for_page(self, page_no: int) -> ExtractionMethod:
+        index = page_no - 1
+        if 0 <= index < len(self.page_methods):
+            return self.page_methods[index]
+        return self.method
 
 
 _MONTHS = {
@@ -97,6 +112,14 @@ _MONTHS = {
     "dicembre": 12,
 }
 _DATE_TOKEN = r"(?:\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+(?:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+\d{4})"
+_ORDER_REFERENCE_PATTERN = re.compile(
+    r"(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:numero|codice|id|n\.?|#))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})",
+    flags=re.IGNORECASE,
+)
+_PRODUCT_PATTERN = re.compile(
+    r"(?:prodotto|articolo|product|item)\s*[:\-]\s*([^\n\r]{2,120})",
+    flags=re.IGNORECASE,
+)
 
 
 def _decode_text(data: bytes) -> str:
@@ -196,18 +219,37 @@ def parse_server_document(filename: str, mime_type: str | None, data: bytes) -> 
 
 
 def parse_client_document(document: ClientExtractedDocument) -> ParsedDocument:
-    text = document.text.strip()[:MAX_TEXT_CHARS]
-    if not text:
-        raise DocumentError("client_extraction_empty")
-    if document.method not in {ExtractionMethod.CLIENT_OCR, ExtractionMethod.CLIENT_PDF_TEXT, ExtractionMethod.PLAIN_TEXT, ExtractionMethod.EMAIL_TEXT}:
+    if document.method not in ALLOWED_CLIENT_METHODS:
         raise DocumentError("client_extraction_method_not_allowed")
+
+    if document.pages:
+        ordered = sorted(document.pages, key=lambda item: item.page)
+        page_numbers = [item.page for item in ordered]
+        if page_numbers != list(range(1, len(ordered) + 1)):
+            raise DocumentError("client_pages_must_be_contiguous_from_one")
+        if any(item.method not in ALLOWED_CLIENT_METHODS for item in ordered):
+            raise DocumentError("client_page_method_not_allowed")
+        pages = [item.text.strip() for item in ordered]
+        if not any(pages):
+            raise DocumentError("client_extraction_empty")
+        if sum(len(page) for page in pages) > MAX_TEXT_CHARS:
+            raise DocumentError("client_extraction_too_large")
+        page_methods = [item.method for item in ordered]
+    else:
+        text = document.text.strip()
+        if not text:
+            raise DocumentError("client_extraction_empty")
+        pages = [text[:MAX_TEXT_CHARS]]
+        page_methods = [document.method]
+
     return ParsedDocument(
         document_id=f"doc_{uuid4().hex[:12]}",
         filename=document.filename[:180],
         mime_type=document.mime_type[:120],
         method=document.method,
-        pages=[text],
+        pages=pages,
         sha256=document.sha256,
+        page_methods=page_methods,
     )
 
 
@@ -241,14 +283,34 @@ def _snippet(text: str, start: int, end: int, radius: int = 70) -> str:
     return re.sub(r"\s+", " ", text[left:right]).strip()[:240]
 
 
-def _candidate(doc: ParsedDocument, page_no: int, key: str, value: object, confidence: str, text: str, match: re.Match[str] | None = None) -> FactCandidate:
+def _candidate(
+    doc: ParsedDocument,
+    page_no: int,
+    key: str,
+    value: object,
+    confidence: str,
+    text: str,
+    match: re.Match[str] | None = None,
+) -> FactCandidate:
     span = _snippet(text, match.start(), match.end()) if match else text[:220]
     return FactCandidate(
         key=key,
         value=value,
         confidence=confidence,
-        evidence=[EvidenceRef(document_id=doc.document_id, filename=doc.filename, page=page_no, span=span, method=doc.method)],
+        evidence=[
+            EvidenceRef(
+                document_id=doc.document_id,
+                filename=doc.filename,
+                page=page_no,
+                span=span,
+                method=doc.method_for_page(page_no),
+            )
+        ],
     )
+
+
+def _clean_label_value(value: str, limit: int = 120) -> str:
+    return re.sub(r"\s+", " ", value).strip(" \t,;.")[:limit]
 
 
 def _extract_page_candidates(doc: ParsedDocument, page_no: int, text: str) -> list[FactCandidate]:
@@ -271,8 +333,18 @@ def _extract_page_candidates(doc: ParsedDocument, page_no: int, text: str) -> li
 
     seller_match = re.search(r"(?:venditore|seller|merchant|venduto\s+da|ragione\s+sociale)\s*[:\-]\s*([^\n\r]{2,100})", text, flags=re.IGNORECASE)
     if seller_match:
-        seller = seller_match.group(1).strip(" \t,;.")
+        seller = _clean_label_value(seller_match.group(1), 100)
         out.append(_candidate(doc, page_no, "seller_name", seller, "high", text, seller_match))
+
+    order_reference_match = _ORDER_REFERENCE_PATTERN.search(text)
+    if order_reference_match:
+        reference = _clean_label_value(order_reference_match.group(1), 40)
+        out.append(_candidate(doc, page_no, "order_reference", reference, "high", text, order_reference_match))
+
+    product_match = _PRODUCT_PATTERN.search(text)
+    if product_match:
+        product = _clean_label_value(product_match.group(1), 120)
+        out.append(_candidate(doc, page_no, "product_name", product, "high", text, product_match))
 
     order_match = re.search(rf"(?:data\s+(?:ordine|acquisto)|ordinato\s+il|acquistato\s+il)\s*[:\-]?\s*({_DATE_TOKEN})", text, flags=re.IGNORECASE)
     if order_match:
@@ -292,7 +364,7 @@ def _extract_page_candidates(doc: ParsedDocument, page_no: int, text: str) -> li
         if parsed:
             out.append(_candidate(doc, page_no, "promised_delivery_date", parsed.isoformat(), "high", text, promised_match))
 
-    if re.search(r"\b(acquisto\s+online|ordine\s+(?:n\.?|numero|#)|e-?commerce|spedizione)\b", lower):
+    if re.search(r"\b(acquisto\s+online|ordine\s+(?:numero|n\.?|#)|e-?commerce|spedizione)\b", lower):
         out.append(_candidate(doc, page_no, "distance_purchase", True, "medium", text))
 
     if re.search(r"\b(s\.?r\.?l\.?|s\.?p\.?a\.?|s\.?n\.?c\.?|s\.?a\.?s\.?|partita\s+iva|p\.?iva)\b", lower):

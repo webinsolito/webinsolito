@@ -27,14 +27,18 @@ jobs:
       - name: Compile Python modules
         run: python -m compileall -q app tests
       - run: pytest -q
-      - name: Run 200-case RISOLVI evaluation gate
+      - name: Run 200-case RISOLVI legal-routing evaluation gate
         run: python -m app.evaluation --strict
+      - name: Run structured document extraction evaluation gate
+        run: python -m app.document_evaluation --strict
       - name: Build production container with release identity
         run: docker build --build-arg RISOLVI_BUILD_SHA=${GITHUB_SHA} -t webinsolito-risolvi-api:ci .
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - run: node --check ../../risolvi/extractor.js
+      - name: Run browser extractor parity benchmark
+        run: node ../../risolvi/extractor-benchmark.mjs
       - run: node --check ../../risolvi/config.js
       - run: node --check ../../risolvi/app.js
       - run: node --check ../../risolvi-review/app.js
