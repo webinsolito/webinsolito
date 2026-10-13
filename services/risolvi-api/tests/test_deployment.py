@@ -19,9 +19,11 @@ def production_settings(
     auto_create_schema: bool,
     malware_scanner: str = "clamav",
     reviewer_credentials: tuple[tuple[str, str], ...] = (("reviewer-a", "a" * 40),),
+    build_sha: str = "a" * 40,
 ) -> Settings:
     return Settings(
         environment="production",
+        build_sha=build_sha,
         database_url="postgresql+psycopg://user:password@example.invalid:5432/risolvi",
         capability_secret="c" * 40,
         storage_backend="s3",
@@ -64,6 +66,14 @@ def test_reviewer_credentials_require_safe_ids_and_distinct_tokens():
         ).validate()
 
 
+def test_build_sha_must_be_hex_when_present():
+    with pytest.raises(ValueError, match="build_sha_invalid"):
+        production_settings(auto_create_schema=False, build_sha="main-latest").validate()
+    # Unknown is tolerated at application boot for portability, but the
+    # pilot-readiness aggregator treats it as UNKNOWN and therefore NO-GO.
+    production_settings(auto_create_schema=False, build_sha="unknown").validate()
+
+
 def test_production_accepts_explicit_migration_mode():
     production_settings(auto_create_schema=False).validate()
 
@@ -71,6 +81,7 @@ def test_production_accepts_explicit_migration_mode():
 def test_readiness_checks_database(tmp_path):
     settings = Settings(
         environment="test",
+        build_sha="a" * 40,
         database_url=f"sqlite+pysqlite:///{tmp_path / 'ready.db'}",
         capability_secret="test-capability-secret-that-is-long-enough",
         storage_backend="local",
@@ -87,7 +98,9 @@ def test_readiness_checks_database(tmp_path):
         "service": "risolvi-api",
         "version": SERVICE_VERSION,
     }
-    assert client.get("/v1/config").json()["service_version"] == SERVICE_VERSION
+    config = client.get("/v1/config").json()
+    assert config["service_version"] == SERVICE_VERSION
+    assert config["build_sha"] == "a" * 40
 
 
 def _alembic_config(root: Path) -> Config:

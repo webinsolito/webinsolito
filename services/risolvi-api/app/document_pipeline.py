@@ -26,6 +26,28 @@ from .models import (
 MAX_FILE_BYTES = 8 * 1024 * 1024
 MAX_FILES = 8
 MAX_TEXT_CHARS = 120_000
+CRITICAL_FACT_KEYS = (
+    "problem",
+    "seller_name",
+    "order_date",
+    "delivery_date",
+    "promised_delivery_date",
+    "consumer",
+    "professional_seller",
+    "seller_country",
+    "distance_purchase",
+    "physical_good",
+)
+PROMPT_INJECTION_MARKERS = (
+    "ignore previous instructions",
+    "ignore all previous instructions",
+    "ignora le istruzioni precedenti",
+    "ignora tutte le istruzioni precedenti",
+    "system prompt",
+    "developer message",
+    "you are chatgpt",
+    "sei chatgpt",
+)
 
 
 class DocumentError(ValueError):
@@ -252,6 +274,12 @@ def _extract_page_candidates(doc: ParsedDocument, page_no: int, text: str) -> li
         seller = seller_match.group(1).strip(" \t,;.")
         out.append(_candidate(doc, page_no, "seller_name", seller, "high", text, seller_match))
 
+    order_match = re.search(rf"(?:data\s+(?:ordine|acquisto)|ordinato\s+il|acquistato\s+il)\s*[:\-]?\s*({_DATE_TOKEN})", text, flags=re.IGNORECASE)
+    if order_match:
+        parsed = _parse_date_token(order_match.group(1))
+        if parsed:
+            out.append(_candidate(doc, page_no, "order_date", parsed.isoformat(), "high", text, order_match))
+
     delivery_match = re.search(rf"(?:consegnat[oa]|data\s+di\s+consegna)\s*(?:il|:)?\s*({_DATE_TOKEN})", text, flags=re.IGNORECASE)
     if delivery_match:
         parsed = _parse_date_token(delivery_match.group(1))
@@ -297,6 +325,11 @@ def _normalise_value(value: object) -> str:
     return str(value).strip().casefold()
 
 
+def _contains_instruction_like_text(text: str) -> bool:
+    lower = text.casefold()
+    return any(marker in lower for marker in PROMPT_INJECTION_MARKERS)
+
+
 def build_bundle(documents: Iterable[ParsedDocument]) -> ExtractionBundle:
     docs = list(documents)
     candidates: list[FactCandidate] = []
@@ -306,6 +339,8 @@ def build_bundle(documents: Iterable[ParsedDocument]) -> ExtractionBundle:
     for doc in docs:
         candidates.extend(extract_candidates(doc))
         warnings.extend(doc.warnings)
+        if _contains_instruction_like_text(doc.text):
+            warnings.append("instruction_like_document_text_ignored_as_instructions")
         extracted_docs.append(
             DocumentExtraction(
                 document_id=doc.document_id,
@@ -340,10 +375,15 @@ def build_bundle(documents: Iterable[ParsedDocument]) -> ExtractionBundle:
     if conflicts:
         warnings.append("conflicting_facts_require_user_confirmation")
 
+    structured_facts: dict[str, object | None] = {
+        key: prefill.get(key) if key not in conflicts else None for key in CRITICAL_FACT_KEYS
+    }
+
     return ExtractionBundle(
         documents=extracted_docs,
         candidates=candidates,
         prefill=prefill,
+        structured_facts=structured_facts,
         conflicts=sorted(conflicts),
         warnings=sorted(set(warnings)),
     )

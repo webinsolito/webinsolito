@@ -6,11 +6,12 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-SERVICE_VERSION = "0.12.0"
+SERVICE_VERSION = "0.13.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
 REVIEWER_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,63}$")
+BUILD_SHA_PATTERN = re.compile(r"^[0-9a-f]{7,64}$")
 
 
 def _int_env(name: str, default: int) -> int:
@@ -53,6 +54,7 @@ def _reviewer_credentials_env(name: str = "RISOLVI_REVIEWER_CREDENTIALS_JSON") -
 @dataclass(frozen=True, slots=True)
 class Settings:
     environment: str = "development"
+    build_sha: str = "unknown"
     database_url: str = "sqlite+pysqlite:///./.data/risolvi.db"
     capability_secret: str = DEV_SECRET
     case_retention_days: int = 7
@@ -81,6 +83,7 @@ class Settings:
         environment = os.getenv("RISOLVI_ENV", "development").strip().lower()
         settings = cls(
             environment=environment,
+            build_sha=os.getenv("RISOLVI_BUILD_SHA", "unknown").strip().lower() or "unknown",
             database_url=os.getenv("RISOLVI_DATABASE_URL", "sqlite+pysqlite:///./.data/risolvi.db").strip(),
             capability_secret=os.getenv("RISOLVI_CAPABILITY_SECRET", DEV_SECRET),
             case_retention_days=_int_env("RISOLVI_CASE_RETENTION_DAYS", 7),
@@ -118,6 +121,8 @@ class Settings:
         return value
 
     def validate(self) -> None:
+        if self.build_sha != "unknown" and not BUILD_SHA_PATTERN.fullmatch(self.build_sha):
+            raise ValueError("build_sha_invalid")
         if self.storage_backend not in {"local", "s3"}:
             raise ValueError("unsupported_storage_backend")
         if self.malware_scanner not in {"disabled", "clamav"}:

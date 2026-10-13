@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "environment_id": "risolvi-pilot-eu-01",
+  "gates": {
+    "dedicated_infrastructure": {
+      "status": "UNKNOWN",
+      "reference_id": "ops:dedicated-infra-pending",
+      "reviewed_by": "ops-01",
+      "reviewed_at": "2026-10-13T00:00:00Z"
+    },
+    "legal_signoff": {
+      "status": "UNKNOWN",
+      "reference_id": "github:#79",
+      "reviewed_by": "legal-01",
+      "reviewed_at": "2026-10-13T00:00:00Z"
+    },
+    "privacy_security": {
+      "status": "UNKNOWN",
+      "reference_id": "github:#100",
+      "reviewed_by": "privacy-01",
+      "reviewed_at": "2026-10-13T00:00:00Z"
+    },
+    "document_pipeline": {
+      "status": "UNKNOWN",
+      "reference_id": "github:#81",
+      "reviewed_by": "qa-01",
+      "reviewed_at": "2026-10-13T00:00:00Z"
+    }
+  }
+}

@@ -97,6 +97,7 @@ class ExtractionBundle(BaseModel):
     documents: list[DocumentExtraction] = Field(default_factory=list)
     candidates: list[FactCandidate] = Field(default_factory=list)
     prefill: dict[str, Any] = Field(default_factory=dict)
+    structured_facts: dict[str, Any | None] = Field(default_factory=dict)
     conflicts: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 

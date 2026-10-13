@@ -74,9 +74,8 @@ class S3PrivateStorage:
 
     def put(self, key: str, data: bytes, content_type: str) -> None:
         # Do not send x-amz-server-side-encryption here. Some compatible
-        # providers (including Supabase Storage S3) reject that header. At-rest
-        # encryption must be configured and verified at the provider/bucket
-        # layer instead of being assumed per object.
+        # providers reject that header. At-rest encryption must be configured
+        # and verified at provider/bucket level instead of assumed per object.
         self.client.put_object(
             Bucket=self.bucket,
             Key=key,
@@ -85,7 +84,22 @@ class S3PrivateStorage:
         )
 
     def get(self, key: str) -> bytes:
-        obj = self.client.get_object(Bucket=self.bucket, Key=key)
+        try:
+            obj = self.client.get_object(Bucket=self.bucket, Key=key)
+        except Exception as exc:
+            # Keep the storage abstraction provider-neutral. boto-compatible
+            # clients expose not-found information in the response payload, but
+            # importing ClientError at module import time would make local-only
+            # installs depend on the optional storage extra.
+            response = getattr(exc, "response", None)
+            if isinstance(response, dict):
+                error = response.get("Error") or {}
+                metadata = response.get("ResponseMetadata") or {}
+                code = str(error.get("Code", ""))
+                status = metadata.get("HTTPStatusCode")
+                if code in {"404", "NoSuchKey", "NotFound"} or status == 404:
+                    raise FileNotFoundError(key) from exc
+            raise
         return obj["Body"].read()
 
     def delete(self, key: str) -> None:

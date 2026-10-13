@@ -1,192 +1,157 @@
-# RISOLVI API v0.12
+# RISOLVI API v0.13
 
-Case Engine privacy-first di WEBINSOLITO. La v0.12 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, PostgreSQL/S3, human review obbligatoria, kill switch intake, type sniffing, malware gate ClamAV, response hardening e preflight attivo; aggiunge **identità reviewer pseudonime, credenziali distinte per reviewer e audit minimale delle decisioni umane**.
+Case Engine privacy-first di WEBINSOLITO per il pilot supervisionato di RISOLVI. La v0.13 mantiene persistenza, capability guest, retention, benchmark da 200 casi, migrazioni Alembic, PostgreSQL/S3, review umana obbligatoria, kill switch intake, type sniffing, ClamAV e audit minimale; aggiunge un **gate di pilot-readiness fail-closed** che impedisce di confondere “CI verde” con “pronto per utenti reali”.
 
-## Modello di sicurezza
+## Principio operativo
 
-- `POST /v1/cases` crea una pratica e restituisce **una sola volta** `capability_token`.
-- Il server conserva solo un HMAC-SHA256 del token; il token originale non viene salvato.
-- Gli endpoint della pratica richiedono `X-Case-Token`.
-- Gli endpoint reviewer richiedono **entrambi** `X-Reviewer-Id` e `X-Reviewer-Token`.
-- In production pilot ogni reviewer ha una credenziale distinta configurata in `RISOLVI_REVIEWER_CREDENTIALS_JSON`; il vecchio secret condiviso resta solo come fallback development/test.
-- Il reviewer ID è un alias pseudonimo ristretto a `a-z`, `0-9`, `.`, `_`, `-`, lungo 3–64 caratteri: non usare nome, cognome o email.
-- I token non vengono letti dalla query string e non compaiono nell'export.
-- Accesso negato e risorsa inesistente restituiscono entrambi `404`, riducendo l'enumerazione.
-- Reviewer ID e token non vanno incorporati nel bundle statico: la console li chiede a runtime e li conserva soltanto in `sessionStorage`.
+L'AI/estrazione comprende i documenti; le regole deterministiche decidono il percorso; le fonti supportano la raccomandazione; il reviewer umano controlla l'Action Card durante il Wizard-of-Oz. Nessun invio automatico al venditore.
 
-### Attribution delle decisioni umane
+Il B2C resta **gratuito end-to-end**: niente account obbligatorio, abbonamenti, crediti o paywall.
 
-Quando un reviewer conferma una decisione:
+## Sicurezza e privacy di base
 
-1. il server autentica la coppia `reviewer_id + token`;
-2. `pilot_reviews.reviewer_id` conserva l'alias che ha deciso;
-3. viene scritto `audit_events.event = pilot.review.decided` con `actor_type=REVIEWER`, `actor_id=<reviewer_id>` e soli metadati minimali (`review_id`, classificazione, severity);
-4. token, note reviewer, documenti e testo della pratica **non** vengono copiati nell'audit event.
+- `POST /v1/cases` restituisce una capability una sola volta; il server conserva solo l'HMAC.
+- Endpoint pratica: `X-Case-Token`.
+- Endpoint reviewer: `X-Reviewer-Id` + `X-Reviewer-Token` distinti per reviewer in production.
+- Reviewer ID pseudonimo: `a-z`, `0-9`, `.`, `_`, `-`, 3–64 caratteri; non usare nome/email.
+- Originali: allow-list + signature sniffing + malware scan prima di parsing/persistenza.
+- Production richiede PostgreSQL, private S3-compatible storage e ClamAV.
+- Risposte API: `Cache-Control: no-store`, `nosniff`, no-referrer, frame deny; HSTS in production.
+- Retention pilot default: originali 24 ore, pratica 7 giorni.
 
-Le review storiche precedenti alla v0.12 restano valide con `reviewer_id = NULL`. La migrazione è `20261013_0002_reviewer_audit.py`.
+## Extraction: fatti espliciti e documenti non fidati
 
-## Privacy e header HTTP
+`ExtractionBundle` conserva `prefill` per compatibilità e aggiunge `structured_facts`: ogni fatto critico è presente con valore estratto oppure `null`. Un conflitto produce `null`, non una scelta arbitraria.
 
-Tutte le risposte HTTP dell'API, inclusi errori gestiti ed export, ricevono:
+Ogni candidato estratto mantiene provenance (`document_id`, filename, pagina, span, metodo). Il parser estrae anche `order_date` quando è supportata dal testo. Stringhe che assomigliano a prompt (`ignore previous instructions`, `system prompt`, varianti italiane, ecc.) restano **contenuto del documento**, non istruzioni: il bundle aggiunge un warning e non crea diritti, route o fatti non supportati.
 
-- `Cache-Control: no-store, max-age=0`;
-- `Pragma: no-cache`;
-- `Expires: 0`;
-- `X-Content-Type-Options: nosniff`;
-- `Referrer-Policy: no-referrer`;
-- `X-Frame-Options: DENY`;
-- `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
+## Build identity
 
-In ambiente `production` viene aggiunto HSTS (`Strict-Transport-Security`). Gli originali restano `attachment`; con storage S3 il backend può restituire un redirect temporaneo firmato, mentre con storage locale/proxy il contenuto passa direttamente dall'API. In entrambi i casi l'accesso iniziale richiede la capability o la credenziale reviewer.
+La readiness deve provare che preflight e smoke appartengono allo stesso deploy. Impostare:
 
-## Sicurezza documenti
+```bash
+RISOLVI_BUILD_SHA=<sha-git-esatto-del-deploy>
+```
 
-Gli originali non vengono accettati soltanto in base a estensione o `Content-Type` dichiarato dal browser. Il server verifica un allow-list di formati e la coerenza dei byte:
+Il valore non è un segreto ed è esposto da `/v1/config` insieme a `environment` e `service_version`. `unknown` mantiene l'app avviabile, ma il report finale resta `NO-GO`.
 
-- PDF: signature `%PDF-`;
-- PNG/JPEG/WEBP/HEIC: header/brand attesi;
-- TXT/HTML: payload prevalentemente testuale e senza NUL;
-- EML: payload testuale con header email riconoscibile.
+Build container consigliata:
 
-Metadati e contenuto incoerenti vengono rifiutati. Il limite di **8 originali per pratica** è applicato server-side.
+```bash
+docker build \
+  --build-arg RISOLVI_BUILD_SHA="$(git rev-parse HEAD)" \
+  -t webinsolito-risolvi-api:0.13.0 .
+```
 
-Prima di parsing server-side o persistenza, i byte passano dal malware gate. In produzione `RISOLVI_MALWARE_SCANNER=clamav` è obbligatorio. Il client usa ClamAV `INSTREAM`, senza scrivere il file su disco locale. Malware rilevato restituisce `422`; scanner non raggiungibile o scan indeterminato restituisce `503` e il file non viene scritto nello storage.
+## Preflight production
 
-`clamd` deve essere raggiungibile soltanto sulla rete privata del runtime.
-
-## Pilot e kill switch intake
-
-`RISOLVI_PILOT_ENABLED` abilita l'infrastruttura Wizard-of-Oz. `RISOLVI_PILOT_INTAKE_ENABLED` controlla separatamente l'accettazione di nuove pratiche/scritture utente.
-
-Deploy sicuro:
+Con intake chiuso:
 
 ```bash
 RISOLVI_PILOT_ENABLED=true
 RISOLVI_PILOT_INTAKE_ENABLED=false
+python -m app.preflight --output preflight.json
 ```
 
-Con intake chiuso, nuove pratiche ricevono `503 pilot_intake_paused`, ma review umana, Action Card di pratiche già inviate, outcome e cancellazione restano disponibili.
+Il preflight verifica:
 
-## Reviewer credentials
+- configurazione production fail-closed;
+- DB raggiungibile;
+- schema/migrazioni;
+- ClamAV, sia percorso clean sia rilevazione EICAR;
+- private storage con `put → get → delete → get=not-found`.
 
-Production pilot richiede una mappa JSON server-side:
+Il report contiene timestamp UTC, ambiente, versione, commit SHA e soli esiti normalizzati. Non contiene hostname di errore provider, token o dati utente.
+
+## Smoke test sintetico
+
+Solo su ambiente pilot dedicato/protetto. L'intake può essere aperto temporaneamente per il test e va richiuso subito dopo.
 
 ```bash
-export RISOLVI_REVIEWER_CREDENTIALS_JSON='{"rev-01":"<token-casuale-1>","rev-02":"<token-casuale-2>"}'
+export RISOLVI_SMOKE_BASE_URL='https://api-risolvi.example'
+export RISOLVI_SMOKE_REVIEWER_ID='rev-smoke'
+export RISOLVI_SMOKE_REVIEWER_SECRET='<credenziale-dedicata>'
+python -m app.remote_smoke --output smoke.json
 ```
 
-Vincoli:
+Lo smoke usa soltanto dati sintetici e verifica: health/ready, release identity, pratica, fatti, extraction server-side + provenance, consenso, upload originale, submit, Action Card assente prima della review, decisione umana e attribution, Action Card dopo review, outcome, export senza credenziali, delete e pratica non più raggiungibile. Il cleanup è best-effort anche su errore.
 
-- ogni ID deve essere pseudonimo e rispettare il pattern previsto;
-- ogni token deve essere distinto;
-- in production ogni token deve essere lungo almeno 32 caratteri;
-- rimuovere una coppia dalla mappa revoca l'accesso di quel reviewer al successivo deploy/config reload;
-- `/v1/config` non espone IDs, token o conteggio delle credenziali.
+## Pilot-readiness GO / NO-GO
 
-## Configurazione pubblica e CORS
-
-`GET /v1/config` espone solo versione servizio, stato pilot/intake, versione del consenso, retention e limiti upload.
-
-Se frontend e API sono su origini diverse:
+Il comando aggrega evidenze tecniche e sign-off manuali senza copiare contenuto o segreti nel report:
 
 ```bash
-export RISOLVI_ALLOWED_ORIGINS='https://www.webinsolito.it,https://review.webinsolito.it'
+cp readiness-evidence.example.json readiness-evidence.json
+# compilare con evidenze REALI; non trasformare UNKNOWN in PASS senza review
+
+pilot-readiness \
+  --preflight preflight.json \
+  --smoke smoke.json \
+  --evidence readiness-evidence.json \
+  --json-out readiness.json \
+  --markdown-out readiness.md
 ```
 
-CORS ammette esplicitamente `X-Reviewer-Id` e `X-Reviewer-Token`; wildcard `*` e origini HTTP non-localhost vengono rifiutate.
+Gate principali:
 
-## Database, migrazioni e storage
+- stesso commit/versione/ambiente production tra preflight e smoke;
+- artefatti recenti (24h di default);
+- infrastruttura dedicata;
+- migrazioni, DB, storage privato, ClamAV;
+- health, ready, upload, extraction+provenance, consenso;
+- review umana e Action Card nascosta prima della review;
+- outcome e cancellazione;
+- sign-off legale (#79);
+- checklist privacy/security (#100);
+- validazione pipeline documentale (#81).
 
-In produzione `RISOLVI_DATABASE_URL` deve essere PostgreSQL (`postgresql+psycopg://...`). SQLite è supportato soltanto per sviluppo e test.
+**`UNKNOWN` blocca il GO esattamente come `FAIL`.** Il comando esce con codice 0 solo se ogni gate è `PASS`. Gli input sono rappresentati nel report tramite digest SHA-256, non incorporati integralmente.
 
-Tabelle principali: `cases`, `facts`, `documents`, `recommendations`, `actions`, `outcomes`, `rules`, `sources`, `audit_events`, `pilot_participations`, `pilot_reviews`.
+La presenza del comando o di test CI verdi **non chiude #111**: per il vero GO servono un run sull'infrastruttura dedicata e i sign-off reali.
 
-La produzione usa Alembic:
+Runbook completo: `docs/risolvi-pilot-readiness.md`.
+
+## Pilot Wizard-of-Oz
+
+1. Il client crea una pratica e salva solo fatti confermati.
+2. Registra il consenso pilot.
+3. Gli originali vengono validati/scansionati.
+4. `/pilot/submit` calcola la candidata senza mostrarla.
+5. Il reviewer autenticato esamina caso e documenti.
+6. `/decision` persiste decisione, reviewer ID pseudonimo e audit minimale.
+7. Solo dopo review `/pilot/action` rilascia l'Action Card.
+8. `/analyse` resta bloccato in pilot mode.
+
+Classificazioni: `PASS_AUTONOMOUS`, `MINOR_EDIT`, `MATERIAL_EDIT`, `WRONG_ROUTE`, `UNSUPPORTED_MISSED`, `LEGAL_REVIEW_REQUIRED`.
+
+## Database e migrazioni
+
+Production usa PostgreSQL e Alembic:
 
 ```bash
 alembic upgrade head
 ```
 
-`RISOLVI_AUTO_CREATE_SCHEMA` deve essere `false` in produzione. Per endpoint DB separati:
+`RISOLVI_AUTO_CREATE_SCHEMA=false` è obbligatorio in production. Si possono separare:
 
 - `RISOLVI_DATABASE_URL` per runtime;
 - `RISOLVI_MIGRATION_DATABASE_URL` per Alembic.
 
-Retention pilot di default:
-
-- originali: 24 ore;
-- pratica: 7 giorni.
+Il job retention è idempotente:
 
 ```bash
 python -m app.retention
 ```
 
-Il job è idempotente. La cancellazione del caso elimina anche consenso/review/audit collegati alla pratica.
-
-## Preflight production
-
-Prima di aprire l'intake, con `RISOLVI_PILOT_INTAKE_ENABLED=false`:
-
-```bash
-python -m app.preflight
-```
-
-Il comando fallisce chiuso se configurazione, DB, schema/migrazioni, malware scanner o private storage non sono pronti. Il malware self-test verifica sia un payload sintetico pulito sia il test EICAR standard. EICAR viene inviato a `clamd` in memoria via `INSTREAM`, non viene scritto nello storage e la signature del motore non viene esposta.
-
-## Smoke test remoto
-
-Su ambiente production-like protetto, con intake temporaneamente aperto:
-
-```bash
-pip install -e '.[dev]'
-export RISOLVI_SMOKE_BASE_URL='https://api-risolvi.example'
-export RISOLVI_SMOKE_REVIEWER_ID='rev-smoke'
-export RISOLVI_SMOKE_REVIEWER_SECRET='<la-credenziale-associata-a-rev-smoke>'
-python -m app.remote_smoke
-```
-
-Lo smoke crea una pratica sintetica, verifica consenso, upload, `PENDING_REVIEW`, decisione umana, **reviewer attribution**, Action Card, outcome, export senza segreti e cancellazione finale. Capability e credenziale reviewer non vengono stampate.
-
-## Probe operativi
-
-- `GET /health`: liveness;
-- `GET /ready`: readiness con query DB;
-- `GET /v1/config`: configurazione pubblica non sensibile.
-
-Un deploy non deve ricevere traffico utente finché `/ready` non è verde e il preflight non passa.
-
-## Benchmark e legal cutover
-
-La suite contiene 200 casi sintetici/de-identificati:
+## Evaluation
 
 ```bash
 python -m app.evaluation --strict
 ```
 
-Il benchmark è un **gold tecnico**, non una validazione legale. Le fonti/regole sono versionate in `evals/registry.json`.
-
-Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.12 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack non riceve sign-off specialistico.
-
-Vedi `docs/risolvi-legal-preflight-2026-10-13.md`.
-
-## Wizard-of-Oz
-
-Flusso:
-
-1. il client crea una pratica e salva i fatti confermati;
-2. l'utente registra il consenso;
-3. eventuali originali vengono validati e scansionati;
-4. `/pilot/submit` crea la candidata ma non la mostra;
-5. il reviewer autenticato con ID + credenziale esamina il caso;
-6. `/decision` persiste decisione e reviewer ID e scrive audit minimale;
-7. solo dopo review `pilot/action` rilascia l'Action Card;
-8. `/analyse` resta bloccato in pilot mode.
-
-Classificazioni: `PASS_AUTONOMOUS`, `MINOR_EDIT`, `MATERIAL_EDIT`, `WRONG_ROUTE`, `UNSUPPORTED_MISSED`, `LEGAL_REVIEW_REQUIRED`.
+I 200 casi sono gold **tecnico sintetico/de-identificato**, non validazione legale. Il D.Lgs. 25 settembre 2026 n. 176, pubblicato il 7/10/2026, entra in vigore il **22/10/2026**: il rule pack corrente non anticipa il cutover e deve restare fail-closed dove previsto finché non riceve il sign-off specialistico.
 
 ## Avvio locale
-
-Il secret condiviso resta disponibile **solo per sviluppo/test**:
 
 ```bash
 python -m venv .venv
@@ -194,39 +159,23 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 export RISOLVI_PILOT_ENABLED=true
 export RISOLVI_PILOT_INTAKE_ENABLED=true
-export RISOLVI_REVIEWER_SECRET='usa-un-secret-lungo-e-casuale'
+export RISOLVI_REVIEWER_SECRET='secret-locale-lungo-e-casuale'
 uvicorn app.main:app --reload
 ```
 
-Anche con fallback locale gli endpoint richiedono un `X-Reviewer-Id` sintatticamente valido; in production pilot la configurazione rifiuta l'avvio se manca `RISOLVI_REVIEWER_CREDENTIALS_JSON`.
-
-Per storage S3-compatible:
+Per S3-compatible storage:
 
 ```bash
 pip install -e '.[dev,storage]'
 ```
 
-## Container
-
-```bash
-docker build -t webinsolito-risolvi-api:0.12.0 .
-```
-
-L'immagine gira come utente non-root e include un healthcheck su `/health`. Le migrazioni non vengono eseguite automaticamente dal container.
-
-Per il deploy controllato completo: `docs/risolvi-pilot-deploy.md`.
-
-## Variabili principali
-
-`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_MIGRATION_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_S3_FORCE_PATH_STYLE`, `RISOLVI_SIGNED_URL_SECONDS`, `RISOLVI_MALWARE_SCANNER`, `RISOLVI_CLAMAV_HOST`, `RISOLVI_CLAMAV_PORT`, `RISOLVI_CLAMAV_TIMEOUT_SECONDS`, `RISOLVI_PILOT_ENABLED`, `RISOLVI_PILOT_INTAKE_ENABLED`, `RISOLVI_REVIEWER_CREDENTIALS_JSON`, `RISOLVI_REVIEWER_SECRET` (solo fallback dev/test), `RISOLVI_ALLOWED_ORIGINS`, `RISOLVI_PILOT_NOTICE_VERSION`, `RISOLVI_AUTO_CREATE_SCHEMA`.
-
 ## Gate ancora aperti
 
-- legal review specialistica del rule pack (#79);
-- split autonomo `REFUND` vs esercizio del recesso;
-- provisioning risorse cloud dedicate e smoke test production-like (#101);
-- verifica operativa privacy/retention/logging sull'ambiente reale (#100);
-- disponibilità reale di ClamAV sulla rete privata;
-- pilot reale 50–100 casi con decisione GO/RESCOPE/KILL (#83).
+- sign-off consumer-law del rule pack (#79);
+- verifica completa della pipeline documentale (#81);
+- privacy/security operativa su ambiente reale (#100);
+- provisioning dedicato + smoke production-like (#101);
+- report #111 con tutti i gate realmente PASS;
+- solo dopo: pilot da 50–100 casi reali (#83).
 
-Il servizio B2C RISOLVI resta **gratuito end-to-end**: nessun account obbligatorio, credito, abbonamento o paywall per ottenere azione e follow-up.
+Non riutilizzare progetti cloud condivisi per aggirare questi gate e non aprire il pilot sulla sola base della CI.

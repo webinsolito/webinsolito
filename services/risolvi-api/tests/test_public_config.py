@@ -9,11 +9,13 @@ from app.storage import LocalPrivateStorage
 
 REVIEWER_ID = "reviewer-a"
 REVIEWER_TOKEN = "r" * 40
+BUILD_SHA = "a" * 40
 
 
 def make_client(tmp_path, *, origins: tuple[str, ...] = ("https://webinsolito.example",)) -> TestClient:
     settings = Settings(
         environment="test",
+        build_sha=BUILD_SHA,
         database_url=f"sqlite+pysqlite:///{tmp_path / 'public-config.db'}",
         capability_secret="test-capability-secret-that-is-long-enough",
         case_retention_days=7,
@@ -45,6 +47,8 @@ def test_public_config_exposes_only_non_secret_runtime_contract(tmp_path):
     data = response.json()
     assert data == {
         "service_version": SERVICE_VERSION,
+        "environment": "test",
+        "build_sha": BUILD_SHA,
         "pilot_enabled": True,
         "pilot_intake_enabled": True,
         "pilot_notice_version": "pilot-2026-10-v1",
