@@ -77,12 +77,12 @@ test('phone finance and reports no longer require horizontal canvases',async()=>
   assert.match(css,/content:'MARGINE'/);
 });
 
-test('runtime 1.9.7 loads hardened operational modules',async()=>{
+test('runtime 1.9.8 loads hardened operational modules',async()=>{
   const [config,sw,preview]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html')]);
-  assert.match(config,/version: '1\.9\.7'/);
+  assert.match(config,/version: '1\.9\.8'/);
   assert.match(config,/operational-quality\.js\?v=1\.9\.7/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
-  assert.match(sw,/dealer-platform-v1\.9\.7-static-only/);
+  assert.match(sw,/dealer-platform-v1\.9\.8-static-only/);
   assert.match(sw,/operational-quality\.js\?v=1\.9\.7/);
   assert.match(preview,/V1\.9\.7/);
 });

@@ -36,12 +36,17 @@ function terminalLock(form,text){
 }
 async function patchDrawer(){
   const form=document.getElementById('saleForm');
-  if(!form||form.dataset.m23Safety==='1')return;
-  const id=String(form.elements.id?.value||'');if(!id)return;
+  if(!form||form.dataset.m23Safety==='1'||form.dataset.m23Safety==='pending')return;
+  const stage=form.elements.sale_stage;
+  stage?.querySelector('option[value="DELIVERED"]')?.remove();
+  const id=String(form.elements.id?.value||'');
+  if(!id){
+    note(form,'saleDeliveryGuideNote','La fase CONSEGNATA non si imposta dal menu: si chiude dalla checklist guidata in Garage.');
+    form.dataset.m23Safety='1';return;
+  }
   form.dataset.m23Safety='pending';
   try{
     const contract=await OfflineDB.get('contracts',id);if(!contract){delete form.dataset.m23Safety;return}
-    const stage=form.elements.sale_stage;
     if(contract.sale_stage==='DELIVERED'){
       terminalLock(form,'Vendita consegnata: pratica definitiva. Per correggere dati storici serve un intervento amministrativo tracciato.');
       form.dataset.m23Safety='1';return;
@@ -50,7 +55,6 @@ async function patchDrawer(){
       terminalLock(form,'Vendita annullata: non può essere riaperta modificando direttamente la fase.');
       form.dataset.m23Safety='1';return;
     }
-    stage?.querySelector('option[value="DELIVERED"]')?.remove();
     if(contract.status!=='DRAFT'){
       for(const name of LOCKED_TERM_FIELDS)lockField(form.elements[name]);
       note(form,'saleTermsLockedNote','Contratto congelato/firmato: cliente, auto, prezzo, caparra e note contrattuali restano bloccati. La consegna si chiude dalla checklist guidata in Garage.');

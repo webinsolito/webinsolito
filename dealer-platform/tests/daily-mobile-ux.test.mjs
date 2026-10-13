@@ -44,11 +44,12 @@ test('Clienti espone prossimo passo ultimo contatto e auto collegata',()=>{
   assert.match(glance.vehicle,/Peugeot 308/);
 });
 
-test('moduli UX restano online/offline mentre preview 1.9.7 è statica e isolata',async()=>{
+test('moduli UX restano online/offline mentre runtime 1.9.8 usa preview 1.9.7 statica e isolata',async()=>{
   const [config,sw,preview,daily,mobile]=await Promise.all([read('config.js'),read('sw.js'),read('preview.html'),read('daily-ux.js'),read('mobile-shell.js')]);
-  assert.match(config,/version: '1\.9\.7'/);
+  assert.match(config,/version: '1\.9\.8'/);
   assert.match(config,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(config,/mobile-shell\.js\?v=1\.9\.6/);
+  assert.match(sw,/dealer-platform-v1\.9\.8-static-only/);
   assert.match(sw,/daily-ux-core\.js/);
   assert.match(sw,/daily-ux\.js\?v=1\.9\.6/);
   assert.match(sw,/mobile-shell\.js\?v=1\.9\.6/);

@@ -34,14 +34,17 @@ jobs:
           test -f dealer-platform/supabase/migrations/0016_operational_quality_v193.sql
           test -f dealer-platform/supabase/migrations/0017_sale_terminal_lock_v194.sql
           test -f dealer-platform/supabase/migrations/0018_publish_photo_gate_v197.sql
+          test -f dealer-platform/supabase/migrations/0019_contract_status_terminal_v197.sql
+          grep -q "version: '1.9.8'" dealer-platform/config.js
           grep -q "data-quality.js?v=1.9.7" dealer-platform/config.js
           grep -q "operational-quality.js?v=1.9.7" dealer-platform/config.js
           grep -q "mobile-shell.js?v=1.9.6" dealer-platform/config.js
           grep -q "daily-ux.js?v=1.9.6" dealer-platform/config.js
-          grep -q "sale-safety.js?v=1.9.4" dealer-platform/config.js
+          grep -q "sale-safety.js?v=1.9.8" dealer-platform/config.js
           grep -q "sync-recovery.js?v=1.9.6" dealer-platform/config.js
           grep -q "session-security.js?v=1.9.6" dealer-platform/config.js
-          grep -q "dealer-platform-v1.9.7-static-only" dealer-platform/sw.js
+          grep -q "dealer-platform-v1.9.8-static-only" dealer-platform/sw.js
+          grep -q "sale-safety.js?v=1.9.8" dealer-platform/sw.js
           grep -q "data-quality.js?v=1.9.7" dealer-platform/sw.js
           grep -q "operational-quality.js?v=1.9.7" dealer-platform/sw.js
           grep -q "mobile-shell.js?v=1.9.6" dealer-platform/sw.js
@@ -56,8 +59,12 @@ jobs:
           grep -q "sale_contract_terms_locked" dealer-platform/supabase/migrations/0017_sale_terminal_lock_v194.sql
           grep -q "vehicle_delivered_terminal" dealer-platform/supabase/migrations/0017_sale_terminal_lock_v194.sql
           grep -q "vehicle_photo_required" dealer-platform/supabase/migrations/0018_publish_photo_gate_v197.sql
+          grep -q "sale_contract_signed_terminal" dealer-platform/supabase/migrations/0019_contract_status_terminal_v197.sql
+          grep -q "sale_contract_finalized_terminal" dealer-platform/supabase/migrations/0019_contract_status_terminal_v197.sql
           ! grep -q "dealer-platform-session" dealer-platform/preview.html
           ! grep -qi "supabase" dealer-platform/preview.html
+          ! grep -q "indexedDB" dealer-platform/preview.html
+          ! grep -q "serviceWorker" dealer-platform/preview.html
       - name: Secret guard
         run: |
           ! grep -R -E "(sk_live_|sb_secret_|service_role[^A-Za-z0-9]*[:=][^A-Za-z0-9]*(eyJ|[A-Za-z0-9_-]{30,}))" dealer-platform --exclude='*.md' --exclude='*.example' || (echo 'Possible committed secret' && exit 1)
