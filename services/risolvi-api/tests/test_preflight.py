@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from app.config import Settings
+from datetime import datetime, timezone
+
+from app.config import SERVICE_VERSION, Settings
 from app.db import Database
 from app.malware import MalwareDetected, MalwareScanError
-from app.preflight import EICAR_TEST_BYTES, run_preflight
+from app.preflight import EICAR_TEST_BYTES, build_report, run_preflight
 from app.storage import LocalPrivateStorage
 
 
@@ -40,6 +42,7 @@ class RecordingStorage(LocalPrivateStorage):
 def make_settings(tmp_path, name: str, *, intake: bool = False) -> Settings:
     return Settings(
         environment="test",
+        build_sha="a" * 40,
         database_url=f"sqlite+pysqlite:///{tmp_path / (name + '.db')}",
         capability_secret="c" * 40,
         storage_backend="local",
@@ -50,7 +53,7 @@ def make_settings(tmp_path, name: str, *, intake: bool = False) -> Settings:
     )
 
 
-def test_preflight_passes_with_clean_and_detection_paths(tmp_path):
+def test_preflight_passes_with_clean_detection_and_storage_delete_paths(tmp_path):
     settings = make_settings(tmp_path, "preflight")
     database = Database(settings.database_url)
     database.create_all()
@@ -76,12 +79,42 @@ def test_preflight_passes_with_clean_and_detection_paths(tmp_path):
     }
     malware_check = next(item for item in checks if item.name == "malware_scanner")
     assert malware_check.detail == "malware_scanner_clean_and_detection_paths_ok"
+    storage_check = next(item for item in checks if item.name == "private_storage")
+    assert storage_check.detail == "storage_roundtrip_delete_ok"
     assert scanner.seen == [
         b"WEBINSOLITO-RISOLVI-PREFLIGHT-CLEAN",
         EICAR_TEST_BYTES,
     ]
     assert EICAR_TEST_BYTES not in storage.put_payloads
     assert not any(path.is_file() for path in (tmp_path / "private-preflight").rglob("*"))
+
+
+def test_preflight_report_contains_release_identity_without_secrets(tmp_path):
+    settings = make_settings(tmp_path, "artifact")
+    database = Database(settings.database_url)
+    database.create_all()
+    storage = LocalPrivateStorage(settings.local_storage_dir)
+    checks = run_preflight(
+        settings,
+        database,
+        storage,
+        HealthyScanner(),
+        require_production=False,
+        require_migrations=False,
+    )
+    report = build_report(
+        settings,
+        checks,
+        generated_at=datetime(2026, 10, 13, 12, 0, tzinfo=timezone.utc),
+    )
+
+    assert report["kind"] == "preflight"
+    assert report["status"] == "ok"
+    assert report["environment"] == "test"
+    assert report["service_version"] == SERVICE_VERSION
+    assert report["commit_sha"] == "a" * 40
+    assert report["generated_at"] == "2026-10-13T12:00:00Z"
+    assert "capability" not in str(report).lower()
 
 
 def test_preflight_blocks_when_intake_is_already_open(tmp_path):
