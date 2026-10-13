@@ -113,7 +113,7 @@ _MONTHS = {
 }
 _DATE_TOKEN = r"(?:\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+(?:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+\d{4})"
 _ORDER_REFERENCE_PATTERN = re.compile(
-    r"(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:n\.?|numero|#|id|codice))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})",
+    r"(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:numero|codice|id|n\.?|#))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})",
     flags=re.IGNORECASE,
 )
 _PRODUCT_PATTERN = re.compile(
@@ -364,7 +364,7 @@ def _extract_page_candidates(doc: ParsedDocument, page_no: int, text: str) -> li
         if parsed:
             out.append(_candidate(doc, page_no, "promised_delivery_date", parsed.isoformat(), "high", text, promised_match))
 
-    if re.search(r"\b(acquisto\s+online|ordine\s+(?:n\.?|numero|#)|e-?commerce|spedizione)\b", lower):
+    if re.search(r"\b(acquisto\s+online|ordine\s+(?:numero|n\.?|#)|e-?commerce|spedizione)\b", lower):
         out.append(_candidate(doc, page_no, "distance_purchase", True, "medium", text))
 
     if re.search(r"\b(s\.?r\.?l\.?|s\.?p\.?a\.?|s\.?n\.?c\.?|s\.?a\.?s\.?|partita\s+iva|p\.?iva)\b", lower):
