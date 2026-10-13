@@ -204,6 +204,10 @@ def create_app(
     @app.post("/v1/cases/{case_id}/analyse", response_model=Recommendation)
     def analyse_case(case_id: UUID, x_case_token: CaseToken = None) -> Recommendation:
         require_case(case_id, x_case_token)
+        if settings.pilot_enabled:
+            # During the controlled Wizard-of-Oz pilot no Action Card may bypass
+            # the explicit review queue. The raw engine output stays server-side.
+            raise HTTPException(status_code=409, detail="pilot_review_required_use_pilot_submit")
         facts = repo.latest_facts(case_id)
         if facts is None:
             raise HTTPException(status_code=409, detail="facts_not_confirmed")
