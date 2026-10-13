@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-SERVICE_VERSION = "0.7.0"
+SERVICE_VERSION = "0.8.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
@@ -41,6 +41,7 @@ class Settings:
     s3_bucket: str | None = None
     s3_region: str | None = None
     s3_endpoint_url: str | None = None
+    s3_force_path_style: bool = False
     signed_url_seconds: int = 300
     pilot_enabled: bool = False
     reviewer_secret: str = DEV_REVIEWER_SECRET
@@ -62,6 +63,7 @@ class Settings:
             s3_bucket=os.getenv("RISOLVI_S3_BUCKET") or None,
             s3_region=os.getenv("RISOLVI_S3_REGION") or None,
             s3_endpoint_url=os.getenv("RISOLVI_S3_ENDPOINT_URL") or None,
+            s3_force_path_style=_bool_env("RISOLVI_S3_FORCE_PATH_STYLE", False),
             signed_url_seconds=_int_env("RISOLVI_SIGNED_URL_SECONDS", 300),
             pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
