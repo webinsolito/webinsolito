@@ -102,11 +102,18 @@ class ExtractionBundle(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class ClientExtractedPage(BaseModel):
+    page: int = Field(ge=1, le=12)
+    text: str = Field(default="", max_length=120_000)
+    method: ExtractionMethod
+
+
 class ClientExtractedDocument(BaseModel):
     filename: str
     mime_type: str
-    text: str = Field(max_length=120_000)
+    text: str = Field(default="", max_length=120_000)
     method: ExtractionMethod
+    pages: list[ClientExtractedPage] = Field(default_factory=list, max_length=12)
     sha256: str | None = None
 
 
@@ -122,6 +129,8 @@ class CaseFacts(BaseModel):
     distance_purchase: bool | None = None
     physical_good: bool | None = None
     order_date: date | None = None
+    order_reference: str | None = None
+    product_name: str | None = None
     delivery_date: date | None = None
     promised_delivery_date: date | None = None
     defect_manifested_date: date | None = None
