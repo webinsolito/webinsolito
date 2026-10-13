@@ -8,7 +8,7 @@ from sqlalchemy import inspect
 
 from .config import Settings
 from .db import Database
-from .malware import MalwareScanner, build_malware_scanner
+from .malware import MalwareDetected, MalwareScanner, build_malware_scanner
 from .storage import PrivateStorage, build_storage
 
 REQUIRED_TABLES = {
@@ -24,6 +24,15 @@ REQUIRED_TABLES = {
     "sources",
     "audit_events",
 }
+
+# Standard harmless EICAR anti-malware test payload. It is split in source so the
+# repository itself does not contain the full contiguous signature, while the
+# bytes sent to clamd are the canonical test string.
+EICAR_TEST_BYTES = (
+    b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$"
+    b"EICAR-STANDARD-ANTIVIRUS-TEST-FILE!"
+    b"$H+H*"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,7 +72,8 @@ def run_preflight(
     """Verify production-like dependencies before opening pilot intake.
 
     Storage and malware checks use only tiny synthetic payloads. No user data is
-    read or created.
+    read or created. The malware self-test checks both the clean path and the
+    detection path; the EICAR payload is never written to object storage.
     """
 
     malware_scanner = malware_scanner or build_malware_scanner(settings)
@@ -95,7 +105,11 @@ def run_preflight(
 
     def malware_check() -> str:
         malware_scanner.scan(b"WEBINSOLITO-RISOLVI-PREFLIGHT-CLEAN")
-        return "malware_scanner_reachable"
+        try:
+            malware_scanner.scan(EICAR_TEST_BYTES)
+        except MalwareDetected:
+            return "malware_scanner_clean_and_detection_paths_ok"
+        raise RuntimeError("malware_scanner_failed_detection_self_test")
 
     checks.append(_check("malware_scanner", malware_check))
 
