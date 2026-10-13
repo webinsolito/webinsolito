@@ -13,8 +13,10 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-
-database_url = os.getenv("RISOLVI_DATABASE_URL")
+# Runtime and migration connectivity are intentionally separable. A hosted
+# Postgres provider may recommend a pooled/session endpoint for the long-running
+# API but a direct connection for Alembic, pg_dump and administrative work.
+database_url = os.getenv("RISOLVI_MIGRATION_DATABASE_URL") or os.getenv("RISOLVI_DATABASE_URL")
 if database_url:
     # Alembic ConfigParser treats % as interpolation syntax.
     config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
