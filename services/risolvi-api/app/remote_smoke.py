@@ -113,7 +113,7 @@ def run(base_url: str, reviewer_id: str, reviewer_secret: str) -> dict[str, obje
                 client.post(
                     f"/v1/cases/{case_id}/documents/extract",
                     headers=case_headers,
-                    files={"file": ("smoke-extract.txt", SYNTHETIC_EXTRACTION_BYTES, "text/plain")},
+                    files={"files": ("smoke-extract.txt", SYNTHETIC_EXTRACTION_BYTES, "text/plain")},
                 ),
                 200,
                 "extract_document",
