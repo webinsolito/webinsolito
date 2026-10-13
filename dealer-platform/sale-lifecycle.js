@@ -22,6 +22,14 @@ export function saleContractTermsChanged(previous,next){
   return LOCKED_SALE_TERMS.some(field=>!sameTerm(field,previous?.[field],next?.[field]));
 }
 
+export function saleContractStatusTransition(previousStatus,nextStatus){
+  const from=String(previousStatus||'DRAFT'),to=String(nextStatus||'DRAFT');
+  if(from==='SIGNED'&&to!=='SIGNED')return {ok:false,code:'sale_contract_signed_terminal'};
+  if(from==='FROZEN'&&!['FROZEN','SIGNED'].includes(to))return {ok:false,code:'sale_contract_finalized_terminal'};
+  if(from==='CANCELLED'&&to!=='CANCELLED')return {ok:false,code:'sale_contract_cancelled_terminal'};
+  return {ok:true,code:'ok'};
+}
+
 export function saleStageTransition(previousStage,nextStage){
   const from=String(previousStage||'OPEN'),to=String(nextStage||'OPEN');
   if(from==='DELIVERED'&&to!=='DELIVERED')return {ok:false,code:'sale_delivered_terminal'};
@@ -92,6 +100,9 @@ export function saleDeliveryMessage(code){
     sale_contract_missing:'Collega prima un contratto di vendita.',
     sale_contract_not_signed:'Il contratto di vendita deve essere congelato e segnato come firmato.',
     sale_contract_terms_locked:'Cliente, auto, prezzo e condizioni del contratto congelato non possono più cambiare.',
+    sale_contract_finalized_terminal:'Un contratto congelato non può tornare in bozza.',
+    sale_contract_signed_terminal:'Un contratto firmato è definitivo e non può essere declassato.',
+    sale_contract_cancelled_terminal:'Un contratto annullato non può essere riaperto modificando direttamente lo stato.',
     sale_delivered_terminal:'Una vendita già consegnata è definitiva e non può tornare a una fase precedente.',
     sale_cancelled_terminal:'Una vendita annullata non può essere riaperta modificando direttamente la fase.',
     sale_delivery_timestamp_locked:'La data di consegna registrata è definitiva.',
