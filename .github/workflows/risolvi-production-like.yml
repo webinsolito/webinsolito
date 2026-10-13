@@ -29,6 +29,8 @@ jobs:
       RISOLVI_CAPABILITY_SECRET: ci-capability-secret-0123456789abcdef0123456789abcdef
       RISOLVI_REVIEWER_ID: rev-ci
       RISOLVI_REVIEWER_TOKEN: ci-reviewer-token-0123456789abcdef0123456789abcdef
+      MINIO_IMAGE: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+      MINIO_MC_IMAGE: quay.io/minio/mc:RELEASE.2025-04-16T18-13-26Z
 
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +66,7 @@ jobs:
           docker run -d --name risolvi-minio --network "$RISOLVI_NETWORK" \
             -e MINIO_ROOT_USER="$MINIO_ROOT_USER" \
             -e MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD" \
-            minio/minio:RELEASE.2025-04-22T22-12-26Z \
+            "$MINIO_IMAGE" \
             server /data
 
           docker run -d --name risolvi-clamav --network "$RISOLVI_NETWORK" \
@@ -88,7 +90,7 @@ jobs:
           for attempt in $(seq 1 60); do
             if docker run --rm --network "$RISOLVI_NETWORK" \
               --entrypoint /bin/sh \
-              minio/mc:RELEASE.2025-04-16T18-13-26Z \
+              "$MINIO_MC_IMAGE" \
               -c "mc alias set ci http://risolvi-minio:9000 '$MINIO_ROOT_USER' '$MINIO_ROOT_PASSWORD' >/dev/null && mc admin info ci >/dev/null"; then
               break
             fi
@@ -115,7 +117,7 @@ jobs:
           set -euo pipefail
           docker run --rm --network "$RISOLVI_NETWORK" \
             --entrypoint /bin/sh \
-            minio/mc:RELEASE.2025-04-16T18-13-26Z \
+            "$MINIO_MC_IMAGE" \
             -c "mc alias set ci http://risolvi-minio:9000 '$MINIO_ROOT_USER' '$MINIO_ROOT_PASSWORD' >/dev/null && mc mb --ignore-existing ci/$RISOLVI_BUCKET >/dev/null && mc anonymous set none ci/$RISOLVI_BUCKET >/dev/null"
 
       - name: Apply Alembic migrations against PostgreSQL
@@ -200,7 +202,7 @@ jobs:
           set -euo pipefail
           remaining="$({ docker run --rm --network "$RISOLVI_NETWORK" \
             --entrypoint /bin/sh \
-            minio/mc:RELEASE.2025-04-16T18-13-26Z \
+            "$MINIO_MC_IMAGE" \
             -c "mc alias set ci http://risolvi-minio:9000 '$MINIO_ROOT_USER' '$MINIO_ROOT_PASSWORD' >/dev/null && mc ls --recursive ci/$RISOLVI_BUCKET"; } | sed '/^[[:space:]]*$/d' | wc -l)"
           if [ "$remaining" -ne 0 ]; then
             echo "Synthetic smoke left objects in private storage" >&2
