@@ -6,6 +6,7 @@ from pathlib import Path
 
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
+PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
 
 
 def _int_env(name: str, default: int) -> int:
@@ -20,6 +21,11 @@ def _bool_env(name: str, default: bool = False) -> bool:
     if raw is None:
         return default
     return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _csv_env(name: str) -> tuple[str, ...]:
+    raw = os.getenv(name, "")
+    return tuple(item.strip().rstrip("/") for item in raw.split(",") if item.strip())
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +43,8 @@ class Settings:
     signed_url_seconds: int = 300
     pilot_enabled: bool = False
     reviewer_secret: str = DEV_REVIEWER_SECRET
+    allowed_origins: tuple[str, ...] = ()
+    pilot_notice_version: str = PILOT_NOTICE_VERSION
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -54,6 +62,8 @@ class Settings:
             signed_url_seconds=_int_env("RISOLVI_SIGNED_URL_SECONDS", 300),
             pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
+            allowed_origins=_csv_env("RISOLVI_ALLOWED_ORIGINS"),
+            pilot_notice_version=os.getenv("RISOLVI_PILOT_NOTICE_VERSION", PILOT_NOTICE_VERSION).strip(),
         )
         settings.validate()
         return settings
@@ -65,6 +75,11 @@ class Settings:
             raise ValueError("signed_url_seconds_must_be_between_30_and_900")
         if self.pilot_enabled and len(self.reviewer_secret) < 24:
             raise ValueError("pilot_requires_strong_reviewer_secret")
+        if self.pilot_notice_version != PILOT_NOTICE_VERSION:
+            raise ValueError("unsupported_pilot_notice_version")
+        for origin in self.allowed_origins:
+            if origin == "*" or not origin.startswith(("https://", "http://localhost", "http://127.0.0.1")):
+                raise ValueError("allowed_origins_must_be_explicit_http_origins")
         if self.environment == "production":
             if not self.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
                 raise ValueError("production_requires_postgresql")
