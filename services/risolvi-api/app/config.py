@@ -4,6 +4,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+SERVICE_VERSION = "0.7.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
@@ -45,11 +46,13 @@ class Settings:
     reviewer_secret: str = DEV_REVIEWER_SECRET
     allowed_origins: tuple[str, ...] = ()
     pilot_notice_version: str = PILOT_NOTICE_VERSION
+    auto_create_schema: bool = True
 
     @classmethod
     def from_env(cls) -> "Settings":
+        environment = os.getenv("RISOLVI_ENV", "development").strip().lower()
         settings = cls(
-            environment=os.getenv("RISOLVI_ENV", "development").strip().lower(),
+            environment=environment,
             database_url=os.getenv("RISOLVI_DATABASE_URL", "sqlite+pysqlite:///./.data/risolvi.db").strip(),
             capability_secret=os.getenv("RISOLVI_CAPABILITY_SECRET", DEV_SECRET),
             case_retention_days=_int_env("RISOLVI_CASE_RETENTION_DAYS", 7),
@@ -64,6 +67,7 @@ class Settings:
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
             allowed_origins=_csv_env("RISOLVI_ALLOWED_ORIGINS"),
             pilot_notice_version=os.getenv("RISOLVI_PILOT_NOTICE_VERSION", PILOT_NOTICE_VERSION).strip(),
+            auto_create_schema=_bool_env("RISOLVI_AUTO_CREATE_SCHEMA", environment != "production"),
         )
         settings.validate()
         return settings
@@ -81,6 +85,8 @@ class Settings:
             if origin == "*" or not origin.startswith(("https://", "http://localhost", "http://127.0.0.1")):
                 raise ValueError("allowed_origins_must_be_explicit_http_origins")
         if self.environment == "production":
+            if self.auto_create_schema:
+                raise ValueError("production_requires_migrations_not_create_all")
             if not self.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
                 raise ValueError("production_requires_postgresql")
             if self.capability_secret == DEV_SECRET or len(self.capability_secret) < 32:
