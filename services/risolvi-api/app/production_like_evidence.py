@@ -44,6 +44,7 @@ def validate(
     preflight: dict[str, Any],
     smoke: dict[str, Any],
     readiness: dict[str, Any],
+    storage_cleanup: dict[str, Any],
     *,
     expected_commit: str | None = None,
     expected_version: str | None = None,
@@ -56,6 +57,15 @@ def validate(
         errors.append("smoke_not_ok")
     if readiness.get("decision") != "NO-GO":
         errors.append("readiness_must_remain_no_go")
+
+    if storage_cleanup.get("kind") != "storage_cleanup":
+        errors.append("storage_cleanup_kind_invalid")
+    if storage_cleanup.get("status") != "ok":
+        errors.append("storage_cleanup_not_ok")
+    if storage_cleanup.get("remaining_objects") != 0:
+        errors.append("storage_cleanup_objects_remaining")
+    if storage_cleanup.get("public_access_block") is not True:
+        errors.append("storage_public_access_block_not_verified")
 
     if preflight.get("environment") != "production":
         errors.append("preflight_environment_not_production")
@@ -125,6 +135,9 @@ def validate(
         "status": "ok" if not errors else "blocked",
         "technical_gates": len(TECHNICAL_GATES),
         "manual_gates": len(MANUAL_GATES),
+        "storage_cleanup_verified": not any(
+            error.startswith("storage_") for error in errors
+        ),
         "errors": errors,
     }
 
@@ -134,6 +147,7 @@ def main() -> None:
     parser.add_argument("--preflight", required=True)
     parser.add_argument("--smoke", required=True)
     parser.add_argument("--readiness", required=True)
+    parser.add_argument("--storage-cleanup", required=True)
     parser.add_argument("--expected-commit")
     parser.add_argument("--expected-version")
     args = parser.parse_args()
@@ -142,6 +156,7 @@ def main() -> None:
         _load(args.preflight),
         _load(args.smoke),
         _load(args.readiness),
+        _load(args.storage_cleanup),
         expected_commit=args.expected_commit,
         expected_version=args.expected_version,
     )
