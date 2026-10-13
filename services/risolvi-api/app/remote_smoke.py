@@ -2,27 +2,25 @@ from __future__ import annotations
 
 import json
 import os
-import sys
+from datetime import date
 from typing import Any
 
 import httpx
 
-SYNTHETIC_FACTS = {
+SYNTHETIC_FACTS_BASE = {
     "problem": "withdrawal",
     "consumer": True,
     "professional_seller": True,
     "seller_country": "IT",
     "distance_purchase": True,
     "physical_good": True,
-    "delivery_date": "2026-10-10",
     "seller_name": "RISOLVI Smoke Test Merchant",
 }
 
 
 def _expect(response: httpx.Response, status: int, label: str) -> Any:
     if response.status_code != status:
-        detail = response.text[:500]
-        raise RuntimeError(f"{label}: expected {status}, got {response.status_code}: {detail}")
+        raise RuntimeError(f"{label}:expected_{status}:got_{response.status_code}")
     if status == 204:
         return None
     content_type = response.headers.get("content-type", "")
@@ -55,9 +53,10 @@ def run(base_url: str, reviewer_secret: str) -> dict[str, str]:
             case_token = created["capability_token"]
             case_headers = {"X-Case-Token": case_token}
             reviewer_headers = {"X-Reviewer-Token": reviewer_secret}
+            facts = {**SYNTHETIC_FACTS_BASE, "delivery_date": date.today().isoformat()}
 
             _expect(
-                client.put(f"/v1/cases/{case_id}/facts", headers=case_headers, json=SYNTHETIC_FACTS),
+                client.put(f"/v1/cases/{case_id}/facts", headers=case_headers, json=facts),
                 200,
                 "save_facts",
             )
