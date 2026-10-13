@@ -1,6 +1,6 @@
-# RISOLVI API v0.10
+# RISOLVI API v0.11
 
-Case Engine privacy-first di WEBINSOLITO. La v0.10 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, container production-ready, compatibilità PostgreSQL/S3, review umana obbligatoria, kill switch intake e preflight; aggiunge hardening degli originali caricati con type sniffing allow-list, limite server-side e malware gate ClamAV fail-closed.
+Case Engine privacy-first di WEBINSOLITO. La v0.11 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, container production-ready, compatibilità PostgreSQL/S3, review umana obbligatoria, kill switch intake, type sniffing e malware gate ClamAV; aggiunge hardening sistematico delle risposte HTTP e un preflight malware che verifica sia il percorso `CLEAN` sia la capacità effettiva di rilevazione.
 
 ## Modello di sicurezza
 
@@ -10,6 +10,18 @@ Case Engine privacy-first di WEBINSOLITO. La v0.10 mantiene persistenza, capabil
 - I token non vengono letti dalla query string e non compaiono nell'export.
 - Accesso negato e ID inesistente restituiscono entrambi `404`, riducendo l'enumerazione.
 - Il reviewer token non va mai incorporato in HTML/JS statico: la console lo chiede a runtime e lo conserva solo in `sessionStorage`.
+
+## Privacy e header HTTP
+
+Tutte le risposte HTTP dell'API, inclusi errori gestiti, export e download proxati, ricevono una policy di non-caching:
+
+- `Cache-Control: no-store, max-age=0`;
+- `Pragma: no-cache`;
+- `Expires: 0`.
+
+Sono inoltre applicati `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY` e una `Permissions-Policy` che disabilita camera, microfono e geolocalizzazione. In ambiente `production` viene aggiunto anche HSTS (`Strict-Transport-Security`).
+
+Gli originali scaricati continuano a essere serviti come `attachment`; durante il pilot l'API fa da proxy dopo l'autorizzazione invece di redirigere una richiesta autenticata verso un origin storage esterno.
 
 ## Sicurezza documenti
 
@@ -104,8 +116,11 @@ Il comando fallisce chiuso se:
 - l'intake è già aperto;
 - il database non risponde;
 - mancano tabelle/migrazioni;
-- il malware scanner non risponde correttamente a un payload sintetico pulito;
+- il malware scanner non accetta correttamente un payload sintetico pulito;
+- il malware scanner non riconosce il test EICAR standard come malware;
 - il private storage non supera un put/get/delete sintetico.
+
+Il test EICAR è il payload standard innocuo per verificare antivirus/antimalware: viene inviato direttamente a `clamd` in memoria tramite `INSTREAM`, non viene scritto nello storage e la signature restituita dal motore non viene esposta. Un motore che risponde `CLEAN` anche al test EICAR blocca il preflight.
 
 I probe usano soltanto piccoli payload sintetici; non leggono dati utente.
 
@@ -140,7 +155,7 @@ python -m app.evaluation --strict
 
 Il benchmark è un **gold tecnico**, non una validazione legale. Le fonti/regole sono versionate in `evals/registry.json`.
 
-Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.10 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
+Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.11 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
 
 Vedi `docs/risolvi-legal-preflight-2026-10-13.md`.
 
@@ -187,12 +202,12 @@ Per storage S3-compatible:
 pip install -e '.[dev,storage]'
 ```
 
-In sviluppo `RISOLVI_MALWARE_SCANNER=disabled` è consentito. Per testare il path production usare un servizio ClamAV privato e impostare le variabili `RISOLVI_CLAMAV_*`.
+In sviluppo `RISOLVI_MALWARE_SCANNER=disabled` è consentito. Il vero preflight production richiede ClamAV e considera errore sia l'indisponibilità sia l'incapacità di rilevare il payload EICAR.
 
 ## Container
 
 ```bash
-docker build -t webinsolito-risolvi-api:0.10.0 .
+docker build -t webinsolito-risolvi-api:0.11.0 .
 ```
 
 L'immagine gira come utente non-root e include un healthcheck su `/health`. Le migrazioni **non** vengono eseguite automaticamente dal container: vanno lanciate come release/pre-deploy step con `alembic upgrade head`.
@@ -210,8 +225,8 @@ Vedi `.env.production.example` per un template senza segreti.
 - legal review specialistica del rule pack (#79);
 - split autonomo `REFUND` vs esercizio del recesso;
 - provisioning effettivo delle risorse cloud dedicate e smoke test dell'ambiente pilot (#101);
-- verifica operativa della checklist privacy (#100);
-- disponibilità reale di ClamAV sulla rete privata dell'ambiente pilot (#104);
+- verifica operativa della checklist privacy sull'ambiente reale (#100);
+- disponibilità reale di ClamAV sulla rete privata dell'ambiente pilot, verificata poi dal preflight;
 - pilot reale da 50–100 casi con consenso e decisione GO/RESCOPE/KILL (#83).
 
 Il servizio B2C RISOLVI resta progettato come **gratuito end-to-end**: nessun account obbligatorio, credito, abbonamento o paywall per ottenere l'azione e il follow-up.
