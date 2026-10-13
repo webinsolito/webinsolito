@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DELIVERY_CHECKLIST_TITLES,normalizeInvoicePayment,saleContractTermsChanged,saleDeliveryGate,saleInvoiceIntegrity,saleStageTransition,selectSaleInvoice,vehicleDeliveryTransition} from '../sale-lifecycle.js';
+import {DELIVERY_CHECKLIST_TITLES,normalizeInvoicePayment,saleContractStatusTransition,saleContractTermsChanged,saleDeliveryGate,saleInvoiceIntegrity,saleStageTransition,selectSaleInvoice,vehicleDeliveryTransition} from '../sale-lifecycle.js';
 
 const contract={id:'c1',template_code:'VENDITA',status:'SIGNED',vehicle_id:'v1',customer_id:'u1',price:10000,deposit:1000,contract_number:'2026/0001',contract_date:'2026-10-01',notes:'ok',financing_amount:0,financing_status:'NOT_REQUESTED'};
 const invoice={id:'i1',invoice_type:'SALE',vehicle_id:'v1',customer_id:'u1',total_amount:10000,paid_amount:10000,payment_status:'UNPAID'};
@@ -44,10 +44,20 @@ test('consegna e annullamento sono stati terminali',()=>{
   assert.equal(saleStageTransition('READY','DELIVERED').ok,true);
 });
 
-test('termini del contratto congelato non possono cambiare',()=>{
+test('stato contratto finalizzato non puo essere declassato',()=>{
+  assert.equal(saleContractStatusTransition('FROZEN','DRAFT').code,'sale_contract_finalized_terminal');
+  assert.equal(saleContractStatusTransition('FROZEN','SIGNED').ok,true);
+  assert.equal(saleContractStatusTransition('SIGNED','FROZEN').code,'sale_contract_signed_terminal');
+  assert.equal(saleContractStatusTransition('SIGNED','DRAFT').code,'sale_contract_signed_terminal');
+  assert.equal(saleContractStatusTransition('CANCELLED','DRAFT').code,'sale_contract_cancelled_terminal');
+  assert.equal(saleContractStatusTransition('DRAFT','FROZEN').ok,true);
+});
+
+test('termini del contratto congelato non possono cambiare o aggirare il lock con downgrade',()=>{
   const frozen={...contract,status:'FROZEN'};
   assert.equal(saleContractTermsChanged(frozen,{...frozen,price:10100}),true);
   assert.equal(saleContractTermsChanged(frozen,{...frozen,customer_id:'u2'}),true);
+  assert.equal(saleContractTermsChanged(frozen,{...frozen,status:'DRAFT'}),true);
   assert.equal(saleContractTermsChanged(frozen,{...frozen,sale_stage:'READY',planned_delivery_at:'2026-10-20T10:00:00Z'}),false);
   assert.equal(saleContractTermsChanged({...frozen,status:'DRAFT'},{...frozen,status:'DRAFT',price:10100}),false);
 });
