@@ -1,0 +1,53 @@
+name: RISOLVI dedicated pilot pack
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'infra/risolvi-pilot/**'
+      - 'services/risolvi-api/Dockerfile'
+      - 'services/risolvi-api/pyproject.toml'
+      - '.github/workflows/risolvi-pilot-pack.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Render compose config with non-secret fixtures
+        working-directory: infra/risolvi-pilot
+        run: |
+          cp .env.example .env
+          RISOLVI_BUILD_SHA="$GITHUB_SHA" docker compose --env-file .env -f compose.yaml config --format json > compose.json
+
+      - name: Assert deployment security invariants
+        working-directory: infra/risolvi-pilot
+        run: |
+          python scripts/validate-compose.py compose.json .env.example
+
+      - name: Ensure placeholder environment is rejected
+        working-directory: infra/risolvi-pilot
+        run: |
+          set +e
+          python scripts/check-env.py .env.example --expected-sha "$GITHUB_SHA" >/tmp/check-env.out 2>&1
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            cat /tmp/check-env.out
+            echo "Example config must never be deployable as-is" >&2
+            exit 1
+          fi
+
+      - name: Build exact API image used by the pack
+        working-directory: infra/risolvi-pilot
+        run: |
+          RISOLVI_BUILD_SHA="$GITHUB_SHA" docker compose --env-file .env -f compose.yaml build api migrate preflight smoke
