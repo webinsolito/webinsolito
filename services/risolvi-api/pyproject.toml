@@ -1,7 +1,7 @@
 [project]
 name = "webinsolito-risolvi-api"
-version = "0.13.0"
-description = "Privacy-first Case Engine, guarded consumer-law routing, evaluation suite and human-review pilot for WEBINSOLITO RISOLVI"
+version = "0.14.0"
+description = "Privacy-first Case Engine, guarded consumer-law routing, document provenance evaluation and human-review pilot for WEBINSOLITO RISOLVI"
 requires-python = ">=3.11"
 dependencies = [
   "alembic>=1.14,<2",
@@ -16,6 +16,7 @@ dependencies = [
 
 [project.scripts]
 pilot-readiness = "app.pilot_readiness:main"
+document-evaluation = "app.document_evaluation:main"
 
 [project.optional-dependencies]
 storage = ["boto3>=1.35,<2"]
