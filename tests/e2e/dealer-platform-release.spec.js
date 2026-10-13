@@ -105,6 +105,9 @@ test.describe('MALÙ23 release gate',()=>{
     await expect(page.locator('#dealerName')).toContainText('MALÙ23 QA');
     await page.waitForTimeout(350);
     for(const entity of FINANCE_PATHS)expect(seen).not.toContain(entity);
+    seen.length=0;
+    await page.evaluate(async dealerId=>{const {fetchTenantData}=await import('./api.js');await fetchTenantData(dealerId)},DEALER_ID);
+    for(const entity of FINANCE_PATHS)expect(seen).not.toContain(entity);
     await expect.poll(async()=>page.locator('[data-view="finanze"]:visible,[data-view="fatture"]:visible').count()).toBe(0);
   });
 
@@ -113,7 +116,9 @@ test.describe('MALÙ23 release gate',()=>{
     const seen=[];await seedSession(page,'ADMIN');await mockExternalRuntime(page,seen);
     await page.goto(APP,{waitUntil:'domcontentloaded'});
     await expect(page.locator('#appShell')).toBeVisible();
-    for(const entity of FINANCE_PATHS)await expect.poll(()=>seen.includes(entity)).toBeTruthy();
+    seen.length=0;
+    await page.evaluate(async dealerId=>{const {fetchTenantData}=await import('./api.js');await fetchTenantData(dealerId)},DEALER_ID);
+    for(const entity of FINANCE_PATHS)expect(seen).toContain(entity);
   });
 
   test('same-account role downgrade and logout physically purge IndexedDB tenant data',async({page},testInfo)=>{
