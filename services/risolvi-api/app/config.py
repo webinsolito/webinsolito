@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-SERVICE_VERSION = "0.9.0"
+SERVICE_VERSION = "0.10.0"
 DEV_SECRET = "dev-only-change-me"
 DEV_REVIEWER_SECRET = "dev-reviewer-only-change-me"
 PILOT_NOTICE_VERSION = "pilot-2026-10-v1"
@@ -43,6 +43,10 @@ class Settings:
     s3_endpoint_url: str | None = None
     s3_force_path_style: bool = False
     signed_url_seconds: int = 300
+    malware_scanner: str = "disabled"
+    clamav_host: str = "127.0.0.1"
+    clamav_port: int = 3310
+    clamav_timeout_seconds: int = 10
     pilot_enabled: bool = False
     pilot_intake_enabled: bool = False
     reviewer_secret: str = DEV_REVIEWER_SECRET
@@ -66,6 +70,10 @@ class Settings:
             s3_endpoint_url=os.getenv("RISOLVI_S3_ENDPOINT_URL") or None,
             s3_force_path_style=_bool_env("RISOLVI_S3_FORCE_PATH_STYLE", False),
             signed_url_seconds=_int_env("RISOLVI_SIGNED_URL_SECONDS", 300),
+            malware_scanner=os.getenv("RISOLVI_MALWARE_SCANNER", "disabled").strip().lower(),
+            clamav_host=os.getenv("RISOLVI_CLAMAV_HOST", "127.0.0.1").strip(),
+            clamav_port=_int_env("RISOLVI_CLAMAV_PORT", 3310),
+            clamav_timeout_seconds=_int_env("RISOLVI_CLAMAV_TIMEOUT_SECONDS", 10),
             pilot_enabled=_bool_env("RISOLVI_PILOT_ENABLED", False),
             pilot_intake_enabled=_bool_env("RISOLVI_PILOT_INTAKE_ENABLED", False),
             reviewer_secret=os.getenv("RISOLVI_REVIEWER_SECRET", DEV_REVIEWER_SECRET),
@@ -79,6 +87,15 @@ class Settings:
     def validate(self) -> None:
         if self.storage_backend not in {"local", "s3"}:
             raise ValueError("unsupported_storage_backend")
+        if self.malware_scanner not in {"disabled", "clamav"}:
+            raise ValueError("unsupported_malware_scanner")
+        if self.malware_scanner == "clamav":
+            if not self.clamav_host:
+                raise ValueError("clamav_host_required")
+            if not 1 <= self.clamav_port <= 65535:
+                raise ValueError("clamav_port_invalid")
+            if not 1 <= self.clamav_timeout_seconds <= 60:
+                raise ValueError("clamav_timeout_invalid")
         if self.signed_url_seconds < 30 or self.signed_url_seconds > 900:
             raise ValueError("signed_url_seconds_must_be_between_30_and_900")
         if self.pilot_intake_enabled and not self.pilot_enabled:
@@ -97,6 +114,8 @@ class Settings:
                 raise ValueError("production_requires_strong_capability_secret")
             if self.storage_backend != "s3" or not self.s3_bucket:
                 raise ValueError("production_requires_private_s3_storage")
+            if self.malware_scanner != "clamav":
+                raise ValueError("production_requires_malware_scanner")
             if self.pilot_enabled and (
                 self.reviewer_secret == DEV_REVIEWER_SECRET or len(self.reviewer_secret) < 32
             ):
