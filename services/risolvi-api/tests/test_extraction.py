@@ -1,6 +1,7 @@
+import pytest
 from fastapi.testclient import TestClient
 
-from app.document_pipeline import build_bundle, parse_client_document, parse_server_document
+from app.document_pipeline import DocumentError, build_bundle, parse_client_document, parse_server_document
 from app.main import app
 from app.models import ClientExtractedDocument, ExtractionMethod
 
@@ -37,19 +38,31 @@ def test_missing_facts_are_explicit_nulls_and_not_invented():
     assert bundle.structured_facts["consumer"] is None
     assert bundle.structured_facts["seller_country"] is None
     assert bundle.structured_facts["order_date"] is None
+    assert bundle.structured_facts["order_reference"] is None
+    assert bundle.structured_facts["product_name"] is None
 
 
-def test_order_date_is_extracted_with_provenance():
+def test_order_product_and_date_are_extracted_with_provenance():
     parsed = parse_server_document(
         "ordine.txt",
         "text/plain",
-        b"Venditore: Demo S.r.l.\nData ordine: 12/10/2026\nOrdine numero 123",
+        (
+            b"Venditore: Demo S.r.l.\n"
+            b"Numero ordine: IT-2026/778\n"
+            b"Data ordine: 12/10/2026\n"
+            b"Prodotto: Cuffie Wireless X2\n"
+            b"Acquisto online"
+        ),
     )
     bundle = build_bundle([parsed])
     assert bundle.structured_facts["order_date"] == "2026-10-12"
-    candidate = next(item for item in bundle.candidates if item.key == "order_date")
-    assert candidate.evidence[0].page == 1
-    assert "Data ordine" in (candidate.evidence[0].span or "")
+    assert bundle.structured_facts["order_reference"] == "IT-2026/778"
+    assert bundle.structured_facts["product_name"] == "Cuffie Wireless X2"
+    for key in ("order_date", "order_reference", "product_name"):
+        candidate = next(item for item in bundle.candidates if item.key == key)
+        assert candidate.evidence[0].page == 1
+        assert candidate.evidence[0].document_id == parsed.document_id
+        assert candidate.evidence[0].span
 
 
 def test_conflicting_dates_are_marked_not_prefilled_and_structured_null():
@@ -93,6 +106,51 @@ def test_instruction_like_document_text_is_data_not_instructions():
     assert all(candidate.key != "route" for candidate in bundle.candidates)
 
 
+def test_client_page_contract_preserves_page_and_method_provenance():
+    parsed = parse_client_document(ClientExtractedDocument(
+        filename="ordine-scansionato.pdf",
+        mime_type="application/pdf",
+        method=ExtractionMethod.CLIENT_OCR,
+        pages=[
+            {
+                "page": 1,
+                "method": "CLIENT_PDF_TEXT",
+                "text": "Venditore: Shop Demo S.r.l.\nNumero ordine: AB-12345\nProdotto: Router Casa",
+            },
+            {
+                "page": 2,
+                "method": "CLIENT_OCR",
+                "text": "Consegnato il 05/10/2026. Il prodotto non funziona.",
+            },
+        ],
+    ))
+    bundle = build_bundle([parsed])
+
+    seller = next(item for item in bundle.candidates if item.key == "seller_name")
+    delivery = next(item for item in bundle.candidates if item.key == "delivery_date")
+    problem = next(item for item in bundle.candidates if item.key == "problem")
+    assert seller.evidence[0].page == 1
+    assert seller.evidence[0].method == ExtractionMethod.CLIENT_PDF_TEXT
+    assert delivery.evidence[0].page == 2
+    assert delivery.evidence[0].method == ExtractionMethod.CLIENT_OCR
+    assert problem.evidence[0].page == 2
+    assert problem.evidence[0].method == ExtractionMethod.CLIENT_OCR
+
+
+def test_client_page_contract_rejects_non_contiguous_pages():
+    document = ClientExtractedDocument(
+        filename="bad.pdf",
+        mime_type="application/pdf",
+        method=ExtractionMethod.CLIENT_PDF_TEXT,
+        pages=[
+            {"page": 1, "method": "CLIENT_PDF_TEXT", "text": "Prima pagina"},
+            {"page": 3, "method": "CLIENT_OCR", "text": "Terza pagina"},
+        ],
+    )
+    with pytest.raises(DocumentError, match="client_pages_must_be_contiguous_from_one"):
+        parse_client_document(document)
+
+
 def test_client_ocr_endpoint_returns_structured_provenance():
     client = TestClient(app)
     created = client.post("/v1/cases").json()
@@ -118,3 +176,34 @@ def test_client_ocr_endpoint_returns_structured_provenance():
     seller = next(item for item in payload["candidates"] if item["key"] == "seller_name")
     assert seller["evidence"][0]["filename"] == "screenshot.png"
     assert seller["evidence"][0]["method"] == "CLIENT_OCR"
+
+
+def test_client_pdf_endpoint_keeps_mixed_page_methods():
+    client = TestClient(app)
+    created = client.post("/v1/cases").json()
+    case_id = created["case"]["id"]
+    token = created["capability_token"]
+    response = client.post(
+        f"/v1/cases/{case_id}/documents/extract-text",
+        headers={"X-Case-Token": token},
+        json={
+            "documents": [{
+                "filename": "ordine.pdf",
+                "mime_type": "application/pdf",
+                "method": "CLIENT_OCR",
+                "text": "",
+                "pages": [
+                    {"page": 1, "method": "CLIENT_PDF_TEXT", "text": "Numero ordine: ZX-900\nProdotto: Monitor 27"},
+                    {"page": 2, "method": "CLIENT_OCR", "text": "Consegnato il 09/10/2026"},
+                ],
+            }]
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    order = next(item for item in payload["candidates"] if item["key"] == "order_reference")
+    delivery = next(item for item in payload["candidates"] if item["key"] == "delivery_date")
+    assert order["evidence"][0]["page"] == 1
+    assert order["evidence"][0]["method"] == "CLIENT_PDF_TEXT"
+    assert delivery["evidence"][0]["page"] == 2
+    assert delivery["evidence"][0]["method"] == "CLIENT_OCR"
