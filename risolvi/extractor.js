@@ -13,6 +13,16 @@ function safeText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
+function normalizeDocumentText(value) {
+  return String(value || '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map(line => line.replace(/[\t ]+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
+    .slice(0, MAX_TEXT);
+}
+
 async function digestFile(file) {
   if (!crypto?.subtle) return null;
   const bytes = await file.arrayBuffer();
@@ -64,7 +74,7 @@ async function getPdfJs() {
 async function ocrSource(source, onStatus) {
   const worker = await getTesseractWorker(onStatus);
   const result = await worker.recognize(source);
-  return safeText(result?.data?.text || '');
+  return normalizeDocumentText(result?.data?.text || '');
 }
 
 async function extractPdf(file, onStatus) {
@@ -80,7 +90,9 @@ async function extractPdf(file, onStatus) {
     onStatus(`Leggo PDF · pagina ${pageNumber}/${pageCount}`);
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    let text = safeText(content.items.map(item => item.str || '').join(' '));
+    let text = normalizeDocumentText(
+      content.items.map(item => `${item.str || ''}${item.hasEOL ? '\n' : ' '}`).join('')
+    );
     let method = 'CLIENT_PDF_TEXT';
 
     if (text.length < 30) {
@@ -113,7 +125,9 @@ async function extractTextLike(file) {
     const doc = new DOMParser().parseFromString(text, 'text/html');
     text = doc.body?.innerText || text;
   }
-  return { text: safeText(text).slice(0, MAX_TEXT), pages: [{ page: 1, text: safeText(text), method: 'PLAIN_TEXT' }], method: /\.eml$/i.test(file.name) ? 'EMAIL_TEXT' : 'PLAIN_TEXT', warnings: [] };
+  const method = /\.eml$/i.test(file.name) || file.type === 'message/rfc822' ? 'EMAIL_TEXT' : 'PLAIN_TEXT';
+  const normalized = normalizeDocumentText(text);
+  return { text: normalized, pages: [{ page: 1, text: normalized, method }], method, warnings: [] };
 }
 
 export async function extractFile(file, onStatus = () => {}) {
@@ -123,13 +137,13 @@ export async function extractFile(file, onStatus = () => {}) {
 
   const lower = file.name.toLowerCase();
   let extracted;
-  if (file.type.startsWith('image/') || /\.(png|jpe?g|webp|bmp)$/i.test(lower)) {
+  if (file.type.startsWith('image/') || /\.(png|jpe?g|webp)$/i.test(lower)) {
     onStatus(`OCR locale · ${file.name}`);
     const text = await ocrSource(file, onStatus);
     extracted = { text, pages: [{ page: 1, text, method: 'CLIENT_OCR' }], method: 'CLIENT_OCR', warnings: [] };
   } else if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
     extracted = await extractPdf(file, onStatus);
-  } else if (file.type.startsWith('text/') || /\.(txt|eml|html?)$/i.test(lower)) {
+  } else if (file.type.startsWith('text/') || file.type === 'message/rfc822' || /\.(txt|eml|html?)$/i.test(lower)) {
     extracted = await extractTextLike(file);
   } else {
     throw new Error('unsupported_file_type');
