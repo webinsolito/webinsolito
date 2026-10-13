@@ -215,7 +215,7 @@ function candidatesForPage(document, page) {
   let match = text.match(/(?:venditore|seller|merchant|venduto\s+da|ragione\s+sociale)\s*[:\-]\s*([^\n\r]{2,100})/i);
   if (match) out.push(evidence(document, page, match, 'seller_name', cleanLabelValue(match[1], 100), 'high'));
 
-  match = text.match(/(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:n\.?|numero|#|id|codice))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})/i);
+  match = text.match(/(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:numero|codice|id|n\.?|#))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})/i);
   if (match) out.push(evidence(document, page, match, 'order_reference', cleanLabelValue(match[1], 40), 'high'));
 
   match = text.match(/(?:prodotto|articolo|product|item)\s*[:\-]\s*([^\n\r]{2,120})/i);
@@ -239,7 +239,7 @@ function candidatesForPage(document, page) {
     if (value) out.push(evidence(document, page, match, 'promised_delivery_date', value, 'high'));
   }
 
-  if (/\b(acquisto\s+online|ordine\s+(?:n\.?|numero|#)|e-?commerce|spedizione)\b/i.test(lower)) out.push(evidence(document, page, null, 'distance_purchase', true, 'medium'));
+  if (/\b(acquisto\s+online|ordine\s+(?:numero|n\.?|#)|e-?commerce|spedizione)\b/i.test(lower)) out.push(evidence(document, page, null, 'distance_purchase', true, 'medium'));
   if (/\b(s\.?r\.?l\.?|s\.?p\.?a\.?|s\.?n\.?c\.?|s\.?a\.?s\.?|partita\s+iva|p\.?iva)\b/i.test(lower)) out.push(evidence(document, page, null, 'professional_seller', true, 'medium'));
   if (/\b(prodotto|articolo|bene|spedizione|pacco|consegna)\b/i.test(lower)) out.push(evidence(document, page, null, 'physical_good', true, 'medium'));
   if (/\b(personalizzat[oa]|su\s+misura|incis[oa])\b/i.test(lower)) out.push(evidence(document, page, null, 'customised', true, 'high'));
