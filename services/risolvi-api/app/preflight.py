@@ -32,11 +32,20 @@ class Check:
     detail: str
 
 
+def _safe_error(exc: Exception) -> str:
+    # RuntimeError/ValueError messages below are controlled by this module/config.
+    # Provider/DB exceptions may contain hostnames or connection metadata, so only
+    # expose their class name in preflight output.
+    if isinstance(exc, (RuntimeError, ValueError)):
+        return f"{type(exc).__name__}:{str(exc)[:160]}"
+    return type(exc).__name__
+
+
 def _check(name: str, fn) -> Check:
     try:
         detail = fn()
-    except Exception as exc:  # preflight must fail closed but never dump secrets
-        return Check(name=name, ok=False, detail=f"{type(exc).__name__}:{str(exc)[:160]}")
+    except Exception as exc:  # preflight must fail closed without leaking secrets
+        return Check(name=name, ok=False, detail=_safe_error(exc))
     return Check(name=name, ok=True, detail=str(detail or "ok"))
 
 
