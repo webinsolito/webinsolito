@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -38,6 +38,23 @@ class ExtractionMethod(StrEnum):
     CLIENT_OCR = "CLIENT_OCR"
     CLIENT_PDF_TEXT = "CLIENT_PDF_TEXT"
     HEURISTIC = "HEURISTIC"
+
+
+class PilotClassification(StrEnum):
+    PASS_AUTONOMOUS = "PASS_AUTONOMOUS"
+    MINOR_EDIT = "MINOR_EDIT"
+    MATERIAL_EDIT = "MATERIAL_EDIT"
+    WRONG_ROUTE = "WRONG_ROUTE"
+    UNSUPPORTED_MISSED = "UNSUPPORTED_MISSED"
+    LEGAL_REVIEW_REQUIRED = "LEGAL_REVIEW_REQUIRED"
+
+
+class ErrorSeverity(StrEnum):
+    S0 = "S0"
+    S1 = "S1"
+    S2 = "S2"
+    S3 = "S3"
+    S4 = "S4"
 
 
 class EvidenceRef(BaseModel):
@@ -103,8 +120,13 @@ class CaseFacts(BaseModel):
     seller_country: str | None = None
     distance_purchase: bool | None = None
     physical_good: bool | None = None
+    order_date: date | None = None
     delivery_date: date | None = None
     promised_delivery_date: date | None = None
+    defect_manifested_date: date | None = None
+    withdrawal_notified_at: date | None = None
+    returned_or_proof_sent: bool | None = None
+    seller_offered_collection: bool = False
     seller_name: str | None = None
     customised: bool = False
     perishable: bool = False
@@ -140,3 +162,50 @@ class Recommendation(BaseModel):
 class OutcomeRequest(BaseModel):
     outcome_type: str = Field(min_length=1, max_length=60)
     payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class PilotConsentRequest(BaseModel):
+    notice_version: Literal["pilot-2026-10-v1"] = "pilot-2026-10-v1"
+
+
+class PilotSubmitResponse(BaseModel):
+    review_id: int
+    status: Literal["PENDING_REVIEW"] = "PENDING_REVIEW"
+
+
+class PilotReviewDecisionRequest(BaseModel):
+    classification: PilotClassification
+    error_severity: ErrorSeverity | None = None
+    final_recommendation: Recommendation | None = None
+    reviewer_note: str | None = Field(default=None, max_length=2000)
+
+
+class PilotReviewView(BaseModel):
+    id: int
+    case_id: UUID
+    created_at: datetime
+    decided_at: datetime | None = None
+    delivered_at: datetime | None = None
+    facts: CaseFacts
+    original_recommendation: Recommendation
+    classification: PilotClassification | None = None
+    error_severity: ErrorSeverity | None = None
+    final_recommendation: Recommendation | None = None
+    reviewer_note: str | None = None
+    document_metadata: list[DocumentMetadata] = Field(default_factory=list)
+
+
+class PilotActionResponse(BaseModel):
+    status: Literal["PENDING_REVIEW", "APPROVED"]
+    recommendation: Recommendation | None = None
+
+
+class PilotMetrics(BaseModel):
+    consented_cases: int
+    submitted_reviews: int
+    decided_reviews: int
+    delivered_actions: int
+    classifications: dict[str, int] = Field(default_factory=dict)
+    material_or_worse_rate: float | None = None
+    median_seconds_case_to_action: float | None = None
+    s0_s1_errors: int = 0
