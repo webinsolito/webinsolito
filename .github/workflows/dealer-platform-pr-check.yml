@@ -35,14 +35,16 @@ jobs:
           test -f dealer-platform/supabase/migrations/0017_sale_terminal_lock_v194.sql
           test -f dealer-platform/supabase/migrations/0018_publish_photo_gate_v197.sql
           test -f dealer-platform/supabase/migrations/0019_contract_status_terminal_v197.sql
+          grep -q "version: '1.9.8'" dealer-platform/config.js
           grep -q "data-quality.js?v=1.9.7" dealer-platform/config.js
           grep -q "operational-quality.js?v=1.9.7" dealer-platform/config.js
           grep -q "mobile-shell.js?v=1.9.6" dealer-platform/config.js
           grep -q "daily-ux.js?v=1.9.6" dealer-platform/config.js
-          grep -q "sale-safety.js?v=1.9.4" dealer-platform/config.js
+          grep -q "sale-safety.js?v=1.9.8" dealer-platform/config.js
           grep -q "sync-recovery.js?v=1.9.6" dealer-platform/config.js
           grep -q "session-security.js?v=1.9.6" dealer-platform/config.js
-          grep -q "dealer-platform-v1.9.7-static-only" dealer-platform/sw.js
+          grep -q "dealer-platform-v1.9.8-static-only" dealer-platform/sw.js
+          grep -q "sale-safety.js?v=1.9.8" dealer-platform/sw.js
           grep -q "data-quality.js?v=1.9.7" dealer-platform/sw.js
           grep -q "operational-quality.js?v=1.9.7" dealer-platform/sw.js
           grep -q "mobile-shell.js?v=1.9.6" dealer-platform/sw.js
