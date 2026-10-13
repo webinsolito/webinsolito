@@ -174,6 +174,8 @@ def create_app(
     def public_config() -> dict[str, object]:
         return {
             "service_version": SERVICE_VERSION,
+            "environment": settings.environment,
+            "build_sha": settings.build_sha,
             "pilot_enabled": settings.pilot_enabled,
             "pilot_intake_enabled": settings.pilot_intake_enabled,
             "pilot_notice_version": settings.pilot_notice_version,
