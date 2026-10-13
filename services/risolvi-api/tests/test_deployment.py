@@ -14,7 +14,12 @@ from app.main import create_app
 from app.storage import LocalPrivateStorage
 
 
-def production_settings(*, auto_create_schema: bool, malware_scanner: str = "clamav") -> Settings:
+def production_settings(
+    *,
+    auto_create_schema: bool,
+    malware_scanner: str = "clamav",
+    reviewer_credentials: tuple[tuple[str, str], ...] = (("reviewer-a", "a" * 40),),
+) -> Settings:
     return Settings(
         environment="production",
         database_url="postgresql+psycopg://user:password@example.invalid:5432/risolvi",
@@ -25,6 +30,7 @@ def production_settings(*, auto_create_schema: bool, malware_scanner: str = "cla
         clamav_host="clamav.internal",
         pilot_enabled=True,
         reviewer_secret="r" * 40,
+        reviewer_credentials=reviewer_credentials,
         allowed_origins=("https://www.webinsolito.it", "https://review.webinsolito.it"),
         auto_create_schema=auto_create_schema,
     )
@@ -38,6 +44,24 @@ def test_production_refuses_create_all_mode():
 def test_production_requires_malware_scanner():
     with pytest.raises(ValueError, match="production_requires_malware_scanner"):
         production_settings(auto_create_schema=False, malware_scanner="disabled").validate()
+
+
+def test_production_pilot_requires_per_reviewer_credentials():
+    with pytest.raises(ValueError, match="production_pilot_requires_per_reviewer_credentials"):
+        production_settings(auto_create_schema=False, reviewer_credentials=()).validate()
+
+
+def test_reviewer_credentials_require_safe_ids_and_distinct_tokens():
+    with pytest.raises(ValueError, match="invalid_reviewer_id"):
+        production_settings(
+            auto_create_schema=False,
+            reviewer_credentials=(("Mario Rossi", "a" * 40),),
+        ).validate()
+    with pytest.raises(ValueError, match="reviewer_credentials_must_be_distinct"):
+        production_settings(
+            auto_create_schema=False,
+            reviewer_credentials=(("reviewer-a", "a" * 40), ("reviewer-b", "a" * 40)),
+        ).validate()
 
 
 def test_production_accepts_explicit_migration_mode():
@@ -72,7 +96,7 @@ def _alembic_config(root: Path) -> Config:
     return config
 
 
-def test_initial_alembic_migration_creates_pilot_schema(tmp_path, monkeypatch):
+def test_alembic_head_creates_reviewer_audit_schema(tmp_path, monkeypatch):
     database_path = tmp_path / "migration.db"
     database_url = f"sqlite+pysqlite:///{database_path}"
     root = Path(__file__).resolve().parents[1]
@@ -106,7 +130,15 @@ def test_initial_alembic_migration_creates_pilot_schema(tmp_path, monkeypatch):
         "ix_pilot_reviews_classification",
         "ix_pilot_reviews_error_severity",
         "ix_pilot_reviews_created_at",
+        "ix_pilot_reviews_reviewer_id",
     } <= review_indexes
+    review_columns = {item["name"] for item in inspector.get_columns("pilot_reviews")}
+    assert "reviewer_id" in review_columns
+
+    audit_columns = {item["name"] for item in inspector.get_columns("audit_events")}
+    assert {"actor_type", "actor_id", "payload"} <= audit_columns
+    audit_indexes = {item["name"] for item in inspector.get_indexes("audit_events")}
+    assert "ix_audit_events_actor_id" in audit_indexes
 
 
 def test_alembic_prefers_dedicated_migration_database_url(tmp_path, monkeypatch):
