@@ -91,6 +91,15 @@ def create_app(
         if not settings.pilot_enabled:
             raise HTTPException(status_code=404, detail="pilot_not_enabled")
 
+    def require_pilot_intake() -> None:
+        require_pilot()
+        if not settings.pilot_intake_enabled:
+            raise HTTPException(status_code=503, detail="pilot_intake_paused")
+
+    def require_user_intake_if_pilot() -> None:
+        if settings.pilot_enabled:
+            require_pilot_intake()
+
     def require_reviewer(token: str | None) -> None:
         require_pilot()
         if not token or not compare_digest(token, settings.reviewer_secret):
@@ -127,6 +136,7 @@ def create_app(
         return {
             "service_version": SERVICE_VERSION,
             "pilot_enabled": settings.pilot_enabled,
+            "pilot_intake_enabled": settings.pilot_intake_enabled,
             "pilot_notice_version": settings.pilot_notice_version,
             "case_retention_days": settings.case_retention_days,
             "document_retention_hours": settings.document_retention_hours,
@@ -136,6 +146,7 @@ def create_app(
 
     @app.post("/v1/cases", response_model=CaseCreated)
     def create_case() -> CaseCreated:
+        require_user_intake_if_pilot()
         token = new_capability_token()
         case = repo.create_case(
             hash_capability(token, settings.capability_secret),
@@ -149,6 +160,7 @@ def create_app(
 
     @app.put("/v1/cases/{case_id}/facts", response_model=Case)
     def put_facts(case_id: UUID, facts: CaseFacts, x_case_token: CaseToken = None) -> Case:
+        require_user_intake_if_pilot()
         require_case(case_id, x_case_token)
         return repo.save_facts(case_id, facts)
 
@@ -158,6 +170,7 @@ def create_app(
         files: list[UploadFile] = File(...),
         x_case_token: CaseToken = None,
     ) -> ExtractionBundle:
+        require_user_intake_if_pilot()
         require_case(case_id, x_case_token)
         if not files or len(files) > MAX_FILES:
             raise HTTPException(status_code=400, detail="invalid_file_count")
@@ -178,6 +191,7 @@ def create_app(
         request: ClientExtractionRequest,
         x_case_token: CaseToken = None,
     ) -> ExtractionBundle:
+        require_user_intake_if_pilot()
         require_case(case_id, x_case_token)
         try:
             parsed = [parse_client_document(document) for document in request.documents]
@@ -191,6 +205,7 @@ def create_app(
         file: UploadFile = File(...),
         x_case_token: CaseToken = None,
     ) -> DocumentMetadata:
+        require_user_intake_if_pilot()
         require_case(case_id, x_case_token)
         data = await file.read(MAX_FILE_BYTES + 1)
         await file.close()
@@ -250,14 +265,14 @@ def create_app(
         request: PilotConsentRequest,
         x_case_token: CaseToken = None,
     ) -> Response:
-        require_pilot()
+        require_pilot_intake()
         require_case(case_id, x_case_token)
         pilot.consent(case_id, request.notice_version)
         return Response(status_code=204)
 
     @app.post("/v1/cases/{case_id}/pilot/submit", response_model=PilotSubmitResponse)
     def pilot_submit(case_id: UUID, x_case_token: CaseToken = None) -> PilotSubmitResponse:
-        require_pilot()
+        require_pilot_intake()
         require_case(case_id, x_case_token)
         facts = repo.latest_facts(case_id)
         if facts is None:
