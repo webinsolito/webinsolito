@@ -59,14 +59,20 @@ def test_readiness_checks_database(tmp_path):
     assert client.get("/v1/config").json()["service_version"] == SERVICE_VERSION
 
 
+def _alembic_config(root: Path) -> Config:
+    config = Config(str(root / "alembic.ini"))
+    config.set_main_option("script_location", str(root / "alembic"))
+    return config
+
+
 def test_initial_alembic_migration_creates_pilot_schema(tmp_path, monkeypatch):
     database_path = tmp_path / "migration.db"
     database_url = f"sqlite+pysqlite:///{database_path}"
     root = Path(__file__).resolve().parents[1]
-    config = Config(str(root / "alembic.ini"))
-    config.set_main_option("script_location", str(root / "alembic"))
+    config = _alembic_config(root)
     config.set_main_option("sqlalchemy.url", database_url)
     monkeypatch.delenv("RISOLVI_DATABASE_URL", raising=False)
+    monkeypatch.delenv("RISOLVI_MIGRATION_DATABASE_URL", raising=False)
 
     command.upgrade(config, "head")
 
@@ -94,3 +100,19 @@ def test_initial_alembic_migration_creates_pilot_schema(tmp_path, monkeypatch):
         "ix_pilot_reviews_error_severity",
         "ix_pilot_reviews_created_at",
     } <= review_indexes
+
+
+def test_alembic_prefers_dedicated_migration_database_url(tmp_path, monkeypatch):
+    database_path = tmp_path / "migration-direct.db"
+    migration_url = f"sqlite+pysqlite:///{database_path}"
+    root = Path(__file__).resolve().parents[1]
+    config = _alembic_config(root)
+
+    monkeypatch.setenv("RISOLVI_DATABASE_URL", "postgresql+psycopg://bad:bad@example.invalid:5432/runtime")
+    monkeypatch.setenv("RISOLVI_MIGRATION_DATABASE_URL", migration_url)
+
+    command.upgrade(config, "head")
+
+    tables = set(inspect(create_engine(migration_url)).get_table_names())
+    assert "alembic_version" in tables
+    assert "cases" in tables
