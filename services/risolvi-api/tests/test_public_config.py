@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from app.config import Settings
+from app.config import SERVICE_VERSION, Settings
 from app.db import Database
 from app.main import create_app
 from app.storage import LocalPrivateStorage
@@ -39,7 +39,7 @@ def test_public_config_exposes_only_non_secret_runtime_contract(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data == {
-        "service_version": "0.6.0",
+        "service_version": SERVICE_VERSION,
         "pilot_enabled": True,
         "pilot_notice_version": "pilot-2026-10-v1",
         "case_retention_days": 7,
