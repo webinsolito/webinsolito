@@ -60,6 +60,7 @@ class ErrorSeverity(StrEnum):
 class EvidenceRef(BaseModel):
     document_id: str
     filename: str
+    document_sha256: str | None = None
     page: int | None = None
     span: str | None = None
     method: ExtractionMethod
@@ -80,6 +81,7 @@ class DocumentExtraction(BaseModel):
     method: ExtractionMethod
     text_chars: int
     sha256: str | None = None
+    content_trust: Literal["UNTRUSTED"] = "UNTRUSTED"
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -101,12 +103,19 @@ class ExtractionBundle(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class ClientExtractedPage(BaseModel):
+    page: int = Field(ge=1, le=100)
+    text: str = Field(max_length=120_000)
+    method: ExtractionMethod
+
+
 class ClientExtractedDocument(BaseModel):
     filename: str
     mime_type: str
-    text: str = Field(max_length=120_000)
+    text: str = Field(default="", max_length=120_000)
     method: ExtractionMethod
     sha256: str | None = None
+    pages: list[ClientExtractedPage] = Field(default_factory=list, max_length=20)
 
 
 class ClientExtractionRequest(BaseModel):
@@ -120,6 +129,8 @@ class CaseFacts(BaseModel):
     seller_country: str | None = None
     distance_purchase: bool | None = None
     physical_good: bool | None = None
+    order_number: str | None = Field(default=None, max_length=80)
+    product_name: str | None = Field(default=None, max_length=180)
     order_date: date | None = None
     delivery_date: date | None = None
     promised_delivery_date: date | None = None
