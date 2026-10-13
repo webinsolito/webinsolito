@@ -1,45 +1,46 @@
 <!doctype html>
-<html lang="it" data-app-build="risolvi-v0.2-extraction">
+<html lang="it" data-app-build="risolvi-v0.6-pilot">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#06111a">
-<meta name="description" content="RISOLVI di WEBINSOLITO legge screenshot, email e PDF sul dispositivo, estrae i fatti e prepara il prossimo passo per un problema con un acquisto online.">
+<meta name="description" content="RISOLVI di WEBINSOLITO legge screenshot, email e PDF, struttura il caso e prepara il prossimo passo con controllo umano nel pilot.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pilot.css">
 <title>RISOLVI — WEBINSOLITO</title>
 </head>
 <body>
 <main class="shell">
   <header class="top">
     <a class="brand" href="../"><img src="logo.svg" alt=""><div><b>RISOLVI</b><span>WEBINSOLITO</span></div></a>
-    <span class="free">Gratis · nessun account</span>
+    <div><span class="free">Gratis · nessun account</span><div id="apiState" class="apiState">Connessione al motore…</div></div>
   </header>
 
   <section class="hero">
-    <div class="eyebrow">Acquisti online · prototipo v0.2</div>
+    <div class="eyebrow">Acquisti online · pilot controllato v0.6</div>
     <h1>Mandami quello che è successo.</h1>
-    <p>Carica uno screenshot, una mail, una ricevuta o un PDF. RISOLVI prova a leggere il materiale direttamente nel browser, estrae i fatti utili e ti chiede di confermarli prima di applicare il percorso.</p>
-    <div class="trust"><span>✓ OCR locale</span><span>✓ PDF letti nel browser</span><span>✓ fonti istituzionali</span><span>✓ nessun invio automatico</span><span>✓ sempre gratis</span></div>
+    <p>Carica uno screenshot, una mail, una ricevuta o un PDF. RISOLVI legge il materiale nel browser, ti fa confermare i fatti e, nel pilot, fa controllare l’Action Card prima di mostrartela.</p>
+    <div class="trust"><span>✓ OCR locale</span><span>✓ fatti confermati da te</span><span>✓ review umana nel pilot</span><span>✓ fonti istituzionali</span><span>✓ sempre gratis</span></div>
   </section>
 
   <section class="card">
     <h2>1. Carica ciò che hai</h2>
-    <p class="cardLead">Puoi scegliere fino a 8 file. Immagini, PDF, EML, TXT o HTML; massimo 8 MB ciascuno.</p>
+    <p class="cardLead">Fino a 8 file: immagini, PDF, EML, TXT o HTML; massimo 8 MB ciascuno. L'estrazione iniziale avviene sul dispositivo.</p>
     <label class="drop">
       <input id="files" type="file" multiple accept="image/*,.pdf,.eml,.txt,.html,.htm,text/plain,message/rfc822,application/pdf">
-      <span><b>Scegli screenshot, email, ricevute o PDF</b><span>I file non vengono caricati su WEBINSOLITO in questa versione.</span></span>
+      <span><b>Scegli screenshot, email, ricevute o PDF</b><span>I file vengono inviati al server solo se accetti di partecipare al pilot controllato.</span></span>
     </label>
     <div id="fileList" class="fileList"></div>
-    <div class="actions"><button id="processBtn" class="btn primary" type="button">Leggi i documenti</button></div>
+    <div class="actions"><button id="processBtn" class="btn primary" type="button">Leggi i documenti</button><button id="noDocsBtn" class="btn secondary" type="button">Continua senza documenti</button></div>
     <div id="extractStatus" class="statusline" aria-live="polite"></div>
-    <div class="privacy">Per leggere immagini e PDF il browser può scaricare i motori open-source Tesseract.js e PDF.js da jsDelivr. Il contenuto dei file resta elaborato sul dispositivo; vengono scaricate librerie/modelli, non caricati i tuoi documenti.</div>
+    <div class="privacy">Per leggere immagini e PDF il browser può scaricare Tesseract.js e PDF.js. Prima del consenso al pilot, il contenuto dei file resta elaborato sul dispositivo.</div>
   </section>
 
   <section id="reviewCard" class="card hidden">
     <h2>2. Controlla quello che ho capito</h2>
-    <p class="cardLead">I campi precompilati sono proposte estratte dai documenti, non fatti già confermati. Correggili liberamente.</p>
+    <p class="cardLead">I campi precompilati sono proposte estratte dai documenti. Correggili liberamente: la decisione usa solo i fatti che confermi.</p>
 
     <div class="grid">
       <div class="field"><label for="problem">Problema principale</label><select id="problem" class="select"><option value="other">Non determinato</option><option value="defect">Prodotto difettoso/non conforme</option><option value="redirect">Venditore mi manda dal produttore</option><option value="not-delivered">Mancata consegna</option><option value="withdrawal">Recesso</option><option value="refund">Rimborso dopo recesso</option></select></div>
@@ -49,11 +50,16 @@
       <div class="field"><label for="professionalSeller">Il venditore è professionale?</label><select id="professionalSeller" class="select"><option value="unknown">Non so</option><option value="yes">Sì</option><option value="no">No / privato</option></select></div>
       <div class="field"><label for="distancePurchase">Acquisto online/a distanza?</label><select id="distancePurchase" class="select"><option value="unknown">Non so</option><option value="yes">Sì</option><option value="no">No</option></select></div>
       <div class="field"><label for="physicalGood">È un bene fisico?</label><select id="physicalGood" class="select"><option value="unknown">Non so</option><option value="yes">Sì</option><option value="no">No</option></select></div>
+      <div class="field"><label for="orderDate">Data ordine</label><input id="orderDate" type="date" class="input"></div>
       <div class="field"><label for="deliveryDate">Data di consegna</label><input id="deliveryDate" type="date" class="input"></div>
       <div class="field"><label for="promisedDate">Consegna promessa entro</label><input id="promisedDate" type="date" class="input"></div>
+      <div class="field"><label for="defectManifestedDate">Quando si è manifestato il difetto</label><input id="defectManifestedDate" type="date" class="input"></div>
+      <div class="field"><label for="withdrawalNotifiedAt">Quando hai comunicato il recesso</label><input id="withdrawalNotifiedAt" type="date" class="input"></div>
+      <div class="field"><label for="returnedOrProofSent">Hai restituito il bene o inviato prova della restituzione?</label><select id="returnedOrProofSent" class="select"><option value="unknown">Non so / non ancora</option><option value="yes">Sì</option><option value="no">No</option></select></div>
     </div>
 
     <div class="checks">
+      <label class="check"><input id="sellerOfferedCollection" type="checkbox"><span>Il venditore ha offerto di ritirare il bene</span></label>
       <label class="check"><input id="customised" type="checkbox"><span>Il bene è personalizzato / su misura</span></label>
       <label class="check"><input id="perishable" type="checkbox"><span>Il bene è deperibile o si deteriora rapidamente</span></label>
       <label class="check"><input id="hygieneOpened" type="checkbox"><span>Era sigillato per ragioni igieniche/salute e il sigillo è stato aperto</span></label>
@@ -63,8 +69,24 @@
     <div id="evidencePanel" class="evidencePanel"></div>
 
     <label class="check confirm"><input id="confirmFacts" type="checkbox"><span>Confermo che i fatti sopra sono corretti. So che l’estrazione automatica può sbagliare.</span></label>
+
+    <div class="pilotBox">
+      <h3>Pilot controllato</h3>
+      <p>Prima di mostrarti il prossimo passo, una persona autorizzata controlla il caso e la bozza. Se hai caricato documenti, vengono inviati solo dopo questo consenso e restano disponibili per il tempo di retention indicato dal servizio.</p>
+      <label class="check"><input id="pilotConsent" type="checkbox"><span>Accetto di inviare al pilot i fatti confermati e gli eventuali documenti caricati per la revisione umana.</span></label>
+      <div id="pilotMeta" class="pilotMeta"></div>
+    </div>
+
     <div id="confirmError" class="error"></div>
-    <div class="actions"><button id="analyseBtn" class="btn primary" type="button">Dimmi il prossimo passo</button><button id="resetBtn" class="btn secondary" type="button">Ricomincia</button></div>
+    <div class="actions"><button id="analyseBtn" class="btn primary" type="button">Invia al controllo e prepara il passo</button><button id="resetBtn" class="btn secondary" type="button">Ricomincia</button></div>
+  </section>
+
+  <section id="pendingCard" class="card pendingCard hidden">
+    <div class="pendingPulse"><strong>Controllo umano in corso</strong></div>
+    <h2>La tua Action Card non è ancora visibile.</h2>
+    <p class="cardLead">RISOLVI ha preparato una proposta, ma nel pilot non viene mostrata finché un reviewer non l’ha controllata.</p>
+    <div id="pendingMessage" class="helper"></div>
+    <div class="actions"><button id="refreshActionBtn" class="btn secondary" type="button">Controlla se è pronta</button><button id="deleteCasePendingBtn" class="dangerLink" type="button">Elimina questa pratica</button></div>
   </section>
 
   <section id="resultCard" class="card hidden">
@@ -74,15 +96,19 @@
     <div class="route">route: <span id="routeCode">—</span></div>
     <div id="sourceList" class="sources"></div>
     <div id="draftWrap" class="draftWrap hidden">
-      <div class="subhead"><h3>Bozza pronta</h3><span>sei tu a inviarla</span></div>
+      <div class="subhead"><h3>Bozza controllata</h3><span>sei tu a inviarla</span></div>
       <div id="draft" class="draft"></div>
       <div class="copyrow"><button id="copyBtn" class="btn secondary" type="button">Copia testo</button><span id="copyFeedback" class="copyFeedback"></span></div>
     </div>
+    <div class="feedbackRow"><button id="sentBtn" class="btn secondary" type="button">L’ho inviata</button><button id="resolvedBtn" class="btn secondary" type="button">Problema risolto</button><button id="notResolvedBtn" class="btn secondary" type="button">Non ancora risolto</button></div>
+    <div id="outcomeFeedback" class="helper"></div>
     <div class="notice">RISOLVI prepara un percorso informativo e operativo nel perimetro supportato; non invia comunicazioni al posto tuo e non sostituisce una valutazione professionale quando il caso è ambiguo o fuori perimetro.</div>
+    <button id="deleteCaseBtn" class="dangerLink" type="button">Elimina questa pratica e i dati collegati</button>
   </section>
 
-  <p class="foot">WEBINSOLITO · prototipo RISOLVI v0.2 · nessun paywall, nessun credito, nessuna carta richiesta.</p>
+  <p class="foot">WEBINSOLITO · RISOLVI pilot v0.6 · nessun paywall, nessun credito, nessuna carta richiesta.</p>
 </main>
+<script src="config.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

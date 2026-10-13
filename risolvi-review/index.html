@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>RISOLVI Reviewer — WEBINSOLITO</title>
+<link rel="icon" href="../risolvi/logo.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><img src="../risolvi/logo.svg" alt=""><div><strong>RISOLVI Reviewer</strong><span>Wizard-of-Oz pilot</span></div></div>
+  <button id="refreshBtn" class="btn secondary" type="button" disabled>Aggiorna</button>
+</header>
+
+<main class="layout">
+  <section class="connect panel">
+    <div><h1>Console di review</h1><p>Il token reviewer non viene salvato nel repository né in localStorage: resta soltanto nella sessione del browser.</p></div>
+    <div class="connectForm">
+      <label>API base<input id="apiBase" placeholder="https://api.example.it oppure vuoto per same-origin"></label>
+      <label>Reviewer token<input id="reviewerToken" type="password" autocomplete="off" placeholder="RISOLVI_REVIEWER_SECRET"></label>
+      <button id="connectBtn" class="btn primary" type="button">Connetti</button>
+    </div>
+    <div id="connectionStatus" class="status"></div>
+  </section>
+
+  <section id="metrics" class="metrics hidden" aria-label="Metriche pilot"></section>
+
+  <div class="workspace">
+    <aside class="panel queuePanel">
+      <div class="sectionHead"><div><h2>Coda</h2><span id="queueCount">0 casi</span></div></div>
+      <div id="queue" class="queue"><div class="empty">Connettiti al Case Engine.</div></div>
+    </aside>
+
+    <section id="detail" class="panel detailPanel">
+      <div class="empty">Seleziona un caso dalla coda.</div>
+    </section>
+  </div>
+</main>
+
+<template id="detailTemplate">
+  <div class="detailHeader">
+    <div><span class="kicker">Review <b data-field="review-id"></b></span><h2 data-field="case-title"></h2><span data-field="created-at" class="muted"></span></div>
+    <span data-field="route-badge" class="badge"></span>
+  </div>
+
+  <section class="block"><h3>Fatti confermati</h3><div data-field="facts" class="facts"></div></section>
+  <section class="block"><h3>Documenti</h3><div data-field="documents" class="documents"></div></section>
+  <section class="block candidate"><h3>Proposta del motore</h3><div data-field="candidate" class="candidateText"></div></section>
+
+  <section class="block decision">
+    <h3>Decisione reviewer</h3>
+    <div class="grid">
+      <label>Classificazione<select data-input="classification">
+        <option>PASS_AUTONOMOUS</option><option>MINOR_EDIT</option><option>MATERIAL_EDIT</option><option>WRONG_ROUTE</option><option>UNSUPPORTED_MISSED</option><option>LEGAL_REVIEW_REQUIRED</option>
+      </select></label>
+      <label>Severity<select data-input="severity"><option value="">Nessuna</option><option>S0</option><option>S1</option><option>S2</option><option>S3</option><option>S4</option></select></label>
+      <label>Status finale<select data-input="status"><option>ACTIONABLE</option><option>NEEDS_INFORMATION</option><option>UNSUPPORTED</option></select></label>
+      <label>Route<input data-input="route"></label>
+    </div>
+    <label>Titolo<input data-input="title"></label>
+    <label>Spiegazione<textarea data-input="explanation" rows="4"></textarea></label>
+    <label>Bozza<textarea data-input="draft" rows="8"></textarea></label>
+    <div class="grid">
+      <label>Rule IDs <span class="muted">separati da virgola</span><input data-input="rule-ids"></label>
+      <label>Source IDs <span class="muted">separati da virgola</span><input data-input="source-ids"></label>
+      <label>Allowed claims <span class="muted">separati da virgola</span><input data-input="allowed-claims"></label>
+      <label>Missing facts <span class="muted">separati da virgola</span><input data-input="missing-facts"></label>
+    </div>
+    <label>Nota reviewer<textarea data-input="note" rows="3" maxlength="2000" placeholder="Motivo della modifica / dubbio / escalation"></textarea></label>
+    <div id="decisionError" class="error"></div>
+    <div class="actions"><button data-action="submit" class="btn primary" type="button">Conferma decisione</button></div>
+  </section>
+</template>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

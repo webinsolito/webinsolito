@@ -206,6 +206,7 @@ class PilotMetrics(BaseModel):
     decided_reviews: int
     delivered_actions: int
     classifications: dict[str, int] = Field(default_factory=dict)
+    outcomes: dict[str, int] = Field(default_factory=dict)
     material_or_worse_rate: float | None = None
     median_seconds_case_to_action: float | None = None
     s0_s1_errors: int = 0

@@ -6,7 +6,8 @@ on:
     paths:
       - 'services/risolvi-api/**'
       - 'risolvi/**'
-      - 'docs/reuse-register.md'
+      - 'risolvi-review/**'
+      - 'docs/**'
       - '.github/workflows/risolvi-api-tests.yml'
 
 jobs:
@@ -30,4 +31,6 @@ jobs:
         with:
           node-version: '22'
       - run: node --check ../../risolvi/extractor.js
+      - run: node --check ../../risolvi/config.js
       - run: node --check ../../risolvi/app.js
+      - run: node --check ../../risolvi-review/app.js

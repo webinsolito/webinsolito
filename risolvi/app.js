@@ -1,22 +1,37 @@
 import { extractFiles, inferFacts, shutdownExtractionWorkers } from './extractor.js';
 
 const $ = id => document.getElementById(id);
-const state = { documents: [], inference: { facts: {}, candidates: [], conflicts: [] } };
+const SESSION_KEY = 'webinsolito.risolvi.case.v06';
+const API_BASE = String(window.RISOLVI_CONFIG?.apiBase || '').replace(/\/$/, '');
+const state = {
+  documents: [],
+  inference: { facts: {}, candidates: [], conflicts: [] },
+  apiConfig: null,
+  caseId: null,
+  caseToken: null,
+  uploaded: false,
+  reviewId: null,
+  pollTimer: null,
+};
 
 const SOURCES = {
-  guarantee: {
+  'MIMIT-GARANZIA': {
     title: 'MIMIT — Garanzia legale',
     url: 'https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/garanzia-legale',
   },
-  withdrawal: {
+  'MIMIT-RECESSO': {
     title: 'MIMIT — Diritto di recesso',
-    url: 'https://www.mimit.gov.it/it/assistenza/domande-frequenti/diritto-di-recesso-domande-frequenti-faq',
+    url: 'https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/diritto-di-recesso',
   },
-  distance: {
+  'MIMIT-VENDITA-DISTANZA': {
     title: 'MIMIT — Vendita a distanza',
     url: 'https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/diritti-del-consumatore/vendita-a-distanza',
   },
 };
+
+function apiUrl(path) {
+  return `${API_BASE}${path}`;
+}
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -31,7 +46,7 @@ function yesNoValue(id) {
 
 function setYesNo(id, value) {
   if (value === true) $(id).value = 'yes';
-  if (value === false) $(id).value = 'no';
+  else if (value === false) $(id).value = 'no';
 }
 
 function setStatus(message, tone = '') {
@@ -40,10 +55,47 @@ function setStatus(message, tone = '') {
   node.dataset.tone = tone;
 }
 
+async function apiRequest(path, options = {}) {
+  const headers = new Headers(options.headers || {});
+  if (state.caseToken && options.caseAuth !== false) headers.set('X-Case-Token', state.caseToken);
+  if (options.json !== undefined) headers.set('Content-Type', 'application/json');
+  const response = await fetch(apiUrl(path), {
+    method: options.method || 'GET',
+    headers,
+    body: options.json !== undefined ? JSON.stringify(options.json) : options.body,
+    cache: 'no-store',
+  });
+  if (response.status === 204) return null;
+  const type = response.headers.get('content-type') || '';
+  const payload = type.includes('application/json') ? await response.json() : await response.text();
+  if (!response.ok) {
+    const detail = typeof payload === 'object' ? payload.detail : payload;
+    throw new Error(typeof detail === 'string' ? detail : `http_${response.status}`);
+  }
+  return payload;
+}
+
+function persistCase() {
+  if (!state.caseId || !state.caseToken) return;
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ caseId: state.caseId, caseToken: state.caseToken }));
+}
+
+function restoreCase() {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+    if (stored?.caseId && stored?.caseToken) {
+      state.caseId = stored.caseId;
+      state.caseToken = stored.caseToken;
+    }
+  } catch {
+    sessionStorage.removeItem(SESSION_KEY);
+  }
+}
+
 function renderFiles(files) {
   $('fileList').innerHTML = files.length
     ? files.map(file => `<div class="fileRow"><div><b>${escapeHtml(file.name)}</b><span>${Math.ceil(file.size / 1024)} KB</span></div><span class="pill">locale</span></div>`).join('')
-    : '';
+    : '<div class="empty">Nessun documento selezionato.</div>';
 }
 
 function renderExtraction() {
@@ -69,8 +121,11 @@ function prefillForm() {
   const facts = state.inference.facts;
   if (facts.problem) $('problem').value = facts.problem;
   if (facts.seller_name) $('sellerName').value = facts.seller_name;
+  if (facts.order_date) $('orderDate').value = facts.order_date;
   if (facts.delivery_date) $('deliveryDate').value = facts.delivery_date;
   if (facts.promised_delivery_date) $('promisedDate').value = facts.promised_delivery_date;
+  if (facts.defect_manifested_date) $('defectManifestedDate').value = facts.defect_manifested_date;
+  if (facts.withdrawal_notified_at) $('withdrawalNotifiedAt').value = facts.withdrawal_notified_at;
   setYesNo('distancePurchase', facts.distance_purchase);
   setYesNo('professionalSeller', facts.professional_seller);
   setYesNo('physicalGood', facts.physical_good);
@@ -78,10 +133,18 @@ function prefillForm() {
   if (facts.perishable === true) $('perishable').checked = true;
 }
 
+function openReviewCard() {
+  $('reviewCard').classList.remove('hidden');
+  $('reviewCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function processFiles() {
   const files = [...$('files').files].slice(0, 8);
   renderFiles(files);
-  if (!files.length) return;
+  if (!files.length) {
+    setStatus('Se non hai documenti, usa “Continua senza documenti”.', 'warn');
+    return;
+  }
   $('processBtn').disabled = true;
   $('reviewCard').classList.add('hidden');
   $('resultCard').classList.add('hidden');
@@ -90,10 +153,9 @@ async function processFiles() {
     state.inference = inferFacts(state.documents);
     renderExtraction();
     prefillForm();
-    $('reviewCard').classList.remove('hidden');
+    openReviewCard();
     const conflicts = state.inference.conflicts.length;
     setStatus(conflicts ? `Analisi completata. ${conflicts} dato/i in conflitto: controllali prima di continuare.` : 'Analisi completata. Controlla e conferma i fatti estratti.', conflicts ? 'warn' : 'good');
-    $('reviewCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
     const messages = {
       file_too_large: 'Un file supera 8 MB.',
@@ -106,118 +168,227 @@ async function processFiles() {
   }
 }
 
-function monthsBetween(isoDate, now = new Date()) {
-  const start = new Date(`${isoDate}T00:00:00Z`);
-  return (now - start) / (1000 * 60 * 60 * 24 * 30.4375);
-}
-
-function daysBetween(isoDate, now = new Date()) {
-  const start = new Date(`${isoDate}T00:00:00Z`);
-  return Math.floor((now - start) / (1000 * 60 * 60 * 24));
-}
-
-function result(status, title, explanation, options = {}) {
-  return { status, title, explanation, route: options.route || null, draft: options.draft || '', sources: options.sources || [], missing: options.missing || [] };
-}
-
-function analyseFacts(f) {
-  const missingCommon = [];
-  if (f.consumer === null) missingCommon.push('se l’acquisto è stato fatto come privato');
-  if (f.professionalSeller === null) missingCommon.push('se il venditore è un professionista');
-  if (!f.sellerCountry) missingCommon.push('paese del venditore');
-  if (f.physicalGood === null) missingCommon.push('se si tratta di un bene fisico');
-  if (missingCommon.length) return result('warn', 'Manca un fatto decisivo', `Prima di applicare una regola devo sapere: ${missingCommon.join(', ')}.`, { missing: missingCommon });
-
-  if (!f.consumer || !f.professionalSeller) return result('bad', 'Caso fuori dal perimetro automatico', 'Questa versione copre soltanto acquisti B2C tra consumatore e venditore professionale.');
-  if (!['IT', 'EU'].includes(f.sellerCountry)) return result('bad', 'Venditore extra-UE: serve un percorso diverso', 'RISOLVI v0.2 non applica automaticamente il rule pack Italia/UE ai venditori extra-UE.');
-  if (!f.physicalGood) return result('bad', 'Tipo di acquisto non ancora supportato', 'Questa versione tratta beni fisici ordinari, non servizi o contenuti digitali.');
-
-  const seller = f.sellerName || 'il venditore';
-  if (['defect', 'redirect'].includes(f.problem)) {
-    if (!f.deliveryDate) return result('warn', 'Serve la data di consegna', 'La data cambia il percorso temporale della garanzia.', { missing: ['data di consegna'] });
-    const months = monthsBetween(f.deliveryDate);
-    if (months < 0) return result('warn', 'Controlla la data di consegna', 'La data inserita risulta futura.');
-    if (months > 24) return result('warn', 'Non affermo automaticamente la copertura', 'La consegna risulta oltre 24 mesi fa: questa versione richiede una verifica specifica prima di suggerire una richiesta basata sulla garanzia legale.', { route: 'LEGAL_GUARANTEE_REVIEW', sources: [SOURCES.guarantee] });
-    return result('good', 'Il prossimo passo: scrivi al venditore', 'Sui fatti che hai confermato, il caso rientra nel percorso di garanzia legale gestito da RISOLVI.', {
-      route: 'LEGAL_GUARANTEE', sources: [SOURCES.guarantee],
-      draft: `Gentili ${seller},\n\nsegnalo un problema di conformità/difetto relativo al bene consegnato il ${f.deliveryDate}. Chiedo di gestire la pratica nell'ambito della garanzia legale e di indicarmi il percorso per il ripristino della conformità.\n\nCordiali saluti`,
-    });
-  }
-
-  if (['withdrawal', 'refund'].includes(f.problem)) {
-    if (f.distancePurchase !== true) return result('bad', 'Il percorso standard di recesso non è applicabile automaticamente', 'Questa versione tratta il recesso degli acquisti online/a distanza.');
-    if (f.customised || f.perishable || f.hygieneOpened) return result('warn', 'Possibile eccezione al recesso', 'Una caratteristica del bene può richiedere una verifica specifica. RISOLVI non applica automaticamente il termine standard.', { route: 'WITHDRAWAL_EXCEPTION_REVIEW', sources: [SOURCES.withdrawal] });
-    if (!f.deliveryDate) return result('warn', 'Serve la data di consegna', 'È necessaria per controllare il termine standard.', { missing: ['data di consegna'] });
-    const days = daysBetween(f.deliveryDate);
-    if (days < 0) return result('warn', 'Controlla la data di consegna', 'La data inserita risulta futura.');
-    if (days > 14) return result('warn', 'Il termine standard risulta superato', 'Questa versione non applica automaticamente eventuali estensioni o eccezioni informative: serve una verifica ulteriore.', { route: 'WITHDRAWAL_LATE_REVIEW', sources: [SOURCES.withdrawal] });
-    return result('good', 'Il prossimo passo: comunica il recesso', 'Sui fatti confermati il caso rientra nel percorso standard di recesso a distanza.', {
-      route: 'WITHDRAWAL', sources: [SOURCES.withdrawal],
-      draft: `Gentili ${seller},\n\ncomunico la mia volontà di recedere dall'acquisto online e chiedo le istruzioni operative per la restituzione.\n\nCordiali saluti`,
-    });
-  }
-
-  if (f.problem === 'not-delivered') {
-    if (f.distancePurchase !== true) return result('bad', 'Percorso consegna online non applicabile', 'La v0.2 tratta la mancata consegna negli acquisti a distanza.');
-    if (!f.promisedDate) return result('warn', 'Serve il termine di consegna promesso', 'Non qualifico il ritardo senza la data o il termine indicato dal venditore.', { missing: ['termine di consegna'] });
-    if (new Date(`${f.promisedDate}T00:00:00Z`) > new Date()) return result('warn', 'Il termine non è ancora trascorso', 'La data promessa risulta futura.', { sources: [SOURCES.distance] });
-    return result('good', 'Il prossimo passo: contesta la mancata consegna', 'Il termine che hai confermato risulta trascorso. RISOLVI prepara una richiesta al venditore senza promettere automaticamente un rimborso immediato.', {
-      route: 'DELIVERY', sources: [SOURCES.distance],
-      draft: `Gentili ${seller},\n\nl'ordine non risulta consegnato nonostante il termine indicato sia trascorso. Chiedo lo stato effettivo della spedizione e un termine certo per la consegna.\n\nCordiali saluti`,
-    });
-  }
-
-  return result('bad', 'Caso non ancora supportato', 'Questa versione non ha una regola automatica per il problema selezionato.');
+function continueWithoutDocuments() {
+  // This action is a privacy boundary, not merely a visual choice: clear the
+  // native file input so uploadPilotDocuments() cannot later send files the
+  // user explicitly chose not to include in the pilot.
+  $('files').value = '';
+  renderFiles([]);
+  state.documents = [];
+  state.inference = { facts: {}, candidates: [], conflicts: [] };
+  state.uploaded = false;
+  renderExtraction();
+  setStatus('Va bene: inserisci solo i fatti che conosci. Nessun documento verrà inviato.', 'good');
+  openReviewCard();
 }
 
 function collectFacts() {
   return {
     problem: $('problem').value,
-    sellerName: $('sellerName').value.trim(),
-    sellerCountry: $('sellerCountry').value,
+    seller_name: $('sellerName').value.trim() || null,
+    seller_country: $('sellerCountry').value || null,
     consumer: yesNoValue('consumer'),
-    professionalSeller: yesNoValue('professionalSeller'),
-    distancePurchase: yesNoValue('distancePurchase'),
-    physicalGood: yesNoValue('physicalGood'),
-    deliveryDate: $('deliveryDate').value || null,
-    promisedDate: $('promisedDate').value || null,
+    professional_seller: yesNoValue('professionalSeller'),
+    distance_purchase: yesNoValue('distancePurchase'),
+    physical_good: yesNoValue('physicalGood'),
+    order_date: $('orderDate').value || null,
+    delivery_date: $('deliveryDate').value || null,
+    promised_delivery_date: $('promisedDate').value || null,
+    defect_manifested_date: $('defectManifestedDate').value || null,
+    withdrawal_notified_at: $('withdrawalNotifiedAt').value || null,
+    returned_or_proof_sent: yesNoValue('returnedOrProofSent'),
+    seller_offered_collection: $('sellerOfferedCollection').checked,
     customised: $('customised').checked,
     perishable: $('perishable').checked,
-    hygieneOpened: $('hygieneOpened').checked,
+    sealed_hygiene_opened: $('hygieneOpened').checked,
   };
 }
 
-function renderResult(data) {
+async function ensureCase() {
+  if (state.caseId && state.caseToken) return;
+  const created = await apiRequest('/v1/cases', { method: 'POST', caseAuth: false });
+  state.caseId = created.case.id;
+  state.caseToken = created.capability_token;
+  persistCase();
+}
+
+async function uploadPilotDocuments() {
+  if (state.uploaded) return;
+  const files = [...$('files').files].slice(0, 8);
+  for (let index = 0; index < files.length; index += 1) {
+    const form = new FormData();
+    form.append('file', files[index], files[index].name);
+    $('confirmError').textContent = `Invio documento ${index + 1}/${files.length} al reviewer…`;
+    await apiRequest(`/v1/cases/${state.caseId}/documents`, { method: 'POST', body: form });
+  }
+  state.uploaded = true;
+}
+
+function showPending(reviewId = null) {
+  if (reviewId) state.reviewId = reviewId;
+  $('reviewCard').classList.add('hidden');
+  $('resultCard').classList.add('hidden');
+  $('pendingCard').classList.remove('hidden');
+  $('pendingMessage').textContent = state.reviewId ? `Pratica in coda · review #${state.reviewId}. Puoi lasciare aperta questa pagina o tornare più tardi nella stessa sessione del browser.` : 'Pratica in coda di revisione.';
+  $('pendingCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  startPolling();
+}
+
+function sourceCards(ids = []) {
+  if (!ids.length) return '<div class="empty">Nessuna fonte associata a questa Action Card.</div>';
+  return ids.map(id => {
+    const source = SOURCES[id];
+    if (!source) return `<div class="source"><b>${escapeHtml(id)}</b><span>Fonte registrata nel rule pack</span></div>`;
+    return `<a class="source" href="${source.url}" target="_blank" rel="noopener"><b>${escapeHtml(source.title)}</b><span>Apri fonte ufficiale ↗</span></a>`;
+  }).join('');
+}
+
+function renderRecommendation(rec) {
+  stopPolling();
+  $('pendingCard').classList.add('hidden');
   const card = $('resultCard');
   card.classList.remove('hidden');
-  $('resultStatus').className = `status ${data.status}`;
-  $('resultStatus').textContent = data.status === 'good' ? 'Percorso utilizzabile' : data.status === 'warn' ? 'Serve un controllo' : 'Fuori perimetro';
-  $('resultTitle').textContent = data.title;
-  $('resultExplanation').textContent = data.explanation;
-  $('routeCode').textContent = data.route || '—';
-  $('sourceList').innerHTML = data.sources.length ? data.sources.map(source => `<a class="source" href="${source.url}" target="_blank" rel="noopener"><b>${escapeHtml(source.title)}</b><span>Apri fonte ufficiale ↗</span></a>`).join('') : '<div class="empty">Nessuna fonte mostrata perché il caso non è stato instradato automaticamente.</div>';
-  $('draftWrap').classList.toggle('hidden', !data.draft);
-  $('draft').textContent = data.draft;
+  const tone = rec.status === 'ACTIONABLE' ? 'good' : rec.status === 'NEEDS_INFORMATION' ? 'warn' : 'bad';
+  $('resultStatus').className = `status ${tone}`;
+  $('resultStatus').textContent = rec.status === 'ACTIONABLE' ? 'Action Card controllata' : rec.status === 'NEEDS_INFORMATION' ? 'Serve un controllo ulteriore' : 'Fuori perimetro';
+  $('resultTitle').textContent = rec.title;
+  $('resultExplanation').textContent = rec.explanation;
+  $('routeCode').textContent = rec.route || '—';
+  $('sourceList').innerHTML = sourceCards(rec.source_ids || []);
+  $('draftWrap').classList.toggle('hidden', !rec.draft);
+  $('draft').textContent = rec.draft || '';
   card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function analyseConfirmed() {
+async function checkAction() {
+  if (!state.caseId || !state.caseToken) return;
+  try {
+    const payload = await apiRequest(`/v1/cases/${state.caseId}/pilot/action`);
+    if (payload.status === 'APPROVED' && payload.recommendation) renderRecommendation(payload.recommendation);
+    else showPending(state.reviewId);
+  } catch (error) {
+    $('pendingMessage').textContent = `Non riesco a controllare lo stato: ${error.message}. Riprova tra poco.`;
+  }
+}
+
+function startPolling() {
+  if (state.pollTimer) return;
+  state.pollTimer = window.setInterval(() => {
+    if (document.visibilityState === 'visible') checkAction();
+  }, 8000);
+}
+
+function stopPolling() {
+  if (!state.pollTimer) return;
+  clearInterval(state.pollTimer);
+  state.pollTimer = null;
+}
+
+async function submitForReview() {
+  $('confirmError').textContent = '';
   if (!$('confirmFacts').checked) {
     $('confirmError').textContent = 'Conferma prima che i fatti inseriti siano corretti.';
     return;
   }
-  $('confirmError').textContent = '';
-  renderResult(analyseFacts(collectFacts()));
+  if (!$('pilotConsent').checked) {
+    $('confirmError').textContent = 'Per il pilot controllato serve il consenso alla revisione umana.';
+    return;
+  }
+  if (!state.apiConfig?.pilot_enabled) {
+    $('confirmError').textContent = 'Il pilot non è attivo sul motore configurato.';
+    return;
+  }
+
+  $('analyseBtn').disabled = true;
+  try {
+    await ensureCase();
+    await apiRequest(`/v1/cases/${state.caseId}/facts`, { method: 'PUT', json: collectFacts() });
+    await apiRequest(`/v1/cases/${state.caseId}/pilot/consent`, {
+      method: 'POST',
+      json: { notice_version: state.apiConfig.pilot_notice_version },
+    });
+    await uploadPilotDocuments();
+    const submitted = await apiRequest(`/v1/cases/${state.caseId}/pilot/submit`, { method: 'POST' });
+    $('confirmError').textContent = '';
+    showPending(submitted.review_id);
+    await checkAction();
+  } catch (error) {
+    $('confirmError').textContent = `Non riesco a inviare la pratica: ${error.message}`;
+  } finally {
+    $('analyseBtn').disabled = false;
+  }
+}
+
+async function recordOutcome(type, payload = {}) {
+  if (!state.caseId || !state.caseToken) return;
+  try {
+    await apiRequest(`/v1/cases/${state.caseId}/outcomes`, { method: 'POST', json: { outcome_type: type, payload } });
+    $('outcomeFeedback').textContent = 'Grazie: questo dato ci aiuta a capire se RISOLVI funziona davvero.';
+  } catch {
+    $('outcomeFeedback').textContent = 'Non sono riuscito a registrare il feedback, ma la tua pratica resta disponibile.';
+  }
+}
+
+async function deleteCase() {
+  stopPolling();
+  if (state.caseId && state.caseToken) {
+    try { await apiRequest(`/v1/cases/${state.caseId}`, { method: 'DELETE' }); } catch { /* best effort */ }
+  }
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+async function loadApiConfig() {
+  const apiState = $('apiState');
+  try {
+    state.apiConfig = await apiRequest('/v1/config', { caseAuth: false });
+    const enabled = Boolean(state.apiConfig.pilot_enabled);
+    apiState.textContent = enabled ? `Motore ${state.apiConfig.service_version} · pilot attivo` : `Motore ${state.apiConfig.service_version} · pilot non attivo`;
+    apiState.className = `apiState ${enabled ? 'good' : 'bad'}`;
+    $('pilotMeta').innerHTML = `<span>documenti: ${state.apiConfig.document_retention_hours}h</span><span>pratica: ${state.apiConfig.case_retention_days} giorni</span><span>consenso: ${escapeHtml(state.apiConfig.pilot_notice_version)}</span>`;
+    $('analyseBtn').disabled = !enabled;
+  } catch (error) {
+    apiState.textContent = `Motore non raggiungibile · ${error.message}`;
+    apiState.className = 'apiState bad';
+    $('analyseBtn').disabled = true;
+    $('pilotMeta').innerHTML = '<span>Il pilot richiede il Case Engine online.</span>';
+  }
+}
+
+async function restorePendingCase() {
+  restoreCase();
+  if (!state.caseId || !state.caseToken) return;
+  try {
+    await apiRequest(`/v1/cases/${state.caseId}`);
+    const action = await apiRequest(`/v1/cases/${state.caseId}/pilot/action`);
+    if (action.status === 'APPROVED' && action.recommendation) renderRecommendation(action.recommendation);
+    else showPending();
+  } catch {
+    sessionStorage.removeItem(SESSION_KEY);
+    state.caseId = null;
+    state.caseToken = null;
+  }
 }
 
 $('files').addEventListener('change', () => renderFiles([...$('files').files].slice(0, 8)));
 $('processBtn').addEventListener('click', processFiles);
-$('analyseBtn').addEventListener('click', analyseConfirmed);
+$('noDocsBtn').addEventListener('click', continueWithoutDocuments);
+$('analyseBtn').addEventListener('click', submitForReview);
+$('refreshActionBtn').addEventListener('click', checkAction);
 $('copyBtn').addEventListener('click', async () => {
   if (!$('draft').textContent) return;
   await navigator.clipboard.writeText($('draft').textContent);
   $('copyFeedback').textContent = 'Copiato';
+  recordOutcome('action_copied');
   setTimeout(() => { $('copyFeedback').textContent = ''; }, 1600);
 });
-$('resetBtn').addEventListener('click', () => location.reload());
-window.addEventListener('pagehide', shutdownExtractionWorkers);
+$('sentBtn').addEventListener('click', () => recordOutcome('action_sent'));
+$('resolvedBtn').addEventListener('click', () => recordOutcome('case_resolved', { resolved: true }));
+$('notResolvedBtn').addEventListener('click', () => recordOutcome('case_not_resolved', { resolved: false }));
+$('deleteCaseBtn').addEventListener('click', deleteCase);
+$('deleteCasePendingBtn').addEventListener('click', deleteCase);
+$('resetBtn').addEventListener('click', deleteCase);
+window.addEventListener('pagehide', () => { stopPolling(); shutdownExtractionWorkers(); });
+
+await loadApiConfig();
+await restorePendingCase();
