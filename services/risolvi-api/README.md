@@ -1,6 +1,6 @@
-# RISOLVI API v0.9
+# RISOLVI API v0.10
 
-Case Engine privacy-first di WEBINSOLITO. La v0.9 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, container production-ready, compatibilità PostgreSQL/S3 e review umana obbligatoria; aggiunge un kill switch separato per l'intake, preflight production fail-closed e smoke test sintetico end-to-end.
+Case Engine privacy-first di WEBINSOLITO. La v0.10 mantiene persistenza, capability, retention, benchmark da 200 casi, migrazioni Alembic, container production-ready, compatibilità PostgreSQL/S3, review umana obbligatoria, kill switch intake e preflight; aggiunge hardening degli originali caricati con type sniffing allow-list, limite server-side e malware gate ClamAV fail-closed.
 
 ## Modello di sicurezza
 
@@ -10,6 +10,21 @@ Case Engine privacy-first di WEBINSOLITO. La v0.9 mantiene persistenza, capabili
 - I token non vengono letti dalla query string e non compaiono nell'export.
 - Accesso negato e ID inesistente restituiscono entrambi `404`, riducendo l'enumerazione.
 - Il reviewer token non va mai incorporato in HTML/JS statico: la console lo chiede a runtime e lo conserva solo in `sessionStorage`.
+
+## Sicurezza documenti
+
+Gli originali non vengono accettati soltanto in base a estensione o `Content-Type` dichiarato dal browser. Il server verifica un allow-list di formati e la coerenza dei byte:
+
+- PDF: signature `%PDF-`;
+- PNG/JPEG/WEBP/HEIC: header/brand attesi;
+- TXT/HTML: payload prevalentemente testuale e senza NUL;
+- EML: payload testuale con header email riconoscibile.
+
+Metadati e contenuto incoerenti vengono rifiutati. Il limite di **8 originali per pratica** è applicato anche server-side, quindi non dipende dal frontend.
+
+Prima di parsing server-side o persistenza, i byte passano dal malware gate. In produzione `RISOLVI_MALWARE_SCANNER=clamav` è obbligatorio: l'app rifiuta di avviarsi con scanner disabilitato. Il client usa il protocollo ClamAV `INSTREAM`, senza scrivere il file su disco locale. File rilevati come malware restituiscono `422`; scanner non raggiungibile o scan indeterminato restituiscono `503` e il file non viene scritto nello storage.
+
+`clamd` deve essere raggiungibile soltanto sulla rete privata del runtime; non va esposto a Internet.
 
 ## Pilot e kill switch intake
 
@@ -89,9 +104,10 @@ Il comando fallisce chiuso se:
 - l'intake è già aperto;
 - il database non risponde;
 - mancano tabelle/migrazioni;
+- il malware scanner non risponde correttamente a un payload sintetico pulito;
 - il private storage non supera un put/get/delete sintetico.
 
-Il probe storage usa esclusivamente un piccolo oggetto sintetico `_preflight/...`; non legge dati utente.
+I probe usano soltanto piccoli payload sintetici; non leggono dati utente.
 
 ## Smoke test remoto
 
@@ -124,7 +140,7 @@ python -m app.evaluation --strict
 
 Il benchmark è un **gold tecnico**, non una validazione legale. Le fonti/regole sono versionate in `evals/registry.json`.
 
-Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.9 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
+Il D.Lgs. 25 settembre 2026 n. 176 è pubblicato il 7/10/2026 ed entra in vigore il **22/10/2026**. La v0.10 non attiva in anticipo le regole future: dal cutover i casi garanzia entrano in `LEGAL_RULEPACK_REVIEW_2026_10_22` finché il rule pack v1 non riceve sign-off specialistico.
 
 Vedi `docs/risolvi-legal-preflight-2026-10-13.md`.
 
@@ -141,7 +157,7 @@ Flusso:
 
 1. il client crea una pratica e salva i fatti confermati;
 2. l'utente registra il consenso con `POST /v1/cases/{id}/pilot/consent`;
-3. solo dopo il consenso gli eventuali originali vengono caricati;
+3. solo dopo il consenso gli eventuali originali vengono caricati, validati e scansionati;
 4. `POST /v1/cases/{id}/pilot/submit` calcola la candidata ma non la mostra;
 5. il reviewer usa `/v1/pilot/reviews/pending`, ispeziona fatti/documenti e decide con `/decision`;
 6. solo dopo la review `GET /v1/cases/{id}/pilot/action` restituisce l'Action Card;
@@ -171,10 +187,12 @@ Per storage S3-compatible:
 pip install -e '.[dev,storage]'
 ```
 
+In sviluppo `RISOLVI_MALWARE_SCANNER=disabled` è consentito. Per testare il path production usare un servizio ClamAV privato e impostare le variabili `RISOLVI_CLAMAV_*`.
+
 ## Container
 
 ```bash
-docker build -t webinsolito-risolvi-api:0.9.0 .
+docker build -t webinsolito-risolvi-api:0.10.0 .
 ```
 
 L'immagine gira come utente non-root e include un healthcheck su `/health`. Le migrazioni **non** vengono eseguite automaticamente dal container: vanno lanciate come release/pre-deploy step con `alembic upgrade head`.
@@ -183,7 +201,7 @@ Per il deploy controllato completo: `docs/risolvi-pilot-deploy.md`.
 
 ## Variabili principali
 
-`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_MIGRATION_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_S3_FORCE_PATH_STYLE`, `RISOLVI_SIGNED_URL_SECONDS`, `RISOLVI_PILOT_ENABLED`, `RISOLVI_PILOT_INTAKE_ENABLED`, `RISOLVI_REVIEWER_SECRET`, `RISOLVI_ALLOWED_ORIGINS`, `RISOLVI_PILOT_NOTICE_VERSION`, `RISOLVI_AUTO_CREATE_SCHEMA`.
+`RISOLVI_ENV`, `RISOLVI_DATABASE_URL`, `RISOLVI_MIGRATION_DATABASE_URL`, `RISOLVI_CAPABILITY_SECRET`, `RISOLVI_CASE_RETENTION_DAYS`, `RISOLVI_DOCUMENT_RETENTION_HOURS`, `RISOLVI_STORAGE_BACKEND`, `RISOLVI_S3_BUCKET`, `RISOLVI_S3_REGION`, `RISOLVI_S3_ENDPOINT_URL`, `RISOLVI_S3_FORCE_PATH_STYLE`, `RISOLVI_SIGNED_URL_SECONDS`, `RISOLVI_MALWARE_SCANNER`, `RISOLVI_CLAMAV_HOST`, `RISOLVI_CLAMAV_PORT`, `RISOLVI_CLAMAV_TIMEOUT_SECONDS`, `RISOLVI_PILOT_ENABLED`, `RISOLVI_PILOT_INTAKE_ENABLED`, `RISOLVI_REVIEWER_SECRET`, `RISOLVI_ALLOWED_ORIGINS`, `RISOLVI_PILOT_NOTICE_VERSION`, `RISOLVI_AUTO_CREATE_SCHEMA`.
 
 Vedi `.env.production.example` per un template senza segreti.
 
@@ -193,6 +211,7 @@ Vedi `.env.production.example` per un template senza segreti.
 - split autonomo `REFUND` vs esercizio del recesso;
 - provisioning effettivo delle risorse cloud dedicate e smoke test dell'ambiente pilot (#101);
 - verifica operativa della checklist privacy (#100);
+- disponibilità reale di ClamAV sulla rete privata dell'ambiente pilot (#104);
 - pilot reale da 50–100 casi con consenso e decisione GO/RESCOPE/KILL (#83).
 
 Il servizio B2C RISOLVI resta progettato come **gratuito end-to-end**: nessun account obbligatorio, credito, abbonamento o paywall per ottenere l'azione e il follow-up.
