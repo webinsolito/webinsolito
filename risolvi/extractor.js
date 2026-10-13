@@ -192,6 +192,10 @@ function evidence(document, page, match, key, value, confidence) {
   };
 }
 
+function cleanLabelValue(value, limit = 120) {
+  return safeText(value).replace(/[\s,;.]+$/, '').slice(0, limit);
+}
+
 function candidatesForPage(document, page) {
   const text = page.text || '';
   const lower = text.toLowerCase();
@@ -209,7 +213,19 @@ function candidatesForPage(document, page) {
   }
 
   let match = text.match(/(?:venditore|seller|merchant|venduto\s+da|ragione\s+sociale)\s*[:\-]\s*([^\n\r]{2,100})/i);
-  if (match) out.push(evidence(document, page, match, 'seller_name', match[1].trim().replace(/[\s,;.]+$/, ''), 'high'));
+  if (match) out.push(evidence(document, page, match, 'seller_name', cleanLabelValue(match[1], 100), 'high'));
+
+  match = text.match(/(?:numero\s+(?:ordine|order)|(?:ordine|order)\s*(?:n\.?|numero|#|id|codice))\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,40})/i);
+  if (match) out.push(evidence(document, page, match, 'order_reference', cleanLabelValue(match[1], 40), 'high'));
+
+  match = text.match(/(?:prodotto|articolo|product|item)\s*[:\-]\s*([^\n\r]{2,120})/i);
+  if (match) out.push(evidence(document, page, match, 'product_name', cleanLabelValue(match[1], 120), 'high'));
+
+  match = text.match(new RegExp(`(?:data\\s+(?:ordine|acquisto)|ordinato\\s+il|acquistato\\s+il)\\s*[:\\-]?\\s*(${dateToken})`, 'i'));
+  if (match) {
+    const value = parseItalianDate(match[1]);
+    if (value) out.push(evidence(document, page, match, 'order_date', value, 'high'));
+  }
 
   match = text.match(new RegExp(`(?:consegnat[oa]|data\\s+di\\s+consegna)\\s*(?:il|:)?\\s*(${dateToken})`, 'i'));
   if (match) {
@@ -228,6 +244,7 @@ function candidatesForPage(document, page) {
   if (/\b(prodotto|articolo|bene|spedizione|pacco|consegna)\b/i.test(lower)) out.push(evidence(document, page, null, 'physical_good', true, 'medium'));
   if (/\b(personalizzat[oa]|su\s+misura|incis[oa])\b/i.test(lower)) out.push(evidence(document, page, null, 'customised', true, 'high'));
   if (/\b(deperibile|scadenza\s+breve|deteriorarsi\s+rapidamente)\b/i.test(lower)) out.push(evidence(document, page, null, 'perishable', true, 'high'));
+  if (/\b(sigillat[oa].{0,35}(igiene|igienic|salute).{0,45}(apert[oa]|rimosso|rotto))\b/i.test(lower)) out.push(evidence(document, page, null, 'sealed_hygiene_opened', true, 'high'));
   return out;
 }
 
