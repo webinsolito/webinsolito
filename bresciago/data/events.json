@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-13T07:04:48.376652+00:00",
-  "count": 61,
+  "generated_at": "2026-10-13T15:56:24.111012+00:00",
+  "count": 62,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 14,
-      "errors": 1
+      "events": 15,
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
@@ -395,6 +395,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/siamo-testimoni-fino-31-dicembre-2026-1024x650.jpg"
     },
     {
+      "id": "auto-613350f9b694bf",
+      "title": "Emergency Days 2026",
+      "date": "2026-10-13",
+      "end_date": "2026-10-13",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-13-ottobre-1024x650.jpg"
+    },
+    {
       "id": "auto-98fce17e519c79",
       "title": "La grande saggezza",
       "date": "2026-10-13",
@@ -500,6 +515,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/brescia-incomune-1024x650.jpg"
     },
     {
+      "id": "auto-86064fa0d62d80",
+      "title": "Cavallerizza. I colori della danza",
+      "date": "2026-10-14",
+      "end_date": "2026-10-14",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cavallerizza-berengo-2519644",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
+    },
+    {
       "id": "auto-782fefebc135f7",
       "title": "Festival dei sapori 2026",
       "date": "2026-10-14",
@@ -573,21 +603,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-15-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-01e788360f48da",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-10-15",
-      "end_date": "2026-10-15",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
       "id": "auto-a18c00fce2c0cd",
