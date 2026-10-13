@@ -44,8 +44,9 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  // API, Supabase, Telegram and every other external/sensitive request are network-only.
-  event.respondWith(fetch(req));
+  // API, Supabase, Telegram and all other sensitive/external traffic bypass the SW entirely.
+  // Without respondWith(), the browser performs a normal network request and no response can enter Cache Storage.
+  return;
 });
 
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});
