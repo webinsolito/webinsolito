@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-13T15:56:24.111012+00:00",
-  "count": 62,
+  "generated_at": "2026-10-14T07:19:11.131503+00:00",
+  "count": 61,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 15,
+      "events": 14,
       "errors": 0
     },
     {
@@ -380,36 +380,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana-dopo-il-restauro.jpg"
     },
     {
-      "id": "auto-0edb0610a70563",
-      "title": "Siamo testimoni",
-      "date": "2026-10-12",
-      "end_date": "2026-10-12",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/siamo-testimoni-2518291-2518460-2518599-2518835-2519006-2519483",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/siamo-testimoni-fino-31-dicembre-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-613350f9b694bf",
-      "title": "Emergency Days 2026",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-13-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-98fce17e519c79",
       "title": "La grande saggezza",
       "date": "2026-10-13",
@@ -468,21 +438,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-4ce8abae6b3596",
-      "title": "Stagione Teatro Grande 2026",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2514430-2514571-2515237-2519313-2519522",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/teatro-grande-stagione-2026-13-ottobre-1024x650-1.jpg"
     },
     {
       "id": "auto-3cb980cf737cb2",
@@ -575,6 +530,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/umanita-migrante-2026-14-ottobre-1024x650.jpg"
     },
     {
+      "id": "auto-9af4e0165ef5df",
+      "title": "Carme 2026. Stefano Cagol",
+      "date": "2026-10-15",
+      "end_date": "2026-10-15",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/carme-2026-stefano-cagol-2519174-2519353-2519549",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
+    },
+    {
       "id": "auto-51d311ec874b74",
       "title": "CNE 2026. Focus Wim Wenders",
       "date": "2026-10-15",
@@ -603,6 +573,21 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-15-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-01e788360f48da",
+      "title": "Settimane Barocche 2026",
+      "date": "2026-10-15",
+      "end_date": "2026-10-15",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
       "id": "auto-a18c00fce2c0cd",
