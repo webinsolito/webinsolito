@@ -1,6 +1,13 @@
 name: MALÙ23 V2
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dealer-platform/v2/**'
+      - 'dealer-platform/supabase/migrations/**'
+      - '.github/workflows/malu23-v2.yml'
   pull_request:
     paths:
       - 'dealer-platform/v2/**'
