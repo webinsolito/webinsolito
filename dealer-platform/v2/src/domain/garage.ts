@@ -20,9 +20,9 @@ export function validateVehicleDraft(input:Partial<VehicleDraft>){
   const v=normalizeVehicleDraft(input),errors:string[]=[]
   if(!v.brand)errors.push('Marca obbligatoria')
   if(!v.model)errors.push('Modello obbligatorio')
-  if(v.year!==null&&(v.year<1950||v.year>new Date().getFullYear()+1))errors.push('Anno non valido')
-  if(v.mileage!==null&&v.mileage<0)errors.push('Chilometri non validi')
-  if(v.asking_price!==null&&v.asking_price<0)errors.push('Prezzo non valido')
+  if(v.year!=null&&(v.year<1950||v.year>new Date().getFullYear()+1))errors.push('Anno non valido')
+  if(v.mileage!=null&&v.mileage<0)errors.push('Chilometri non validi')
+  if(v.asking_price!=null&&v.asking_price<0)errors.push('Prezzo non valido')
   if(v.vin&&v.vin.length<6)errors.push('Telaio troppo corto')
   return {value:v,errors,valid:errors.length===0}
 }
@@ -32,7 +32,7 @@ export function vehicleCompleteness(vehicle:Vehicle,photoCount:number){
     {key:'identity',ok:Boolean(vehicle.brand&&vehicle.model),label:'Marca e modello'},
     {key:'registration',ok:Boolean(vehicle.plate||vehicle.vin),label:'Targa o telaio'},
     {key:'year',ok:Boolean(vehicle.year||vehicle.first_registration),label:'Anno o prima immatricolazione'},
-    {key:'mileage',ok:Number(vehicle.mileage)>=0&&vehicle.mileage!==null&&vehicle.mileage!==undefined,label:'Chilometri'},
+    {key:'mileage',ok:vehicle.mileage!=null&&Number(vehicle.mileage)>=0,label:'Chilometri'},
     {key:'price',ok:!sellable.has(vehicle.status||'')||Number(vehicle.asking_price)>0,label:'Prezzo cliente'},
     {key:'photos',ok:photoCount>=PHOTO_TARGET,label:`Almeno ${PHOTO_TARGET} foto`}
   ]
