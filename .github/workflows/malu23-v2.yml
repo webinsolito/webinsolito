@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'dealer-platform/v2/**'
+      - 'dealer-platform/supabase/migrations/**'
       - '.github/workflows/malu23-v2.yml'
   workflow_dispatch:
 
@@ -27,10 +28,19 @@ jobs:
         run: npm test
       - name: Typecheck and production build
         run: npm run build
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Garage desktop and iPhone gate
+        run: npm run test:e2e
       - name: Assert V2 seller finance hard gate
         run: |
           grep -q "role==='VENDITORE'" src/lib/api.ts
           ! grep -R "service_role\|sb_secret_\|sk_live_" src public
+      - name: Assert private vehicle media boundary
+        run: |
+          grep -q "dealer-vehicle-media" src/lib/api.ts
+          grep -q "garage_write" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
+          grep -q "bucket_id='dealer-vehicle-media'" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
       - name: Assert service worker is same-origin static only
         run: |
           grep -q "url.origin!==self.location.origin" public/sw.js
