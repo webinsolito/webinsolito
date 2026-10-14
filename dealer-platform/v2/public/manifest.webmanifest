@@ -1,0 +1,13 @@
+{
+  "name": "MALÙ23 Dealer Cockpit",
+  "short_name": "MALÙ23",
+  "description": "Gestionale operativo per concessionaria: oggi, garage, clienti e consegne.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f2ed",
+  "theme_color": "#0a111c",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
