@@ -1,0 +1,37 @@
+name: MALÙ23 V2
+
+on:
+  pull_request:
+    paths:
+      - 'dealer-platform/v2/**'
+      - '.github/workflows/malu23-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dealer-platform/v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Unit tests
+        run: npm test
+      - name: Typecheck and production build
+        run: npm run build
+      - name: Assert V2 seller finance hard gate
+        run: |
+          grep -q "role==='VENDITORE'" src/lib/api.ts
+          ! grep -R "service_role\|sb_secret_\|sk_live_" src public
+      - name: Assert service worker is same-origin static only
+        run: |
+          grep -q "url.origin!==self.location.origin" public/sw.js
+          grep -q "!url.pathname.startsWith(SCOPE_PATH)" public/sw.js
