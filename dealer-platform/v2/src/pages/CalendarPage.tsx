@@ -1,0 +1,4 @@
+import {CalendarDays,Clock} from 'lucide-react'
+import {fullDate} from '../lib/format'
+import type {TenantData} from '../types'
+export function CalendarPage({data}:{data:TenantData}){const rows=[...data.calendarEvents].sort((a,b)=>String(a.starts_at||'').localeCompare(String(b.starts_at||'')));return <><div className="page-heading"><div><p className="eyebrow">SCADENZE E APPUNTAMENTI</p><h1>Calendario</h1><p>Mostra solo eventi che richiedono attenzione.</p></div></div><div className="calendar-list">{rows.map(e=><article key={e.id} className="calendar-row"><div className="calendar-date"><CalendarDays/><b>{fullDate(e.starts_at)}</b></div><div><h3>{e.title||'Evento'}</h3><p>{e.note||e.status||'Aperto'}</p></div><span>{e.starts_at?<><Clock/> {new Date(e.starts_at).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</>:''}</span></article>)}{!rows.length&&<div className="empty-state">Nessuna scadenza attiva.</div>}</div></>}
