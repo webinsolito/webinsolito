@@ -35,6 +35,13 @@ jobs:
         run: npm test
       - name: Typecheck and production build
         run: npm run build
+      - name: Package static preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: malu23-v2-dist
+          path: dealer-platform/v2/dist
+          if-no-files-found: error
+          retention-days: 3
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Garage desktop and iPhone gate
