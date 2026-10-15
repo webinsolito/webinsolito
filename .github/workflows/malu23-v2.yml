@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -59,20 +59,38 @@ jobs:
         run: |
           grep -q "url.origin!==self.location.origin" public/sw.js
           grep -q "!url.pathname.startsWith(SCOPE_PATH)" public/sw.js
-      - name: Publish Pages-ready V2 preview snapshot to PR branch
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        working-directory: .
+
+  publish-preview:
+    needs: verify
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout PR head without executing PR code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Download verified production build
+        uses: actions/download-artifact@v4
+        with:
+          name: malu23-v2-dist
+          path: dealer-platform/v2-preview
+      - name: Assert Pages-ready bundle
+        run: |
+          test -f dealer-platform/v2-preview/index.html
+          grep -q './assets/' dealer-platform/v2-preview/index.html
+          ! grep -q '/src/main.tsx' dealer-platform/v2-preview/index.html
+          test -f dealer-platform/v2-preview/sw.js
+          test -f dealer-platform/v2-preview/manifest.webmanifest
+      - name: Commit verified V2 preview snapshot
         env:
           HEAD_REF: ${{ github.head_ref }}
         run: |
-          rm -rf dealer-platform/v2-preview
-          mkdir -p dealer-platform/v2-preview
-          cp -R dealer-platform/v2/dist/. dealer-platform/v2-preview/
-          grep -q './assets/' dealer-platform/v2-preview/index.html
-          ! grep -q '/src/main.tsx' dealer-platform/v2-preview/index.html
           git add -A dealer-platform/v2-preview
           if git diff --cached --quiet; then
-            echo 'Static preview already matches the production build.'
+            echo 'Static preview already matches the verified production build.'
             exit 0
           fi
           git config user.name 'webinsolito-bot'
