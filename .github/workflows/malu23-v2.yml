@@ -46,8 +46,8 @@ jobs:
       - name: Assert private vehicle media boundary
         run: |
           grep -q "dealer-vehicle-media" src/lib/api.ts
-          grep -q "garage_write" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
-          grep -q "bucket_id='dealer-vehicle-media'" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
+          grep -q "garage_write" ../supabase/migrations/20261014214108_v2_vehicle_media_storage.sql
+          grep -q "bucket_id='dealer-vehicle-media'" ../supabase/migrations/20261014214108_v2_vehicle_media_storage.sql
       - name: Assert service worker is same-origin static only
         run: |
           grep -q "url.origin!==self.location.origin" public/sw.js
