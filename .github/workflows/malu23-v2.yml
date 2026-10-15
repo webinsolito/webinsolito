@@ -35,6 +35,13 @@ jobs:
         run: npm test
       - name: Typecheck and production build
         run: npm run build
+      - name: Package static preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: malu23-v2-dist
+          path: dealer-platform/v2/dist
+          if-no-files-found: error
+          retention-days: 3
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Garage desktop and iPhone gate
@@ -46,9 +53,47 @@ jobs:
       - name: Assert private vehicle media boundary
         run: |
           grep -q "dealer-vehicle-media" src/lib/api.ts
-          grep -q "garage_write" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
-          grep -q "bucket_id='dealer-vehicle-media'" ../supabase/migrations/20261014212400_v2_vehicle_media_storage.sql
+          grep -q "garage_write" ../supabase/migrations/20261014214108_v2_vehicle_media_storage.sql
+          grep -q "bucket_id='dealer-vehicle-media'" ../supabase/migrations/20261014214108_v2_vehicle_media_storage.sql
       - name: Assert service worker is same-origin static only
         run: |
           grep -q "url.origin!==self.location.origin" public/sw.js
           grep -q "!url.pathname.startsWith(SCOPE_PATH)" public/sw.js
+
+  publish-preview:
+    needs: verify
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout PR head without executing PR code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Download verified production build
+        uses: actions/download-artifact@v4
+        with:
+          name: malu23-v2-dist
+          path: dealer-platform/v2-preview
+      - name: Assert Pages-ready bundle
+        run: |
+          test -f dealer-platform/v2-preview/index.html
+          grep -q './assets/' dealer-platform/v2-preview/index.html
+          ! grep -q '/src/main.tsx' dealer-platform/v2-preview/index.html
+          test -f dealer-platform/v2-preview/sw.js
+          test -f dealer-platform/v2-preview/manifest.webmanifest
+      - name: Commit verified V2 preview snapshot
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          git add -A dealer-platform/v2-preview
+          if git diff --cached --quiet; then
+            echo 'Static preview already matches the verified production build.'
+            exit 0
+          fi
+          git config user.name 'webinsolito-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'chore(malu23): refresh V2 static preview [skip ci]'
+          git push origin "HEAD:${HEAD_REF}"
