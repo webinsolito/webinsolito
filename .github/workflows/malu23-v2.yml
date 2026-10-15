@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -59,3 +59,23 @@ jobs:
         run: |
           grep -q "url.origin!==self.location.origin" public/sw.js
           grep -q "!url.pathname.startsWith(SCOPE_PATH)" public/sw.js
+      - name: Publish Pages-ready V2 preview snapshot to PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        working-directory: .
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          rm -rf dealer-platform/v2-preview
+          mkdir -p dealer-platform/v2-preview
+          cp -R dealer-platform/v2/dist/. dealer-platform/v2-preview/
+          grep -q './assets/' dealer-platform/v2-preview/index.html
+          ! grep -q '/src/main.tsx' dealer-platform/v2-preview/index.html
+          git add -A dealer-platform/v2-preview
+          if git diff --cached --quiet; then
+            echo 'Static preview already matches the production build.'
+            exit 0
+          fi
+          git config user.name 'webinsolito-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'chore(malu23): refresh V2 static preview [skip ci]'
+          git push origin "HEAD:${HEAD_REF}"
