@@ -1,6 +1,6 @@
 import {config} from './config'
 import {normalizeVehicleDraft,storageObjectPath,validateVehicleDraft} from '../domain/garage'
-import type {SessionPayload,TenantData,Vehicle,VehicleDraft,VehicleMedia,VehicleWorkItem,WorkItemDraft} from '../types'
+import type {CalendarEvent,CalendarEventDraft,Customer,CustomerInteraction,CustomerInteractionDraft,CustomerNextActionDraft,SessionPayload,TenantData,Vehicle,VehicleDraft,VehicleMedia,VehicleWorkItem,WorkItemDraft} from '../types'
 
 const SESSION_KEY='malu23-v2-session'
 const MEDIA_BUCKET='dealer-vehicle-media'
@@ -8,6 +8,11 @@ const MAX_MEDIA_BYTES=15*1024*1024
 const ALLOWED_MEDIA_TYPES=new Set(['image/jpeg','image/png','image/webp','image/heic','image/heif'])
 const FINANCE_ROLES=new Set(['ADMIN','AMMINISTRAZIONE'])
 const GARAGE_WRITE_ROLES=new Set(['ADMIN','VENDITORE','OPERATORE'])
+const CUSTOMER_WRITE_ROLES=new Set(['ADMIN','VENDITORE'])
+const CALENDAR_WRITE_ROLES=new Set(['ADMIN','VENDITORE','AMMINISTRAZIONE','OPERATORE'])
+const CUSTOMER_CHANNELS=new Set(['TELEFONO','WHATSAPP','EMAIL','VISITA','TEST_DRIVE','NOTE'])
+const CALENDAR_EVENT_TYPES=new Set(['APPOINTMENT','CALLBACK','TEST_DRIVE','DELIVERY','PAYMENT','DOCUMENT','WORK','OTHER'])
+const CALENDAR_PRIORITIES=new Set(['LOW','NORMAL','HIGH'])
 const mediaUrlCache=new Map<string,string>()
 const emptyData:TenantData={vehicles:[],media:[],workItems:[],customers:[],customerInteractions:[],customerInterests:[],calendarEvents:[],contracts:[],financials:[],costs:[],invoices:[]}
 function jsonHeaders(extra:Record<string,string>={}){return {'content-type':'application/json',...extra}}
@@ -18,7 +23,11 @@ export function clearMediaUrlCache(){for(const url of mediaUrlCache.values())URL
 export function logout(){clearMediaUrlCache();setSession(null)}
 export function canSeeFinance(session:SessionPayload|null){if(!session||session.profile.role==='VENDITORE')return false;const p=session.profile.permissions||{};return FINANCE_ROLES.has(session.profile.role)||p.finance_view===true||p.view_costs===true||p.invoices_view===true}
 export function canWriteGarage(session:SessionPayload|null){if(!session)return false;return GARAGE_WRITE_ROLES.has(session.profile.role)||session.profile.permissions?.garage_write===true}
+export function canWriteCustomers(session:SessionPayload|null){if(!session)return false;return CUSTOMER_WRITE_ROLES.has(session.profile.role)||session.profile.permissions?.customers_write===true}
+export function canWriteCalendar(session:SessionPayload|null){if(!session)return false;return CALENDAR_WRITE_ROLES.has(session.profile.role)||session.profile.permissions?.calendar_write===true}
 function requireGarageWrite(session:SessionPayload|null){if(!canWriteGarage(session))throw new Error('garage_write_forbidden')}
+function requireCustomerWrite(session:SessionPayload|null){if(!canWriteCustomers(session))throw new Error('customers_write_forbidden')}
+function requireCalendarWrite(session:SessionPayload|null){if(!canWriteCalendar(session))throw new Error('calendar_write_forbidden')}
 export async function login(identifier:string,password:string,dealerSlug=config.defaultDealerSlug){const data=await parse<SessionPayload>(await fetch(`${config.workerUrl}/auth/resolve-login`,{method:'POST',headers:jsonHeaders(),body:JSON.stringify({identifier:identifier.trim(),dealer_slug:dealerSlug,password})}));if(data.profile.force_password_change)throw new Error('Cambio password obbligatorio: completa prima l’accesso nella versione attuale.');setSession(data);return data}
 async function refresh(session:SessionPayload){const data=await parse<SessionPayload & {expires_in?:number}>(await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:jsonHeaders({apikey:config.supabasePublishableKey}),body:JSON.stringify({refresh_token:session.refresh_token})}));const next={...session,...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};setSession(next);return next}
 async function liveSession(){let session=getSession();if(!session)throw new Error('session_required');if(!session.expires_at||Date.now()/1000>session.expires_at-30)session=await refresh(session);return session}
@@ -46,6 +55,13 @@ export async function saveVehicle(draft:Partial<VehicleDraft>,vehicleId?:string)
 
 export async function saveWorkItem(vehicleId:string,draft:WorkItemDraft){const session=await liveSession();requireGarageWrite(session);const title=String(draft.title||'').trim();if(!title)throw new Error('Titolo lavoro obbligatorio');const body={dealer_id:session.dealer.id,vehicle_id:vehicleId,title,category:draft.category||'PREPARAZIONE',status:'TODO',priority:draft.priority||'NORMAL',due_date:draft.due_date||null,note:String(draft.note||'').trim()||null,updated_at:new Date().toISOString()};return first(await restWrite<VehicleWorkItem[]>('vehicle_work_items',{method:'POST',body}),'work_item_create_not_persisted')}
 export async function completeWorkItem(item:VehicleWorkItem){const session=await liveSession();requireGarageWrite(session);const rows=await restWrite<VehicleWorkItem[]>(`vehicle_work_items?id=eq.${encodeURIComponent(item.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{status:'DONE',completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}});return first(rows,'work_item_update_not_persisted')}
+
+export async function saveCustomerNextAction(customer:Customer,draft:CustomerNextActionDraft){const session=await liveSession();requireCustomerWrite(session);const nextStep=String(draft.nextStep||'').trim();if(!nextStep)throw new Error('Inserisci la prossima azione');const rows=await restWrite<Customer[]>(`customers?id=eq.${encodeURIComponent(customer.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{next_step:nextStep,next_contact_at:draft.nextContactAt||null,updated_at:new Date().toISOString()}});return first(rows,'customer_next_action_not_persisted')}
+export async function clearCustomerNextAction(customer:Customer){const session=await liveSession();requireCustomerWrite(session);const rows=await restWrite<Customer[]>(`customers?id=eq.${encodeURIComponent(customer.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{next_step:null,next_contact_at:null,updated_at:new Date().toISOString()}});return first(rows,'customer_next_action_not_cleared')}
+export async function logCustomerInteraction(customer:Customer,draft:CustomerInteractionDraft){const session=await liveSession();requireCustomerWrite(session);const title=String(draft.title||'').trim();const channel=String(draft.channel||'NOTE').toUpperCase();if(!title)throw new Error('Descrizione contatto obbligatoria');if(!CUSTOMER_CHANNELS.has(channel))throw new Error('Canale contatto non valido');return first(await restWrite<CustomerInteraction[]>('customer_interactions',{method:'POST',body:{dealer_id:session.dealer.id,customer_id:customer.id,channel,title,happened_at:new Date().toISOString(),created_by:session.user?.id||null,updated_at:new Date().toISOString()}}),'customer_interaction_not_persisted')}
+
+export async function saveCalendarEvent(draft:CalendarEventDraft){const session=await liveSession();requireCalendarWrite(session);const title=String(draft.title||'').trim();const eventType=String(draft.eventType||'APPOINTMENT').toUpperCase();const priority=String(draft.priority||'NORMAL').toUpperCase();if(!title)throw new Error('Titolo appuntamento obbligatorio');if(!draft.startsAt||Number.isNaN(new Date(draft.startsAt).getTime()))throw new Error('Data appuntamento non valida');if(!CALENDAR_EVENT_TYPES.has(eventType))throw new Error('Tipo appuntamento non valido');if(!CALENDAR_PRIORITIES.has(priority))throw new Error('Priorità appuntamento non valida');return first(await restWrite<CalendarEvent[]>('calendar_events',{method:'POST',body:{dealer_id:session.dealer.id,event_type:eventType,title,starts_at:new Date(draft.startsAt).toISOString(),all_day:Boolean(draft.allDay),status:'OPEN',priority,customer_id:draft.customerId||null,vehicle_id:draft.vehicleId||null,note:String(draft.note||'').trim()||null,source:'MANUAL',created_by:session.user?.id||null,updated_at:new Date().toISOString()}}),'calendar_event_not_persisted')}
+export async function completeCalendarEvent(event:CalendarEvent){const session=await liveSession();requireCalendarWrite(session);const rows=await restWrite<CalendarEvent[]>(`calendar_events?id=eq.${encodeURIComponent(event.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{status:'DONE',updated_at:new Date().toISOString()}});return first(rows,'calendar_event_not_completed')}
 
 export async function getPrivateMediaObjectUrl(objectKey:string){const hit=mediaUrlCache.get(objectKey);if(hit)return hit;const res=await storageRequest(objectKey,'GET');const blob=await res.blob();const url=URL.createObjectURL(blob);mediaUrlCache.set(objectKey,url);return url}
 
