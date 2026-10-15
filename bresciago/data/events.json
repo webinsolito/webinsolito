@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-14T16:12:27.018282+00:00",
-  "count": 61,
+  "generated_at": "2026-10-15T07:19:30.301654+00:00",
+  "count": 56,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 14,
+      "events": 9,
       "errors": 0
     },
     {
@@ -380,96 +380,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana-dopo-il-restauro.jpg"
     },
     {
-      "id": "auto-98fce17e519c79",
-      "title": "La grande saggezza",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/la-grande-saggezza-2517509-2517698-2517777-2517861-2518286-2518463-2518593-2518753-2518995-2519318-2519485",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-grande-saggezza-14lug26-10gen27-1024x650.jpg"
-    },
-    {
-      "id": "auto-d4b586e7455dcd",
-      "title": "La Vittoria di Brescia",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/la-vittoria-di-brescia-2517862-2517870-2518098-2518288-2518464-2518595-2518756-2518996-2519319-2519486",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-la-vittoria-di-brescia-40-fotografi-17lug-1nov-1024x650-1.jpg"
-    },
-    {
-      "id": "auto-5617471254d743",
-      "title": "Queriniana. San Francesco a Brescia",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/queriniana-vittoria-alata-1826-2026-2518365-2518465-2518597-2518791-2519474-2519487",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/queriniana-2026-san-francesco-a-brescia-1024x650.jpg"
-    },
-    {
-      "id": "auto-6c5ddd4476a4a8",
-      "title": "Sguardi. 100 anni di Renato Borsoni",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cavallerizza-renato-corsini-e-mario-cresci-2518279-2518461-2518591-2518712-2519268-2519320-2519488",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-3cb980cf737cb2",
-      "title": "Una storia di Altri Alfabeti",
-      "date": "2026-10-13",
-      "end_date": "2026-10-13",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/una-storia-di-altri-alfabeti-2516594-2516795-2517121-2517337-2517499-2517860-2517868-2518096-2518283-2518462-2518592-2518751-2518994-2519316-2519484",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-franca-ghitti-16giu26-4apr27-1024x650.jpg"
-    },
-    {
-      "id": "auto-a731372620f01c",
-      "title": "Brescia inComune",
-      "date": "2026-10-14",
-      "end_date": "2026-10-14",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/brescia-incomune-2518912-2518915-2519322-2519520",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/brescia-incomune-1024x650.jpg"
-    },
-    {
       "id": "auto-86064fa0d62d80",
       "title": "Cavallerizza. I colori della danza",
       "date": "2026-10-14",
@@ -485,21 +395,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
     },
     {
-      "id": "auto-782fefebc135f7",
-      "title": "Festival dei sapori 2026",
-      "date": "2026-10-14",
-      "end_date": "2026-10-14",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/festival-dei-sapori-2026-2519394-2519490",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/festival-dei-sapori-14-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-42991462fcb19b",
       "title": "Progetti. 100 anni di Renato Borsoni",
       "date": "2026-10-14",
@@ -513,21 +408,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-6eb8f5795bfb5f",
-      "title": "Umanità migrante 2026",
-      "date": "2026-10-14",
-      "end_date": "2026-10-14",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/umanita-migrante-2026-2515430-2519523",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/umanita-migrante-2026-14-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-9af4e0165ef5df",
@@ -590,6 +470,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
+      "id": "auto-d782fdbd87f6bf",
+      "title": "CNE 2026. Nazra Palestine 2026",
+      "date": "2026-10-16",
+      "end_date": "2026-10-16",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519555",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cne-2026-nazra-palestine-2026-16-ottobre-1024x650.jpg"
+    },
+    {
       "id": "auto-a18c00fce2c0cd",
       "title": "Lugana Festival 2026",
       "date": "2026-10-16",
@@ -603,6 +498,36 @@
       "note": "Un evento imperdibile per tutti i wine lovers: a ottobre arriva a Sirmione il Lugana Festival! Clicca qui",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/lugana-festival.jpg"
+    },
+    {
+      "id": "auto-3ce9914a72bda0",
+      "title": "Psicogeografia 2026",
+      "date": "2026-10-16",
+      "end_date": "2026-10-16",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/psicogeografia-2026-2519556",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/youth-colab-3-0-psicogeografia-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-bab678229d2416",
+      "title": "Stagione Teatro Grande 2026",
+      "date": "2026-10-16",
+      "end_date": "2026-10-16",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2514430-2514571-2515237-2519313-2519522-2519557",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/teatro-grande-stagione-2026-13-ottobre-1024x650-1.jpg"
     },
     {
       "id": "auto-9766eff5bf7944",
