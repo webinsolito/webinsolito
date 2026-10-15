@@ -9,10 +9,13 @@ export interface VehicleDraft { brand:string; model:string; version?:string|null
 export interface VehicleMedia { id:string; dealer_id:string; vehicle_id:string; kind?:'PHOTO'|'VIDEO'|string; object_key:string; thumb_object_key?:string|null; caption?:string|null; sort_order?:number; is_cover?:boolean; created_at?:string; updated_at?:string }
 export interface VehicleWorkItem { id:string; dealer_id:string; vehicle_id:string; title?:string; category?:string; status?:string; due_date?:string|null; completed_at?:string|null; priority?:string; supplier?:string|null; estimated_cost?:number|null; note?:string|null; created_at?:string; updated_at?:string }
 export interface WorkItemDraft { title:string; category?:string; priority?:string; due_date?:string|null; note?:string|null }
-export interface Customer { id:string; dealer_id:string; first_name?:string; last_name?:string; phone?:string; email?:string; status?:string; next_action_at?:string; last_contact_at?:string; deleted_at?:string|null }
-export interface CustomerInteraction { id:string; dealer_id:string; customer_id:string; vehicle_id?:string; kind?:string; note?:string; happened_at?:string; next_action_at?:string }
+export interface Customer { id:string; dealer_id:string; first_name?:string; last_name?:string; phone?:string; email?:string; fiscal_code?:string; status?:string; next_contact_at?:string|null; next_step?:string|null; preferred_contact?:string|null; source?:string|null; notes?:string|null; created_at?:string; updated_at?:string; deleted_at?:string|null }
+export interface CustomerInteraction { id:string; dealer_id:string; customer_id:string; channel?:string; title?:string; happened_at?:string; created_by?:string|null; created_at?:string; updated_at?:string }
 export interface CustomerInterest { id:string; dealer_id:string; customer_id:string; vehicle_id:string; status?:string; created_at?:string }
-export interface CalendarEvent { id:string; dealer_id:string; title?:string; starts_at?:string; ends_at?:string; status?:string; customer_id?:string; vehicle_id?:string; note?:string }
+export interface CalendarEvent { id:string; dealer_id:string; event_type?:string; title?:string; starts_at?:string; ends_at?:string|null; all_day?:boolean; status?:string; priority?:string; customer_id?:string|null; vehicle_id?:string|null; assigned_to?:string|null; reminder_minutes?:number; source?:string; note?:string|null; created_by?:string|null; created_at?:string; updated_at?:string }
+export interface CustomerNextActionDraft { nextStep:string; nextContactAt?:string|null }
+export interface CustomerInteractionDraft { channel:'CALL'|'WHATSAPP'|'EMAIL'|'NOTE'|string; title:string }
+export interface CalendarEventDraft { title:string; startsAt:string; eventType?:string; priority?:string; note?:string|null; customerId?:string|null; vehicleId?:string|null; allDay?:boolean }
 export interface Contract { id:string; dealer_id:string; template_code?:string; vehicle_id?:string; customer_id?:string; sale_stage?:string; status?:string; agreed_price?:number; delivered_at?:string; integrity_state?:string }
 export interface VehicleFinancial { id:string; dealer_id:string; vehicle_id:string; purchase_price?:number; minimum_price?:number; vat_regime?:string }
 export interface VehicleCost { id:string; dealer_id:string; vehicle_id:string; amount?:number; category?:string; occurred_on?:string }
