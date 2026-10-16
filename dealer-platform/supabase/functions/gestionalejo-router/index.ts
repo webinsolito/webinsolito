@@ -19,6 +19,7 @@ function responseHeaders(source?:Headers){const h=new Headers(source);for(const 
 function fail(error:string,status:number,req:Request,extra:Record<string,string>={}){const h=responseHeaders();h.set('content-type','application/json; charset=utf-8');const origin=req.headers.get('origin')||'';if(origin&&ALLOWED_ORIGINS.has(origin)){h.set('access-control-allow-origin',origin);h.set('vary','Origin')}for(const [k,v] of Object.entries(extra))h.set(k,v);return new Response(JSON.stringify({ok:false,error}),{status,headers:h})}
 function bodyLimit(path:string){if(path==='/documents/file')return 20*1024*1024+1024;if(path==='/telegram/webhook')return 1024*1024;return 64*1024}
 function targetFor(path:string){const root=project();if(!root)return null;if(path.startsWith('/documents/'))return {base:`${root}/functions/v1/gestionalejo-documents`,upPath:path.replace(/^\/documents/,'')};if(path.startsWith('/telegram/'))return {base:`${root}/functions/v1/gestionalejo-telegram`,upPath:path.replace(/^\/telegram/,'')};return {base:`${root}/functions/v1/gestionalejo-gateway`,upPath:path}}
+async function adminAccessAllowed(req:Request){const root=project();if(!root)return false;try{const headers=headersFor(req);headers.delete('content-type');headers.set('accept','application/json');const res=await fetch(`${root}/functions/v1/dealer-access-status`,{method:'GET',headers});if(!res.ok)return false;const data=await res.json();return data?.active===true}catch{return false}}
 Deno.serve(async(req:Request)=>{
   const {path,search}=routePath(req),methods=ROUTES.get(path);
   if(req.method==='OPTIONS'){
@@ -29,6 +30,7 @@ Deno.serve(async(req:Request)=>{
   if(!methods)return fail('not_found',404,req);
   if(!methods.has(req.method))return fail('method_not_allowed',405,req,{allow:[...methods].join(', ')});
   const length=Number(req.headers.get('content-length')||0),limit=bodyLimit(path);if(length>limit)return fail('payload_too_large',413,req);
+  if(path.startsWith('/admin/')&&!await adminAccessAllowed(req))return fail('dealer_access_locked',423,req);
   const target=targetFor(path);if(!target)return fail('backend_not_configured',503,req);
   try{
     const init:RequestInit={method:req.method,headers:headersFor(req),redirect:'manual'};if(!['GET','HEAD'].includes(req.method))init.body=req.body;
