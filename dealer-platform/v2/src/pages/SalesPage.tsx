@@ -1,6 +1,6 @@
 import {useMemo,useState} from 'react'
 import {CalendarClock,Car,CheckCircle2,ClipboardCheck,Euro,Plus,ShoppingBag,UserRound,X} from 'lucide-react'
-import {saveWorkItem} from '../lib/api'
+import {canWriteGarage,saveWorkItem} from '../lib/api'
 import {canWriteContracts,createSaleContract,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import type {Contract,SaleDraft,SessionPayload,TenantData} from '../types'
 
@@ -14,7 +14,7 @@ const vehicleName=(v?:TenantData['vehicles'][number])=>v?[v.brand,v.model,v.vers
 const localDateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new Date(value);return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
 
 export function SalesPage({data,session,onRefresh}:{data:TenantData;session:SessionPayload;onRefresh:()=>Promise<void>}){
-  const writable=canWriteContracts(session)
+  const writable=canWriteContracts(session),checklistWritable=canWriteGarage(session)
   const [creating,setCreating]=useState(false)
   const [draft,setDraft]=useState<SaleDraft>({customerId:'',vehicleId:'',price:'',deposit:'',plannedDeliveryAt:'',notes:''})
   const [busy,setBusy]=useState(false)
@@ -38,7 +38,7 @@ export function SalesPage({data,session,onRefresh}:{data:TenantData;session:Sess
       const checklistDone=DELIVERY_ITEMS.filter(item=>done.has(item)).length
       const stage=contract.sale_stage||'OPEN',next=NEXT_STAGE[stage]
       const terminal=stage==='DELIVERED'||stage==='CANCELLED'
-      return <article className={`sale-card ${terminal?'is-terminal':''}`} key={contract.id} data-testid="sale-card"><div className="sale-card-head"><div><span className="sale-number">{contract.contract_number}</span><h3>{vehicleName(vehicle)}</h3><p><UserRound/> {personName(customer)}</p></div><span className={`sale-stage stage-${stage.toLowerCase()}`}>{STAGE_LABELS[stage]||stage}</span></div><div className="sale-kpis"><div><Euro/><span>Prezzo</span><b>{money(contract.price)}</b></div><div><Euro/><span>Caparra</span><b>{money(contract.deposit)}</b></div><div><CalendarClock/><span>Consegna</span><b>{localDateTime(contract.planned_delivery_at)}</b></div><div><ClipboardCheck/><span>Checklist</span><b>{checklistDone}/{DELIVERY_ITEMS.length}</b></div></div><div className="sale-progress">{STAGES.map(s=><span key={s} className={STAGES.indexOf(s)<=STAGES.indexOf(stage as typeof STAGES[number])?'done':''}>{STAGE_LABELS[s]}</span>)}</div><div className="sale-status-line"><span>Contratto: <b>{contract.status||'DRAFT'}</b></span>{stage==='READY'&&<span>{contract.status==='SIGNED'?'Contratto firmato':'Firma contratto ancora necessaria'}</span>}</div>{writable&&!terminal&&<div className="sale-actions"><button className="soft-action" disabled={busy} onClick={()=>void ensureChecklist(contract)}><ClipboardCheck/> Prepara checklist</button>{next&&<button disabled={busy} onClick={()=>void move(contract,next)}><CheckCircle2/> Avanza a {STAGE_LABELS[next]}</button>}{stage==='READY'&&<button className="delivery-action" disabled={busy||checklistDone<DELIVERY_ITEMS.length} onClick={()=>void move(contract,'DELIVERED')}><Car/> Verifica e consegna</button>}</div>}</article>
+      return <article className={`sale-card ${terminal?'is-terminal':''}`} key={contract.id} data-testid="sale-card"><div className="sale-card-head"><div><span className="sale-number">{contract.contract_number}</span><h3>{vehicleName(vehicle)}</h3><p><UserRound/> {personName(customer)}</p></div><span className={`sale-stage stage-${stage.toLowerCase()}`}>{STAGE_LABELS[stage]||stage}</span></div><div className="sale-kpis"><div><Euro/><span>Prezzo</span><b>{money(contract.price)}</b></div><div><Euro/><span>Caparra</span><b>{money(contract.deposit)}</b></div><div><CalendarClock/><span>Consegna</span><b>{localDateTime(contract.planned_delivery_at)}</b></div><div><ClipboardCheck/><span>Checklist</span><b>{checklistDone}/{DELIVERY_ITEMS.length}</b></div></div><div className="sale-progress">{STAGES.map(s=><span key={s} className={STAGES.indexOf(s)<=STAGES.indexOf(stage as typeof STAGES[number])?'done':''}>{STAGE_LABELS[s]}</span>)}</div><div className="sale-status-line"><span>Contratto: <b>{contract.status||'DRAFT'}</b></span>{stage==='READY'&&<span>{contract.status==='SIGNED'?'Contratto firmato':'Firma contratto ancora necessaria'}</span>}</div>{writable&&!terminal&&<div className="sale-actions">{checklistWritable&&<button className="soft-action" disabled={busy} onClick={()=>void ensureChecklist(contract)}><ClipboardCheck/> Prepara checklist</button>}{next&&<button disabled={busy} onClick={()=>void move(contract,next)}><CheckCircle2/> Avanza a {STAGE_LABELS[next]}</button>}{stage==='READY'&&<button className="delivery-action" disabled={busy||checklistDone<DELIVERY_ITEMS.length} onClick={()=>void move(contract,'DELIVERED')}><Car/> Verifica e consegna</button>}</div>}</article>
     })}{!sales.length&&!creating&&<div className="empty-state">Nessuna vendita aperta. Crea la prima pratica quando un cliente conferma l’auto.</div>}</div>
   </>
 }
