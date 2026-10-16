@@ -12,6 +12,7 @@ import './owner-console-v2.css'
 import './support.css'
 import './owner-login.css'
 import './onboarding.css'
+import './documents.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 

@@ -1,5 +1,5 @@
 export type Role='ADMIN'|'AMMINISTRAZIONE'|'VENDITORE'|'OPERATORE'|string
-export type View='today'|'garage'|'clients'|'calendar'|'sales'|'staff'|'more'
+export type View='today'|'garage'|'clients'|'calendar'|'sales'|'documents'|'staff'|'more'
 
 export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null; status?:string; vat_number?:string|null; contact_email?:string|null; phone?:string|null; access_expires_at?:string|null; last_renewed_at?:string|null; onboarding_started_at?:string|null; onboarding_completed_at?:string|null }
 export interface DealerBranch { id:string; name:string; city?:string|null; address?:string|null; is_primary?:boolean }
@@ -32,4 +32,6 @@ export interface SaleDraft { customerId:string; vehicleId:string; price:number|s
 export interface VehicleFinancial { id:string; dealer_id:string; vehicle_id:string; purchase_price?:number; minimum_price?:number; vat_regime?:string }
 export interface VehicleCost { id:string; dealer_id:string; vehicle_id:string; amount?:number; category?:string; occurred_on?:string }
 export interface Invoice { id:string; dealer_id:string; vehicle_id?:string; customer_id?:string; invoice_type?:string; total?:number; total_amount?:number; paid_amount?:number; payment_status?:string; due_date?:string; issue_date?:string; deleted_at?:string|null }
+export interface DocumentRecord { id:string; dealer_id:string; vehicle_id?:string|null; customer_id?:string|null; inbox_status?:string; visibility?:string; object_key?:string; original_name:string; mime_type?:string|null; title?:string|null; category?:string; document_date?:string|null; size_bytes?:number|null; storage_state?:string; note?:string|null; created_at?:string; updated_at?:string; cost?:{id:string;vehicle_id:string;category:string;supplier?:string|null;amount:number;occurred_on:string;source_document_id?:string|null;note?:string|null}|null }
+export interface ExpenseConfirmDraft { vehicle_id:string; supplier?:string|null; amount:number; occurred_on:string; category:string; invoice_number?:string|null }
 export interface TenantData { vehicles:Vehicle[]; media:VehicleMedia[]; workItems:VehicleWorkItem[]; customers:Customer[]; customerInteractions:CustomerInteraction[]; customerInterests:CustomerInterest[]; calendarEvents:CalendarEvent[]; contracts:Contract[]; financials:VehicleFinancial[]; costs:VehicleCost[]; invoices:Invoice[] }
