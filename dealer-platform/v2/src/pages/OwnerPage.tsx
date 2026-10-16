@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useState,type FormEvent} from 'react'
-import {AlertTriangle,ArrowLeft,Building2,Check,ChevronRight,Clock3,Copy,DoorOpen,KeyRound,PauseCircle,PlayCircle,Plus,RefreshCw,ShieldCheck,UsersRound,X} from 'lucide-react'
+import {AlertTriangle,ArrowLeft,Building2,Check,ChevronRight,Clock3,Copy,DoorOpen,KeyRound,Link2,PauseCircle,PlayCircle,Plus,RefreshCw,Search,ShieldCheck,UsersRound,X} from 'lucide-react'
 import {approveOwnerRegistration,approveOwnerRenewal,createOwnerMember,getOwnerDealerDetail,getOwnerOverview,rejectOwnerRegistration,rejectOwnerRenewal,resetOwnerMemberPassword,setOwnerDealerStatus,updateOwnerMember,type OwnerDealer,type OwnerDealerDetail,type OwnerOverview} from '../lib/ownerApi'
 import type {AdminMember,Role} from '../types'
 
@@ -7,8 +7,10 @@ const ROLE_OPTIONS:[Role,string][]=[['VENDITORE','Venditore'],['AMMINISTRAZIONE'
 const fmtDate=(value?:string|null,time=false)=>value?new Intl.DateTimeFormat('it-IT',time?{dateStyle:'medium',timeStyle:'short'}:{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(value)):'—'
 const daysTo=(value?:string|null)=>value?Math.ceil((new Date(value).getTime()-Date.now())/86400000):null
 const roleLabel=(value:string)=>ROLE_OPTIONS.find(([id])=>id===value)?.[1]||value
+const dealerStatusLabel=(status:string)=>status==='ACTIVE'?'ATTIVA':status==='ARCHIVED'?'ARCHIVIATA':'SOSPESA'
 
 type Credentials={dealerSlug:string;displayName:string;username:string;tempPassword:string}
+type DealerFilter='ALL'|'ACTIVE'|'EXPIRING'|'SUSPENDED'
 
 export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;onLogout:()=>void;onEnterSupport:(dealerId:string)=>Promise<void>}){
   const [overview,setOverview]=useState<OwnerOverview|null>(null)
@@ -19,6 +21,9 @@ export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;on
   const [detailBusy,setDetailBusy]=useState(false)
   const [newMemberOpen,setNewMemberOpen]=useState(false)
   const [credentials,setCredentials]=useState<Credentials|null>(null)
+  const [query,setQuery]=useState('')
+  const [filter,setFilter]=useState<DealerFilter>('ALL')
+  const [copiedDealer,setCopiedDealer]=useState('')
 
   const load=async()=>{setBusy(true);setError('');try{setOverview(await getOwnerOverview())}catch(err){setError(err instanceof Error?err.message:'Impossibile caricare il pannello proprietario')}finally{setBusy(false)}}
   useEffect(()=>{void load()},[])
@@ -26,6 +31,16 @@ export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;on
   const registrations=useMemo(()=>(overview?.registrations||[]).filter(r=>r.status==='PENDING'),[overview])
   const renewals=useMemo(()=>(overview?.renewals||[]).filter(r=>r.status==='PENDING'),[overview])
   const dealerById=(id:string)=>overview?.dealers.find(d=>d.id===id)
+  const filteredDealers=useMemo(()=>{
+    const q=query.trim().toLowerCase()
+    return (overview?.dealers||[]).filter(dealer=>{
+      const days=daysTo(dealer.access_expires_at)
+      const stateOk=filter==='ALL'||(filter==='ACTIVE'&&dealer.status==='ACTIVE')||(filter==='EXPIRING'&&dealer.status==='ACTIVE'&&days!==null&&days<=7)||(filter==='SUSPENDED'&&dealer.status!=='ACTIVE')
+      if(!stateOk)return false
+      if(!q)return true
+      return [dealer.display_name,dealer.legal_name,dealer.slug,dealer.vat_number,dealer.contact_email,dealer.phone].filter(Boolean).join(' ').toLowerCase().includes(q)
+    })
+  },[overview,query,filter])
 
   const run=async(key:string,fn:()=>Promise<unknown>,reload=true)=>{setAction(key);setError('');try{await fn();if(reload)await load()}catch(err){setError(err instanceof Error?err.message:'Operazione non riuscita')}finally{setAction('')}}
 
@@ -35,6 +50,16 @@ export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;on
 
   const openDetail=async(id:string)=>{setDetailBusy(true);setError('');try{setDetail(await getOwnerDealerDetail(id));setNewMemberOpen(false)}catch(err){setError(err instanceof Error?err.message:'Dettagli non disponibili')}finally{setDetailBusy(false)}}
   const enterSupport=async(dealer:OwnerDealer)=>{setAction(`support-${dealer.id}`);setError('');try{await onEnterSupport(dealer.id)}catch(err){setError(err instanceof Error?err.message:'Accesso supporto non riuscito');setAction('')}}
+  const copyDealerLink=async(dealer:OwnerDealer)=>{
+    const url=new URL(window.location.href)
+    url.searchParams.delete('owner')
+    url.searchParams.set('dealer',dealer.slug)
+    try{
+      await navigator.clipboard.writeText(url.toString())
+      setCopiedDealer(dealer.id)
+      window.setTimeout(()=>setCopiedDealer(current=>current===dealer.id?'':current),1600)
+    }catch{setError('Non riesco a copiare automaticamente il link. Apri la concessionaria e copia l’indirizzo dal browser.')}
+  }
 
   const activeDealers=(overview?.dealers||[]).filter(d=>d.status==='ACTIVE').length
   const expiring=(overview?.dealers||[]).filter(d=>{const x=daysTo(d.access_expires_at);return d.status==='ACTIVE'&&x!==null&&x<=7}).length
@@ -55,8 +80,18 @@ export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;on
         {renewals.map(r=>{const d=dealerById(r.dealer_id);return <article className="owner-request renewal" key={r.id}><div className="owner-request-icon"><Clock3/></div><div className="owner-request-copy"><span>RINNOVO 30 GIORNI</span><h3>{d?.display_name||'Concessionaria'}</h3><p>Codice {d?.slug||'—'} · scadenza {fmtDate(r.previous_expires_at)}</p><small>L’approvazione estende di 30 giorni, chiude le sessioni e forza il cambio password.</small></div><div className="owner-request-actions"><button className="accept" disabled={action===`renew-${r.id}`} onClick={()=>decideRenewal(r.id,true)}><Check/>Approva</button><button className="reject" disabled={action===`renew-${r.id}`} onClick={()=>decideRenewal(r.id,false)}><X/>Rifiuta</button></div></article>})}
       </div></section>}
 
-      <section className="owner-dealers"><div className="owner-section-title"><div><p className="eyebrow">CLIENTI</p><h2>Concessionarie</h2></div><span>{overview?.dealers.length||0}</span></div>
-        {busy&&!overview?<div className="owner-loading"><RefreshCw className="spin"/>Caricamento concessionarie…</div>:<div className="owner-dealer-grid">{(overview?.dealers||[]).map(d=><DealerCard key={d.id} dealer={d} action={action} onDetail={()=>void openDetail(d.id)} onSupport={()=>void enterSupport(d)} onToggle={()=>toggleDealer(d)}/>) }{!overview?.dealers.length&&<div className="owner-empty">Nessuna concessionaria registrata.</div>}</div>}
+      <section className="owner-dealers">
+        <div className="owner-section-title"><div><p className="eyebrow">CLIENTI</p><h2>Concessionarie</h2></div><span>{filteredDealers.length}/{overview?.dealers.length||0}</span></div>
+        <div className="owner-dealer-toolbar">
+          <label className="owner-dealer-search"><Search/><input aria-label="CERCA CONCESSIONARIA" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Cerca nome, codice, email o P.IVA…"/><button type="button" aria-label="Pulisci ricerca" className={query?'visible':''} onClick={()=>setQuery('')}><X/></button></label>
+          <div className="owner-dealer-filters" role="group" aria-label="Filtra concessionarie">
+            <button aria-pressed={filter==='ALL'} className={filter==='ALL'?'active':''} onClick={()=>setFilter('ALL')}>Tutte</button>
+            <button aria-pressed={filter==='ACTIVE'} className={filter==='ACTIVE'?'active':''} onClick={()=>setFilter('ACTIVE')}>Attive</button>
+            <button aria-pressed={filter==='EXPIRING'} className={filter==='EXPIRING'?'active':''} onClick={()=>setFilter('EXPIRING')}>In scadenza</button>
+            <button aria-pressed={filter==='SUSPENDED'} className={filter==='SUSPENDED'?'active':''} onClick={()=>setFilter('SUSPENDED')}>Sospese</button>
+          </div>
+        </div>
+        {busy&&!overview?<div className="owner-loading"><RefreshCw className="spin"/>Caricamento concessionarie…</div>:<div className="owner-dealer-grid">{filteredDealers.map(d=><DealerCard key={d.id} dealer={d} action={action} copied={copiedDealer===d.id} onDetail={()=>void openDetail(d.id)} onSupport={()=>void enterSupport(d)} onCopy={()=>void copyDealerLink(d)} onToggle={()=>toggleDealer(d)}/>) }{!filteredDealers.length&&<div className="owner-empty">Nessuna concessionaria corrisponde alla ricerca o al filtro selezionato.</div>}</div>}
       </section>
     </div>
 
@@ -64,9 +99,15 @@ export function OwnerPage({onClose,onLogout,onEnterSupport}:{onClose:()=>void;on
   </main>
 }
 
-function DealerCard({dealer,action,onDetail,onSupport,onToggle}:{dealer:OwnerDealer;action:string;onDetail:()=>void;onSupport:()=>void;onToggle:()=>void}){
+function DealerCard({dealer,action,copied,onDetail,onSupport,onCopy,onToggle}:{dealer:OwnerDealer;action:string;copied:boolean;onDetail:()=>void;onSupport:()=>void;onCopy:()=>void;onToggle:()=>void}){
   const days=daysTo(dealer.access_expires_at),expired=days!==null&&days<=0,warning=days!==null&&days<=7
-  return <article className={`owner-dealer-card ${dealer.status!=='ACTIVE'?'suspended':''}`} data-testid={`owner-dealer-${dealer.slug}`}><div className="owner-dealer-head"><div className="owner-dealer-logo"><Building2/></div><div><h3>{dealer.display_name||dealer.slug}</h3><span>{dealer.legal_name||dealer.slug}</span></div><em className={dealer.status==='ACTIVE'?'active':'suspended'}>{dealer.status==='ACTIVE'?'ATTIVA':'SOSPESA'}</em></div><div className="owner-dealer-code">Codice <b>{dealer.slug}</b></div><div className="owner-dealer-meta"><span className={expired?'danger':warning?'warning':''}><Clock3/>Scadenza <b>{fmtDate(dealer.access_expires_at)}</b>{days!==null&&<small>{expired?'scaduta':`${days} gg`}</small>}</span><span><UsersRound/><b>{dealer.members.active}</b> attivi / {dealer.members.total}</span></div><div className="owner-dealer-actions"><button className="support" disabled={action===`support-${dealer.id}`} onClick={onSupport}><DoorOpen/>{action===`support-${dealer.id}`?'Apertura…':'Entra come supporto'}</button><button onClick={onDetail}>Dettagli<ChevronRight/></button><button className={dealer.status==='ACTIVE'?'suspend':'reactivate'} disabled={action===`dealer-${dealer.id}`} onClick={onToggle}>{dealer.status==='ACTIVE'?<><PauseCircle/>Sospendi</>:<><PlayCircle/>Riattiva</>}</button></div></article>
+  return <article className={`owner-dealer-card ${dealer.status!=='ACTIVE'?'suspended':''}`} data-testid={`owner-dealer-${dealer.slug}`}>
+    <div className="owner-dealer-head"><div className="owner-dealer-logo"><Building2/></div><div><h3>{dealer.display_name||dealer.slug}</h3><span>{dealer.legal_name||dealer.slug}</span></div><em className={dealer.status==='ACTIVE'?'active':'suspended'}>{dealerStatusLabel(String(dealer.status))}</em></div>
+    <div className="owner-dealer-code">Codice <b>{dealer.slug}</b></div>
+    {(dealer.contact_email||dealer.vat_number||dealer.phone)&&<div className="owner-dealer-contact"><span>{dealer.contact_email||'Email non indicata'}</span><span>{dealer.vat_number?`P.IVA ${dealer.vat_number}`:dealer.phone||''}</span></div>}
+    <div className="owner-dealer-meta"><span className={expired?'danger':warning?'warning':''}><Clock3/>Scadenza <b>{fmtDate(dealer.access_expires_at)}</b>{days!==null&&<small>{expired?'scaduta':`${days} gg`}</small>}</span><span><UsersRound/><b>{dealer.members.active}</b> attivi / {dealer.members.total}</span></div>
+    <div className="owner-dealer-actions"><button className="support" disabled={action===`support-${dealer.id}`} onClick={onSupport}><DoorOpen/>{action===`support-${dealer.id}`?'Apertura…':'Entra come supporto'}</button><button onClick={onDetail}>Dettagli<ChevronRight/></button><button className="copy-link" onClick={onCopy}><Link2/>{copied?'Copiato':'Link cliente'}</button><button className={dealer.status==='ACTIVE'?'suspend':'reactivate'} disabled={action===`dealer-${dealer.id}`} onClick={onToggle}>{dealer.status==='ACTIVE'?<><PauseCircle/>Sospendi</>:<><PlayCircle/>Riattiva</>}</button></div>
+  </article>
 }
 
 function OwnerDealerDrawer({detail,busyKey,credentials,newMemberOpen,onClose,onToggleNew,onCredentials,onRefresh,onRun}:{detail:OwnerDealerDetail;busyKey:string;credentials:Credentials|null;newMemberOpen:boolean;onClose:()=>void;onToggleNew:()=>void;onCredentials:(v:Credentials|null)=>void;onRefresh:()=>void;onRun:(key:string,fn:()=>Promise<unknown>,reload?:boolean)=>Promise<void>}){
