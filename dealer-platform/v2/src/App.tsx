@@ -10,6 +10,7 @@ import {ClientsPage} from './pages/ClientsPage'
 import {GaragePage} from './pages/GaragePage'
 import {MorePage} from './pages/MorePage'
 import {SalesPage} from './pages/SalesPage'
+import {StaffPage} from './pages/StaffPage'
 import {TodayPage} from './pages/TodayPage'
 import {canWriteCalendar,canWriteCustomers,canWriteGarage,fetchTenantData,getSession,logout} from './lib/api'
 import {getAccessStatus} from './lib/renewalApi'
@@ -70,6 +71,7 @@ export default function App(){
   const openVehicle=(id:string)=>{setView('garage');setVehicleId(id)}
   const saved=async(v:Vehicle)=>{setNewVehicleOpen(false);setEditingId(null);setView('garage');setVehicleId(v.id);await load()}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
+  const isAdmin=session.profile.role==='ADMIN'
   return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave}>
     {access.renewal_available&&<RenewalControl session={session} access={access} onApproved={leave}/>} 
     {error&&<div className="load-error">{error}<button onClick={()=>void load()}><RefreshCw/>Riprova</button></div>}
@@ -79,7 +81,8 @@ export default function App(){
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load}/>} 
     {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load}/>} 
     {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load}/>} 
-    {view==='more'&&<MorePage/>}
+    {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:<MorePage isAdmin={false} onOpenStaff={()=>{}}/>)}
+    {view==='more'&&<MorePage isAdmin={isAdmin} onOpenStaff={()=>setView('staff')}/>} 
     {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load}/>} 
     {(newVehicleOpen||editingVehicle)&&<VehicleFormModal vehicle={editingVehicle} onClose={()=>{setNewVehicleOpen(false);setEditingId(null)}} onSaved={v=>void saved(v)}/>} 
   </Shell>
