@@ -1,5 +1,5 @@
 export const config=Object.freeze({
-  appVersion:'0.6.0',
+  appVersion:'0.7.0',
   supabaseUrl:'https://jnofezlhptbrkoxhdenx.supabase.co',
   supabasePublishableKey:'sb_publishable_m5NZjT_wkqfbMLT1kN7kJg_U9u8YzDR',
   workerUrl:'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/gestionalejo-router',
