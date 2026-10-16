@@ -6,17 +6,19 @@ const OLD_PASSWORD='OldPass!12345'
 
 async function installBackend(page:Page){
   let renewalApproved=false
+  let passwordChanged=false
   let loginCount=0
   let changedPassword=''
   await page.route(`${PROJECT}/**`,async route=>{
     const req=route.request(),url=new URL(req.url()),path=url.pathname
     if(path.endsWith('/functions/v1/gestionalejo-router/auth/resolve-login')){
       loginCount++
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:`e2e-${loginCount}`,refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'admin-user',email:'admin@example.test'},dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo'},profile:{display_name:'Admin Test',username:'admin',role:'ADMIN',permissions:{},force_password_change:renewalApproved}})})
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:`e2e-${loginCount}`,refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'admin-user',email:'admin@example.test'},dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo'},profile:{display_name:'Admin Test',username:'admin',role:'ADMIN',permissions:{},force_password_change:renewalApproved&&!passwordChanged}})})
     }
     if(path.endsWith('/functions/v1/dealer-access-status')){
       const expired=!renewalApproved
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo',status:'ACTIVE',access_expires_at:expired?'2026-10-15T10:00:00Z':'2026-11-15T10:00:00Z'},profile:{display_name:'Admin Test',username:'admin',role:'ADMIN',force_password_change:renewalApproved},expired,force_password_change:renewalApproved,days_remaining:expired?0:30,renewal_available:expired,active:!expired&&!renewalApproved})})
+      const forcePasswordChange=renewalApproved&&!passwordChanged
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo',status:'ACTIVE',access_expires_at:expired?'2026-10-15T10:00:00Z':'2026-11-15T10:00:00Z'},profile:{display_name:'Admin Test',username:'admin',role:'ADMIN',force_password_change:forcePasswordChange},expired,force_password_change:forcePasswordChange,days_remaining:expired?0:30,renewal_available:expired,active:!expired&&!forcePasswordChange})})
     }
     if(path.endsWith('/functions/v1/dealer-renewal/request'))return route.fulfill({status:201,contentType:'application/json',body:JSON.stringify({ok:true,request_id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',claim_token:'claim-token-with-more-than-thirty-characters-123',status:'PENDING',access_expires_at:'2026-10-15T10:00:00Z',owner_notified:true})})
     if(path.endsWith('/functions/v1/dealer-renewal/status')){
@@ -25,6 +27,7 @@ async function installBackend(page:Page){
     }
     if(path.endsWith('/functions/v1/gestionalejo-router/account/change-password')){
       changedPassword=(req.postDataJSON() as {password:string}).password
+      passwordChanged=true
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true})})
     }
     if(path.startsWith('/rest/v1/'))return route.fulfill({status:200,contentType:'application/json',body:'[]'})
