@@ -1,9 +1,10 @@
 export type Role='ADMIN'|'AMMINISTRAZIONE'|'VENDITORE'|'OPERATORE'|string
 export type View='today'|'garage'|'clients'|'calendar'|'sales'|'more'
 
-export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null }
-export interface Profile { id?:string; display_name?:string; username?:string; role:Role; permissions?:Record<string,boolean>; force_password_change?:boolean }
+export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null; status?:string; access_expires_at?:string|null; last_renewed_at?:string|null }
+export interface Profile { id?:string; display_name?:string; username?:string; role:Role; permissions?:Record<string,boolean>; force_password_change?:boolean; password_changed_at?:string|null }
 export interface SessionPayload { access_token:string; refresh_token:string; expires_at?:number; expires_in?:number; user?:{id:string;email?:string}; dealer:Dealer; profile:Profile }
+export interface AccessStatus { ok:true; dealer:Dealer; profile:Profile; expired:boolean; force_password_change:boolean; days_remaining:number; renewal_available:boolean; active:boolean }
 export interface Vehicle { id:string; dealer_id:string; location_branch_id?:string|null; brand?:string; model?:string; version?:string; plate?:string|null; vin?:string|null; first_registration?:string|null; year?:number|null; mileage?:number|null; origin_country?:string|null; status?:string; asking_price?:number|null; sale_price?:number|null; cover_object_key?:string|null; notes?:string|null; purchase_date?:string; created_at?:string; updated_at?:string; autoscout_status?:string; autoscout_url?:string; autoscout_published_at?:string; deleted_at?:string|null }
 export interface VehicleDraft { brand:string; model:string; version?:string|null; plate?:string|null; vin?:string|null; first_registration?:string|null; year?:number|null; mileage?:number|null; origin_country?:string|null; status?:string; asking_price?:number|null; notes?:string|null }
 export interface VehicleMedia { id:string; dealer_id:string; vehicle_id:string; kind?:'PHOTO'|'VIDEO'|string; object_key:string; thumb_object_key?:string|null; caption?:string|null; sort_order?:number; is_cover?:boolean; created_at?:string; updated_at?:string }
