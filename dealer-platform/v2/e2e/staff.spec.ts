@@ -9,6 +9,7 @@ type Member={user_id:string;username:string;role:string;status:string;display_na
 
 async function installBackend(page:Page,role='ADMIN'){
   let financeRequests=0
+  let adminRequests=0
   const members:Member[]=[
     {user_id:ADMIN,username:'titolare',role:'ADMIN',status:'ACTIVE',display_name:'Mario Rossi',email:'mario@example.test',force_password_change:false,last_sign_in_at:'2026-10-16T10:00:00Z',telegram_linked:true,permissions:{}},
     {user_id:SELLER,username:'luca',role:'VENDITORE',status:'ACTIVE',display_name:'Luca Bianchi',email:'luca@example.test',force_password_change:false,last_sign_in_at:null,telegram_linked:false,permissions:{garage_write:true,customers_write:true}}
@@ -17,6 +18,7 @@ async function installBackend(page:Page,role='ADMIN'){
     const req=route.request(),url=new URL(req.url()),path=url.pathname
     if(path.endsWith('/functions/v1/gestionalejo-router/auth/resolve-login'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?ADMIN:SELLER,email:'user@example.test'},dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo'},profile:{display_name:role==='ADMIN'?'Mario Rossi':'Luca Bianchi',username:role==='ADMIN'?'titolare':'luca',role,permissions:{}}})})
     if(path.endsWith('/functions/v1/dealer-access-status'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo',status:'ACTIVE',access_expires_at:'2026-11-15T12:00:00Z'},profile:{display_name:'Mario Rossi',username:'titolare',role,permissions:{}},expired:false,force_password_change:false,days_remaining:30,renewal_available:false,active:true})})
+    if(path.includes('/functions/v1/gestionalejo-router/admin/'))adminRequests++
     if(path.endsWith('/functions/v1/gestionalejo-router/admin/overview'))return route.fulfill({status:role==='ADMIN'?200:403,contentType:'application/json',body:JSON.stringify(role==='ADMIN'?{ok:true,dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo'},members,audit_logs:[],current_user_id:ADMIN}:{ok:false,error:'admin_required'})})
     if(path.endsWith('/functions/v1/gestionalejo-router/admin/member/create')){
       const b=req.postDataJSON() as any
@@ -39,7 +41,7 @@ async function installBackend(page:Page,role='ADMIN'){
     }
     return route.fulfill({status:404,contentType:'application/json',body:'{}'})
   })
-  return {members,getFinanceRequests:()=>financeRequests}
+  return {members,getFinanceRequests:()=>financeRequests,getAdminRequests:()=>adminRequests}
 }
 
 async function login(page:Page){
@@ -90,12 +92,14 @@ test('Admin gestisce dipendenti: crea, cambia ruolo, sospende e resetta accesso'
   await luca.getByRole('button',{name:'Reimposta accesso'}).click()
   await expect(page.getByTestId('temporary-credentials')).toContainText('M23-Reset!2026')
   await expect(page.getByTestId('member-luca')).toContainText('Deve cambiare password')
-  expect(state.getFinanceRequests()).toBe(0)
+  expect(state.getAdminRequests()).toBeGreaterThanOrEqual(6)
 })
 
-test('Venditore non vede la gestione dipendenti',async({page})=>{
-  await installBackend(page,'VENDITORE')
+test('Venditore non vede la gestione dipendenti e non richiede finanze o API admin',async({page})=>{
+  const state=await installBackend(page,'VENDITORE')
   await login(page)
   await openMore(page)
   await expect(page.getByRole('button',{name:'Apri gestione dipendenti'})).toHaveCount(0)
+  expect(state.getFinanceRequests()).toBe(0)
+  expect(state.getAdminRequests()).toBe(0)
 })
