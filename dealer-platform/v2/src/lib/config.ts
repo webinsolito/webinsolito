@@ -7,5 +7,6 @@ export const config=Object.freeze({
   renewalUrl:'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/dealer-renewal',
   accessStatusUrl:'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/dealer-access-status',
   ownerUrl:'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/dealer-owner-console',
+  ownerAuthUrl:'https://jnofezlhptbrkoxhdenx.supabase.co/functions/v1/dealer-owner-auth',
   defaultDealerSlug:'' as string
 })
