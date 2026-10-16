@@ -7,11 +7,13 @@ on:
     paths:
       - 'dealer-platform/v2/**'
       - 'dealer-platform/supabase/migrations/**'
+      - 'dealer-platform/supabase/functions/gestionalejo-documents/**'
       - '.github/workflows/malu23-v2.yml'
   pull_request:
     paths:
       - 'dealer-platform/v2/**'
       - 'dealer-platform/supabase/migrations/**'
+      - 'dealer-platform/supabase/functions/gestionalejo-documents/**'
       - '.github/workflows/malu23-v2.yml'
   workflow_dispatch:
 
@@ -51,6 +53,12 @@ jobs:
         run: |
           grep -q "role==='VENDITORE'" src/lib/api.ts
           ! grep -R "service_role\|sb_secret_\|sk_live_" src public
+      - name: Assert private financial documents boundary
+        run: |
+          grep -q "FINANCE_ROLES" ../supabase/functions/gestionalejo-documents/index.ts
+          grep -q "finance_documents_forbidden" ../supabase/functions/gestionalejo-documents/index.ts
+          grep -q "documents_finance_privacy_gate" ../supabase/migrations/20261016202853_documents_finance_privacy_gate.sql
+          grep -q "dealer_private_docs_finance_gate" ../supabase/migrations/20261016202853_documents_finance_privacy_gate.sql
       - name: Assert private vehicle media boundary
         run: |
           grep -q "dealer-vehicle-media" src/lib/api.ts
