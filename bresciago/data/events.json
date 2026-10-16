@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-16T07:18:18.866719+00:00",
-  "count": 55,
+  "generated_at": "2026-10-16T16:08:36.518369+00:00",
+  "count": 56,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 49,
-      "events": 48,
+      "links": 50,
+      "events": 49,
       "errors": 0
     }
   ],
@@ -693,6 +693,21 @@
       "note": "Sfida le tue paure nella notte più terrificante dell'anno: ogni anno il 31 ottobre a Pezzaze torna Halloween in Miniera!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Halloween-in-miniera-Pezzaze-2.jpg"
+    },
+    {
+      "id": "auto-7dad297853f71c",
+      "title": "Mostra \"Tesori. Il grande romanzo dei Musei bresciani. 1826 | 2026\"",
+      "date": "2026-11-04",
+      "end_date": "2027-08-22",
+      "time": "",
+      "place": "Museo di Santa Giulia Via dei Musei, 81/b , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mostra-tesori-grande-romanzo-musei-bresciani/",
+      "note": "Dal 4 novembre 2026 al 22 agosto 2027 al Museo di Santa Giulia arriva la mostra \"Tesori. Il grande romanzo dei Musei bresciani. 1826 | 2026\": scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/01_Elisabetta-Kaehlbrandt-Laranceto-dettaglio-1920x991-1.jpg"
     },
     {
       "id": "auto-bcbdc8ef6db168",
