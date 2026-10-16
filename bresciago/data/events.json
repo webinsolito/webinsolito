@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-15T16:09:01.568308+00:00",
-  "count": 56,
+  "generated_at": "2026-10-16T07:18:18.866719+00:00",
+  "count": 55,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 9,
+      "events": 7,
       "errors": 0
     },
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 48,
-      "events": 47,
+      "links": 49,
+      "events": 48,
       "errors": 0
     }
   ],
@@ -380,34 +380,19 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana-dopo-il-restauro.jpg"
     },
     {
-      "id": "auto-86064fa0d62d80",
-      "title": "Cavallerizza. I colori della danza",
-      "date": "2026-10-14",
-      "end_date": "2026-10-14",
+      "id": "auto-467c635d149016",
+      "title": "CorrixBrescia 2026/2027",
+      "date": "2026-10-08",
+      "end_date": "2027-05-27",
       "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
+      "place": "Brescia Piazza Vittoria (ritrovo) , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Sport",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/cavallerizza-berengo-2519644",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-42991462fcb19b",
-      "title": "Progetti. 100 anni di Renato Borsoni",
-      "date": "2026-10-14",
-      "end_date": "2026-10-14",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2519267-2519327-2519492",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
+      "url": "https://www.visitbrescia.it/eventi/corrixbrescia/",
+      "note": "Scoprire la città di Brescia e i suoi scorci più suggestivi praticando attività fisica e condividendo la passione per lo sport: fino a maggio 2027 torna CorrixBrescia!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/CorrixBrescia.jpeg"
     },
     {
       "id": "auto-9af4e0165ef5df",
@@ -423,51 +408,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-51d311ec874b74",
-      "title": "CNE 2026. Focus Wim Wenders",
-      "date": "2026-10-15",
-      "end_date": "2026-10-15",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cne-2026-focus-wim-wenders-15-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-f07258f9e9efe2",
-      "title": "Emergency Days 2026",
-      "date": "2026-10-15",
-      "end_date": "2026-10-15",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521-2519553",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-15-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-01e788360f48da",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-10-15",
-      "end_date": "2026-10-15",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
       "id": "auto-d782fdbd87f6bf",
@@ -530,6 +470,36 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/teatro-grande-stagione-2026-13-ottobre-1024x650-1.jpg"
     },
     {
+      "id": "auto-1b9fe8f513f6e0",
+      "title": "Associazione Perlar 2026",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/associazione-perlar-2026-2519619",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/perlar-2026-17-ottobre-1024x650-1.jpg"
+    },
+    {
+      "id": "auto-77bac80c2297e2",
+      "title": "Biblioteche sociali. Uncinetto",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/biblioteche-2026-uncinetto-torrelunga-1024x650.jpg"
+    },
+    {
       "id": "auto-9766eff5bf7944",
       "title": "Escursione faunistica \"Il bramito dei cervi\" 2026",
       "date": "2026-10-17",
@@ -543,6 +513,21 @@
       "note": "A settembre e ottobre tornano le escursioni guidate \"Il bramito dei cervi\" con partenza e arrivo a Vezza d'Oglio. Scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/bramito-dei-cervi-in-amore-Ph-Sefano-Sandrini-scaled.jpg"
+    },
+    {
+      "id": "auto-98055a8ce21acf",
+      "title": "Inaugurazione campi riqualificati",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/inaugurazione-campi-riqualificati",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/san-filippo-inaugurazione-campi-riqualificati-1024x650.jpg"
     },
     {
       "id": "auto-4ee1b0ad627dfb",
