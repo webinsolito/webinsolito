@@ -11,7 +11,9 @@ async function installBackend(page:Page){
   await page.route(`${PROJECT}/**`,async route=>{
     const req=route.request(),url=new URL(req.url()),method=req.method(),path=url.pathname
     if(path.endsWith('/functions/v1/gestionalejo-router/auth/resolve-login')){
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'seller-user',email:'seller@example.test'},dealer:{id:DEALER,slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Venditore Test',username:'seller',role:'VENDITORE',permissions:{}}})})
+      const body=req.postDataJSON() as {dealer_slug?:string}
+      expect(body.dealer_slug).toBe('autosalone-demo')
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'seller-user',email:'seller@example.test'},dealer:{id:DEALER,slug:'autosalone-demo',display_name:'Autosalone Demo'},profile:{display_name:'Venditore Test',username:'seller',role:'VENDITORE',permissions:{}}})})
     }
     if(path.startsWith('/rest/v1/')){
       const table=path.slice('/rest/v1/'.length)
@@ -71,10 +73,12 @@ function json(route:any,data:unknown){return route.fulfill({status:200,contentTy
 
 async function login(page:Page){
   await page.goto('/')
+  await page.getByLabel('CODICE CONCESSIONARIA').fill('autosalone-demo')
   await page.getByLabel('UTENTE O EMAIL').fill('seller')
   await page.getByLabel('PASSWORD').fill('demo')
-  await page.getByRole('button',{name:'Entra in MALÙ23'}).click()
+  await page.getByRole('button',{name:'Entra',exact:true}).click()
   await expect(page.getByRole('heading',{name:'Oggi'})).toBeVisible()
+  await expect(page.locator('.brand')).toContainText('Autosalone Demo')
 }
 
 async function openClients(page:Page){
