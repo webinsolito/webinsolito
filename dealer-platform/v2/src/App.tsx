@@ -1,6 +1,7 @@
 import {useCallback,useEffect,useState} from 'react'
 import {DoorOpen,RefreshCw,ShieldCheck} from 'lucide-react'
 import {Login} from './components/Login'
+import {OwnerLogin} from './components/OwnerLogin'
 import {Shell} from './components/Shell'
 import {PasswordChangeGate,RenewalControl} from './components/AccessGate'
 import {VehicleDrawer} from './components/VehicleDrawer'
@@ -40,7 +41,7 @@ export default function App(){
   const [editingId,setEditingId]=useState<string|null>(null)
 
   const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setData(empty);setVehicleId(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
-  const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal()};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
+  const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
 
   useEffect(()=>{
     if(!session){setIsOwner(false);setOwnerChecked(false);return}
@@ -52,6 +53,7 @@ export default function App(){
 
   const checkAccess=useCallback(async()=>{
     if(!session){setAccess(null);setAccessBusy(false);return}
+    if(ownerMode){setAccessBusy(false);return}
     if(session.support_mode){
       const expiry=session.support_expires_at?new Date(session.support_expires_at).getTime():0
       if(!expiry||expiry<=Date.now()){
@@ -71,7 +73,7 @@ export default function App(){
       else setError(message||'Impossibile verificare lo stato accesso')
     }
     finally{setAccessBusy(false)}
-  },[session,leave])
+  },[session,leave,ownerMode])
 
   const load=useCallback(async()=>{
     if(!session||!access?.active||ownerMode)return
@@ -90,8 +92,13 @@ export default function App(){
   const closeOwner=()=>{setOwnerMode(false);updateOwnerQuery(false,session?.dealer.slug)}
   const enterSupport=async(dealerId:string)=>{const next=await enterOwnerSupport(dealerId);setSessionState(next);setOwnerMode(false);setAccess(null);setAccessBusy(true);setData(empty);setView('today');setVehicleId(null);updateOwnerQuery(false,next.dealer.slug)}
   const stopSupport=async()=>{setBusy(true);setError('');try{const restored=await exitOwnerSupport();if(!restored){leave();return}setSessionState(restored);setAccess(null);setAccessBusy(true);setData(empty);setView('today');setOwnerMode(true);setIsOwner(true);setOwnerChecked(true);updateOwnerQuery(true,restored.dealer.slug)}catch(err){setError(err instanceof Error?err.message:'Impossibile chiudere il supporto')}finally{setBusy(false)}}
+  const backToDealerLogin=()=>{setOwnerMode(false);updateOwnerQuery(false)}
+  const openOwnerLogin=()=>{setOwnerMode(true);updateOwnerQuery(true)}
 
-  if(!session)return <Login onLogin={(next,password)=>{setSessionState(next);setCurrentPassword(password);setAccess(null);setAccessBusy(true)}}/>
+  if(!session){
+    if(ownerMode)return <OwnerLogin onBack={backToDealerLogin} onLogin={next=>{setSessionState(next);setOwnerMode(true);setAccess(null);setAccessBusy(false)}}/>
+    return <div className="login-owner-wrapper"><Login onLogin={(next,password)=>{setSessionState(next);setCurrentPassword(password);setAccess(null);setAccessBusy(true)}}/><button className="owner-entry-button" type="button" onClick={openOwnerLogin}><ShieldCheck/>Accesso proprietario</button></div>
+  }
   if(ownerMode){
     if(!ownerChecked)return <main className="access-page"><section className="access-card access-loading"><RefreshCw className="spin"/><h1>Verifica accesso proprietario…</h1></section></main>
     if(isOwner)return <OwnerPage onClose={closeOwner} onLogout={leave} onEnterSupport={enterSupport}/>
