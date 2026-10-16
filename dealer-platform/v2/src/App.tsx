@@ -8,6 +8,7 @@ import {VehicleDrawer} from './components/VehicleDrawer'
 import {VehicleFormModal} from './components/VehicleFormModal'
 import {CalendarPage} from './pages/CalendarPage'
 import {ClientsPage} from './pages/ClientsPage'
+import {DocumentsPage} from './pages/DocumentsPage'
 import {GaragePage} from './pages/GaragePage'
 import {MorePage} from './pages/MorePage'
 import {OnboardingPage} from './pages/OnboardingPage'
@@ -15,7 +16,7 @@ import {OwnerPage} from './pages/OwnerPage'
 import {SalesPage} from './pages/SalesPage'
 import {StaffPage} from './pages/StaffPage'
 import {TodayPage} from './pages/TodayPage'
-import {canWriteCalendar,canWriteCustomers,canWriteGarage,fetchTenantData,getSession,logout} from './lib/api'
+import {canSeeFinance,canWriteCalendar,canWriteCustomers,canWriteGarage,fetchTenantData,getSession,logout} from './lib/api'
 import {getOnboardingStatus} from './lib/onboardingApi'
 import {enterOwnerSupport,exitOwnerSupport,getOwnerMe} from './lib/ownerApi'
 import {getAccessStatus} from './lib/renewalApi'
@@ -141,6 +142,8 @@ export default function App(){
   const saved=async(v:Vehicle)=>{setNewVehicleOpen(false);setEditingId(null);setView('garage');setVehicleId(v.id);await load()}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
+  const financeVisible=canSeeFinance(session)
+  const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenOwner={openOwner}/>
   return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave}>
     {session.support_mode&&<div className="owner-live-support"><DoorOpen/><div><b>SUPPORTO OWNER · {dealerName}</b><span>Accesso temporaneo e tracciato · scade {session.support_expires_at?new Intl.DateTimeFormat('it-IT',{hour:'2-digit',minute:'2-digit'}).format(new Date(session.support_expires_at)):'automaticamente'}</span></div><button onClick={()=>void stopSupport()}>Esci dal supporto</button></div>}
     {access.renewal_available&&!session.support_mode&&<RenewalControl session={session} access={access} onApproved={leave}/>} 
@@ -151,8 +154,9 @@ export default function App(){
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load}/>} 
     {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load}/>} 
     {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load}/>} 
-    {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:<MorePage isAdmin={false} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>{}} onOpenOwner={openOwner}/>)}
-    {view==='more'&&<MorePage isAdmin={isAdmin} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenOwner={openOwner}/>} 
+    {view==='documents'&&(financeVisible?<DocumentsPage session={session} vehicles={data.vehicles} onBack={()=>setView('more')} onCostsChanged={load}/>:more)}
+    {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:more)}
+    {view==='more'&&more} 
     {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load}/>} 
     {(newVehicleOpen||editingVehicle)&&<VehicleFormModal vehicle={editingVehicle} onClose={()=>{setNewVehicleOpen(false);setEditingId(null)}} onSaved={v=>void saved(v)}/>} 
   </Shell>
