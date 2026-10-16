@@ -10,14 +10,16 @@ import {CalendarPage} from './pages/CalendarPage'
 import {ClientsPage} from './pages/ClientsPage'
 import {GaragePage} from './pages/GaragePage'
 import {MorePage} from './pages/MorePage'
+import {OnboardingPage} from './pages/OnboardingPage'
 import {OwnerPage} from './pages/OwnerPage'
 import {SalesPage} from './pages/SalesPage'
 import {StaffPage} from './pages/StaffPage'
 import {TodayPage} from './pages/TodayPage'
 import {canWriteCalendar,canWriteCustomers,canWriteGarage,fetchTenantData,getSession,logout} from './lib/api'
+import {getOnboardingStatus} from './lib/onboardingApi'
 import {enterOwnerSupport,exitOwnerSupport,getOwnerMe} from './lib/ownerApi'
 import {getAccessStatus} from './lib/renewalApi'
-import type {AccessStatus,SessionPayload,TenantData,Vehicle,View} from './types'
+import type {AccessStatus,OnboardingStatus,SessionPayload,TenantData,Vehicle,View} from './types'
 
 const empty:TenantData={vehicles:[],media:[],workItems:[],customers:[],customerInteractions:[],customerInterests:[],calendarEvents:[],contracts:[],financials:[],costs:[],invoices:[]}
 const isLocalHarness=()=>['localhost','127.0.0.1'].includes(window.location.hostname)
@@ -29,6 +31,9 @@ export default function App(){
   const [currentPassword,setCurrentPassword]=useState<string|undefined>()
   const [access,setAccess]=useState<AccessStatus|null>(null)
   const [accessBusy,setAccessBusy]=useState(Boolean(session))
+  const [onboarding,setOnboarding]=useState<OnboardingStatus|null>(null)
+  const [onboardingBusy,setOnboardingBusy]=useState(false)
+  const [onboardingError,setOnboardingError]=useState('')
   const [ownerMode,setOwnerMode]=useState(initialOwnerMode)
   const [isOwner,setIsOwner]=useState(false)
   const [ownerChecked,setOwnerChecked]=useState(false)
@@ -40,7 +45,7 @@ export default function App(){
   const [newVehicleOpen,setNewVehicleOpen]=useState(false)
   const [editingId,setEditingId]=useState<string|null>(null)
 
-  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setData(empty);setVehicleId(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
+  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
   const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
 
   useEffect(()=>{
@@ -75,29 +80,47 @@ export default function App(){
     finally{setAccessBusy(false)}
   },[session,leave,ownerMode])
 
+  const refreshOnboarding=useCallback(async():Promise<OnboardingStatus|void>=>{
+    const needsCheck=Boolean(session&&access?.active&&session.profile.role==='ADMIN'&&!session.support_mode&&!ownerMode)
+    if(!needsCheck){setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');return}
+    setOnboardingBusy(true);setOnboardingError('')
+    try{const next=await getOnboardingStatus(session!);setOnboarding(next);return next}
+    catch(err){
+      const message=err instanceof Error?err.message:''
+      if(isLocalHarness()&&/http_404|not_found|Failed to fetch/i.test(message)){
+        const fallback:OnboardingStatus={ok:true,completed:true,dealer:session!.dealer,primary_branch:null,vehicle_count:0,member_count:1};setOnboarding(fallback);return fallback
+      }
+      if(/Sessione scaduta|unauthorized|session_revoked/i.test(message)){leave();return}
+      setOnboardingError(message||'Impossibile verificare la configurazione iniziale')
+    }finally{setOnboardingBusy(false)}
+  },[session,access?.active,ownerMode,leave])
+
+  const adminNeedsOnboarding=Boolean(session?.profile.role==='ADMIN'&&!session?.support_mode)
+  const onboardingReady=!adminNeedsOnboarding||onboarding?.completed===true
   const load=useCallback(async()=>{
-    if(!session||!access?.active||ownerMode)return
+    if(!session||!access?.active||ownerMode||!onboardingReady)return
     setBusy(true);setError('')
     try{setData(await fetchTenantData(session))}
     catch(err){setError(err instanceof Error?err.message:'Errore caricamento dati')}
     finally{setBusy(false)}
-  },[session,access?.active,ownerMode])
+  },[session,access?.active,ownerMode,onboardingReady])
 
   useEffect(()=>{void checkAccess()},[checkAccess])
-  useEffect(()=>{if(access?.active&&!ownerMode)void load();else setData(empty)},[load,access?.active,ownerMode])
+  useEffect(()=>{if(access?.active&&!ownerMode)void refreshOnboarding();else{setOnboarding(null);setOnboardingBusy(false)}},[access?.active,ownerMode,refreshOnboarding])
+  useEffect(()=>{if(access?.active&&!ownerMode&&onboardingReady)void load();else setData(empty)},[load,access?.active,ownerMode,onboardingReady])
   useEffect(()=>{document.title=ownerMode&&isOwner?'Owner · Dealer Cockpit':session?`${session.dealer.display_name||session.dealer.name||'Concessionaria'} · Dealer Cockpit`:'Dealer Cockpit'},[session,ownerMode,isOwner])
   useEffect(()=>{const handler=(e:KeyboardEvent)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('global-search')?.focus()}};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[])
 
   const openOwner=()=>{setOwnerMode(true);setVehicleId(null);updateOwnerQuery(true,session?.dealer.slug)}
   const closeOwner=()=>{setOwnerMode(false);updateOwnerQuery(false,session?.dealer.slug)}
-  const enterSupport=async(dealerId:string)=>{const next=await enterOwnerSupport(dealerId);setSessionState(next);setOwnerMode(false);setAccess(null);setAccessBusy(true);setData(empty);setView('today');setVehicleId(null);updateOwnerQuery(false,next.dealer.slug)}
-  const stopSupport=async()=>{setBusy(true);setError('');try{const restored=await exitOwnerSupport();if(!restored){leave();return}setSessionState(restored);setAccess(null);setAccessBusy(true);setData(empty);setView('today');setOwnerMode(true);setIsOwner(true);setOwnerChecked(true);updateOwnerQuery(true,restored.dealer.slug)}catch(err){setError(err instanceof Error?err.message:'Impossibile chiudere il supporto')}finally{setBusy(false)}}
+  const enterSupport=async(dealerId:string)=>{const next=await enterOwnerSupport(dealerId);setSessionState(next);setOwnerMode(false);setAccess(null);setAccessBusy(true);setOnboarding(null);setData(empty);setView('today');setVehicleId(null);updateOwnerQuery(false,next.dealer.slug)}
+  const stopSupport=async()=>{setBusy(true);setError('');try{const restored=await exitOwnerSupport();if(!restored){leave();return}setSessionState(restored);setAccess(null);setAccessBusy(true);setOnboarding(null);setData(empty);setView('today');setOwnerMode(true);setIsOwner(true);setOwnerChecked(true);updateOwnerQuery(true,restored.dealer.slug)}catch(err){setError(err instanceof Error?err.message:'Impossibile chiudere il supporto')}finally{setBusy(false)}}
   const backToDealerLogin=()=>{setOwnerMode(false);updateOwnerQuery(false)}
   const openOwnerLogin=()=>{setOwnerMode(true);updateOwnerQuery(true)}
 
   if(!session){
     if(ownerMode)return <OwnerLogin onBack={backToDealerLogin} onLogin={next=>{setSessionState(next);setOwnerMode(true);setAccess(null);setAccessBusy(false)}}/>
-    return <div className="login-owner-wrapper"><Login onLogin={(next,password)=>{setSessionState(next);setCurrentPassword(password);setAccess(null);setAccessBusy(true)}}/><button className="owner-entry-button" type="button" onClick={openOwnerLogin}><ShieldCheck/>Accesso proprietario</button></div>
+    return <div className="login-owner-wrapper"><Login onLogin={(next,password)=>{setSessionState(next);setCurrentPassword(password);setAccess(null);setAccessBusy(true);setOnboarding(null)}}/><button className="owner-entry-button" type="button" onClick={openOwnerLogin}><ShieldCheck/>Accesso proprietario</button></div>
   }
   if(ownerMode){
     if(!ownerChecked)return <main className="access-page"><section className="access-card access-loading"><RefreshCw className="spin"/><h1>Verifica accesso proprietario…</h1></section></main>
@@ -108,6 +131,9 @@ export default function App(){
   if(!access)return <main className="access-page"><section className="access-card"><h1>Accesso non verificato</h1><p className="access-copy">{error||'Riprova la verifica.'}</p><button className="primary" onClick={()=>void checkAccess()}>Riprova</button><button className="access-secondary" onClick={leave}>Esci</button></section></main>
   if(access.expired)return <RenewalControl session={session} access={access} full onApproved={leave}/>
   if(access.force_password_change)return <PasswordChangeGate session={session} currentPassword={currentPassword} onLogout={leave} onChanged={next=>{setSessionState(next);setCurrentPassword(undefined);setAccess(prev=>prev?{...prev,active:true,force_password_change:false,profile:{...prev.profile,force_password_change:false,password_changed_at:new Date().toISOString()}}:prev)}}/>
+  if(adminNeedsOnboarding&&onboardingBusy&&!onboarding)return <main className="access-page"><section className="access-card access-loading"><RefreshCw className="spin"/><h1>Preparazione concessionaria…</h1></section></main>
+  if(adminNeedsOnboarding&&!onboarding&&onboardingError)return <main className="access-page"><section className="access-card"><h1>Configurazione non verificata</h1><p className="access-copy">{onboardingError}</p><button className="primary" onClick={()=>void refreshOnboarding()}>Riprova</button><button className="access-secondary" onClick={leave}>Esci</button></section></main>
+  if(adminNeedsOnboarding&&onboarding&&!onboarding.completed)return <OnboardingPage session={session} status={onboarding} onRefresh={refreshOnboarding} onLogout={leave} onComplete={target=>{const completedAt=new Date().toISOString();setOnboarding(prev=>prev?{...prev,completed:true,dealer:{...prev.dealer,onboarding_completed_at:completedAt}}:prev);setSessionState(prev=>prev?{...prev,dealer:{...prev.dealer,onboarding_completed_at:completedAt}}:prev);setView(target)}}/>
 
   const vehicle=vehicleId?data.vehicles.find(v=>v.id===vehicleId):undefined
   const editingVehicle=editingId?data.vehicles.find(v=>v.id===editingId):undefined

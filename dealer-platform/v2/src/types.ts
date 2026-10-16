@@ -1,10 +1,14 @@
 export type Role='ADMIN'|'AMMINISTRAZIONE'|'VENDITORE'|'OPERATORE'|string
 export type View='today'|'garage'|'clients'|'calendar'|'sales'|'staff'|'more'
 
-export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null; status?:string; access_expires_at?:string|null; last_renewed_at?:string|null }
+export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null; status?:string; vat_number?:string|null; contact_email?:string|null; phone?:string|null; access_expires_at?:string|null; last_renewed_at?:string|null; onboarding_started_at?:string|null; onboarding_completed_at?:string|null }
+export interface DealerBranch { id:string; name:string; city?:string|null; address?:string|null; is_primary?:boolean }
 export interface Profile { id?:string; display_name?:string; username?:string; role:Role; permissions?:Record<string,boolean>; force_password_change?:boolean; password_changed_at?:string|null }
-export interface SessionPayload { access_token:string; refresh_token:string; expires_at?:number; expires_in?:number; user?:{id:string;email?:string}; dealer:Dealer; profile:Profile }
+export interface SessionPayload { access_token:string; refresh_token:string; expires_at?:number; expires_in?:number; user?:{id:string;email?:string}; dealer:Dealer; profile:Profile; support_mode?:boolean; support_expires_at?:string|null }
 export interface AccessStatus { ok:true; dealer:Dealer; profile:Profile; expired:boolean; force_password_change:boolean; days_remaining:number; renewal_available:boolean; active:boolean }
+export interface OnboardingStatus { ok:true; completed:boolean; dealer:Dealer; primary_branch:DealerBranch|null; vehicle_count:number; member_count:number }
+export interface OnboardingCompanyDraft { display_name:string; legal_name:string; vat_number?:string|null; contact_email?:string|null; phone?:string|null; branch_name?:string|null; city?:string|null; address?:string|null }
+export interface VehicleImportResult { ok:true; inserted:number; skipped:Array<{row:number;reason:string;plate?:string|null;vin?:string|null}>; errors:Array<{row:number;message:string}> }
 export interface AdminMember { user_id:string; username:string; role:Role; status:'INVITED'|'ACTIVE'|'SUSPENDED'|string; permissions?:Record<string,boolean>; created_at?:string; updated_at?:string; display_name?:string; force_password_change?:boolean; password_changed_at?:string|null; email?:string|null; last_sign_in_at?:string|null; telegram_linked?:boolean }
 export interface AdminOverview { ok:true; dealer:Dealer; members:AdminMember[]; audit_logs?:Array<{id:string;actor_user_id?:string;entity_type?:string;entity_id?:string|null;action?:string;created_at?:string}>; current_user_id:string }
 export interface MemberDraft { display_name:string; email:string; username:string; role:Role }
