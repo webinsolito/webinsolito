@@ -8,6 +8,7 @@ import './registration.css'
 import './access.css'
 import './staff.css'
 import './owner.css'
+import './owner-console-v2.css'
 import './support.css'
 import './owner-login.css'
 
