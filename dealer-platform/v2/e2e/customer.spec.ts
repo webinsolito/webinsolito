@@ -11,7 +11,7 @@ async function installBackend(page:Page){
   await page.route(`${PROJECT}/**`,async route=>{
     const req=route.request(),url=new URL(req.url()),method=req.method(),path=url.pathname
     if(path.endsWith('/functions/v1/gestionalejo-router/auth/resolve-login')){
-      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:'test-access',refresh_token:'test-refresh',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'seller-user',email:'seller@example.test'},dealer:{id:DEALER,slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Venditore Test',username:'seller',role:'VENDITORE',permissions:{}}})})
+      return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'seller-user',email:'seller@example.test'},dealer:{id:DEALER,slug:'malu23',display_name:'MALÙ23 CARS'},profile:{display_name:'Venditore Test',username:'seller',role:'VENDITORE',permissions:{}}})})
     }
     if(path.startsWith('/rest/v1/')){
       const table=path.slice('/rest/v1/'.length)
@@ -72,7 +72,7 @@ function json(route:any,data:unknown){return route.fulfill({status:200,contentTy
 async function login(page:Page){
   await page.goto('/')
   await page.getByLabel('UTENTE O EMAIL').fill('seller')
-  await page.getByLabel('PASSWORD').fill('test-password')
+  await page.getByLabel('PASSWORD').fill('demo')
   await page.getByRole('button',{name:'Entra in MALÙ23'}).click()
   await expect(page.getByRole('heading',{name:'Oggi'})).toBeVisible()
 }
@@ -90,14 +90,14 @@ test('Cliente completo: crea, modifica, collega auto, tratta offerta e registra 
   expect(state.financeRequests).toBe(0)
 
   await page.getByTestId('new-customer').click()
-  await page.getByLabel('NOME').fill('Luca')
-  await page.getByLabel('COGNOME').fill('Bianchi')
-  await page.getByLabel('TELEFONO').fill('3331234567')
-  await page.getByLabel('EMAIL').fill('luca.bianchi@example.test')
-  await page.getByLabel('CODICE FISCALE').fill('bnclcu90a01b157x')
-  await page.getByLabel('CONTATTO PREFERITO').selectOption('WHATSAPP')
-  await page.getByLabel('PROVENIENZA').fill('AutoScout')
-  await page.getByLabel('NOTE CLIENTE').fill('Cerca un diesel automatico')
+  await page.getByLabel('NOME',{exact:true}).fill('Luca')
+  await page.getByLabel('COGNOME',{exact:true}).fill('Bianchi')
+  await page.getByLabel('TELEFONO',{exact:true}).fill('3331234567')
+  await page.getByLabel('EMAIL',{exact:true}).fill('luca.bianchi@example.test')
+  await page.getByLabel('CODICE FISCALE',{exact:true}).fill('bnclcu90a01b157x')
+  await page.getByLabel('CONTATTO PREFERITO',{exact:true}).selectOption('WHATSAPP')
+  await page.getByLabel('PROVENIENZA',{exact:true}).fill('AutoScout')
+  await page.getByLabel('NOTE CLIENTE',{exact:true}).fill('Cerca un diesel automatico')
   await page.getByTestId('customer-save').click()
 
   await expect(page.getByTestId('customer-detail')).toContainText('Luca Bianchi')
@@ -106,17 +106,17 @@ test('Cliente completo: crea, modifica, collega auto, tratta offerta e registra 
   expect(state.customers[0].preferred_contact).toBe('WHATSAPP')
 
   await page.getByTitle('Modifica cliente').click()
-  await page.getByLabel('STATO CLIENTE').selectOption('CLIENTE')
-  await page.getByLabel('NOTE CLIENTE').fill('Vuole Golf, valuta permuta')
+  await page.getByLabel('STATO CLIENTE',{exact:true}).selectOption('CLIENTE')
+  await page.getByLabel('NOTE CLIENTE',{exact:true}).fill('Vuole Golf, valuta permuta')
   await page.getByTestId('customer-save').click()
   await expect.poll(()=>state.customers[0].status).toBe('CLIENTE')
   expect(state.customers[0].notes).toContain('permuta')
 
   await page.getByTestId('add-interest').click()
-  await page.getByLabel('AUTO INTERESSATA').selectOption(VEHICLE)
-  await page.getByLabel('FASE INTERESSE').selectOption('OFFERTA')
-  await page.getByLabel('OFFERTA CLIENTE').fill('20500')
-  await page.getByLabel('NOTA INTERESSE').fill('Offerta con permuta da valutare')
+  await page.getByLabel('AUTO INTERESSATA',{exact:true}).selectOption(VEHICLE)
+  await page.getByLabel('FASE INTERESSE',{exact:true}).selectOption('OFFERTA')
+  await page.getByLabel('OFFERTA CLIENTE',{exact:true}).fill('20500')
+  await page.getByLabel('NOTA INTERESSE',{exact:true}).fill('Offerta con permuta da valutare')
   await page.getByTestId('interest-save').click()
   await expect.poll(()=>state.interests.length).toBe(1)
   expect(state.interests[0].vehicle_id).toBe(VEHICLE)
@@ -124,13 +124,13 @@ test('Cliente completo: crea, modifica, collega auto, tratta offerta e registra 
   await expect(page.getByText('Volkswagen Golf 2.0 TDI')).toBeVisible()
 
   await page.locator('.interest-row').click()
-  await page.getByLabel('FASE INTERESSE').selectOption('TRATTATIVA')
+  await page.getByLabel('FASE INTERESSE',{exact:true}).selectOption('TRATTATIVA')
   await page.getByTestId('interest-save').click()
   await expect.poll(()=>state.interests[0].status).toBe('TRATTATIVA')
 
   await page.getByPlaceholder('Es. richiamare per proposta Golf').fill('Richiamare per conferma permuta')
   await page.locator('.next-panel input[type="datetime-local"]').fill('2026-10-17T11:30')
-  await page.locator('.next-panel').getByRole('button',{name:'Salva'}).click()
+  await page.locator('.next-panel').getByRole('button',{name:'Salva',exact:true}).click()
   await expect.poll(()=>state.customers[0].next_step).toBe('Richiamare per conferma permuta')
 
   await page.getByPlaceholder('Es. interessato, richiamare venerdì').fill('Chiamata positiva, attende valutazione permuta')
