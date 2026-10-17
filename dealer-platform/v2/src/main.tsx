@@ -13,6 +13,8 @@ import './support.css'
 import './owner-login.css'
 import './onboarding.css'
 import './documents.css'
+import './finance.css'
+import './report.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
