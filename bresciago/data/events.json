@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-17T07:13:28.926590+00:00",
-  "count": 58,
+  "generated_at": "2026-10-17T15:59:27.983427+00:00",
+  "count": 60,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 9,
-      "errors": 2
+      "events": 11,
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
@@ -410,6 +410,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/lugana-festival.jpg"
     },
     {
+      "id": "auto-1b9fe8f513f6e0",
+      "title": "Associazione Perlar 2026",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/associazione-perlar-2026-2519619",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/perlar-2026-17-ottobre-1024x650-1.jpg"
+    },
+    {
       "id": "auto-09b9b3effe3700",
       "title": "Bao Sound Experience 2026",
       "date": "2026-10-17",
@@ -423,6 +438,21 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/bao-2026-17-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-77bac80c2297e2",
+      "title": "Biblioteche sociali. Uncinetto",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/biblioteche-2026-uncinetto-torrelunga-1024x650.jpg"
     },
     {
       "id": "auto-e5ea1ec2994375",
