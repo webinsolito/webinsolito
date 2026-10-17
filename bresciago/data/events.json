@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-16T16:08:36.518369+00:00",
-  "count": 56,
+  "generated_at": "2026-10-17T07:13:28.926590+00:00",
+  "count": 58,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 7,
-      "errors": 0
+      "events": 9,
+      "errors": 2
     },
     {
       "name": "Visit Brescia",
@@ -395,36 +395,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/CorrixBrescia.jpeg"
     },
     {
-      "id": "auto-9af4e0165ef5df",
-      "title": "Carme 2026. Stefano Cagol",
-      "date": "2026-10-15",
-      "end_date": "2026-10-15",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/carme-2026-stefano-cagol-2519174-2519353-2519549",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-d782fdbd87f6bf",
-      "title": "CNE 2026. Nazra Palestine 2026",
-      "date": "2026-10-16",
-      "end_date": "2026-10-16",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519555",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cne-2026-nazra-palestine-2026-16-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-a18c00fce2c0cd",
       "title": "Lugana Festival 2026",
       "date": "2026-10-16",
@@ -440,38 +410,8 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/lugana-festival.jpg"
     },
     {
-      "id": "auto-3ce9914a72bda0",
-      "title": "Psicogeografia 2026",
-      "date": "2026-10-16",
-      "end_date": "2026-10-16",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/psicogeografia-2026-2519556",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/youth-colab-3-0-psicogeografia-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-bab678229d2416",
-      "title": "Stagione Teatro Grande 2026",
-      "date": "2026-10-16",
-      "end_date": "2026-10-16",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2514430-2514571-2515237-2519313-2519522-2519557",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/teatro-grande-stagione-2026-13-ottobre-1024x650-1.jpg"
-    },
-    {
-      "id": "auto-1b9fe8f513f6e0",
-      "title": "Associazione Perlar 2026",
+      "id": "auto-09b9b3effe3700",
+      "title": "Bao Sound Experience 2026",
       "date": "2026-10-17",
       "end_date": "2026-10-17",
       "time": "",
@@ -479,25 +419,25 @@
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/associazione-perlar-2026-2519619",
+      "url": "https://comune.brescia.it/it/events/bao-sound-experience-2026-2519675",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/perlar-2026-17-ottobre-1024x650-1.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/bao-2026-17-ottobre-1024x650.jpg"
     },
     {
-      "id": "auto-77bac80c2297e2",
-      "title": "Biblioteche sociali. Uncinetto",
+      "id": "auto-e5ea1ec2994375",
+      "title": "CNE 2026 – Made in Usa",
       "date": "2026-10-17",
       "end_date": "2026-10-17",
       "time": "",
       "place": "Brescia",
       "area": "Brescia",
-      "cat": "Cultura",
+      "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612",
+      "url": "https://comune.brescia.it/it/events/cne-2026-la-nueva-ola-2518604-2519653",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/biblioteche-2026-uncinetto-torrelunga-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cne-2026-made-in-usa-17-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-9766eff5bf7944",
@@ -515,6 +455,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/bramito-dei-cervi-in-amore-Ph-Sefano-Sandrini-scaled.jpg"
     },
     {
+      "id": "auto-cd49a9f7eb9056",
+      "title": "Giuseppe Zanardelli. Mostra",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/giuseppe-zanardelli-mostra-2516520-2516738-2517027-2517285-2517452-2518422-2518569-2518696-2518944-2519200-2519440-2519618",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-mostra-zanardelli-1024x650.jpg"
+    },
+    {
       "id": "auto-98055a8ce21acf",
       "title": "Inaugurazione campi riqualificati",
       "date": "2026-10-17",
@@ -528,6 +483,81 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/san-filippo-inaugurazione-campi-riqualificati-1024x650.jpg"
+    },
+    {
+      "id": "auto-f8af6bed38f7c8",
+      "title": "Mo.Ca 2026 – Festival Nidi fioriti",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2518786-2519002-2519326-2519395-2519616",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-festival-nidi-fioriti-17-18-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-4e9c75f5eaebe3",
+      "title": "Musica: fuoco dell’anima",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/musica-fuoco-dellanima",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/banda-isidoro-capitanio-fuoco-nell-anima-1024x650.jpg"
+    },
+    {
+      "id": "auto-147180cc61ccbb",
+      "title": "Scambio di stagione autunno 2026",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/scambio-di-stagione-primavera-2519820",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/scambio-di-stagione-autunno-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-ef3b70ab36c152",
+      "title": "Stagione concertistica GIA 2026",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-concertistica-gia-2025-13-ottobre-2519621",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/stagione-gia-2026-17-ottobre-1024x650.png"
+    },
+    {
+      "id": "auto-8e1be2eaf6bc5b",
+      "title": "Us da le as 2026. 2° atto",
+      "date": "2026-10-17",
+      "end_date": "2026-10-17",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/us-da-le-as-2026-2-atto-17-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-4ee1b0ad627dfb",
