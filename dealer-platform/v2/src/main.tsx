@@ -15,6 +15,7 @@ import './onboarding.css'
 import './documents.css'
 import './finance.css'
 import './report.css'
+import './invoices.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
