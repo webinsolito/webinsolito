@@ -10,7 +10,7 @@ export function buildInvoiceSummary(invoices:InvoiceDetail[],receipts:InvoiceRec
     const total=Math.max(0,num(invoice.total_amount))
     const paid=Math.min(total,Math.max(0,num(invoice.paid_amount)))
     const due=Math.max(0,Math.round((total-paid)*100)/100)
-    const state=due<=0?'PAID':paid>0?'PARTIAL':'UNPAID'
+    const state:InvoiceRow['state']=due<=0?'PAID':paid>0?'PARTIAL':'UNPAID'
     const overdue=due>0&&Boolean(invoice.due_date)&&String(invoice.due_date)<today
     const entries=receipts.filter(r=>r.invoice_id===invoice.id).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))
     const historicalPaid=Math.max(0,Math.round((paid-entries.reduce((s,r)=>s+num(r.amount),0))*100)/100)
