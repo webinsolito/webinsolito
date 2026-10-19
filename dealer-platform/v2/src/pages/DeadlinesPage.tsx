@@ -13,7 +13,7 @@ const kindLabel:Record<DeadlineKind,string>={CUSTOMER:'RICHIAMO',APPOINTMENT:'AP
 const dateLabel=(value:string)=>new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(value+'T12:00:00'))
 const bucketLabel=(item:DeadlineItem,today:string)=>item.bucket==='OVERDUE'?'SCADUTA':item.bucket==='TODAY'?'OGGI':Math.ceil((Date.parse(item.date+'T12:00:00')-Date.parse(today+'T12:00:00'))/86400000)+' gg'
 
-export function DeadlinesPage({data,financeVisible,onBack,onVehicle,onCustomer,onCalendar,onCollections}:{data:TenantData;financeVisible:boolean;onBack:()=>void;onVehicle:(id:string)=>void;onCustomer:(id:string)=>void;onCalendar:()=>void;onCollections:()=>void}){
+export function DeadlinesPage({data,financeVisible,onBack,onVehicle,onCustomer,onSale,onCalendar,onCollections}:{data:TenantData;financeVisible:boolean;onBack:()=>void;onVehicle:(id:string)=>void;onCustomer:(id:string)=>void;onSale:(id:string)=>void;onCalendar:()=>void;onCollections:()=>void}){
  const [followups,setFollowups]=useState<InvoiceCollectionFollowup[]|null>(financeVisible?null:[])
  const [financeError,setFinanceError]=useState(false)
  const [bucket,setBucket]=useState<'ALL'|DeadlineBucket>('ALL')
@@ -33,7 +33,7 @@ export function DeadlinesPage({data,financeVisible,onBack,onVehicle,onCustomer,o
  },[data.invoices,financeVisible,followups,today])
  const summary=useMemo(()=>buildDeadlineSummary(data,today,collectionTasks),[data,today,collectionTasks])
  const rows=useMemo(()=>filterDeadlines(summary.items,bucket,kind),[summary.items,bucket,kind])
- const open=(item:DeadlineItem)=>{if(item.kind==='COLLECTION'){onCollections();return}if(item.vehicleId){onVehicle(item.vehicleId);return}if(item.customerId){onCustomer(item.customerId);return}onCalendar()}
+ const open=(item:DeadlineItem)=>{if(item.kind==='COLLECTION'){onCollections();return}if(item.kind==='DELIVERY'&&item.saleId){onSale(item.saleId);return}if(item.vehicleId){onVehicle(item.vehicleId);return}if(item.customerId){onCustomer(item.customerId);return}onCalendar()}
  return <section className="deadline-page" data-testid="deadline-page">
   <div className="page-heading"><div><p className="eyebrow">CENTRO SCADENZE</p><h1>Tutto ciò che non deve sfuggire</h1><p>Richiami, appuntamenti, consegne, pratiche, lavori e incassi ordinati per urgenza.</p></div><div className="deadline-heading-actions"><button className="access-secondary" onClick={onBack}><ArrowLeft/>Indietro</button></div></div>
   <div className="deadline-kpis"><article className={summary.overdue?'danger':''}><span>SCADUTE</span><b>{summary.overdue}</b></article><article><span>OGGI</span><b>{summary.today}</b></article><article><span>ENTRO 7 GIORNI</span><b>{summary.next7}</b></article><article><span>PROSSIME</span><b>{summary.upcoming}</b></article></div>

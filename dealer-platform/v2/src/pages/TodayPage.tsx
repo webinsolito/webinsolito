@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useState} from 'react'
-import {AlertTriangle,CalendarClock,Camera,CarFront,ChevronRight,Euro,PhoneCall,Users,Wrench} from 'lucide-react'
+import {CalendarClock,Camera,CarFront,ChevronRight,Euro,PackageCheck,PhoneCall,Users,Wrench} from 'lucide-react'
 import {buildPriorities,type PriorityItem} from '../domain/priorities'
 import {buildInvoiceSummary} from '../domain/invoices'
 import {buildCollectionSchedule} from '../domain/collections'
@@ -9,10 +9,10 @@ import type {InvoiceDetail} from '../lib/invoiceApi'
 import {money} from '../lib/format'
 import type {TenantData,View} from '../types'
 
-const icon={PRICE:Euro,PHOTO:Camera,WORK:Wrench,AGE:CarFront,CALENDAR:CalendarClock,CUSTOMER:PhoneCall,DELIVERY:AlertTriangle,COLLECTION:Euro}
+const icon={PRICE:Euro,PHOTO:Camera,WORK:Wrench,AGE:CarFront,CALENDAR:CalendarClock,CUSTOMER:PhoneCall,DELIVERY:PackageCheck,COLLECTION:Euro}
 const localDay=(date=new Date())=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')
 
-export function TodayPage({data,financeVisible=false,onVehicle,onView,onCollections,onDeadlines}:{data:TenantData;financeVisible?:boolean;onVehicle:(id:string)=>void;onView:(view:View)=>void;onCollections:()=>void;onDeadlines:()=>void}){
+export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onCollections,onDeadlines}:{data:TenantData;financeVisible?:boolean;onVehicle:(id:string)=>void;onSale:(id:string)=>void;onView:(view:View)=>void;onCollections:()=>void;onDeadlines:()=>void}){
  const [followups,setFollowups]=useState<InvoiceCollectionFollowup[]|null>(financeVisible?null:[])
  const [collectionsError,setCollectionsError]=useState(false)
  useEffect(()=>{
@@ -40,13 +40,14 @@ export function TodayPage({data,financeVisible=false,onVehicle,onView,onCollecti
  const stock=data.vehicles.filter(v=>!['CONSEGNATA','VENDUTA','ANNULLATA'].includes(v.status||''))
  const customerActions=priorities.filter(p=>p.kind==='CUSTOMER').length
  const garageActions=priorities.filter(p=>['PRICE','PHOTO','WORK','AGE'].includes(p.kind)).length
- const act=(p:PriorityItem)=>{if(p.kind==='COLLECTION'){onCollections();return}if(p.kind==='CUSTOMER'){onView('clients');return}if(p.kind==='CALENDAR'){onView('calendar');return}if(p.vehicleId){onVehicle(p.vehicleId);return}if(p.customerId)onView('clients')}
- const actionLabel=(p?:PriorityItem)=>p?.kind==='COLLECTION'?'Apri scadenziario':p?.kind==='CUSTOMER'?'Apri clienti':p?.kind==='CALENDAR'?'Apri calendario':p?.vehicleId?'Apri auto':'Apri'
+ const deliveryActions=priorities.filter(p=>p.kind==='DELIVERY').length
+ const act=(p:PriorityItem)=>{if(p.kind==='COLLECTION'){onCollections();return}if(p.kind==='DELIVERY'&&p.saleId){onSale(p.saleId);return}if(p.kind==='CUSTOMER'){onView('clients');return}if(p.kind==='CALENDAR'){onView('calendar');return}if(p.vehicleId){onVehicle(p.vehicleId);return}if(p.customerId)onView('clients')}
+ const actionLabel=(p?:PriorityItem)=>p?.kind==='COLLECTION'?'Apri scadenziario':p?.kind==='DELIVERY'&&p.saleId?'Apri vendita 360°':p?.kind==='CUSTOMER'?'Apri clienti':p?.kind==='CALENDAR'?'Apri calendario':p?.vehicleId?'Apri auto':'Apri'
  const collectionCount=collectionsError?'—':followups===null?'…':String(collectionSchedule?.todayCount||0)
  const deadlineSummary=useMemo(()=>buildDeadlineSummary(data,localDay(),collectionSchedule?.tasks||[]),[data,collectionSchedule])
  const dueNow=deadlineSummary.overdue+deadlineSummary.today
  return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
- <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small></span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
+ <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small></span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button><button onClick={()=>onView('sales')} aria-label="Apri consegne da gestire"><PackageCheck/><span><b>{deliveryActions}</b><small>Consegne da gestire</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
  <section className="focus-card"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||'Niente di urgente 🎉'}</h2><p>{allPriorities[0]?.detail||'Puoi passare ai clienti o al Garage senza emergenze aperte.'}</p></div>{allPriorities[0]&&<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>}</section>
  <section className="section"><div className="section-title"><div><p className="eyebrow">CODA DI LAVORO</p><h2>Una lista, in ordine di urgenza</h2></div></div><div className="priority-list">{allPriorities.slice(0,12).map(p=>{const Icon=icon[p.kind];return <button key={p.id} onClick={()=>act(p)} className={'priority-row severity-'+p.severity}><span className="priority-icon"><Icon/></span><span><b>{p.title}</b><small>{p.detail}</small></span><ChevronRight/></button>})}{!allPriorities.length&&<div className="empty-state">Nessuna azione urgente. Ottimo momento per seguire nuovi clienti.</div>}</div></section></>
 }

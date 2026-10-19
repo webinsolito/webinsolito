@@ -5,7 +5,7 @@ export type DeadlineKind='CUSTOMER'|'APPOINTMENT'|'DELIVERY'|'DOCUMENT'|'WORK'|'
 export type DeadlineBucket='OVERDUE'|'TODAY'|'UPCOMING'
 export interface DeadlineItem{
  id:string;kind:DeadlineKind;title:string;detail:string;date:string;bucket:DeadlineBucket;urgency:number;
- customerId?:string;vehicleId?:string;invoiceId?:string
+ customerId?:string;vehicleId?:string;invoiceId?:string;saleId?:string
 }
 export interface DeadlineSummary{
  items:DeadlineItem[];overdue:number;today:number;upcoming:number;next7:number
@@ -36,7 +36,8 @@ export function buildDeadlineSummary(data:TenantData,today:string,collections:Co
   const date=day(event.starts_at)
   const kind:DeadlineKind=looksDelivery(event.event_type,event.title)?'DELIVERY':looksDocument(event.event_type,event.title,event.note)?'DOCUMENT':'APPOINTMENT'
   const related=[customerName(data,event.customer_id),vehicleName(data,event.vehicle_id),event.note].filter(Boolean).join(' · ')
-  items.push({id:'calendar:'+event.id,kind,title:event.title||({DELIVERY:'Consegna',DOCUMENT:'Pratica / documento',APPOINTMENT:'Appuntamento'}[kind]||'Appuntamento'),detail:related||String(event.event_type||'Appuntamento').replaceAll('_',' '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(event.priority==='HIGH'?1:0),customerId:event.customer_id||undefined,vehicleId:event.vehicle_id||undefined})
+  const sale=kind==='DELIVERY'?data.contracts.find(c=>c.template_code==='VENDITA'&&c.customer_id===event.customer_id&&c.vehicle_id===event.vehicle_id&&!['DELIVERED','CANCELLED'].includes(String(c.sale_stage||'').toUpperCase())):undefined
+  items.push({id:'calendar:'+event.id,kind,title:event.title||({DELIVERY:'Consegna',DOCUMENT:'Pratica / documento',APPOINTMENT:'Appuntamento'}[kind]||'Appuntamento'),detail:related||String(event.event_type||'Appuntamento').replaceAll('_',' '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(event.priority==='HIGH'?1:0),customerId:event.customer_id||undefined,vehicleId:event.vehicle_id||undefined,saleId:sale?.id})
  }
 
  for(const work of data.workItems){
@@ -45,6 +46,15 @@ export function buildDeadlineSummary(data:TenantData,today:string,collections:Co
   const kind:DeadlineKind=looksDocument(work.category,work.title,work.note)?'DOCUMENT':'WORK'
   const car=vehicleName(data,work.vehicle_id)
   items.push({id:'work:'+work.id,kind,title:work.title||work.category||'Attività auto',detail:[car,work.category,work.note].filter(Boolean).join(' · ')||'Attività Garage',date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(work.priority==='HIGH'?1:0),vehicleId:work.vehicle_id})
+ }
+
+ for(const sale of data.contracts){
+  if(sale.template_code!=='VENDITA'||!sale.planned_delivery_at||['DELIVERED','CANCELLED'].includes(String(sale.sale_stage||'').toUpperCase()))continue
+  const date=day(sale.planned_delivery_at)
+  const duplicate=data.calendarEvents.some(event=>event.starts_at&&activeStatus(event.status)&&looksDelivery(event.event_type,event.title)&&event.customer_id===sale.customer_id&&event.vehicle_id===sale.vehicle_id&&day(event.starts_at)===date)
+  if(duplicate)continue
+  const car=vehicleName(data,sale.vehicle_id),client=customerName(data,sale.customer_id),stage=String(sale.sale_stage||'OPEN').replaceAll('_',' ')
+  items.push({id:'sale:'+sale.id,kind:'DELIVERY',title:'Consegna '+(car||'veicolo'),detail:[client,stage].filter(Boolean).join(' · '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(String(sale.sale_stage||'').toUpperCase()==='READY'?1:0),customerId:sale.customer_id,vehicleId:sale.vehicle_id,saleId:sale.id})
  }
 
  for(const task of collections){
