@@ -1,9 +1,10 @@
 import {FormEvent,useState} from 'react'
 import {CalendarClock,Camera,CheckCircle2,CircleDollarSign,FileText,Image as ImageIcon,Pencil,Plus,ShoppingBag,Star,Trash2,UserRound,Wrench,X} from 'lucide-react'
 import {integer,money,vehicleName} from '../lib/format'
-import {canSeeFinance,canWriteGarage,completeWorkItem,deleteVehiclePhoto,saveWorkItem,setVehicleCover,uploadVehiclePhotos} from '../lib/api'
+import {canSeeFinance,canWriteCustomers,canWriteGarage,completeWorkItem,deleteVehiclePhoto,saveWorkItem,setVehicleCover,uploadVehiclePhotos} from '../lib/api'
 import {PHOTO_TARGET,vehicleCompleteness} from '../domain/garage'
 import {buildVehicle360} from '../domain/vehicle360'
+import {saveCustomerInterest} from '../lib/customerApi'
 import {PrivateImage} from './PrivateImage'
 import type {SessionPayload,TenantData,Vehicle} from '../types'
 
@@ -12,18 +13,27 @@ const person=(data:TenantData,id?:string|null)=>{const c=id?data.customers.find(
 const stageLabel=(value?:string|null)=>({OPEN:'Aperta',AGREED:'Accordo',DEPOSIT:'Caparra',BALANCE_PENDING:'Saldo da chiudere',READY:'Pronta consegna',DELIVERED:'Consegnata',CANCELLED:'Annullata'}[String(value||'')]||String(value||'Non aperta').replaceAll('_',' '))
 const dateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new Date(value);return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
 
-export function VehicleDrawer({vehicle,data,session,onClose,onEdit,onRefresh,onOpenCustomer,onOpenCalendar,onOpenDeadlines,onOpenSales,onOpenInvoices}:{vehicle:Vehicle;data:TenantData;session:SessionPayload;onClose:()=>void;onEdit:()=>void;onRefresh:()=>Promise<void>;onOpenCustomer:(id:string)=>void;onOpenCalendar:()=>void;onOpenDeadlines:()=>void;onOpenSales:()=>void;onOpenInvoices:(invoiceId?:string)=>void}){
+export function VehicleDrawer({vehicle,data,session,onClose,onEdit,onRefresh,onOpenCustomer,onOpenCalendar,onQuickAppointment,onOpenDeadlines,onOpenSales,onOpenInvoices}:{vehicle:Vehicle;data:TenantData;session:SessionPayload;onClose:()=>void;onEdit:()=>void;onRefresh:()=>Promise<void>;onOpenCustomer:(id:string)=>void;onOpenCalendar:()=>void;onQuickAppointment:()=>void;onOpenDeadlines:()=>void;onOpenSales:()=>void;onOpenInvoices:(invoiceId?:string)=>void}){
   const media=data.media.filter(x=>x.vehicle_id===vehicle.id&&(x.kind||'PHOTO')==='PHOTO').sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))
   const works=data.workItems.filter(x=>x.vehicle_id===vehicle.id&&!['DONE','CANCELLED'].includes(x.status||''))
   const financial=data.financials.find(x=>x.vehicle_id===vehicle.id)
   const cover=media.find(x=>x.is_cover)||media[0]
   const writable=canWriteGarage(session)
+  const customerWritable=canWriteCustomers(session)
   const financeVisible=canSeeFinance(session)
   const completeness=vehicleCompleteness(vehicle,media.length)
   const summary=buildVehicle360(data,vehicle.id,localDay())
+  const linkedCustomerIds=new Set(data.customerInterests.filter(i=>i.vehicle_id===vehicle.id).map(i=>i.customer_id))
+  const linkableCustomers=data.customers.filter(c=>!c.deleted_at&&!linkedCustomerIds.has(c.id))
   const [busy,setBusy]=useState(false)
   const [error,setError]=useState('')
   const [workOpen,setWorkOpen]=useState(false)
+  const [quickAction,setQuickAction]=useState<'customer'|'practice'|null>(null)
+  const [linkCustomerId,setLinkCustomerId]=useState('')
+  const [linkNote,setLinkNote]=useState('')
+  const [practiceTitle,setPracticeTitle]=useState('')
+  const [practiceDue,setPracticeDue]=useState('')
+  const [practiceNote,setPracticeNote]=useState('')
 
   async function run(task:()=>Promise<unknown>){setBusy(true);setError('');try{await task();await onRefresh()}catch(err){setError(err instanceof Error?err.message:'Operazione non riuscita')}finally{setBusy(false)}}
   async function photos(files:FileList|null){if(!files?.length)return;await run(()=>uploadVehiclePhotos(vehicle,[...files],media))}
@@ -31,6 +41,8 @@ export function VehicleDrawer({vehicle,data,session,onClose,onEdit,onRefresh,onO
   async function coverPhoto(id:string){const item=media.find(x=>x.id===id);if(!item)return;await run(()=>setVehicleCover(vehicle,item))}
   async function complete(id:string){const item=works.find(x=>x.id===id);if(!item)return;await run(()=>completeWorkItem(item))}
   async function addWork(e:FormEvent<HTMLFormElement>){e.preventDefault();const fd=new FormData(e.currentTarget);await run(()=>saveWorkItem(vehicle.id,{title:String(fd.get('title')||''),category:String(fd.get('category')||'PREPARAZIONE'),priority:String(fd.get('priority')||'NORMAL'),due_date:String(fd.get('due_date')||'')||null,note:String(fd.get('note')||'')||null}));setWorkOpen(false)}
+  async function linkCustomer(){const customer=linkableCustomers.find(c=>c.id===linkCustomerId);if(!customer)return;await run(()=>saveCustomerInterest(customer,{vehicleId:vehicle.id,status:'INTERESSATO',note:linkNote||null}));setLinkCustomerId('');setLinkNote('');setQuickAction(null)}
+  async function addPractice(){if(!practiceTitle.trim())return;await run(()=>saveWorkItem(vehicle.id,{title:practiceTitle.trim(),category:'DOCUMENTI',priority:'HIGH',due_date:practiceDue||null,note:practiceNote||null}));setPracticeTitle('');setPracticeDue('');setPracticeNote('');setQuickAction(null)}
 
   return <div className="drawer-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside className="drawer garage-drawer-v2" data-testid="vehicle-360">
     <header><div><p className="eyebrow">SCHEDA AUTO 360°</p><h2>{vehicleName(vehicle)}</h2><span>{vehicle.plate||'Targa mancante'} · {vehicle.year||'Anno —'} · {integer(vehicle.mileage)} km</span></div><div className="drawer-head-actions">{writable&&<button className="icon-btn" onClick={onEdit} aria-label="Modifica auto"><Pencil/></button>}<button className="icon-btn" onClick={onClose} aria-label="Chiudi"><X/></button></div></header>
@@ -41,6 +53,18 @@ export function VehicleDrawer({vehicle,data,session,onClose,onEdit,onRefresh,onO
     <section className="completeness-panel"><div><span>COMPLETEZZA SCHEDA</span><b>{completeness.percent}%</b></div><div className="completion-track"><i style={{width:`${completeness.percent}%`}}/></div>{completeness.missing.length?<p>Manca: {completeness.missing.join(' · ')}</p>:<p className="complete-copy">Scheda pronta per il flusso commerciale.</p>}</section>
 
     <section className="drawer-grid"><article><span>STATO</span><b>{(vehicle.status||'—').replaceAll('_',' ')}</b></article><article><span>PREZZO CLIENTE</span><b>{vehicle.asking_price?money(vehicle.asking_price):'Da impostare'}</b></article><article><span>FOTO</span><b>{media.length}/{PHOTO_TARGET}</b></article><article><span>LAVORI APERTI</span><b>{works.length}</b></article></section>
+
+    <section className="vehicle360-quick" data-testid="vehicle-quick-actions">
+      <div className="vehicle360-quick-head"><div><span>AZIONI RAPIDE</span><b>Fai senza uscire dalla scheda</b></div></div>
+      <div className="vehicle360-quick-grid">
+        <button data-testid="quick-appointment" onClick={onQuickAppointment}><CalendarClock/><span><b>Appuntamento</b><small>Auto già selezionata</small></span></button>
+        {customerWritable&&<button data-testid="quick-link-customer" onClick={()=>setQuickAction(v=>v==='customer'?null:'customer')}><UserRound/><span><b>Collega cliente</b><small>Interesse immediato</small></span></button>}
+        {writable&&<button data-testid="quick-practice" onClick={()=>setQuickAction(v=>v==='practice'?null:'practice')}><FileText/><span><b>Nuova pratica</b><small>Documenti / scadenza</small></span></button>}
+        <button data-testid="quick-sale" onClick={onOpenSales}><ShoppingBag/><span><b>Vendita</b><small>{summary.sale?'Apri pratica':'Auto precompilata'}</small></span></button>
+      </div>
+      {quickAction==='customer'&&customerWritable&&<div className="vehicle360-quick-panel" data-testid="quick-customer-panel"><label><span>CLIENTE</span><select aria-label="CLIENTE DA COLLEGARE" value={linkCustomerId} disabled={busy} onChange={e=>setLinkCustomerId(e.target.value)}><option value="">Seleziona cliente…</option>{linkableCustomers.map(c=><option key={c.id} value={c.id}>{[c.first_name,c.last_name].filter(Boolean).join(' ')||'Cliente'}</option>)}</select></label><label><span>NOTA</span><input aria-label="NOTA COLLEGAMENTO" value={linkNote} disabled={busy} onChange={e=>setLinkNote(e.target.value)} placeholder="Es. interessato dopo prova auto"/></label><div className="vehicle360-quick-panel-actions"><button className="primary" disabled={busy||!linkCustomerId} onClick={()=>void linkCustomer()}>Collega cliente</button><button disabled={busy} onClick={()=>setQuickAction(null)}>Annulla</button></div>{!linkableCustomers.length&&<small className="vehicle360-quick-empty">Tutti i clienti sono già collegati a questa auto.</small>}</div>}
+      {quickAction==='practice'&&writable&&<div className="vehicle360-quick-panel" data-testid="quick-practice-panel"><label><span>PRATICA</span><input aria-label="TITOLO PRATICA" value={practiceTitle} disabled={busy} onChange={e=>setPracticeTitle(e.target.value)} placeholder="Es. Immatricolazione / passaggio / libretto"/></label><label><span>SCADENZA</span><input aria-label="SCADENZA PRATICA" type="date" value={practiceDue} disabled={busy} onChange={e=>setPracticeDue(e.target.value)}/></label><label className="wide"><span>NOTA</span><input aria-label="NOTA PRATICA" value={practiceNote} disabled={busy} onChange={e=>setPracticeNote(e.target.value)} placeholder="Dettaglio utile"/></label><div className="vehicle360-quick-panel-actions"><button className="primary" disabled={busy||!practiceTitle.trim()} onClick={()=>void addPractice()}>Crea pratica</button><button disabled={busy} onClick={()=>setQuickAction(null)}>Annulla</button></div></div>}
+    </section>
 
     <section className="vehicle360-status">
       <button onClick={()=>summary.interests[0]?.customer&&onOpenCustomer(summary.interests[0].customer.id)} disabled={!summary.interests.length}><span>COMMERCIALE</span><b>{summary.interests.length?summary.interests.length+' interessati':'Nessun interessato'}</b></button>
