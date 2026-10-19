@@ -51,7 +51,7 @@ export default function App(){
   const [customerFocus,setCustomerFocus]=useState<{id:string;key:number}|null>(null)
   const [invoiceFocus,setInvoiceFocus]=useState<{id:string;key:number}|null>(null)
   const [salesFocus,setSalesFocus]=useState<{vehicleId?:string;customerId?:string;key:number}|null>(null)
-  const [calendarFocus,setCalendarFocus]=useState<{vehicleId?:string;customerId?:string;key:number}|null>(null)
+  const [calendarFocus,setCalendarFocus]=useState<{vehicleId?:string;customerId?:string;eventType?:string;title?:string;key:number}|null>(null)
 
   const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
   const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
@@ -152,6 +152,7 @@ export default function App(){
   const openVehicleAppointment=(id:string)=>{const customerId=data.customerInterests.find(i=>i.vehicle_id===id&&String(i.status||'').toUpperCase()!=='PERSA')?.customer_id;setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(prev=>({vehicleId:id,customerId,key:(prev?.key||0)+1}));setView('calendar')}
   const openCustomerSales=(id:string)=>{setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setCalendarFocus(null);setSalesFocus(prev=>({customerId:id,key:(prev?.key||0)+1}));setView('sales')}
   const openCustomerAppointment=(id:string)=>{const vehicleId=data.customerInterests.find(i=>i.customer_id===id&&String(i.status||'').toUpperCase()!=='PERSA')?.vehicle_id;setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(prev=>({customerId:id,vehicleId,key:(prev?.key||0)+1}));setView('calendar')}
+  const openSaleDeliveryAppointment=(customerId:string,vehicleId:string)=>{const vehicle=data.vehicles.find(v=>v.id===vehicleId);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(prev=>({customerId,vehicleId,eventType:'DELIVERY',title:'Consegna '+([vehicle?.brand,vehicle?.model].filter(Boolean).join(' ')||'veicolo'),key:(prev?.key||0)+1}));setView('calendar')}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
@@ -164,8 +165,8 @@ export default function App(){
     {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onView={setView} onCollections={()=>setView('collections')} onDeadlines={()=>setView('deadlines')}/>}   
     {view==='garage'&&<GaragePage data={data} onVehicle={setVehicleId} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load} focusCustomerId={customerFocus?.id} focusKey={customerFocus?.key} onFocusConsumed={()=>setCustomerFocus(null)} onOpenVehicle={openVehicle} onOpenCalendar={openCustomerAppointment} onOpenSales={openCustomerSales}/>}  
-    {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load} focusVehicleId={calendarFocus?.vehicleId} focusCustomerId={calendarFocus?.customerId} focusKey={calendarFocus?.key} onFocusConsumed={()=>setCalendarFocus(null)}/>}  
-    {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load} focusVehicleId={salesFocus?.vehicleId} focusCustomerId={salesFocus?.customerId} focusKey={salesFocus?.key} onFocusConsumed={()=>setSalesFocus(null)}/>}  
+    {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load} focusVehicleId={calendarFocus?.vehicleId} focusCustomerId={calendarFocus?.customerId} focusEventType={calendarFocus?.eventType} focusTitle={calendarFocus?.title} focusKey={calendarFocus?.key} onFocusConsumed={()=>setCalendarFocus(null)}/>}  
+    {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load} focusVehicleId={salesFocus?.vehicleId} focusCustomerId={salesFocus?.customerId} focusKey={salesFocus?.key} onFocusConsumed={()=>setSalesFocus(null)} onOpenCustomer={openCustomerSearch} onOpenVehicle={openVehicle} onOpenDeliveryAppointment={openSaleDeliveryAppointment} onOpenInvoices={id=>{if(id)openInvoiceSearch(id);else{setVehicleId(null);setCustomerFocus(null);setSalesFocus(null);setView('invoices')}}} onOpenDeadlines={()=>setView('deadlines')}/>}  
     {view==='documents'&&(financeVisible?<DocumentsPage session={session} vehicles={data.vehicles} onBack={()=>setView('more')} onCostsChanged={load}/>:more)}
     {view==='collections'&&(financeVisible?<CollectionsPage onBack={()=>setView('more')}/>:more)}
     {view==='invoices'&&(financeVisible?<InvoicesPage onBack={()=>setView('more')} focusInvoiceId={invoiceFocus?.id} focusKey={invoiceFocus?.key} onFocusConsumed={()=>setInvoiceFocus(null)}/>:more)}
