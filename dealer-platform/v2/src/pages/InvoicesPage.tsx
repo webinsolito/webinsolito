@@ -12,7 +12,7 @@ const dateLabel=(value?:string|null)=>value?new Intl.DateTimeFormat('it-IT',{day
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function friendlyError(error:unknown){const m=error instanceof Error?error.message:String(error);if(m.includes('payment_exceeds_balance'))return 'Importo superiore al saldo disponibile. Aggiorna i dati e riprova.';if(m.includes('receipt_request_conflict'))return 'La richiesta è già stata usata per un pagamento differente.';if(m.includes('session_revoked'))return 'Sessione scaduta. Esci e accedi nuovamente.';if(m.includes('invoices_write_forbidden')||m.includes('dealer_access_locked'))return 'Non hai il permesso di registrare questo incasso.';return m}
 
-export function InvoicesPage({onBack}:{onBack:()=>void}){
+export function InvoicesPage({onBack,focusInvoiceId,focusKey=0}:{onBack:()=>void;focusInvoiceId?:string|null;focusKey?:number}){
  const [session]=useState(()=>getSession())
  const [data,setData]=useState<TenantData|null>(null)
  const [receipts,setReceipts]=useState<InvoiceReceipt[]>([])
@@ -25,6 +25,7 @@ export function InvoicesPage({onBack}:{onBack:()=>void}){
  const allowed=canViewInvoices(session),writable=canWriteInvoices(session)
  const load=useCallback(async()=>{if(!session||!allowed){setError('Fatture non disponibili per questo profilo');setBusy(false);return}setBusy(true);setError('');try{const [tenant,payments]=await Promise.all([fetchTenantData(session),fetchInvoiceReceipts()]);setData(tenant);setReceipts(payments)}catch(e){setError(friendlyError(e))}finally{setBusy(false)}},[session,allowed])
  useEffect(()=>{void load()},[load])
+ useEffect(()=>{if(!focusInvoiceId)return;setFilter('all');setSearch('');setDetail(focusInvoiceId)},[focusInvoiceId,focusKey])
  const summary=useMemo(()=>data?buildInvoiceSummary(data.invoices as InvoiceDetail[],receipts,today()):null,[data,receipts])
  const rows=useMemo(()=>summary?filterInvoices(summary.rows,filter,search):[],[summary,filter,search])
  if(!allowed||!session)return <section className="invoice-page"><button className="invoice-back" onClick={onBack}><ArrowLeft/>Altro</button><p>Area fatture riservata ad Amministrazione e Admin.</p></section>
@@ -41,7 +42,7 @@ export function InvoicesPage({onBack}:{onBack:()=>void}){
    <div className="invoice-tools"><label><Search/><input aria-label="Cerca fatture" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Numero, cliente o riferimento auto"/></label><div className="invoice-filter">{([['open','Da incassare'],['overdue','Scadute'],['paid','Saldate'],['all','Tutte']] as const).map(([key,label])=><button key={key} className={filter===key?'selected':''} onClick={()=>setFilter(key)}>{label}</button>)}</div></div>
    <div className="invoice-list">{rows.length?rows.map(row=>{
     const inv=row.invoice,car=data?.vehicles.find(v=>v.id===inv.vehicle_id),expanded=detail===inv.id
-    return <article key={inv.id} className={'invoice-card '+(row.overdue?'overdue':'')}>
+    return <article key={inv.id} data-testid={'invoice-card-'+inv.id} className={'invoice-card '+(row.overdue?'overdue':'')}>
      <div className="invoice-card-main"><div className="invoice-identity"><span className="invoice-number">FATTURA {inv.number||'—'} · {dateLabel(inv.issue_date)}</span><h2>{inv.counterparty_name||'Cliente non indicato'}</h2><p>{car?vehicleName(car):'Veicolo non collegato'}{car?.plate?' · '+car.plate:''}</p><span className={'invoice-status '+(row.overdue?'overdue':row.state.toLowerCase())}>{row.overdue?'SCADUTA':row.state==='PAID'?'SALDATA':row.state==='PARTIAL'?'PARZIALE':'NON PAGATA'}</span></div>
        <div className="invoice-amount"><small>TOTALE</small><b>{money(row.total)}</b><small>PAGATO {money(row.paid)}</small><strong>{row.due>0?money(row.due)+' da incassare':'Saldo completato'}</strong><span>Scadenza: {dateLabel(inv.due_date)}</span></div></div>
      <div className="invoice-actions"><button onClick={()=>setDetail(expanded?null:inv.id)}><ReceiptText/>{expanded?'Chiudi dettaglio':'Storico incassi'}</button>{writable&&row.due>0&&<button className="primary" onClick={()=>setEditing(row)} disabled={busy}><CheckCircle2/>Registra incasso</button>}</div>
