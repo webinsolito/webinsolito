@@ -26,7 +26,7 @@ async function search(page:Page,value:string){
  await page.getByRole('button',{name:'Apri ricerca globale'}).click()
  const dialog=page.getByTestId('global-search')
  await expect(dialog).toBeVisible()
- await dialog.getByLabel('Ricerca globale').fill(value)
+ await dialog.getByRole('textbox',{name:'Ricerca globale'}).fill(value)
  return dialog
 }
 
