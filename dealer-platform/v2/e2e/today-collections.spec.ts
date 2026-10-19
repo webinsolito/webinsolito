@@ -24,10 +24,12 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'){
 test('ADMIN vede gli incassi urgenti direttamente in OGGI e apre lo Scadenziario',async({page})=>{
  const stats=await boot(page,'ADMIN')
  await expect(page.getByText('Incassi da sollecitare')).toBeVisible()
- await expect(page.getByText('Mario Rossi: incasso da sollecitare')).toBeVisible()
- await expect(page.getByText(/FV-2026-44.*15\.000/)).toBeVisible()
+ const focus=page.locator('.focus-card')
+ await expect(focus.getByRole('heading',{name:'Mario Rossi: incasso da sollecitare'})).toBeVisible()
+ await expect(focus).toContainText('FV-2026-44')
+ await expect(focus).toContainText('15.000')
  expect(stats.followupRequests).toBeGreaterThan(0)
- await page.getByRole('button',{name:'Apri scadenziario'}).click()
+ await focus.getByRole('button',{name:'Apri scadenziario'}).click()
  await expect(page.getByTestId('collections-page')).toBeVisible()
 })
 
