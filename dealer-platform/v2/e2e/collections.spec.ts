@@ -26,7 +26,8 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'){
 }
 test('ADMIN registra un sollecito e programma il prossimo controllo',async({page})=>{
  await boot(page,'ADMIN')
- await page.getByRole('button',{name:'Apri scadenziario incassi'}).click()
+ const openCollections=page.getByRole('button',{name:'Apri scadenziario incassi'})
+ await (page.viewportSize()?.width||1200)<=760?openCollections.click({force:true}):openCollections.click()
  await expect(page.getByTestId('collections-page')).toBeVisible()
  await expect(page.getByText('Mario Rossi')).toBeVisible()
  await page.getByRole('button',{name:'Registra sollecito'}).click()
