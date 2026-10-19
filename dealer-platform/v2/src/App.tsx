@@ -12,6 +12,7 @@ import {CollectionsPage} from './pages/CollectionsPage'
 import {DocumentsPage} from './pages/DocumentsPage'
 import {GaragePage} from './pages/GaragePage'
 import {MorePage} from './pages/MorePage'
+import {InvoicesPage} from './pages/InvoicesPage'
 import {OnboardingPage} from './pages/OnboardingPage'
 import {OwnerPage} from './pages/OwnerPage'
 import {SalesPage} from './pages/SalesPage'
@@ -46,8 +47,10 @@ export default function App(){
   const [vehicleId,setVehicleId]=useState<string|null>(null)
   const [newVehicleOpen,setNewVehicleOpen]=useState(false)
   const [editingId,setEditingId]=useState<string|null>(null)
+  const [customerFocus,setCustomerFocus]=useState<{id:string;key:number}|null>(null)
+  const [invoiceFocus,setInvoiceFocus]=useState<{id:string;key:number}|null>(null)
 
-  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
+  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
   const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
 
   useEffect(()=>{
@@ -111,7 +114,6 @@ export default function App(){
   useEffect(()=>{if(access?.active&&!ownerMode)void refreshOnboarding();else{setOnboarding(null);setOnboardingBusy(false)}},[access?.active,ownerMode,refreshOnboarding])
   useEffect(()=>{if(access?.active&&!ownerMode&&onboardingReady)void load();else setData(empty)},[load,access?.active,ownerMode,onboardingReady])
   useEffect(()=>{document.title=ownerMode&&isOwner?'Owner · Dealer Cockpit':session?`${session.dealer.display_name||session.dealer.name||'Concessionaria'} · Dealer Cockpit`:'Dealer Cockpit'},[session,ownerMode,isOwner])
-  useEffect(()=>{const handler=(e:KeyboardEvent)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('global-search')?.focus()}};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[])
 
   const openOwner=()=>{setOwnerMode(true);setVehicleId(null);updateOwnerQuery(true,session?.dealer.slug)}
   const closeOwner=()=>{setOwnerMode(false);updateOwnerQuery(false,session?.dealer.slug)}
@@ -141,22 +143,25 @@ export default function App(){
   const editingVehicle=editingId?data.vehicles.find(v=>v.id===editingId):undefined
   const openVehicle=(id:string)=>{setView('garage');setVehicleId(id)}
   const saved=async(v:Vehicle)=>{setNewVehicleOpen(false);setEditingId(null);setView('garage');setVehicleId(v.id);await load()}
+  const openCustomerSearch=(id:string)=>{setCustomerFocus(prev=>({id,key:(prev?.key||0)+1}));setView('clients')}
+  const openInvoiceSearch=(id:string)=>{setInvoiceFocus(prev=>({id,key:(prev?.key||0)+1}));setView('invoices')}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
-  const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenCollections={()=>setView('collections')} onOpenOwner={openOwner}/>
-  return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave}>
+  const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenInvoices={()=>{setInvoiceFocus(null);setView('invoices')}} onOpenCollections={()=>setView('collections')} onOpenOwner={openOwner}/>
+  return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave} searchData={data} financeVisible={financeVisible} onSearchVehicle={openVehicle} onSearchCustomer={openCustomerSearch} onSearchInvoice={openInvoiceSearch}>
     {session.support_mode&&<div className="owner-live-support"><DoorOpen/><div><b>SUPPORTO OWNER · {dealerName}</b><span>Accesso temporaneo e tracciato · scade {session.support_expires_at?new Intl.DateTimeFormat('it-IT',{hour:'2-digit',minute:'2-digit'}).format(new Date(session.support_expires_at)):'automaticamente'}</span></div><button onClick={()=>void stopSupport()}>Esci dal supporto</button></div>}
     {access.renewal_available&&!session.support_mode&&<RenewalControl session={session} access={access} onApproved={leave}/>} 
     {error&&<div className="load-error">{error}<button onClick={()=>void load()}><RefreshCw/>Riprova</button></div>}
     {busy&&<div className="loading-bar"/>}
     {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onView={setView} onCollections={()=>setView('collections')}/>}  
     {view==='garage'&&<GaragePage data={data} onVehicle={setVehicleId} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
-    {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load}/>} 
+    {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load} focusCustomerId={customerFocus?.id} focusKey={customerFocus?.key} onFocusConsumed={()=>setCustomerFocus(null)}/>}  
     {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load}/>} 
     {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load}/>} 
     {view==='documents'&&(financeVisible?<DocumentsPage session={session} vehicles={data.vehicles} onBack={()=>setView('more')} onCostsChanged={load}/>:more)}
     {view==='collections'&&(financeVisible?<CollectionsPage onBack={()=>setView('more')}/>:more)}
+    {view==='invoices'&&(financeVisible?<InvoicesPage onBack={()=>setView('more')} focusInvoiceId={invoiceFocus?.id} focusKey={invoiceFocus?.key} onFocusConsumed={()=>setInvoiceFocus(null)}/>:more)}
     {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:more)}
     {view==='more'&&more} 
     {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load}/>} 
