@@ -4,6 +4,7 @@ const DEALER='11111111-1111-1111-1111-111111111111'
 const VEHICLE='22222222-2222-2222-2222-222222222222'
 const CUSTOMER='33333333-3333-3333-3333-333333333333'
 const INVOICE='44444444-4444-4444-4444-444444444444'
+const CONTRACT='55555555-5555-5555-5555-555555555555'
 
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 const iso=(offset:number,hour='09:00:00')=>day(offset)+'T'+hour+'Z'
@@ -20,6 +21,7 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'){
    {id:'e-doc',dealer_id:DEALER,event_type:'DOCUMENT',title:'Pratica immatricolazione',starts_at:iso(1,'10:00:00'),status:'OPEN',priority:'NORMAL',vehicle_id:VEHICLE}
   ])})
   if(path==='/rest/v1/vehicle_work_items')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify([{id:'w1',dealer_id:DEALER,vehicle_id:VEHICLE,title:'Controllo finale',category:'PREPARAZIONE',status:'TODO',priority:'NORMAL',due_date:day(0)}])})
+  if(path==='/rest/v1/contracts')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify([{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-200',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:32900,deposit:5000,planned_delivery_at:iso(0,'15:00:00')}])})
   if(path==='/rest/v1/invoices'){invoiceRequests++;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify([{id:INVOICE,dealer_id:DEALER,vehicle_id:VEHICLE,customer_id:CUSTOMER,number:'FV-2026-88',counterparty_name:'Mario Rossi',invoice_type:'SALE',total_amount:32900,paid_amount:10000,payment_status:'PARTIAL',due_date:day(-2),issue_date:day(-10)}])})}
   if(path==='/rest/v1/invoice_collection_followups'){followupRequests++;return route.fulfill({status:200,contentType:'application/json',body:'[]'})}
   if(path.startsWith('/rest/v1/'))return route.fulfill({status:200,contentType:'application/json',body:'[]'})
@@ -56,7 +58,30 @@ test('VENDITORE usa il Centro Scadenze senza ricevere dati finanziari',async({pa
  await expect(center.getByText('Consegna BMW X1')).toBeVisible()
  await expect(center.getByRole('button',{name:'Incassi',exact:true})).toHaveCount(0)
  await expect(center.getByText('Incasso Mario Rossi')).toHaveCount(0)
+ await center.getByRole('button',{name:'Apri Consegna BMW X1'}).click()
+ const sale=page.getByTestId('sale-360')
+ await expect(sale).toBeVisible()
+ await expect(sale).toContainText('V-2026-200')
+ await expect(sale).toContainText('BMW X1')
+ await expect(sale).toContainText('Mario Rossi')
+ await expect(sale.getByTestId('sale-360-finance')).toHaveCount(0)
  await page.waitForTimeout(250)
+ expect(stats.invoiceRequests).toBe(0)
+ expect(stats.followupRequests).toBe(0)
+})
+
+test('Oggi mostra READY come consegna da gestire e apre la vendita esatta',async({page})=>{
+ const stats=await boot(page,'VENDITORE')
+ const kpi=page.getByRole('button',{name:'Apri consegne da gestire'})
+ await expect(kpi).toContainText('1')
+ const delivery=page.getByRole('button',{name:/BMW X1: consegna da gestire/})
+ await expect(delivery).toContainText('Mario Rossi')
+ await expect(delivery).toContainText('checklist 0/7')
+ await delivery.click()
+ const sale=page.getByTestId('sale-360')
+ await expect(sale).toBeVisible()
+ await expect(sale).toContainText('V-2026-200')
+ await expect(sale.getByTestId('sale-360-finance')).toHaveCount(0)
  expect(stats.invoiceRequests).toBe(0)
  expect(stats.followupRequests).toBe(0)
 })
