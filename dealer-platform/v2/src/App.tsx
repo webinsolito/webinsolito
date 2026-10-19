@@ -10,6 +10,7 @@ import {CalendarPage} from './pages/CalendarPage'
 import {ClientsPage} from './pages/ClientsPage'
 import {CollectionsPage} from './pages/CollectionsPage'
 import {DocumentsPage} from './pages/DocumentsPage'
+import {DeadlinesPage} from './pages/DeadlinesPage'
 import {GaragePage} from './pages/GaragePage'
 import {MorePage} from './pages/MorePage'
 import {InvoicesPage} from './pages/InvoicesPage'
@@ -148,13 +149,13 @@ export default function App(){
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
-  const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenInvoices={()=>{setInvoiceFocus(null);setView('invoices')}} onOpenCollections={()=>setView('collections')} onOpenOwner={openOwner}/>
+  const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenInvoices={()=>{setInvoiceFocus(null);setView('invoices')}} onOpenCollections={()=>setView('collections')} onOpenDeadlines={()=>setView('deadlines')} onOpenOwner={openOwner}/>
   return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave} searchData={data} financeVisible={financeVisible} onSearchVehicle={openVehicle} onSearchCustomer={openCustomerSearch} onSearchInvoice={openInvoiceSearch}>
     {session.support_mode&&<div className="owner-live-support"><DoorOpen/><div><b>SUPPORTO OWNER · {dealerName}</b><span>Accesso temporaneo e tracciato · scade {session.support_expires_at?new Intl.DateTimeFormat('it-IT',{hour:'2-digit',minute:'2-digit'}).format(new Date(session.support_expires_at)):'automaticamente'}</span></div><button onClick={()=>void stopSupport()}>Esci dal supporto</button></div>}
     {access.renewal_available&&!session.support_mode&&<RenewalControl session={session} access={access} onApproved={leave}/>} 
     {error&&<div className="load-error">{error}<button onClick={()=>void load()}><RefreshCw/>Riprova</button></div>}
     {busy&&<div className="loading-bar"/>}
-    {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onView={setView} onCollections={()=>setView('collections')}/>}  
+    {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onView={setView} onCollections={()=>setView('collections')} onDeadlines={()=>setView('deadlines')}/>}   
     {view==='garage'&&<GaragePage data={data} onVehicle={setVehicleId} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load} focusCustomerId={customerFocus?.id} focusKey={customerFocus?.key} onFocusConsumed={()=>setCustomerFocus(null)}/>}  
     {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load}/>} 
@@ -162,6 +163,7 @@ export default function App(){
     {view==='documents'&&(financeVisible?<DocumentsPage session={session} vehicles={data.vehicles} onBack={()=>setView('more')} onCostsChanged={load}/>:more)}
     {view==='collections'&&(financeVisible?<CollectionsPage onBack={()=>setView('more')}/>:more)}
     {view==='invoices'&&(financeVisible?<InvoicesPage onBack={()=>setView('more')} focusInvoiceId={invoiceFocus?.id} focusKey={invoiceFocus?.key} onFocusConsumed={()=>setInvoiceFocus(null)}/>:more)}
+    {view==='deadlines'&&<DeadlinesPage data={data} financeVisible={financeVisible} onBack={()=>setView('today')} onVehicle={openVehicle} onCustomer={openCustomerSearch} onCalendar={()=>setView('calendar')} onCollections={()=>setView('collections')}/>} 
     {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:more)}
     {view==='more'&&more} 
     {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load}/>} 
