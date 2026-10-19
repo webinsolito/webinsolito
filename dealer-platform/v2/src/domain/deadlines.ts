@@ -54,7 +54,7 @@ export function buildDeadlineSummary(data:TenantData,today:string,collections:Co
   const duplicate=data.calendarEvents.some(event=>event.starts_at&&activeStatus(event.status)&&looksDelivery(event.event_type,event.title)&&event.customer_id===sale.customer_id&&event.vehicle_id===sale.vehicle_id&&day(event.starts_at)===date)
   if(duplicate)continue
   const car=vehicleName(data,sale.vehicle_id),client=customerName(data,sale.customer_id),stage=String(sale.sale_stage||'OPEN').replaceAll('_',' ')
-  items.push({id:'sale:'+sale.id,kind:'DELIVERY',title:'Consegna '+(car||'veicolo'),detail:[client,stage].filter(Boolean).join(' · '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(sale.sale_stage==='READY'?1:0),customerId:sale.customer_id,vehicleId:sale.vehicle_id,saleId:sale.id})
+  items.push({id:'sale:'+sale.id,kind:'DELIVERY',title:'Consegna '+(car||'veicolo'),detail:[client,stage].filter(Boolean).join(' · '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(String(sale.sale_stage||'').toUpperCase()==='READY'?1:0),customerId:sale.customer_id,vehicleId:sale.vehicle_id,saleId:sale.id})
  }
 
  for(const task of collections){
