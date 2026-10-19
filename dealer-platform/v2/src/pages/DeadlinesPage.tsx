@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useState} from 'react'
-import {ArrowLeft,BriefcaseBusiness,CalendarClock,CarFront,ChevronRight,Euro,FileText,PackageCheck,PhoneCall} from 'lucide-react'
+import {ArrowLeft,BriefcaseBusiness,CalendarClock,ChevronRight,Euro,FileText,PackageCheck,PhoneCall} from 'lucide-react'
 import {buildDeadlineSummary,filterDeadlines,type DeadlineBucket,type DeadlineKind,type DeadlineItem} from '../domain/deadlines'
 import {buildInvoiceSummary} from '../domain/invoices'
 import {buildCollectionSchedule} from '../domain/collections'
