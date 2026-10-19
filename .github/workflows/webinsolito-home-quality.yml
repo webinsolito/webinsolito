@@ -1,0 +1,97 @@
+name: WEBINSOLITO Home Quality
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - assets/home-3d-v25.js
+      - assets/models/**
+      - .github/workflows/webinsolito-home-quality.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: webinsolito-home-quality
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-audit --no-fund --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Start site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/site.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: Real Chromium orbit, mobile and app routes
+        run: |
+          mkdir -p test-results
+          node <<'NODE'
+          const assert=require('node:assert/strict'),fs=require('fs');
+          const {chromium}=require('@playwright/test');
+          (async()=>{
+            const catalog=JSON.parse(fs.readFileSync('apps.json','utf8'));
+            const live=catalog.apps.filter(a=>['MVP','BETA','STABLE'].includes(a.status)&&a.path);
+            assert.equal(catalog.categories.length,12);
+            assert.ok(live.length>=180);
+            const browser=await chromium.launch();
+            for(const width of [360,390,430,1366]){
+              const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'no-preference'});
+              await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:60000});
+              await page.locator('.stage.wi-orbit-live').waitFor();
+              assert.equal(await page.locator('a.node[href]').count(),5);
+              assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow width '+width);
+              const first=await page.locator('.nodeAuto').evaluate(e=>e.style.transform);
+              await page.waitForTimeout(450);
+              const next=await page.locator('.nodeAuto').evaluate(e=>e.style.transform);
+              assert.notEqual(first,next,'orbit frozen at '+width);
+              const positions=await page.locator('a.node').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return [r.left,r.right]}));
+              for(const [x,right] of positions)assert.ok(x>=-1&&right<=width+1,'category clipped at '+width);
+              if(width===390||width===1366)await page.screenshot({path:'test-results/home-'+width+'.png',fullPage:true});
+              await page.close();
+              console.log('HOME_MOBILE_ORBIT_PASS='+width);
+            }
+            const reduced=await browser.newPage({reducedMotion:'reduce'});
+            await reduced.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:60000});
+            assert.equal(await reduced.locator('.wi-orbit-live').count(),0,'reduced motion not respected');
+            await reduced.close();
+            const routes=['auto/','casa/','viaggi/','food/','soldi/','autobuddy/','docpocket/','frigochef/'];
+            for(const route of routes){
+              const response=await browser.newPage().then(async p=>{const r=await p.goto('http://127.0.0.1:4173/'+route,{waitUntil:'domcontentloaded'});await p.close();return r});
+              assert.equal(response.status(),200,'broken mini-app route '+route);
+            }
+            await browser.close();
+            console.log('WEBINSOLITO_CATEGORIES_AND_MINI_APPS=ok');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Confirm GitHub Pages serves this exact Home release
+        run: |
+          set -euo pipefail
+          ok=false
+          for i in $(seq 1 36); do
+            if curl -fsS --max-time 20 "https://webinsolito.github.io/webinsolito/index.html?verify=$GITHUB_SHA&attempt=$i" -o /tmp/live-home.html; then
+              if cmp -s index.html /tmp/live-home.html; then ok=true; break; fi
+            fi
+            sleep 10
+          done
+          test "$ok" = true || { echo 'Published Home is outdated'; exit 1; }
+          echo 'GITHUB_PAGES_MATCHES_HOME_SOURCE=true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: webinsolito-home-visual-check
+          path: test-results/home-*.png
+          if-no-files-found: ignore
