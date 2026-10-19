@@ -60,8 +60,8 @@ test('ADMIN vede la scheda auto 360 completa e apre la fattura esatta',async({pa
  await expect(drawer.getByText('V-2026-88')).toBeVisible()
  await expect(drawer.getByRole('button',{name:'VENDITA Pronta consegna'})).toBeVisible()
  await expect(drawer.getByTestId('vehicle-360-finance')).toBeVisible()
- await expect(drawer.getByTestId('vehicle-360-finance')).toContainText(/6\\.?000/)
- await expect(drawer.getByTestId('vehicle-360-finance')).toContainText(/15\\.?000/)
+ await expect(drawer.getByTestId('vehicle-360-finance')).toContainText(/6\.?000/)
+ await expect(drawer.getByTestId('vehicle-360-finance')).toContainText(/15\.?000/)
  expect(state.financeRequests).toBeGreaterThan(0)
 
  await drawer.getByRole('button',{name:'Apri fattura'}).click()
