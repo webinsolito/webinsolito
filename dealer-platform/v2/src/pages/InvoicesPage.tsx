@@ -12,7 +12,7 @@ const dateLabel=(value?:string|null)=>value?new Intl.DateTimeFormat('it-IT',{day
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function friendlyError(error:unknown){const m=error instanceof Error?error.message:String(error);if(m.includes('payment_exceeds_balance'))return 'Importo superiore al saldo disponibile. Aggiorna i dati e riprova.';if(m.includes('receipt_request_conflict'))return 'La richiesta è già stata usata per un pagamento differente.';if(m.includes('session_revoked'))return 'Sessione scaduta. Esci e accedi nuovamente.';if(m.includes('invoices_write_forbidden')||m.includes('dealer_access_locked'))return 'Non hai il permesso di registrare questo incasso.';return m}
 
-export function InvoicesPage({onBack,focusInvoiceId,focusKey=0}:{onBack:()=>void;focusInvoiceId?:string|null;focusKey?:number}){
+export function InvoicesPage({onBack,focusInvoiceId,focusKey=0,onFocusConsumed}:{onBack:()=>void;focusInvoiceId?:string|null;focusKey?:number;onFocusConsumed?:()=>void}){
  const [session]=useState(()=>getSession())
  const [data,setData]=useState<TenantData|null>(null)
  const [receipts,setReceipts]=useState<InvoiceReceipt[]>([])
@@ -25,7 +25,7 @@ export function InvoicesPage({onBack,focusInvoiceId,focusKey=0}:{onBack:()=>void
  const allowed=canViewInvoices(session),writable=canWriteInvoices(session)
  const load=useCallback(async()=>{if(!session||!allowed){setError('Fatture non disponibili per questo profilo');setBusy(false);return}setBusy(true);setError('');try{const [tenant,payments]=await Promise.all([fetchTenantData(session),fetchInvoiceReceipts()]);setData(tenant);setReceipts(payments)}catch(e){setError(friendlyError(e))}finally{setBusy(false)}},[session,allowed])
  useEffect(()=>{void load()},[load])
- useEffect(()=>{if(!focusInvoiceId)return;setFilter('all');setSearch('');setDetail(focusInvoiceId)},[focusInvoiceId,focusKey])
+ useEffect(()=>{if(!focusInvoiceId)return;setFilter('all');setSearch('');setDetail(focusInvoiceId);onFocusConsumed?.()},[focusInvoiceId,focusKey])
  const summary=useMemo(()=>data?buildInvoiceSummary(data.invoices as InvoiceDetail[],receipts,today()):null,[data,receipts])
  const rows=useMemo(()=>summary?filterInvoices(summary.rows,filter,search):[],[summary,filter,search])
  if(!allowed||!session)return <section className="invoice-page"><button className="invoice-back" onClick={onBack}><ArrowLeft/>Altro</button><p>Area fatture riservata ad Amministrazione e Admin.</p></section>
