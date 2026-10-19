@@ -1,5 +1,5 @@
 export type Role='ADMIN'|'AMMINISTRAZIONE'|'VENDITORE'|'OPERATORE'|string
-export type View='today'|'garage'|'clients'|'calendar'|'sales'|'documents'|'staff'|'more'
+export type View='today'|'garage'|'clients'|'calendar'|'sales'|'documents'|'staff'|'more'|'collections'
 
 export interface Dealer { id:string; slug:string; display_name?:string; name?:string; legal_name?:string; logo_url?:string|null; status?:string; vat_number?:string|null; contact_email?:string|null; phone?:string|null; access_expires_at?:string|null; last_renewed_at?:string|null; onboarding_started_at?:string|null; onboarding_completed_at?:string|null }
 export interface DealerBranch { id:string; name:string; city?:string|null; address?:string|null; is_primary?:boolean }
