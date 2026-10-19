@@ -1,5 +1,5 @@
 import {ArrowLeft,CalendarDays,Car,CheckCircle2,Clock3,Edit3,Euro,Mail,MessageCircle,NotebookPen,Phone,Plus,Save,Search,UserRound,X} from 'lucide-react'
-import {useMemo,useState} from 'react'
+import {useEffect,useMemo,useState} from 'react'
 import {clearCustomerNextAction,logCustomerInteraction,saveCustomerNextAction} from '../lib/api'
 import {saveCustomer,saveCustomerInterest} from '../lib/customerApi'
 import type {Customer,CustomerDraft,CustomerInterest,CustomerInterestDraft,TenantData} from '../types'
@@ -14,7 +14,7 @@ const localInput=(value?:string|null)=>{if(!value)return '';const d=new Date(val
 const dueLabel=(value?:string|null)=>{if(!value)return 'Nessuna scadenza';const d=new Date(value);if(Number.isNaN(d.getTime()))return 'Data non valida';const today=new Date();const same=d.toDateString()===today.toDateString();const overdue=d.getTime()<Date.now()&&!same;return `${overdue?'SCADUTA · ':same?'OGGI · ':''}${d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`}
 const waNumber=(phone:string)=>{let digits=phone.replace(/\D/g,'');if(digits.startsWith('00'))digits=digits.slice(2);if(digits.startsWith('39'))return digits;if(digits.startsWith('3'))return `39${digits}`;return digits}
 
-export function ClientsPage({data,writable,onRefresh}:{data:TenantData;writable:boolean;onRefresh:()=>Promise<void>}){
+export function ClientsPage({data,writable,onRefresh,focusCustomerId,focusKey=0}:{data:TenantData;writable:boolean;onRefresh:()=>Promise<void>;focusCustomerId?:string|null;focusKey?:number}){
   const [query,setQuery]=useState('')
   const [selectedId,setSelectedId]=useState<string|null>(null)
   const [editorMode,setEditorMode]=useState<'create'|'edit'|null>(null)
@@ -39,6 +39,7 @@ export function ClientsPage({data,writable,onRefresh}:{data:TenantData;writable:
   const statuses=Array.from(new Set(['LEAD','CLIENTE','CHIUSO_VINTO','CHIUSO_PERSO',...data.customers.map(c=>c.status).filter(Boolean) as string[]]))
 
   const openCustomer=(c:Customer)=>{setSelectedId(c.id);setEditorMode(null);setNextStep(c.next_step||'');setNextAt(localInput(c.next_contact_at));setInteraction('');setInterestEditing(null);setInterestDraft(EMPTY_INTEREST);setError('')}
+  useEffect(()=>{if(!focusCustomerId)return;const customer=data.customers.find(c=>c.id===focusCustomerId&&!c.deleted_at);if(customer)openCustomer(customer)},[focusCustomerId,focusKey,data.customers])
   const closeCustomer=()=>{setSelectedId(null);setEditorMode(null);setInterestEditing(null);setError('')}
   const startCreate=()=>{setSelectedId(null);setCustomerDraft(EMPTY_CUSTOMER);setEditorMode('create');setError('')}
   const startEdit=(c:Customer)=>{setCustomerDraft({firstName:c.first_name||'',lastName:c.last_name||'',phone:c.phone||'',email:c.email||'',fiscalCode:c.fiscal_code||'',status:c.status||'LEAD',source:c.source||'',notes:c.notes||'',preferredContact:c.preferred_contact||''});setEditorMode('edit');setError('')}
