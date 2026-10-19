@@ -12,7 +12,7 @@ export function GlobalSearch({data,financeVisible,onVehicle,onCustomer,onInvoice
  useEffect(()=>{const handler=(e:KeyboardEvent)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();setOpen(true)}if(e.key==='Escape')setOpen(false)};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[])
  useEffect(()=>{if(open)requestAnimationFrame(()=>inputRef.current?.focus());else setQuery('')},[open])
  const choose=(result:GlobalSearchResult)=>{setOpen(false);if(result.kind==='VEHICLE')onVehicle(result.id);else if(result.kind==='CUSTOMER')onCustomer(result.id);else onInvoice(result.id)}
- return <><button className="search-shell" type="button" aria-label="Apri ricerca globale" onClick={()=>setOpen(true)}><Search/><span>Cerca targa, telaio, cliente o fattura…</span><kbd>⌘K</kbd></button>
+ return <><button className="search-shell" type="button" aria-label="Apri ricerca globale" onClick={()=>setOpen(true)}><Search/><span>Cerca targa, telaio, cliente o fattura…</span><kbd>Ctrl K</kbd></button>
  {open&&<div className="global-search-backdrop" data-testid="global-search" onMouseDown={e=>{if(e.target===e.currentTarget)setOpen(false)}}>
   <section className="global-search-panel" role="dialog" aria-modal="true" aria-label="Ricerca globale">
    <div className="global-search-input"><Search/><input id="global-search" ref={inputRef} value={query} onChange={e=>setQuery(e.target.value)} placeholder={financeVisible?'Targa, telaio, cliente, telefono o fattura…':'Targa, telaio, cliente o telefono…'} aria-label="Ricerca globale"/><button aria-label="Chiudi ricerca" onClick={()=>setOpen(false)}><X/></button></div>
