@@ -20,7 +20,7 @@ export function SalesPage({data,session,onRefresh,focusVehicleId,focusKey=0,onFo
   const [busy,setBusy]=useState(false)
   const [error,setError]=useState('')
   const [focusedVehicleId,setFocusedVehicleId]=useState<string|null>(null)
-  const sales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts])
+  const sales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>Number(b.vehicle_id===focusedVehicleId)-Number(a.vehicle_id===focusedVehicleId)||String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts,focusedVehicleId])
   useEffect(()=>{if(!focusVehicleId)return;setFocusedVehicleId(focusVehicleId);const existing=sales.some(c=>c.vehicle_id===focusVehicleId&&c.sale_stage!=='CANCELLED');if(!existing&&writable){const vehicle=data.vehicles.find(v=>v.id===focusVehicleId);setCreating(true);setDraft(current=>({...current,vehicleId:focusVehicleId,price:vehicle?.asking_price??current.price}))}else setCreating(false);onFocusConsumed?.()},[focusVehicleId,focusKey])
   const selectVehicle=(vehicleId:string)=>{const vehicle=data.vehicles.find(v=>v.id===vehicleId);setDraft(current=>({...current,vehicleId,price:vehicle?.asking_price??current.price}))}
   const persist=async()=>{setBusy(true);setError('');try{await createSaleContract(draft);setCreating(false);setDraft({customerId:'',vehicleId:'',price:'',deposit:'',plannedDeliveryAt:'',notes:''});await onRefresh()}catch(err){setError(friendlySaleError(err))}finally{setBusy(false)}}
