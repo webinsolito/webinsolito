@@ -1,5 +1,5 @@
 import type {TenantData,Vehicle} from '../types'
-export type PriorityKind='PRICE'|'PHOTO'|'WORK'|'AGE'|'CALENDAR'|'CUSTOMER'|'DELIVERY'
+export type PriorityKind='PRICE'|'PHOTO'|'WORK'|'AGE'|'CALENDAR'|'CUSTOMER'|'DELIVERY'|'COLLECTION'
 export interface PriorityItem { id:string; kind:PriorityKind; severity:1|2|3; title:string; detail:string; vehicleId?:string; customerId?:string; due?:string }
 const terminal=new Set(['CONSEGNATA','VENDUTA','ANNULLATA'])
 const sellable=new Set(['IN_VENDITA','IN_ARRIVO'])
