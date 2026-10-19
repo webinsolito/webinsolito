@@ -80,7 +80,7 @@ test('VENDITORE vede commerciale, agenda e vendita ma nessun dato finanziario',a
  await expect(drawer.getByTestId('vehicle-360-finance')).toHaveCount(0)
  expect(state.financeRequests).toBe(0)
 
- await drawer.getByRole('button',{name:'Apri vendita'}).click()
+ await drawer.getByTestId('quick-sale').click()
  await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
  const focused=page.locator('.sale-card.vehicle-focus')
  await expect(focused).toContainText('Volkswagen Golf')

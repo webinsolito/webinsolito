@@ -51,8 +51,9 @@ export default function App(){
   const [customerFocus,setCustomerFocus]=useState<{id:string;key:number}|null>(null)
   const [invoiceFocus,setInvoiceFocus]=useState<{id:string;key:number}|null>(null)
   const [salesFocus,setSalesFocus]=useState<{id:string;key:number}|null>(null)
+  const [calendarFocus,setCalendarFocus]=useState<{vehicleId:string;customerId?:string;key:number}|null>(null)
 
-  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
+  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
   const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
 
   useEffect(()=>{
@@ -143,11 +144,12 @@ export default function App(){
 
   const vehicle=vehicleId?data.vehicles.find(v=>v.id===vehicleId):undefined
   const editingVehicle=editingId?data.vehicles.find(v=>v.id===editingId):undefined
-  const openVehicle=(id:string)=>{setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setView('garage');setVehicleId(id)}
+  const openVehicle=(id:string)=>{setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(null);setView('garage');setVehicleId(id)}
   const saved=async(v:Vehicle)=>{setNewVehicleOpen(false);setEditingId(null);setView('garage');setVehicleId(v.id);await load()}
   const openCustomerSearch=(id:string)=>{setVehicleId(null);setInvoiceFocus(null);setSalesFocus(null);setCustomerFocus(prev=>({id,key:(prev?.key||0)+1}));setView('clients')}
   const openInvoiceSearch=(id:string)=>{setVehicleId(null);setCustomerFocus(null);setSalesFocus(null);setInvoiceFocus(prev=>({id,key:(prev?.key||0)+1}));setView('invoices')}
-  const openVehicleSales=(id:string)=>{setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(prev=>({id,key:(prev?.key||0)+1}));setView('sales')}
+  const openVehicleSales=(id:string)=>{setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setCalendarFocus(null);setSalesFocus(prev=>({id,key:(prev?.key||0)+1}));setView('sales')}
+  const openVehicleAppointment=(id:string)=>{const customerId=data.customerInterests.find(i=>i.vehicle_id===id&&String(i.status||'').toUpperCase()!=='PERSA')?.customer_id;setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(prev=>({vehicleId:id,customerId,key:(prev?.key||0)+1}));setView('calendar')}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
@@ -160,7 +162,7 @@ export default function App(){
     {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onView={setView} onCollections={()=>setView('collections')} onDeadlines={()=>setView('deadlines')}/>}   
     {view==='garage'&&<GaragePage data={data} onVehicle={setVehicleId} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load} focusCustomerId={customerFocus?.id} focusKey={customerFocus?.key} onFocusConsumed={()=>setCustomerFocus(null)}/>}  
-    {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load}/>} 
+    {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load} focusVehicleId={calendarFocus?.vehicleId} focusCustomerId={calendarFocus?.customerId} focusKey={calendarFocus?.key} onFocusConsumed={()=>setCalendarFocus(null)}/>}  
     {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load} focusVehicleId={salesFocus?.id} focusKey={salesFocus?.key} onFocusConsumed={()=>setSalesFocus(null)}/>}  
     {view==='documents'&&(financeVisible?<DocumentsPage session={session} vehicles={data.vehicles} onBack={()=>setView('more')} onCostsChanged={load}/>:more)}
     {view==='collections'&&(financeVisible?<CollectionsPage onBack={()=>setView('more')}/>:more)}
@@ -168,7 +170,7 @@ export default function App(){
     {view==='deadlines'&&<DeadlinesPage data={data} financeVisible={financeVisible} onBack={()=>setView('today')} onVehicle={openVehicle} onCustomer={openCustomerSearch} onCalendar={()=>setView('calendar')} onCollections={()=>setView('collections')}/>} 
     {view==='staff'&&(isAdmin?<StaffPage session={session} onBack={()=>setView('more')}/>:more)}
     {view==='more'&&more} 
-    {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load} onOpenCustomer={openCustomerSearch} onOpenCalendar={()=>{setVehicleId(null);setView('calendar')}} onOpenDeadlines={()=>{setVehicleId(null);setView('deadlines')}} onOpenSales={()=>openVehicleSales(vehicle.id)} onOpenInvoices={id=>{if(id)openInvoiceSearch(id);else{setVehicleId(null);setView('invoices')}}}/>}  
+    {vehicle&&<VehicleDrawer vehicle={vehicle} data={data} session={session} onClose={()=>setVehicleId(null)} onEdit={()=>setEditingId(vehicle.id)} onRefresh={load} onOpenCustomer={openCustomerSearch} onOpenCalendar={()=>{setVehicleId(null);setCalendarFocus(null);setView('calendar')}} onQuickAppointment={()=>openVehicleAppointment(vehicle.id)} onOpenDeadlines={()=>{setVehicleId(null);setView('deadlines')}} onOpenSales={()=>openVehicleSales(vehicle.id)} onOpenInvoices={id=>{if(id)openInvoiceSearch(id);else{setVehicleId(null);setView('invoices')}}}/>}  
     {(newVehicleOpen||editingVehicle)&&<VehicleFormModal vehicle={editingVehicle} onClose={()=>{setNewVehicleOpen(false);setEditingId(null)}} onSaved={v=>void saved(v)}/>} 
   </Shell>
 }
