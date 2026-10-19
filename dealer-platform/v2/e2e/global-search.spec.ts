@@ -34,7 +34,10 @@ test('ADMIN cerca targa, telefono e fattura e apre direttamente i record',async(
  const stats=await boot(page,'ADMIN')
  let dialog=await search(page,'AB 123 CD')
  await dialog.getByRole('button',{name:/AUTO BMW X1/}).click()
- await expect(page.locator('.drawer').getByRole('heading',{name:'BMW X1 xDrive20d'})).toBeVisible()
+ const drawer=page.locator('.drawer')
+ await expect(drawer.getByRole('heading',{name:'BMW X1 xDrive20d'})).toBeVisible()
+ await drawer.getByRole('button',{name:'Chiudi'}).click()
+ await expect(drawer).toHaveCount(0)
 
  dialog=await search(page,'3331234567')
  await dialog.getByRole('button',{name:/CLIENTE Mario Rossi/}).click()
