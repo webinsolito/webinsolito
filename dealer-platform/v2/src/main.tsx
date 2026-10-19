@@ -19,6 +19,7 @@ import './invoices.css'
 import './collections.css'
 import './global-search.css'
 import './deadlines.css'
+import './vehicle360.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
