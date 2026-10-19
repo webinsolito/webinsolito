@@ -24,7 +24,7 @@ export function buildGlobalSearchResults(data:TenantData,query:string,includeInv
   if(vehicle.deleted_at)continue
   const title=[vehicle.brand,vehicle.model,vehicle.version].filter(Boolean).join(' ')||'Veicolo'
   const score=bestScore(query,[title,vehicle.brand,vehicle.model,vehicle.version,vehicle.plate,vehicle.vin])
-  if(score)out.push({kind:'VEHICLE',id:vehicle.id,title,subtitle:[vehicle.plate||'Targa —',vehicle.vin?'Telaio '+vehicle.vin:null,vehicle.status?.replaceAll('_',' ')].filter(Boolean).join(' · '),score:score+(fieldScore(query,vehicle.plate)||fieldScore(query,vehicle.vin)?25:0)})
+  if(score)out.push({kind:'VEHICLE',id:vehicle.id,title,subtitle:[vehicle.plate||'Targa —',vehicle.vin?'Telaio '+vehicle.vin:null,vehicle.status?.replaceAll('_',' ')].filter(Boolean).join(' · '),score:score+((fieldScore(query,vehicle.plate)||fieldScore(query,vehicle.vin))?25:0)})
  }
  for(const customer of data.customers){
   if(customer.deleted_at)continue
