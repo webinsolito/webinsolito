@@ -39,7 +39,6 @@ export function TodayPage({data,financeVisible=false,onVehicle,onView,onCollecti
  const allPriorities=useMemo(()=>[...priorities,...collectionPriorities].sort((a,b)=>b.severity-a.severity||String(a.due||'').localeCompare(String(b.due||''))).slice(0,30),[priorities,collectionPriorities])
  const stock=data.vehicles.filter(v=>!['CONSEGNATA','VENDUTA','ANNULLATA'].includes(v.status||''))
  const customerActions=priorities.filter(p=>p.kind==='CUSTOMER').length
- const calendarActions=priorities.filter(p=>p.kind==='CALENDAR').length
  const garageActions=priorities.filter(p=>['PRICE','PHOTO','WORK','AGE'].includes(p.kind)).length
  const act=(p:PriorityItem)=>{if(p.kind==='COLLECTION'){onCollections();return}if(p.kind==='CUSTOMER'){onView('clients');return}if(p.kind==='CALENDAR'){onView('calendar');return}if(p.vehicleId){onVehicle(p.vehicleId);return}if(p.customerId)onView('clients')}
  const actionLabel=(p?:PriorityItem)=>p?.kind==='COLLECTION'?'Apri scadenziario':p?.kind==='CUSTOMER'?'Apri clienti':p?.kind==='CALENDAR'?'Apri calendario':p?.vehicleId?'Apri auto':'Apri'
