@@ -17,6 +17,7 @@ import './finance.css'
 import './report.css'
 import './invoices.css'
 import './collections.css'
+import './global-search.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
