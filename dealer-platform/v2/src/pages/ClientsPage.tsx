@@ -2,6 +2,7 @@ import {ArrowLeft,CalendarDays,Car,CheckCircle2,Clock3,Edit3,Euro,Mail,MessageCi
 import {useEffect,useMemo,useState} from 'react'
 import {clearCustomerNextAction,logCustomerInteraction,saveCustomerNextAction} from '../lib/api'
 import {saveCustomer,saveCustomerInterest} from '../lib/customerApi'
+import {Customer360Overview} from '../components/Customer360Overview'
 import type {Customer,CustomerDraft,CustomerInterest,CustomerInterestDraft,TenantData} from '../types'
 
 const EMPTY_CUSTOMER:CustomerDraft={firstName:'',lastName:'',phone:'',email:'',fiscalCode:'',status:'LEAD',source:'',notes:'',preferredContact:''}
@@ -14,7 +15,7 @@ const localInput=(value?:string|null)=>{if(!value)return '';const d=new Date(val
 const dueLabel=(value?:string|null)=>{if(!value)return 'Nessuna scadenza';const d=new Date(value);if(Number.isNaN(d.getTime()))return 'Data non valida';const today=new Date();const same=d.toDateString()===today.toDateString();const overdue=d.getTime()<Date.now()&&!same;return `${overdue?'SCADUTA · ':same?'OGGI · ':''}${d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`}
 const waNumber=(phone:string)=>{let digits=phone.replace(/\D/g,'');if(digits.startsWith('00'))digits=digits.slice(2);if(digits.startsWith('39'))return digits;if(digits.startsWith('3'))return `39${digits}`;return digits}
 
-export function ClientsPage({data,writable,onRefresh,focusCustomerId,focusKey=0,onFocusConsumed}:{data:TenantData;writable:boolean;onRefresh:()=>Promise<void>;focusCustomerId?:string|null;focusKey?:number;onFocusConsumed?:()=>void}){
+export function ClientsPage({data,writable,onRefresh,focusCustomerId,focusKey=0,onFocusConsumed,onOpenVehicle,onOpenCalendar,onOpenSales}:{data:TenantData;writable:boolean;onRefresh:()=>Promise<void>;focusCustomerId?:string|null;focusKey?:number;onFocusConsumed?:()=>void;onOpenVehicle:(id:string)=>void;onOpenCalendar:(id:string)=>void;onOpenSales:(id:string)=>void}){
   const [query,setQuery]=useState('')
   const [selectedId,setSelectedId]=useState<string|null>(null)
   const [editorMode,setEditorMode]=useState<'create'|'edit'|null>(null)
@@ -73,6 +74,8 @@ export function ClientsPage({data,writable,onRefresh,focusCustomerId,focusKey=0,
 
     {!editorMode&&selected&&<section className="customer-detail" data-testid="customer-detail">
       <div className="customer-detail-head"><button className="back-customer" onClick={closeCustomer}><ArrowLeft/> Clienti</button><div className="customer-title"><div className="customer-avatar large"><UserRound/></div><div><div className="customer-title-line"><h2>{nameOf(selected)}</h2><span className="customer-status">{selected.status?.replaceAll('_',' ')||'LEAD'}</span></div><p>{selected.next_step||'Nessuna prossima azione'} · {dueLabel(selected.next_contact_at)}</p></div></div><div className="customer-head-actions">{selected.phone&&<a title="Chiama cliente" href={`tel:${selected.phone}`}><Phone/></a>}{selected.phone&&<a title="Apri WhatsApp" href={`https://wa.me/${waNumber(selected.phone)}`} target="_blank" rel="noreferrer"><MessageCircle/></a>}{selected.email&&<a title="Scrivi email" href={`mailto:${selected.email}`}><Mail/></a>}{writable&&<button title="Modifica cliente" onClick={()=>startEdit(selected)}><Edit3/></button>}</div></div>
+
+      <Customer360Overview customer={selected} data={data} onOpenVehicle={onOpenVehicle} onOpenCalendar={onOpenCalendar} onOpenSales={onOpenSales}/>
 
       <div className="customer-dashboard-grid">
         <article className="customer-panel identity-panel"><div className="panel-title"><UserRound/><div><b>Dati cliente</b><small>Contatti e informazioni utili</small></div></div><dl><div><dt>Telefono</dt><dd>{selected.phone||'—'}</dd></div><div><dt>Email</dt><dd>{selected.email||'—'}</dd></div><div><dt>Codice fiscale</dt><dd>{selected.fiscal_code||'—'}</dd></div><div><dt>Preferenza</dt><dd>{selected.preferred_contact||'—'}</dd></div><div><dt>Provenienza</dt><dd>{selected.source||'—'}</dd></div></dl>{selected.notes&&<p className="customer-notes">{selected.notes}</p>}</article>

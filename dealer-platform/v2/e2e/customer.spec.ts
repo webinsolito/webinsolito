@@ -125,7 +125,7 @@ test('Cliente completo: crea, modifica, collega auto, tratta offerta e registra 
   await expect.poll(()=>state.interests.length).toBe(1)
   expect(state.interests[0].vehicle_id).toBe(VEHICLE)
   expect(Number(state.interests[0].offer_amount)).toBe(20500)
-  await expect(page.getByText('Volkswagen Golf 2.0 TDI')).toBeVisible()
+  await expect(page.locator('.interest-list').getByText('Volkswagen Golf 2.0 TDI')).toBeVisible()
 
   await page.locator('.interest-row').click()
   await page.getByLabel('FASE INTERESSE',{exact:true}).selectOption('TRATTATIVA')
