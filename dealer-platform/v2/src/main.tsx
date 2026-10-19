@@ -21,6 +21,7 @@ import './global-search.css'
 import './deadlines.css'
 import './vehicle360.css'
 import './customer360.css'
+import './sale360.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
