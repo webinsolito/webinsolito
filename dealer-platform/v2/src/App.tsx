@@ -141,10 +141,10 @@ export default function App(){
 
   const vehicle=vehicleId?data.vehicles.find(v=>v.id===vehicleId):undefined
   const editingVehicle=editingId?data.vehicles.find(v=>v.id===editingId):undefined
-  const openVehicle=(id:string)=>{setView('garage');setVehicleId(id)}
+  const openVehicle=(id:string)=>{setCustomerFocus(null);setInvoiceFocus(null);setView('garage');setVehicleId(id)}
   const saved=async(v:Vehicle)=>{setNewVehicleOpen(false);setEditingId(null);setView('garage');setVehicleId(v.id);await load()}
-  const openCustomerSearch=(id:string)=>{setCustomerFocus(prev=>({id,key:(prev?.key||0)+1}));setView('clients')}
-  const openInvoiceSearch=(id:string)=>{setInvoiceFocus(prev=>({id,key:(prev?.key||0)+1}));setView('invoices')}
+  const openCustomerSearch=(id:string)=>{setVehicleId(null);setInvoiceFocus(null);setCustomerFocus(prev=>({id,key:(prev?.key||0)+1}));setView('clients')}
+  const openInvoiceSearch=(id:string)=>{setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(prev=>({id,key:(prev?.key||0)+1}));setView('invoices')}
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
