@@ -12,6 +12,7 @@ describe('priorità consegne',()=>{
   expect(delivery).toMatchObject({saleId:'s1',vehicleId:'v1',customerId:'c1',severity:3})
   expect(delivery?.detail).toContain('checklist 1/7')
  })
+ it('nasconde da Oggi un vecchio evento DELIVERY se la vendita è già consegnata',()=>{const data:TenantData={...base,calendarEvents:[{id:'e1',dealer_id:'d',event_type:'DELIVERY',title:'Consegna X1',starts_at:'2026-10-19T09:00:00Z',status:'OPEN',customer_id:'c1',vehicle_id:'v1'}],contracts:[{id:'s0',dealer_id:'d',customer_id:'c1',vehicle_id:'v1',contract_number:'V-0',template_code:'VENDITA',sale_stage:'DELIVERED'}]};expect(buildPriorities(data,new Date('2026-10-19T10:00:00Z')).some(x=>x.id==='cal:e1')).toBe(false)})
  it('porta in Oggi una consegna pianificata entro tre giorni anche prima di READY',()=>{
   const data:TenantData={...base,contracts:[{id:'s2',dealer_id:'d',customer_id:'c1',vehicle_id:'v1',contract_number:'V-2',template_code:'VENDITA',sale_stage:'BALANCE_PENDING',planned_delivery_at:'2026-10-21T10:00:00Z'}]}
   expect(buildPriorities(data,new Date('2026-10-19T10:00:00Z')).find(x=>x.id==='delivery:s2')).toMatchObject({kind:'DELIVERY',saleId:'s2',severity:2})
