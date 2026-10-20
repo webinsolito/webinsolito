@@ -81,9 +81,12 @@ test('VENDITORE annulla una trattativa pulita senza ricevere dati finanziari',as
  await expect(page.getByTestId('sales-tab-cancelled')).toHaveAttribute('aria-selected','true')
  await expect(page.getByTestId('sale-card')).toContainText('Annullata')
  await page.getByTestId('open-sale-360').click()
+ const cancelledDrawer=page.getByTestId('sale-360')
  const summary=page.getByTestId('sale-cancelled-summary')
  await expect(summary).toContainText('Cliente ha rinunciato — cliente non procede più')
  await expect(summary).toContainText('non può essere riaperta')
+ await expect(cancelledDrawer.getByTestId('sale360-delivery-appointment')).toHaveCount(0)
+ await expect(cancelledDrawer.getByRole('button',{name:'Completa checklist'})).toHaveCount(0)
 })
 
 test('VENDITORE non può annullare una vendita con caparra o fase avanzata',async({page})=>{
