@@ -10,5 +10,6 @@ const base:TenantData={vehicles:[{id:'v1',dealer_id:'d'}],media:[],workItems:don
 describe('delivery gate',()=>{
  it('abilita consegna solo con controlli server-equivalenti verdi',()=>{const g=buildDeliveryGate(base,contract,true);expect(g.canDeliver).toBe(true);expect(g.blockerCount).toBe(0)})
  it('blocca contratto non firmato, checklist e saldo aperto',()=>{const data={...base,workItems:done.slice(0,5),invoices:[{...base.invoices[0],paid_amount:15000,payment_status:'PARTIAL'}]};const g=buildDeliveryGate(data,{...contract,status:'DRAFT'},true);expect(g.canDeliver).toBe(false);expect(g.checks.filter(x=>x.state==='BLOCK').map(x=>x.id)).toEqual(expect.arrayContaining(['contract','checklist','balance']))})
+ it('non sostituisce una fattura collegata mancante con una fattura diversa',()=>{const data={...base,invoices:[{...base.invoices[0],id:'i2'}]};const g=buildDeliveryGate(data,contract,true);expect(g.canDeliver).toBe(false);expect(g.checks.find(x=>x.id==='invoice')?.state).toBe('BLOCK')})
  it('non espone dati finanziari al venditore e richiede verifica amministrativa',()=>{const g=buildDeliveryGate({...base,invoices:[]},contract,false);expect(g.canDeliver).toBe(false);expect(g.checks.find(x=>x.id==='finance')?.state).toBe('PRIVATE');expect(g.checks.some(x=>x.id==='invoice')).toBe(false)})
 })
