@@ -95,6 +95,9 @@ test('V30: programmare richiamo da vendita aggiorna la coda Oggi senza liberare 
  await expect(panel.getByRole('status')).toContainText('Richiamo salvato')
  await page.getByRole('button',{name:'Chiudi vendita 360'}).click()
  await go(page,'Oggi')
+ // La prenotazione programmata scende dopo tutte le attività ancora urgenti.
+ // Espandi la coda prima di cercarla: non deve scomparire dai dati.
+ await page.getByTestId('today-callback-show-all').click()
  const row=page.getByTestId('today-callback-row').filter({hasText:'V-TODAY-2'})
  await expect(row).toHaveAttribute('data-callback-state','SCHEDULED')
  await expect(page.getByTestId('today-callback-to-do')).toHaveText('4')
