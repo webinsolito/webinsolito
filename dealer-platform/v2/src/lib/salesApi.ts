@@ -1,6 +1,7 @@
 import {getSession} from './api'
 import {config} from './config'
 import type {Contract,SaleDraft,SessionPayload} from '../types'
+import type {ReservationHistoryEvent} from '../domain/reservationHistory'
 
 const CONTRACT_WRITE_ROLES=new Set(['ADMIN','VENDITORE','AMMINISTRAZIONE'])
 const SALE_STAGES=new Set(['OPEN','AGREED','DEPOSIT','BALANCE_PENDING','READY','DELIVERED','CANCELLED'])
@@ -31,6 +32,21 @@ async function write<T>(path:string,method:'POST'|'PATCH',body:unknown){
 
 function first<T>(rows:T[],message:string){if(!rows?.length)throw new Error(message);return rows[0]}
 function contractNumber(){const d=new Date();const date=d.toISOString().slice(0,10).replaceAll('-','');const time=d.toTimeString().slice(0,8).replaceAll(':','');const suffix=crypto.randomUUID().slice(0,4).toUpperCase();return `V-${date}-${time}-${suffix}`}
+
+export async function fetchReservationHistory(contract:Pick<Contract,'id'|'dealer_id'>):Promise<ReservationHistoryEvent[]>{
+ const session=getSession()
+ if(!session)throw new Error('session_required')
+ if(session.dealer.id!==contract.dealer_id)throw new Error('reservation_history_wrong_dealer')
+ const columns='id,dealer_id,contract_id,vehicle_id,event_type,occurred_at,actor_user_id,actor_name,actor_role,sale_stage_before,sale_stage_after,expires_at_before,expires_at_after,reason'
+ const params=new URLSearchParams({
+  select:columns,dealer_id:'eq.'+session.dealer.id,
+  contract_id:'eq.'+contract.id,
+  order:'occurred_at.desc,id.desc',limit:'100'
+ })
+ return parse<ReservationHistoryEvent[]>(await fetch(`${config.supabaseUrl}/rest/v1/vehicle_reservation_events_v270?${params.toString()}`,{
+  method:'GET',headers:{apikey:config.supabasePublishableKey,authorization:`Bearer ${session.access_token}`,accept:'application/json'}
+ }))
+}
 
 export async function createSaleContract(draft:SaleDraft){
   const session=activeSession()
