@@ -23,6 +23,7 @@ import './vehicle360.css'
 import './customer360.css'
 import './sale360.css'
 import './reservation-deadlines.css'
+import './reservation-history.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 

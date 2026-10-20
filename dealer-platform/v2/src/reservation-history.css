@@ -1,0 +1,19 @@
+.reservation-history-intro{display:flex;align-items:flex-start;gap:7px;margin:0 0 13px;color:#737a83;font-size:10px;line-height:1.5}
+.reservation-history-intro svg{flex:none;margin-top:1px;color:#9a7130}
+.reservation-history .sale360-head button{display:inline-flex;align-items:center;gap:5px;border:1px solid #eee2ca;border-radius:9px;padding:8px 10px;background:#fff7e9;color:#78551e}
+.reservation-history .sale360-head button svg{width:13px;height:13px}
+.reservation-history-list{display:grid;gap:0}
+.reservation-history-entry{position:relative;display:grid;grid-template-columns:27px minmax(0,1fr);gap:9px;padding:10px 0}
+.reservation-history-entry:not(:last-of-type):before{content:'';position:absolute;left:12px;top:34px;bottom:-10px;width:1px;background:#e5dfd1}
+.reservation-history-marker{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#f5eddf;color:#976c2d}
+.reservation-history-entry.type-cancelled .reservation-history-marker,.reservation-history-entry.type-released .reservation-history-marker{background:#fce9e6;color:#b34d41}
+.reservation-history-entry.type-extended .reservation-history-marker{background:#e7f5e9;color:#397e52}
+.reservation-history-entry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}
+.reservation-history-entry-head b{font-size:11px;color:#262d34}
+.reservation-history-entry-head time{white-space:nowrap;color:#8b929b;font-size:9px;font-weight:750}
+.reservation-history-actor{margin:5px 0 0;color:#66717c;font-size:10px}
+.reservation-history-dates,.reservation-history-reason{margin:6px 0 0;line-height:1.5;font-size:10px;color:#4f5964;overflow-wrap:anywhere}
+.reservation-history-reason{padding:8px 10px;border-left:2px solid #b99a60;border-radius:0 7px 7px 0;background:#faf7f1}
+.reservation-history-more{display:flex;gap:7px;align-items:center;justify-content:center;width:100%;min-height:38px;margin-top:10px;border:1px solid #e7dac2;border-radius:10px;background:#fbf7ee;color:#75551f;font-size:10px;font-weight:850}
+.reservation-history-more svg{width:14px;height:14px}
+@media(max-width:600px){.reservation-history-entry-head{flex-direction:column;gap:3px}.reservation-history-entry-head time{white-space:normal}}
