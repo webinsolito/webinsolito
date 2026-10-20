@@ -18,6 +18,8 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  const [followups,setFollowups]=useState<InvoiceCollectionFollowup[]|null>(financeVisible?null:[])
  const [collectionsError,setCollectionsError]=useState(false)
  const [showAllBookingCallbacks,setShowAllBookingCallbacks]=useState(false)
+ const [nowIso,setNowIso]=useState(()=>new Date().toISOString())
+ useEffect(()=>{const tick=()=>setNowIso(new Date().toISOString());const timer=window.setInterval(tick,60_000);window.addEventListener('focus',tick);document.addEventListener('visibilitychange',tick);return()=>{window.clearInterval(timer);window.removeEventListener('focus',tick);document.removeEventListener('visibilitychange',tick)}},[])
  useEffect(()=>{
   let active=true
   if(!financeVisible){setFollowups([]);setCollectionsError(false);return()=>{active=false}}
@@ -49,8 +51,8 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  const collectionCount=collectionsError?'—':followups===null?'…':String(collectionSchedule?.todayCount||0)
  const deadlineSummary=useMemo(()=>buildDeadlineSummary(data,localDay(),collectionSchedule?.tasks||[]),[data,collectionSchedule])
  const dueNow=deadlineSummary.overdue+deadlineSummary.today
- const urgentReservations=activeReservationAlerts(data,new Date().toISOString())
- const overdueCallbacks=useMemo(()=>buildTodayReservationCallbacks(data,new Date().toISOString()),[data])
+ const urgentReservations=activeReservationAlerts(data,nowIso)
+ const overdueCallbacks=useMemo(()=>buildTodayReservationCallbacks(data,nowIso),[data,nowIso])
  const bookingCallbackCounts=overdueCallbackCounts(overdueCallbacks)
  const bookingCallbackRows=showAllBookingCallbacks?overdueCallbacks:overdueCallbacks.slice(0,5)
  const callbackDateTime=(value:string)=>new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value))
