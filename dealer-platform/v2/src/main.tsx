@@ -24,6 +24,7 @@ import './customer360.css'
 import './sale360.css'
 import './reservation-deadlines.css'
 import './reservation-history.css'
+import './garage-reservations.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
