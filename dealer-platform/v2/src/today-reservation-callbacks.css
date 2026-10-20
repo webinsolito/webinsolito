@@ -1,0 +1,39 @@
+
+/* Dealer Cockpit V2 — Modifica 30: queue prenotazioni scadute in Oggi. */
+.today-overdue-callbacks{margin:14px 0 20px;padding:17px;border:1px solid #ead7b8;border-radius:20px;background:linear-gradient(145deg,#fffdf9,#fff);box-shadow:0 5px 22px rgba(15,25,35,.025)}
+.today-callback-head{display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.today-callback-head .eyebrow{color:#976521}
+.today-callback-head h2{display:flex;align-items:center;gap:9px;margin:5px 0 6px;font-size:18px;color:#212b35}
+.today-callback-head h2 svg{width:21px;height:21px;color:#b07d39}
+.today-callback-head p:not(.eyebrow){margin:0;line-height:1.5;font-size:11px;color:#727d85}
+.today-callback-stats{display:flex;flex:0 0 auto;gap:8px}
+.today-callback-stats span{min-width:84px;display:grid;place-items:center;gap:3px;padding:7px 10px;border:1px solid #ecdecb;border-radius:12px;background:#fff7ea;color:#8e5c25;font-size:9px;font-weight:850;text-align:center}
+.today-callback-stats span:last-child{color:#3c6552;background:#f3faf5;border-color:#d6e9db}
+.today-callback-stats b{font-size:19px;color:inherit}
+.today-callback-list{display:grid;gap:8px}
+.today-callback-row{width:100%;min-width:0;display:flex;align-items:center;gap:11px;padding:12px 13px;border:1px solid #e6e1d9;border-radius:13px;background:#fff;color:#263340;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.today-callback-row:hover{border-color:#d2ab71;background:#fffaf1}
+.today-callback-row:focus-visible,.today-callback-more:focus-visible{outline:3px solid #d5a556;outline-offset:2px}
+.today-callback-symbol{flex:0 0 auto;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#fdf0e8;color:#b46539}
+.today-callback-row.status-scheduled .today-callback-symbol{background:#ecf6ed;color:#477d54}
+.today-callback-copy{min-width:0;display:grid;gap:4px;flex:1}
+.today-callback-copy strong{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.today-callback-copy strong span{color:#6f777f;font-weight:700}
+.today-callback-copy small{font-size:10px;color:#78818a;line-height:1.35;overflow-wrap:anywhere}
+.today-callback-state{flex:0 0 auto;display:grid;justify-items:end;gap:4px;max-width:190px;text-align:right}
+.today-callback-state b{font-size:10px;line-height:1.4;color:#9a522e}
+.today-callback-row.status-scheduled .today-callback-state b{color:#39794e}
+.today-callback-row.status-needs_plan .today-callback-state b{color:#9a6c2b}
+.today-callback-state small{font-size:9px;color:#77828a}
+.today-callback-arrow{flex:0 0 auto;color:#9a7139}
+.today-callback-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:38px;margin-top:9px;border:1px solid #e2ceb0;border-radius:11px;background:#fff8ec;color:#86612d;font-size:11px;font-weight:900;cursor:pointer}
+@media(max-width:760px){
+ .today-overdue-callbacks{padding:12px;margin:12px 0 17px}
+ .today-callback-head{flex-direction:column;gap:11px}
+ .today-callback-stats{width:100%}
+ .today-callback-stats span{flex:1}
+ .today-callback-row{flex-wrap:wrap;padding:11px;gap:8px}
+ .today-callback-copy{flex:1 1 calc(100% - 55px)}
+ .today-callback-state{margin-left:46px;max-width:none;flex:1;justify-items:start;text-align:left}
+ .today-callback-arrow{margin-left:auto}
+}
