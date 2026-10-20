@@ -69,9 +69,9 @@ begin
  end if;
  if not old_booked and not new_booked then return new; end if;
  select coalesce(nullif(trim(p.display_name),''),nullif(trim(m.username),''))
-   into actor_label from public.profiles p
-   left join public.memberships m on m.user_id=p.user_id and m.dealer_id=new.dealer_id
-   where p.user_id=actor_id limit 1;
+   into actor_label from public.memberships m
+   left join public.profiles p on p.user_id=m.user_id
+   where m.user_id=actor_id and m.dealer_id=new.dealer_id limit 1;
  select m.role::text into actor_level
   from public.memberships m where m.user_id=actor_id and m.dealer_id=new.dealer_id
   and m.status='ACTIVE' limit 1;
@@ -140,7 +140,7 @@ from public.contracts c
 where c.template_code='VENDITA'
  and (c.sale_stage in ('AGREED','DEPOSIT','BALANCE_PENDING','READY')
    or (coalesce(c.sale_stage,'OPEN')='OPEN'
-      and (coalesce(c.deposit,0)>0 or c.status in ('FROZEN','SIGNED')))
+      and (coalesce(c.deposit,0)>0 or c.status in ('FROZEN','SIGNED'))))
  and not exists (
    select 1 from public.vehicle_reservation_events_v270 e where e.contract_id=c.id
  );
