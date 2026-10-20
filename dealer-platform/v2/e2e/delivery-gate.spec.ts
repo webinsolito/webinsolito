@@ -66,6 +66,10 @@ test('ADMIN con gate tutto verde conferma due volte e consegna definitivamente',
  await gate.getByRole('button',{name:'Conferma definitivamente'}).click()
  await expect.poll(()=>state.contract.sale_stage).toBe('DELIVERED')
  await expect(page.getByTestId('sale-360')).toHaveCount(0)
+ await expect(page.getByTestId('sales-tab-active')).toContainText('0')
+ await expect(page.getByTestId('sale-card')).toHaveCount(0)
+ await page.getByTestId('sales-tab-delivered').click()
+ await expect(page.getByTestId('sales-tab-delivered')).toContainText('1')
  await expect(page.getByTestId('sale-card')).toContainText('Consegnata')
  const mobile=(page.viewportSize()?.width||1200)<=760
  await (mobile?page.locator('.mobile-nav button').filter({hasText:'Oggi'}):page.locator('.sidebar nav button').filter({hasText:'Oggi'})).click()
