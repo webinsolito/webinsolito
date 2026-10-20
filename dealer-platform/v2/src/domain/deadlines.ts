@@ -20,6 +20,7 @@ const customerName=(data:TenantData,id?:string|null)=>{const c=id?data.customers
 const vehicleName=(data:TenantData,id?:string|null)=>{const v=id?data.vehicles.find(x=>x.id===id):undefined;return v?[v.brand,v.model,v.plate].filter(Boolean).join(' ')||'Auto':''}
 const looksDocument=(...values:Array<string|undefined|null>)=>values.join(' ').toUpperCase().match(/DOCUMENT|PRATICA|PASSAGG|IMMATRIC|TARG|LIBRET|RADIAZ|REVISION/)
 const looksDelivery=(...values:Array<string|undefined|null>)=>values.join(' ').toUpperCase().match(/DELIVERY|CONSEGN/)
+const terminalSale=(value?:string|null)=>['DELIVERED','CANCELLED'].includes(String(value||'').toUpperCase())
 
 export function buildDeadlineSummary(data:TenantData,today:string,collections:CollectionTask[]=[]):DeadlineSummary{
  const items:DeadlineItem[]=[]
@@ -36,7 +37,9 @@ export function buildDeadlineSummary(data:TenantData,today:string,collections:Co
   const date=day(event.starts_at)
   const kind:DeadlineKind=looksDelivery(event.event_type,event.title)?'DELIVERY':looksDocument(event.event_type,event.title,event.note)?'DOCUMENT':'APPOINTMENT'
   const related=[customerName(data,event.customer_id),vehicleName(data,event.vehicle_id),event.note].filter(Boolean).join(' · ')
-  const sale=kind==='DELIVERY'?data.contracts.find(c=>c.template_code==='VENDITA'&&c.customer_id===event.customer_id&&c.vehicle_id===event.vehicle_id&&!['DELIVERED','CANCELLED'].includes(String(c.sale_stage||'').toUpperCase())):undefined
+  const deliverySales=kind==='DELIVERY'&&event.customer_id&&event.vehicle_id?data.contracts.filter(c=>c.template_code==='VENDITA'&&c.customer_id===event.customer_id&&c.vehicle_id===event.vehicle_id):[]
+  const sale=deliverySales.find(c=>!terminalSale(c.sale_stage))
+  if(kind==='DELIVERY'&&deliverySales.some(c=>terminalSale(c.sale_stage))&&!sale)continue
   items.push({id:'calendar:'+event.id,kind,title:event.title||({DELIVERY:'Consegna',DOCUMENT:'Pratica / documento',APPOINTMENT:'Appuntamento'}[kind]||'Appuntamento'),detail:related||String(event.event_type||'Appuntamento').replaceAll('_',' '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(event.priority==='HIGH'?1:0),customerId:event.customer_id||undefined,vehicleId:event.vehicle_id||undefined,saleId:sale?.id})
  }
 
