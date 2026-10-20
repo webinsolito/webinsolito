@@ -35,7 +35,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    <section className="sale360-actions">
      {summary.customer&&<button onClick={()=>onOpenCustomer(summary.customer!.id)}><UserRound/><span><b>Cliente</b><small>{person(summary.customer)}</small></span></button>}
      {summary.vehicle&&<button onClick={()=>onOpenVehicle(summary.vehicle!.id)}><Car/><span><b>Auto</b><small>{vehicle(summary.vehicle)}</small></span></button>}
-     <button data-testid="sale360-delivery-appointment" onClick={()=>onOpenDeliveryAppointment(contract.customer_id,contract.vehicle_id)}><CalendarClock/><span><b>Appuntamento consegna</b><small>Cliente e auto già selezionati</small></span></button>
+     {!terminal&&<button data-testid="sale360-delivery-appointment" onClick={()=>onOpenDeliveryAppointment(contract.customer_id,contract.vehicle_id)}><CalendarClock/><span><b>Appuntamento consegna</b><small>Cliente e auto già selezionati</small></span></button>}
      <button onClick={onOpenDeadlines}><FileText/><span><b>Pratiche</b><small>{summary.practices.length} aperte</small></span></button>
    </section>
 
@@ -59,7 +59,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    </section>
 
    <section className="sale360-section">
-     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna</h3><button onClick={onPrepareChecklist}>Completa checklist</button></div>
+     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna</h3>{!terminal&&<button onClick={onPrepareChecklist}>Completa checklist</button>}</div>
      <div className="sale360-checklist">{summary.checklist.items.map(item=><div className={item.done?'done':''} key={item.title}>{item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b></div>)}</div>
    </section>
 
