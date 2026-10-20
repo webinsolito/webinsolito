@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-19T20:43:05.219482+00:00",
-  "count": 71,
+  "generated_at": "2026-10-20T12:05:37.816889+00:00",
+  "count": 73,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 15,
-      "errors": 0
+      "events": 13,
+      "errors": 2
     },
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 57,
-      "events": 56,
+      "links": 61,
+      "events": 60,
       "errors": 0
     }
   ],
@@ -410,21 +410,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/CorrixBrescia.jpeg"
     },
     {
-      "id": "auto-a18c00fce2c0cd",
-      "title": "Lugana Festival 2026",
-      "date": "2026-10-16",
-      "end_date": "2026-10-19",
-      "time": "",
-      "place": "Sirmione Sirmione",
-      "area": "Brescia e provincia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/lugana-festival/",
-      "note": "Un evento imperdibile per tutti i wine lovers: a ottobre arriva a Sirmione il Lugana Festival! Clicca qui",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/lugana-festival.jpg"
-    },
-    {
       "id": "auto-24f53c14fc1275",
       "title": "Siamo testimoni",
       "date": "2026-10-19",
@@ -545,21 +530,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-la-vittoria-di-brescia-40-fotografi-17lug-1nov-1024x650-1.jpg"
     },
     {
-      "id": "auto-e0255939549d7c",
-      "title": "Mo.Ca 2026 – Facciamo economia",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mo-ca-2026-aperti-per-voi-2515624-2517078-2519705-2519798",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-facciamo-economia-1024x650.jpg"
-    },
-    {
       "id": "auto-23eaca44aaa179",
       "title": "Queriniana. San Francesco a Brescia",
       "date": "2026-10-20",
@@ -588,21 +558,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/urban-center-riflessioni-partecipazione-pubblica-20-ottobre-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-87fdee824cbfaa",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748-2519751",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
       "id": "auto-601488f4aa8696",
@@ -725,6 +680,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/B-Bagoss5_web.jpeg"
     },
     {
+      "id": "auto-5f424d23ee5181",
+      "title": "Cosa fare ad Halloween a Brescia e provincia 2026",
+      "date": "2026-10-24",
+      "end_date": "2026-11-01",
+      "time": "16:00",
+      "place": "Brescia e provincia Varie location",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/halloween/",
+      "note": "La notte di Halloween anima ogni anno la provincia di Brescia, con eventi per bambini e famiglie!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
+    },
+    {
       "id": "auto-cf8cd7d4710144",
       "title": "Camminanotte 2026",
       "date": "2026-10-24",
@@ -740,19 +710,19 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/camminanotte-villa-carcina.jpg"
     },
     {
-      "id": "auto-1dd690c00d35b7",
-      "title": "Cosa fare ad Halloween a Brescia e provincia 2026",
+      "id": "auto-2e2331f3ba73f7",
+      "title": "Pomeriggi Musicali di Salò 2026",
       "date": "2026-10-25",
-      "end_date": "2026-11-01",
+      "end_date": "2026-10-25",
       "time": "",
-      "place": "Brescia e provincia Varie location",
+      "place": "Sala dei Provveditori Lungolago Zanardelli, 52 , Salò",
       "area": "Brescia e provincia",
-      "cat": "Famiglia",
+      "cat": "Musica",
       "price": null,
-      "url": "https://www.visitbrescia.it/eventi/halloween/",
-      "note": "La notte di Halloween anima ogni anno la provincia di Brescia, con eventi per bambini e famiglie!",
+      "url": "https://www.visitbrescia.it/eventi/pomeriggi-musicali-salo/",
+      "note": "Le emozioni della musica da camera protagoniste dell'autunno salodiano: al via la rassegna Pomeriggi Musicali di Salò 2025!",
       "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
     },
     {
       "id": "auto-adc2826d09fbf0",
@@ -815,6 +785,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/pieve-bigolio-orzivecchi.jpeg"
     },
     {
+      "id": "auto-1decf07eb635fe",
+      "title": "4^ Festival Internazionale Silvana Tirini Bonometti 2026/2027",
+      "date": "2026-11-01",
+      "end_date": "2026-11-01",
+      "time": "16:00",
+      "place": "Brescia e Rezzato Varie location , Brescia e Rezzato",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-internazionale-silvana-tirini-bonometti/",
+      "note": "Musiche ed emozioni senza tempo tra Brescia e Rezzato: fino a maggio 2027 torna il Festival Internazionale Silvana Tirini Bonometti!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Santuario-Valverde-organo.jpeg"
+    },
+    {
       "id": "auto-7dad297853f71c",
       "title": "Mostra \"Tesori. Il grande romanzo dei Musei bresciani. 1826 | 2026\"",
       "date": "2026-11-04",
@@ -875,6 +860,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Manerbio-Jazz-Festival.jpeg"
     },
     {
+      "id": "auto-82bd903eb43be2",
+      "title": "Festa delle mele di Piancogno 2026",
+      "date": "2026-11-07",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "PalaViBi Via Nazionale , Pianborno",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festa-mele-piancogno/",
+      "note": "Un intero weekend dedicato al frutto di stagione per eccellenza: ogni anno in autunno a Piancogno torna la Festa delle mele!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/mele.jpg"
+    },
+    {
       "id": "auto-97f90edfdea349",
       "title": "Fiera Gardacon al Centro Fiera di Montichiari",
       "date": "2026-11-07",
@@ -918,6 +918,21 @@
       "note": "Ogni anno a novembre Chiari si riempie di libri e di cultura con la Rassegna della MicroEditoria: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-della-Microeditoria.jpg"
+    },
+    {
+      "id": "auto-9cb48353426f1c",
+      "title": "Salò Design Market 2026",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Salò PIazza Vittorio Emanuele II (fossa) e lungolago , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/salo-design-market/",
+      "note": "Un'imperdibile mostra mercato in uno dei paesi più caratteristici del lago di Garda: scopri di più su Salò Design Market!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Salo-©VisitBrescia-ph-Michele-Rossetti-e1608805012745.jpg"
     },
     {
       "id": "auto-8faecb77c02d60",
@@ -978,6 +993,21 @@
       "note": "Ogni anno arriva il festival \"Lungo la via del Romanino\", per riscoprire il genio del pittore bresciano: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/abbazia-benedettina-rodengo.jpg"
+    },
+    {
+      "id": "auto-845045d92a9774",
+      "title": "Maddalena Urban Trail 2026",
+      "date": "2026-11-15",
+      "end_date": "2026-11-15",
+      "time": "",
+      "place": "Oratorio Botticino Mattina (arrivo e ristoro) Via Giuseppe Verdi, 18 , Botticino Mattina",
+      "area": "Brescia e provincia",
+      "cat": "Sport",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/maddalena-urban-trail/",
+      "note": "Il fascino del trail urbano nella cornice del monte simbolo della città: ogni anno a novembre torna Maddalena Urban Trail!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Maddalena-Urban-Trail-ph-Marco-Mereghetti-bu-Photostore-small.jpg"
     },
     {
       "id": "auto-31ea6cac6549f1",
