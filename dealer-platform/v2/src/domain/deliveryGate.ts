@@ -9,9 +9,14 @@ export function buildDeliveryGate(data:TenantData,contract:Contract,financeVisib
  const missingChecklist=DELIVERY_CHECKLIST.filter(title=>!done.has(title))
  const stageReady=String(contract.sale_stage||'').toUpperCase()==='READY'
  const signed=String(contract.status||'').toUpperCase()==='SIGNED'
+ const vehicle=data.vehicles.find(v=>v.id===contract.vehicle_id)
+ const plate=String(vehicle?.plate||'').replace(/\s+/g,'').toUpperCase()
+ const vin=String(vehicle?.vin||'').replace(/\s+/g,'').toUpperCase()
+ const identityOk=Boolean(plate&&vin.length===17&&!/[IOQ]/.test(vin))
  const operationalChecks:DeliveryGateCheck[]=[
   {id:'stage',label:'Vendita pronta consegna',state:stageReady?'PASS':'BLOCK',detail:stageReady?'Stato READY confermato.':'Porta prima la vendita allo stato Pronta consegna.'},
   {id:'contract',label:'Contratto firmato',state:signed?'PASS':'BLOCK',detail:signed?'Contratto SIGNED.':'Il contratto deve risultare firmato.'},
+  {id:'identity',label:'Identità veicolo completa',state:identityOk?'PASS':'BLOCK',detail:identityOk?('Targa '+plate+' · VIN verificato.'):!plate?'Manca la targa del veicolo.':!vin?'Manca il VIN del veicolo.':'VIN non valido: deve avere 17 caratteri e non contenere I, O o Q.'},
   {id:'checklist',label:'Checklist consegna',state:missingChecklist.length?'BLOCK':'PASS',detail:missingChecklist.length?(missingChecklist.length+' controlli mancanti: '+missingChecklist.join(', ')):'Tutti i 7 controlli operativi sono completati.'}
  ]
  if(!financeVisible){
