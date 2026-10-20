@@ -25,7 +25,7 @@ async function boot(page:Page){
    sale_stage:'AGREED',status:'DRAFT',price:20000,deposit:0
   }])
   if(path.startsWith('/rest/v1/'))return send(route,[])
-  return send(route,{})
+  return route.fulfill({status:404,contentType:'application/json',body:'{}'})
  })
  await page.goto('/')
  await expect(page.getByRole('heading',{name:'Oggi'})).toBeVisible()
