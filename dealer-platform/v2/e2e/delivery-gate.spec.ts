@@ -19,7 +19,7 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE',options:Options={}){
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
  await page.route(PROJECT+'/**',async route=>{
   const req=route.request(),url=new URL(req.url()),path=url.pathname,method=req.method(),body=method==='GET'?null:req.postDataJSON() as any
-  if(path==='/rest/v1/vehicles')return json(route,[{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',status:'IN_VENDITA',asking_price:25000}])
+  if(path==='/rest/v1/vehicles')return json(route,[{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000}])
   if(path==='/rest/v1/vehicle_media')return json(route,[])
   if(path==='/rest/v1/vehicle_work_items')return json(route,state.workItems)
   if(path==='/rest/v1/customers')return json(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
