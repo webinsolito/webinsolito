@@ -1,7 +1,10 @@
-import {CalendarClock,Car,CheckCircle2,CircleDollarSign,ClipboardCheck,FileText,ShoppingBag,UserRound,X} from 'lucide-react'
+import {useState} from 'react'
+import {AlertTriangle,CalendarClock,Car,CheckCircle2,CircleDollarSign,ClipboardCheck,FileText,LockKeyhole,ShieldCheck,ShoppingBag,UserRound,X} from 'lucide-react'
 import {canSeeFinance} from '../lib/api'
+import {canWriteContracts} from '../lib/salesApi'
 import {money} from '../lib/format'
 import {buildSale360} from '../domain/sale360'
+import {buildDeliveryGate} from '../domain/deliveryGate'
 import type {Contract,SessionPayload,TenantData} from '../types'
 
 const stageLabel=(value?:string|null)=>({OPEN:'Aperta',AGREED:'Accordo',DEPOSIT:'Caparra',BALANCE_PENDING:'Saldo da chiudere',READY:'Pronta consegna',DELIVERED:'Consegnata',CANCELLED:'Annullata'}[String(value||'')]||String(value||'Non aperta').replaceAll('_',' '))
@@ -9,9 +12,15 @@ const dateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new
 const person=(c?:TenantData['customers'][number])=>c?[c.first_name,c.last_name].filter(Boolean).join(' ')||'Cliente':'Cliente non disponibile'
 const vehicle=(v?:TenantData['vehicles'][number])=>v?[v.brand,v.model,v.version].filter(Boolean).join(' ')||'Auto':'Auto non disponibile'
 
-export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void}){
+export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onDeliver,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onDeliver:()=>Promise<void>;deliveryBusy?:boolean}){
  const summary=buildSale360(data,contract,new Date().toISOString())
  const financeVisible=canSeeFinance(session)
+ const deliveryWritable=canWriteContracts(session)
+ const gate=buildDeliveryGate(data,contract,financeVisible)
+ const [confirming,setConfirming]=useState(false)
+ const [deliveryError,setDeliveryError]=useState('')
+ const terminal=['DELIVERED','CANCELLED'].includes(String(contract.sale_stage||'').toUpperCase())
+ const deliver=async()=>{setDeliveryError('');try{await onDeliver()}catch(err){setDeliveryError(err instanceof Error?err.message:'Impossibile completare la consegna');setConfirming(false)}}
  return <div className="drawer-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside className="drawer sale360-drawer" data-testid="sale-360">
    <header><div><p className="eyebrow">SCHEDA VENDITA 360°</p><h2>{contract.contract_number}</h2><span>{vehicle(summary.vehicle)} · {person(summary.customer)}</span></div><button className="icon-btn" onClick={onClose} aria-label="Chiudi vendita 360"><X/></button></header>
 
@@ -28,6 +37,13 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
      <button data-testid="sale360-delivery-appointment" onClick={()=>onOpenDeliveryAppointment(contract.customer_id,contract.vehicle_id)}><CalendarClock/><span><b>Appuntamento consegna</b><small>Cliente e auto già selezionati</small></span></button>
      <button onClick={onOpenDeadlines}><FileText/><span><b>Pratiche</b><small>{summary.practices.length} aperte</small></span></button>
    </section>
+
+   {!terminal&&<section className={'sale360-gate '+(gate.canDeliver?'ready':'blocked')} data-testid="delivery-gate">
+     <div className="sale360-gate-head"><div><p className="eyebrow">GATE CONSEGNA</p><h3><ShieldCheck/> {gate.canDeliver?'Pronta per la consegna':'Consegna bloccata'}</h3></div><b>{gate.canDeliver?'TUTTO VERDE':gate.blockerCount+' VERIFICHE'}</b></div>
+     <div className="sale360-gate-checks">{gate.checks.map(check=><div key={check.id} className={'gate-check '+check.state.toLowerCase()} data-gate-check={check.id}>{check.state==='PASS'?<CheckCircle2/>:check.state==='PRIVATE'?<LockKeyhole/>:<AlertTriangle/>}<span><b>{check.label}</b><small>{check.detail}</small></span></div>)}</div>
+     {deliveryError&&<div className="sale360-gate-error" role="alert">{deliveryError}</div>}
+     {String(contract.sale_stage||'').toUpperCase()==='READY'&&<div className="sale360-gate-action">{!deliveryWritable?<button disabled><LockKeyhole/> Permesso consegna non disponibile</button>:!financeVisible?<button disabled><LockKeyhole/> Conferma finale · Admin/Amministrazione</button>:gate.canDeliver&&!confirming?<button className="deliver" disabled={deliveryBusy} onClick={()=>setConfirming(true)}><Car/> Consegna veicolo</button>:gate.canDeliver&&confirming?<div className="sale360-confirm"><p>Confermi la consegna definitiva? Dopo non potrai riaprire la vendita.</p><button className="deliver" disabled={deliveryBusy} onClick={()=>void deliver()}><CheckCircle2/> {deliveryBusy?'Consegna…':'Conferma definitivamente'}</button><button disabled={deliveryBusy} onClick={()=>setConfirming(false)}>Annulla</button></div>:<button disabled><AlertTriangle/> Consegna bloccata · completa le verifiche</button>}</div>}
+   </section>}
 
    <section className="sale360-section">
      <div className="sale360-head"><h3><CalendarClock/> Consegna e appuntamenti</h3></div>
