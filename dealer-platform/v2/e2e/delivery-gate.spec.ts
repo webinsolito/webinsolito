@@ -9,12 +9,12 @@ const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
 type Options={completeChecklist?:boolean;paid?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;workItems:any[]}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[]}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
 async function boot(page:Page,role:'ADMIN'|'VENDITORE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[]}
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[]}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
  await page.route(PROJECT+'/**',async route=>{
@@ -23,8 +23,9 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE',options:Options={}){
   if(path==='/rest/v1/vehicle_media')return json(route,[{id:'media-1',dealer_id:DEALER,vehicle_id:VEHICLE,kind:'PHOTO',object_key:'vehicles/'+VEHICLE+'/photo.jpg',is_cover:true}])
   if(path==='/rest/v1/vehicle_work_items')return json(route,state.workItems)
   if(path==='/rest/v1/customers')return json(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
-  if(path==='/rest/v1/customer_interactions'||path==='/rest/v1/customer_vehicle_interests'||path==='/rest/v1/calendar_events')return json(route,[])
-  if(path==='/rest/v1/contracts'){if(method==='PATCH'){Object.assign(state.contract,body,{delivered_at:body.sale_stage==='DELIVERED'?new Date().toISOString():state.contract.delivered_at});if(body.sale_stage==='DELIVERED')state.vehicle.status='CONSEGNATA';return json(route,[state.contract])}return json(route,[state.contract])}
+  if(path==='/rest/v1/customer_interactions'||path==='/rest/v1/customer_vehicle_interests')return json(route,[])
+  if(path==='/rest/v1/calendar_events')return json(route,state.calendarEvents)
+  if(path==='/rest/v1/contracts'){if(method==='PATCH'){Object.assign(state.contract,body,{delivered_at:body.sale_stage==='DELIVERED'?new Date().toISOString():state.contract.delivered_at});if(body.sale_stage==='DELIVERED'){state.vehicle.status='CONSEGNATA';state.calendarEvents.forEach(event=>{if(event.event_type==='DELIVERY'&&event.customer_id===CUSTOMER&&event.vehicle_id===VEHICLE&&event.status==='OPEN')event.status='DONE'})}return json(route,[state.contract])}return json(route,[state.contract])}
   if(path==='/rest/v1/vehicle_financials'||path==='/rest/v1/vehicle_costs'){state.financeRequests++;return json(route,[])}
   if(path==='/rest/v1/invoices'){state.financeRequests++;return json(route,[{id:INVOICE,dealer_id:DEALER,vehicle_id:VEHICLE,customer_id:CUSTOMER,invoice_type:'SALE',total_amount:25000,paid_amount:options.paid?25000:10000,payment_status:options.paid?'PAID':'PARTIAL',issue_date:day(-2),due_date:day(0)}])}
   if(path==='/rest/v1/invoice_receipts')return json(route,[])
@@ -70,7 +71,13 @@ test('ADMIN con gate tutto verde conferma due volte e consegna definitivamente',
  await (mobile?page.locator('.mobile-nav button').filter({hasText:'Oggi'}):page.locator('.sidebar nav button').filter({hasText:'Oggi'})).click()
  await expect(page.getByRole('heading',{name:'Oggi'})).toBeVisible()
  await expect(page.locator('.mini-stat').filter({hasText:'AUTO ATTIVE'})).toContainText('0')
+ await expect(page.getByRole('button',{name:'Apri consegne da gestire'})).toContainText('0')
  expect(state.vehicle.status).toBe('CONSEGNATA')
+ expect(state.calendarEvents[0].status).toBe('DONE')
+ await page.getByRole('button',{name:'Apri centro scadenze'}).click()
+ const center=page.getByTestId('deadline-page')
+ await expect(center).toBeVisible()
+ await expect(center.getByText('Consegna Audi A3')).toHaveCount(0)
 })
 
 test('VENDITORE prepara la consegna senza ricevere dati finanziari',async({page})=>{
