@@ -18,8 +18,8 @@ export function buildDeliveryGate(data:TenantData,contract:Contract,financeVisib
   const checks=[...operationalChecks,{id:'finance',label:'Verifica amministrativa finale',state:'PRIVATE' as const,detail:'Fattura, saldo e finanziamento sono riservati ad Admin/Amministrazione.'}]
   return {checks,missingChecklist,financeVisible:false,canDeliver:false,blockerCount:operationalChecks.filter(x=>x.state==='BLOCK').length+1}
  }
- const invoice=(contract.sale_invoice_id?data.invoices.find(i=>i.id===contract.sale_invoice_id&&!i.deleted_at):undefined)||data.invoices.filter(i=>!i.deleted_at&&String(i.invoice_type||'').toUpperCase()==='SALE'&&i.vehicle_id===contract.vehicle_id&&i.customer_id===contract.customer_id).sort((a,b)=>String(b.issue_date||'').localeCompare(String(a.issue_date||'')))[0]
- const total=Number(invoice?.total_amount??invoice?.total??0),paid=Number(invoice?.paid_amount||0),price=Number(contract.price||0)
+ const invoice=contract.sale_invoice_id?data.invoices.find(i=>i.id===contract.sale_invoice_id&&!i.deleted_at):data.invoices.filter(i=>!i.deleted_at&&String(i.invoice_type||'').toUpperCase()==='SALE'&&i.vehicle_id===contract.vehicle_id&&i.customer_id===contract.customer_id).sort((a,b)=>String(b.issue_date||'').localeCompare(String(a.issue_date||'')))[0]
+ const total=Number(invoice?.total_amount??0),paid=Number(invoice?.paid_amount||0),price=Number(contract.price||0)
  const invoiceOk=Boolean(invoice&&String(invoice.invoice_type||'').toUpperCase()==='SALE'&&invoice.vehicle_id===contract.vehicle_id&&invoice.customer_id===contract.customer_id&&Math.abs(total-price)<=0.01)
  const balanceOk=Boolean(invoiceOk&&String(invoice?.payment_status||'').toUpperCase()==='PAID'&&paid>=total-0.01)
  const financingRequired=Number(contract.financing_amount||0)>0
