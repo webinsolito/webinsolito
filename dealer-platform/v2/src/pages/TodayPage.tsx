@@ -84,7 +84,7 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
    onClick={()=>setShowAllBookingCallbacks(x=>!x)}>
    {showAllBookingCallbacks?'Mostra i primi 5':'Mostra tutti i '+overdueCallbacks.length+' richiami'} <ChevronRight size={16}/>
   </button>}
- </section>
+ </section>}
  <section className="focus-card"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||'Niente di urgente 🎉'}</h2><p>{allPriorities[0]?.detail||'Puoi passare ai clienti o al Garage senza emergenze aperte.'}</p></div>{allPriorities[0]&&<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>}</section>
  <section className="section"><div className="section-title"><div><p className="eyebrow">CODA DI LAVORO</p><h2>Una lista, in ordine di urgenza</h2></div></div><div className="priority-list">{allPriorities.slice(0,12).map(p=>{const Icon=icon[p.kind];return <button key={p.id} onClick={()=>act(p)} className={'priority-row severity-'+p.severity}><span className="priority-icon"><Icon/></span><span><b>{p.title}</b><small>{p.detail}</small></span><ChevronRight/></button>})}{!allPriorities.length&&<div className="empty-state">Nessuna azione urgente. Ottimo momento per seguire nuovi clienti.</div>}</div></section></>
 }
