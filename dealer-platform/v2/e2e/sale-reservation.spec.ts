@@ -10,7 +10,7 @@ const send=(r:any,body:unknown)=>r.fulfill({status:200,contentType:'application/
 async function boot(page:Page){
  await page.addInitScript(({dealer})=>localStorage.setItem('malu23-v2-session',JSON.stringify({
   access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'seller'},
-  dealer:{id:dealer,slug:'demo',display_name:'Demo'},profile:{role:'VENDITORE',display_name:'Venditore',permissions:{}}
+  dealer:{id:dealer,slug:'demo',display_name:'Demo'},profile:{role:'VENDITORE',display_name:'Venditore',username:'seller',permissions:{}}
  })),{dealer:DEALER})
  await page.route(PROJECT+'/**',async route=>{
   const path=new URL(route.request().url()).pathname
@@ -18,7 +18,7 @@ async function boot(page:Page){
    {id:BOOKED,dealer_id:DEALER,brand:'BMW',model:'X1',status:'PRENOTATA',asking_price:20000},
    {id:FREE,dealer_id:DEALER,brand:'Fiat',model:'500',status:'IN_VENDITA',asking_price:13000}
   ])
-  if(path==='/rest/v1/customers')return send(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi'}])
+  if(path==='/rest/v1/customers')return send(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
   if(path==='/rest/v1/contracts')return send(route,[{
    id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:BOOKED,
    contract_number:'V-OWNER',contract_date:day(),template_code:'VENDITA',
@@ -37,6 +37,7 @@ async function nav(page:Page,label:string){
 test('Modifica 25: cliente proprietario della prenotazione visibile in Vendite e Garage',async({page})=>{
  await boot(page)
  await nav(page,'Vendite')
+ await expect(page.getByText('V-OWNER',{exact:true})).toBeVisible()
  await expect(page.getByTestId('sale-reservation-owner')).toContainText('Mario Rossi')
  await expect(page.getByTestId('sale-reservation-owner')).toContainText('V-OWNER')
  await nav(page,'Garage')
@@ -45,6 +46,7 @@ test('Modifica 25: cliente proprietario della prenotazione visibile in Vendite e
 test('Modifica 25: nuova vendita avvisa e non propone auto già prenotata',async({page})=>{
  await boot(page)
  await nav(page,'Vendite')
+ await expect(page.getByText('V-OWNER',{exact:true})).toBeVisible()
  await page.getByTestId('new-sale').click()
  const picker=page.getByLabel('AUTO VENDITA')
  await expect(picker.locator('option[value="'+BOOKED+'"]')).toBeDisabled()
