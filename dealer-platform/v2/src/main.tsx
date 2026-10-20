@@ -26,6 +26,7 @@ import './reservation-deadlines.css'
 import './reservation-history.css'
 import './garage-reservations.css'
 import './reservation-followup.css'
+import './today-reservation-callbacks.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
