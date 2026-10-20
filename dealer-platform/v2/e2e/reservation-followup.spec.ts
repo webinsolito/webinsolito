@@ -85,7 +85,7 @@ test('V29 richiamo: non sovrascrive una azione CRM esistente senza conferma',asy
  await panel.getByLabel('Data richiamo prenotazione').fill(v)
  await expect(panel.getByTestId('reservation-followup-plan')).toBeDisabled()
  await expect(panel).toContainText('Richiamare per preventivo nuovo')
- await panel.getByText('Sostituisci la prossima azione CRM esistente').check()
+ await panel.getByRole('checkbox').check()
  await panel.getByTestId('reservation-followup-plan').click()
  await expect.poll(()=>state.customerWrites).toBe(1)
  expect(state.customers[0].next_step).toBe('Ricontatto prenotazione V-EXPIRED-29')
