@@ -43,6 +43,12 @@ export async function createSaleContract(draft:SaleDraft){
   return first(await write<Contract[]>('contracts','POST',body),'sale_create_not_persisted')
 }
 
+export async function cancelSaleContract(contract:Contract,reason:string){
+  const session=activeSession();const clean=String(reason||'').trim()
+  if(clean.length<4)throw new Error('sale_cancel_reason_required')
+  return first(await write<Contract[]>(`contracts?id=eq.${encodeURIComponent(contract.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,'PATCH',{sale_stage:'CANCELLED',sale_cancel_reason:clean.slice(0,240),updated_at:new Date().toISOString()}),'sale_cancel_not_persisted')
+}
+
 export async function updateSaleStage(contract:Contract,stage:string){
   const session=activeSession();const next=String(stage||'').toUpperCase()
   if(!SALE_STAGES.has(next))throw new Error('Stato vendita non valido')
@@ -51,7 +57,7 @@ export async function updateSaleStage(contract:Contract,stage:string){
 
 export function friendlySaleError(error:unknown){
   const raw=error instanceof Error?error.message:String(error)
-  const known:Record<string,string>={sale_contract_not_signed:'Prima serve il contratto firmato.',sale_invoice_missing:'Manca la fattura di vendita.',sale_invoice_wrong_type:'La fattura collegata non è una fattura di vendita.',sale_invoice_vehicle_mismatch:'La fattura non corrisponde all’auto.',sale_invoice_customer_mismatch:'La fattura non corrisponde al cliente.',sale_invoice_amount_mismatch:'Il totale fattura non corrisponde al prezzo di vendita.',sale_balance_open:'Il saldo non risulta completamente pagato.',sale_financing_not_paid:'Il finanziamento non risulta liquidato.',sale_checklist_incomplete:'Completa prima tutta la checklist di consegna.',sale_delivery_role_forbidden:'Solo Admin o Amministrazione possono confermare la consegna finale.',sale_delivery_unauthorized:'Sessione non autorizzata alla consegna.',sale_vehicle_missing:'Auto collegata alla vendita non trovata.',vehicle_plate_required:'Inserisci la targa prima della consegna.',vehicle_vin_required:'Inserisci il VIN prima della consegna.',vehicle_vin_invalid:'Il VIN non è valido.',vehicle_photo_required:'Aggiungi almeno una foto dell’auto prima della consegna.',sale_delivered_terminal:'La vendita è già consegnata e non può essere riaperta.',sale_cancelled_terminal:'La vendita è annullata e non può essere riaperta.'}
+  const known:Record<string,string>={sale_contract_not_signed:'Prima serve il contratto firmato.',sale_invoice_missing:'Manca la fattura di vendita.',sale_invoice_wrong_type:'La fattura collegata non è una fattura di vendita.',sale_invoice_vehicle_mismatch:'La fattura non corrisponde all’auto.',sale_invoice_customer_mismatch:'La fattura non corrisponde al cliente.',sale_invoice_amount_mismatch:'Il totale fattura non corrisponde al prezzo di vendita.',sale_balance_open:'Il saldo non risulta completamente pagato.',sale_financing_not_paid:'Il finanziamento non risulta liquidato.',sale_checklist_incomplete:'Completa prima tutta la checklist di consegna.',sale_cancel_reason_required:'Seleziona il motivo dell’annullamento.',sale_cancel_admin_required:'Questa vendita richiede la conferma di Admin/Amministrazione.',sale_cancel_forbidden:'Non hai il permesso di annullare questa vendita.',sale_cancel_unauthorized:'Sessione non autorizzata all’annullamento.',sale_cancel_delivered_forbidden:'Una vendita già consegnata non può essere annullata.',sale_cancel_metadata_locked:'Il motivo di una vendita annullata non può più essere modificato.',sale_delivery_role_forbidden:'Solo Admin o Amministrazione possono confermare la consegna finale.',sale_delivery_unauthorized:'Sessione non autorizzata alla consegna.',sale_vehicle_missing:'Auto collegata alla vendita non trovata.',vehicle_plate_required:'Inserisci la targa prima della consegna.',vehicle_vin_required:'Inserisci il VIN prima della consegna.',vehicle_vin_invalid:'Il VIN non è valido.',vehicle_photo_required:'Aggiungi almeno una foto dell’auto prima della consegna.',sale_delivered_terminal:'La vendita è già consegnata e non può essere riaperta.',sale_cancelled_terminal:'La vendita è annullata e non può essere riaperta.'}
   const key=Object.keys(known).find(k=>raw.includes(k))
   return key?known[key]:raw
 }
