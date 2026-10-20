@@ -1,0 +1,19 @@
+.reservation-alert-banner{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:14px 16px;border:1px solid #ddbc80;border-left:4px solid #be882f;border-radius:14px;background:#fff8ed;color:#62451f;text-align:left;font-weight:850;font-size:12px}
+.reservation-alert-banner svg{width:18px;flex:none}
+.reservation-deadline-status{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px;border:1px solid #dce6da;border-radius:12px;background:#f3f8f0}
+.reservation-deadline-status b{font-size:12px}.reservation-deadline-status span{font-size:10px;font-weight:750}
+.reservation-deadline-status.soon{background:#fff6e8;border-color:#eed3a3;color:#825621}
+.reservation-deadline-status.overdue{background:#fff0ee;border-color:#efc3bc;color:#993a32}
+.reservation-deadline-hint{display:flex;align-items:flex-start;gap:7px;margin:10px 0;color:#69717a;font-size:10px;line-height:1.5}
+.reservation-deadline-hint svg{flex:none;margin-top:1px}
+.reservation-deadline-locked{display:flex;align-items:center;gap:7px;margin-top:12px;color:#76551d;font-size:10px;font-weight:700}
+.reservation-deadline-panel .soft-action,.sale360-section .soft-action{margin-top:10px;border:1px solid #dac6a3;border-radius:12px;background:#faf2e2;color:#6b4b1e;padding:10px 12px;font-weight:850;font-size:11px}
+.reservation-extension-form{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid #ebe6df}
+.reservation-extension-form label{display:grid;gap:5px;font-size:10px;font-weight:850;color:#595c60}
+.reservation-extension-form input,.reservation-extension-form select{height:40px;width:100%;padding:0 11px;border:1px solid #d8d5ce;border-radius:10px;background:#fff;color:#272d36;font-size:12px}
+.reservation-extension-form p{font-size:11px;margin:0}
+.reservation-extension-buttons{display:flex;flex-wrap:wrap;gap:9px}
+.reservation-extension-buttons button{min-height:39px;padding:0 13px;border:1px solid #d8c29b;border-radius:10px;background:#f6ead5;color:#694916;display:inline-flex;gap:6px;align-items:center;font-size:11px;font-weight:900}
+.reservation-extension-buttons button:last-child{background:#fff;border-color:#e4e0d9;color:#59616b}
+.reservation-extension-buttons button:disabled{opacity:.5}
+@media(max-width:600px){.reservation-alert-banner{font-size:11px}.reservation-deadline-status{align-items:flex-start;flex-direction:column}}
