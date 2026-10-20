@@ -7,6 +7,7 @@ import {buildSale360} from '../domain/sale360'
 import {buildDeliveryGate} from '../domain/deliveryGate'
 import {SaleCancellationPanel} from './SaleCancellationPanel'
 import {ReservationDeadlinePanel} from './ReservationDeadlinePanel'
+import {ReservationHistoryPanel} from './ReservationHistoryPanel'
 import type {Contract,SessionPayload,TenantData} from '../types'
 
 const stageLabel=(value?:string|null)=>({OPEN:'Aperta',AGREED:'Accordo',DEPOSIT:'Caparra',BALANCE_PENDING:'Saldo da chiudere',READY:'Pronta consegna',DELIVERED:'Consegnata',CANCELLED:'Annullata'}[String(value||'')]||String(value||'Non aperta').replaceAll('_',' '))
@@ -41,6 +42,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    </section>
 
    <ReservationDeadlinePanel contract={contract} session={session} busy={deliveryBusy} onExtend={onExtendReservation}/>
+   <ReservationHistoryPanel contract={contract}/>
    <SaleCancellationPanel contract={contract} session={session} busy={deliveryBusy} onCancel={onCancel}/>
 
    {!terminal&&<section className={'sale360-gate '+(gate.canDeliver?'ready':'blocked')} data-testid="delivery-gate">
