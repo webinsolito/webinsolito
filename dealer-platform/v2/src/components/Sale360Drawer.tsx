@@ -6,6 +6,7 @@ import {money} from '../lib/format'
 import {buildSale360} from '../domain/sale360'
 import {buildDeliveryGate} from '../domain/deliveryGate'
 import {SaleCancellationPanel} from './SaleCancellationPanel'
+import {ReservationDeadlinePanel} from './ReservationDeadlinePanel'
 import type {Contract,SessionPayload,TenantData} from '../types'
 
 const stageLabel=(value?:string|null)=>({OPEN:'Aperta',AGREED:'Accordo',DEPOSIT:'Caparra',BALANCE_PENDING:'Saldo da chiudere',READY:'Pronta consegna',DELIVERED:'Consegnata',CANCELLED:'Annullata'}[String(value||'')]||String(value||'Non aperta').replaceAll('_',' '))
@@ -13,7 +14,7 @@ const dateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new
 const person=(c?:TenantData['customers'][number])=>c?[c.first_name,c.last_name].filter(Boolean).join(' ')||'Cliente':'Cliente non disponibile'
 const vehicle=(v?:TenantData['vehicles'][number])=>v?[v.brand,v.model,v.version].filter(Boolean).join(' ')||'Auto':'Auto non disponibile'
 
-export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onDeliver,onCancel,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;deliveryBusy?:boolean}){
+export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onDeliver,onCancel,onExtendReservation,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;onExtendReservation:(iso:string,reason:string)=>Promise<void>;deliveryBusy?:boolean}){
  const summary=buildSale360(data,contract,new Date().toISOString())
  const financeVisible=canSeeFinance(session)
  const deliveryWritable=canWriteContracts(session)
@@ -39,6 +40,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
      <button onClick={onOpenDeadlines}><FileText/><span><b>Pratiche</b><small>{summary.practices.length} aperte</small></span></button>
    </section>
 
+   <ReservationDeadlinePanel contract={contract} session={session} busy={deliveryBusy} onExtend={onExtendReservation}/>
    <SaleCancellationPanel contract={contract} session={session} busy={deliveryBusy} onCancel={onCancel}/>
 
    {!terminal&&<section className={'sale360-gate '+(gate.canDeliver?'ready':'blocked')} data-testid="delivery-gate">

@@ -1,7 +1,8 @@
 import type {CollectionTask} from './collections'
 import type {TenantData} from '../types'
+import {reservesVehicle} from './saleReservation'
 
-export type DeadlineKind='CUSTOMER'|'APPOINTMENT'|'DELIVERY'|'DOCUMENT'|'WORK'|'COLLECTION'
+export type DeadlineKind='CUSTOMER'|'APPOINTMENT'|'DELIVERY'|'DOCUMENT'|'WORK'|'COLLECTION'|'RESERVATION'
 export type DeadlineBucket='OVERDUE'|'TODAY'|'UPCOMING'
 export interface DeadlineItem{
  id:string;kind:DeadlineKind;title:string;detail:string;date:string;bucket:DeadlineBucket;urgency:number;
@@ -58,6 +59,13 @@ export function buildDeadlineSummary(data:TenantData,today:string,collections:Co
   if(duplicate)continue
   const car=vehicleName(data,sale.vehicle_id),client=customerName(data,sale.customer_id),stage=String(sale.sale_stage||'OPEN').replaceAll('_',' ')
   items.push({id:'sale:'+sale.id,kind:'DELIVERY',title:'Consegna '+(car||'veicolo'),detail:[client,stage].filter(Boolean).join(' · '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+(String(sale.sale_stage||'').toUpperCase()==='READY'?1:0),customerId:sale.customer_id,vehicleId:sale.vehicle_id,saleId:sale.id})
+ }
+
+ for(const sale of data.contracts){
+  if(!reservesVehicle(sale)||!sale.reservation_expires_at)continue
+  const date=day(sale.reservation_expires_at)
+  const car=vehicleName(data,sale.vehicle_id),client=customerName(data,sale.customer_id)
+  items.push({id:'reservation:'+sale.id,kind:'RESERVATION',title:'Verifica prenotazione '+(car||'veicolo'),detail:[client,sale.contract_number,'La scadenza non libera l’auto'].filter(Boolean).join(' · '),date,bucket:bucketOf(date,today),urgency:urgencyOf(date,today)+1,customerId:sale.customer_id,vehicleId:sale.vehicle_id,saleId:sale.id})
  }
 
  for(const task of collections){
