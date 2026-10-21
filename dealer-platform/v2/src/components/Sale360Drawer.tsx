@@ -26,7 +26,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
  const checklistWritable=canWriteGarage(session)
  const gate=buildDeliveryGate(data,contract,financeVisible)
  const guidedCheck=focusCheckId&&Object.prototype.hasOwnProperty.call(GUIDED_HINTS,focusCheckId)?gate.checks.find(check=>check.id===focusCheckId&&check.state==='BLOCK'):undefined
- const drawerRef=useRef<HTMLElement>(null)
+ const drawerRef=useRef<HTMLAsideElement>(null)
  useEffect(()=>{
   if(!guidedCheck)return
   const frame=window.requestAnimationFrame(()=>{
