@@ -1,7 +1,7 @@
 import type {Contract,TenantData} from '../types'
 
 export type SalesSegment='ACTIVE'|'DELIVERED'|'CANCELLED'
-export type SalesListFilter='ALL'|SalesSegment
+export type SalesListFilter='ALL'|'TO_COMPLETE'|SalesSegment
 
 export function salesSegment(contract:Contract):SalesSegment{
  const stage=String(contract.sale_stage||'OPEN').toUpperCase()
@@ -15,7 +15,7 @@ export function salesSegmentCounts(contracts:Contract[]){
 }
 
 export function filterSalesSegment(contracts:Contract[],segment:SalesListFilter){
- return segment==='ALL'?contracts:contracts.filter(contract=>salesSegment(contract)===segment)
+ return segment==='ALL'?contracts:contracts.filter(contract=>salesSegment(contract)===(segment==='TO_COMPLETE'?'ACTIVE':segment))
 }
 
 const normalizeSearch=(value:string)=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('it-IT').trim()
