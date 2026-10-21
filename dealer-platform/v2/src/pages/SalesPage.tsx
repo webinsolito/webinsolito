@@ -1,11 +1,12 @@
 import {useEffect,useMemo,useState} from 'react'
 import {CalendarClock,CheckCircle2,ClipboardCheck,Euro,Plus,ShieldCheck,ShoppingBag,UserRound,X} from 'lucide-react'
-import {canWriteGarage,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
+import {canWriteGarage,clearMatchingReservationCallback,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
 import {cancelSaleContract,canWriteContracts,createSaleContract,extendSaleReservation,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import {Sale360Drawer} from '../components/Sale360Drawer'
 import {filterSalesSegment,salesSegment,salesSegmentCounts,type SalesSegment} from '../domain/salesView'
 import {reservationLabel,reservesVehicle,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts,reservationAlert} from '../domain/reservationDeadlines'
+import {latestReservationCompletion,reservationCompletionTitle,reservationNextStep,type ReservationFollowupWindow} from '../domain/reservationFollowup'
 import type {Contract,SaleDraft,SessionPayload,TenantData} from '../types'
 
 const DELIVERY_ITEMS=['Contratto firmato','Saldo verificato','Passaggio / documenti completati','Libretto e documenti pronti','Preparazione auto completata','Doppie chiavi presenti','Garanzia / documentazione consegnata']
@@ -59,6 +60,27 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
     }catch(err){const message=err instanceof Error?err.message:'Impossibile pianificare il richiamo';setError(message);throw new Error(message)}
     finally{setBusy(false)}
   }
+  const completeReservationCallback=async(contract:Contract,window:ReservationFollowupWindow,note:string)=>{
+    const customer=data.customers.find(c=>c.id===contract.customer_id)
+    if(!customer||customer.dealer_id!==session.dealer.id)throw new Error('Cliente non disponibile nella concessionaria')
+    setBusy(true);setError('')
+    let logged=false
+    try{
+      const existing=latestReservationCompletion(contract,data.customerInteractions.filter(x=>x.dealer_id===session.dealer.id),window)
+      if(!existing){
+        await logCustomerInteraction(customer,{channel:'NOTE',title:reservationCompletionTitle(contract,window,note)})
+        logged=true
+      }
+      if(customer.next_step===reservationNextStep(contract)){
+        await clearMatchingReservationCallback(customer,reservationNextStep(contract))
+      }
+      await onRefresh()
+    }catch(err){
+      if(logged)await onRefresh().catch(()=>undefined)
+      const message=err instanceof Error?err.message:'Impossibile completare il richiamo'
+      setError(message);throw new Error(message)
+    }finally{setBusy(false)}
+  }
   const ensureChecklist=async(contract:Contract)=>{setBusy(true);setError('');try{const existing=new Set(data.workItems.filter(w=>w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA').map(w=>String(w.title||'').trim()));for(const title of DELIVERY_ITEMS){if(!existing.has(title))await saveWorkItem(contract.vehicle_id,{title,category:'CONSEGNA',priority:'HIGH',note:'Checklist consegna vendita'});}await onRefresh()}catch(err){setError(err instanceof Error?err.message:'Errore checklist consegna')}finally{setBusy(false)}}
 
   return <>
@@ -79,6 +101,6 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       const terminal=stage==='DELIVERED'||stage==='CANCELLED'
       return <article className={`sale-card ${terminal?'is-terminal':''} ${focusedVehicleId===contract.vehicle_id||focusedCustomerId===contract.customer_id?'vehicle-focus':''}`} key={contract.id} data-testid="sale-card" data-vehicle-id={contract.vehicle_id}><div className="sale-card-head"><div><span className="sale-number">{contract.contract_number}</span><h3>{vehicleName(vehicle)}</h3><p><UserRound/> {personName(customer)}</p></div><span className={`sale-stage stage-${stage.toLowerCase()}`}>{STAGE_LABELS[stage]||stage}</span></div>{reservesVehicle(contract)&&<p className="sale-reservation-owner" data-testid="sale-reservation-owner">🔒 Auto prenotata per {personName(customer)} · vendita {contract.contract_number}{reservationAlert(contract,new Date().toISOString())==='OVERDUE'?' · SCADUTA':reservationAlert(contract,new Date().toISOString())==='SOON'?' · IN SCADENZA':''}</p>}<div className="sale-kpis"><div><Euro/><span>Prezzo</span><b>{money(contract.price)}</b></div><div><Euro/><span>Caparra</span><b>{money(contract.deposit)}</b></div><div><CalendarClock/><span>Consegna</span><b>{localDateTime(contract.planned_delivery_at)}</b></div><div><ClipboardCheck/><span>Checklist</span><b>{checklistDone}/{DELIVERY_ITEMS.length}</b></div></div><div className="sale-progress">{STAGES.map(s=><span key={s} className={STAGES.indexOf(s)<=STAGES.indexOf(stage as typeof STAGES[number])?'done':''}>{STAGE_LABELS[s]}</span>)}</div><div className="sale-status-line"><span>Contratto: <b>{contract.status||'DRAFT'}</b></span>{stage==='READY'&&<span>{contract.status==='SIGNED'?'Contratto firmato':'Firma contratto ancora necessaria'}</span>}<button className="sale360-open" data-testid="open-sale-360" aria-label={`Apri Scheda Vendita 360° ${contract.contract_number}`} onClick={()=>setSale360Id(contract.id)}>Scheda 360°</button></div>{writable&&!terminal&&<div className="sale-actions">{checklistWritable&&<button className="soft-action" disabled={busy} onClick={()=>void ensureChecklist(contract)}><ClipboardCheck/> Prepara checklist</button>}{next&&<button disabled={busy} onClick={()=>void move(contract,next)}><CheckCircle2/> Avanza a {STAGE_LABELS[next]}</button>}{stage==='READY'&&<button className="delivery-action" disabled={busy} onClick={()=>setSale360Id(contract.id)}><ShieldCheck/> Verifica consegna</button>}</div>}</article>
     })}{!sales.length&&!creating&&<div className="empty-state">{segment==='ACTIVE'?'Nessuna vendita attiva. Crea una pratica quando un cliente conferma l’auto.':segment==='DELIVERED'?'Nessuna vendita consegnata.':'Nessuna vendita annullata.'}</div>}</div>
-    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} onClose={()=>setSale360Id(null)} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} deliveryBusy={busy} />}
+    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} onClose={()=>setSale360Id(null)} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
   </>
 }
