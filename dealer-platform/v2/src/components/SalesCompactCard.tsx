@@ -3,6 +3,7 @@ import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {reservesVehicle} from '../domain/saleReservation'
 import {salesPriorityLabel,type SalesPriority} from '../domain/salesSorting'
+import type {SalesCompletionStatus} from '../domain/salesCompletion'
 import type {Contract,Customer,Vehicle} from '../types'
 
 const STAGES=['OPEN','AGREED','DEPOSIT','BALANCE_PENDING','READY','DELIVERED'] as const
@@ -16,9 +17,9 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,defaultExpanded=false,onOpen,onChecklist,onAdvance,onDelivery}:{
+export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onChecklist,onAdvance,onDelivery}:{
  contract:Contract;customer?:Customer;vehicle?:Vehicle;checklistDone:number;checklistTotal:number
- focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;defaultExpanded?:boolean
+ focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;completion?:SalesCompletionStatus;defaultExpanded?:boolean
  onOpen:()=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
  const [expanded,setExpanded]=useState(defaultExpanded)
@@ -55,6 +56,11 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
    <LockKeyhole size={15}/> Auto prenotata per {customerName} · vendita {contract.contract_number}
    {alert==='OVERDUE'?' · SCADUTA':alert==='SOON'?' · IN SCADENZA':''}
   </p>}
+  {completion&&<div className="sale-compact-completion" data-testid="sale-completion-checks">
+    <strong>{completion.count} {completion.count===1?'verifica operativa da completare':'verifiche operative da completare'}</strong>
+    <span>{completion.checks.slice(0,3).map(check=>check.label).join(' · ')}{completion.count>3?' · +'+(completion.count-3)+' altre':''}</span>
+    <small>Per la consegna definitiva verifica anche il gate completo nella Vendita 360°.</small>
+  </div>}
   {hasActions&&<div className="sale-actions sale-compact-actions" data-testid="sale-card-quick-actions">
    {checklistWritable&&<button type="button" className="soft-action" disabled={busy} onClick={onChecklist}><ClipboardCheck/> Prepara checklist</button>}
    {next&&<button type="button" disabled={busy} onClick={()=>onAdvance(next)}><CheckCircle2/> Avanza a {stageName[next]}</button>}
