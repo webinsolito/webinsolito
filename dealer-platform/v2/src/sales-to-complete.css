@@ -1,0 +1,17 @@
+/* Modifica 38 · operational completion filter, consistent with the Sale360 delivery gate. */
+.sales-segments button[data-testid="sales-tab-to-complete"] span{white-space:nowrap}
+.sales-segments button[data-testid="sales-tab-to-complete"].active{background:#805b32;color:#fff}
+.sale-card-compact .sale-compact-completion{
+ display:grid;gap:5px;margin:0;padding:11px 17px;
+ background:#fff9ef;border-top:1px solid #efe0c7;color:#785829
+}
+.sale-card-compact .sale-compact-completion strong{font-size:11px;font-weight:900;line-height:1.3}
+.sale-card-compact .sale-compact-completion span{font-size:10px;line-height:1.5;color:#805f34}
+.sale-card-compact .sale-compact-completion small{font-size:9px;line-height:1.45;color:#96836c}
+@media(max-width:760px){
+ .sales-segments{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+ .sales-segments button{grid-column:span 2;min-width:0;min-height:43px;padding:4px}
+ .sales-segments button:nth-child(n+4){grid-column:span 3}
+ .sales-segments button[data-testid="sales-tab-to-complete"] span{font-size:9px}
+ .sale-card-compact .sale-compact-completion{padding:10px 13px}
+}
