@@ -5,10 +5,10 @@ const C='33333333-3333-3333-3333-333333333333'
 const V='22222222-2222-2222-2222-222222222222'
 const iso=(days:number)=>new Date(Date.now()+days*86400000).toISOString()
 const json=(route:any,data:unknown)=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})
-async function boot(page:Page,{role='VENDITORE'}:{role?:string}={}){
+async function boot(page:Page,{role='VENDITORE',fullyReady=false}:{role?:string;fullyReady?:boolean}={}){
  const state={contractWrites:0,vehicleWrites:0,financeRequests:0}
  const customers=[{id:C,dealer_id:DEALER,first_name:'Giulia',last_name:'Rossi'}]
- const vehicles=[{id:V,dealer_id:DEALER,brand:'BMW',model:'X1',plate:'AB123CD',status:'PRENOTATA',asking_price:28000}]
+ const vehicles=[{id:V,dealer_id:DEALER,brand:'BMW',model:'X1',plate:'AB123CD',vin:fullyReady?'WBA12345678901234':undefined,status:'PRENOTATA',asking_price:28000}]
  const contracts=[
   {id:'sale-active',dealer_id:DEALER,vehicle_id:V,customer_id:C,contract_number:'V-COMPACT-1',contract_date:'2026-10-20',
    template_code:'VENDITA',status:'DRAFT',sale_stage:'AGREED',price:28000,deposit:1500,reservation_expires_at:iso(-2)},
@@ -28,7 +28,8 @@ async function boot(page:Page,{role='VENDITORE'}:{role?:string}={}){
   if(path==='/rest/v1/vehicles'){if(req.method()!=='GET')state.vehicleWrites++;return json(route,vehicles)}
   if(path==='/rest/v1/contracts'){if(req.method()!=='GET')state.contractWrites++;return json(route,contracts)}
   if(path==='/rest/v1/customers')return json(route,customers)
-  if(path==='/rest/v1/vehicle_work_items')return json(route,[{id:'a',dealer_id:DEALER,vehicle_id:V,category:'CONSEGNA',title:'Contratto firmato',status:'DONE'}])
+  if(path==='/rest/v1/vehicle_work_items')return json(route,fullyReady?['Contratto firmato','Saldo verificato','Passaggio / documenti completati','Libretto e documenti pronti','Preparazione auto completata','Doppie chiavi presenti','Garanzia / documentazione consegnata'].map((title,i)=>({id:'done'+i,dealer_id:DEALER,vehicle_id:V,category:'CONSEGNA',title,status:'DONE'})):[{id:'a',dealer_id:DEALER,vehicle_id:V,category:'CONSEGNA',title:'Contratto firmato',status:'DONE'}])
+  if(path==='/rest/v1/vehicle_media')return json(route,fullyReady?[{id:'photo',dealer_id:DEALER,vehicle_id:V,kind:'PHOTO',object_key:'demo.jpg'}]:[])
   if(['/rest/v1/vehicle_financials','/rest/v1/vehicle_costs','/rest/v1/invoices'].includes(path)){state.financeRequests++;return json(route,[])}
   if(path.startsWith('/rest/v1/'))return json(route,[])
   return route.fulfill({status:404,contentType:'application/json',body:'{}'})
@@ -241,4 +242,59 @@ test('Mod37: ricerca temporanea non viene salvata né sostituisce il filtro pref
  await page.getByTestId('sales-search-clear').click()
  await expect(page.getByTestId('sales-tab-delivered')).toHaveAttribute('aria-selected','true')
  await expect(page.getByTestId('sale-card')).toHaveCount(1)
+})
+
+test('Mod38 filtro Da completare mostra solo contratti attivi con controlli mancanti',async({page})=>{
+ const state=await boot(page)
+ const tab=page.getByTestId('sales-tab-to-complete')
+ await expect(page.getByTestId('sales-to-complete-count')).toHaveText('2')
+ await tab.click()
+ await expect(tab).toHaveAttribute('aria-selected','true')
+ const rows=page.getByTestId('sale-card')
+ await expect(rows).toHaveCount(2)
+ await expect(rows.first().getByTestId('sale-completion-checks')).toContainText('verifiche operative da completare')
+ await expect(rows.first().getByTestId('sale-completion-checks')).toContainText('Vendita pronta consegna')
+ await expect(rows.first().getByTestId('sale-completion-checks')).not.toContainText('Fattura')
+ await expect(rows.first().getByRole('button',{name:'Avanza a Caparra'})).toBeVisible()
+ await rows.first().getByTestId('open-sale-360').click()
+ await expect(page.getByTestId('sale-360').locator('header h2')).toHaveText('V-COMPACT-1')
+ expect(state.contractWrites).toBe(0)
+ expect(state.vehicleWrites).toBe(0)
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod38 una vendita READY operativamente completa esce dal filtro senza oscurare la verifica amministrativa',async({page})=>{
+ const state=await boot(page,{fullyReady:true})
+ await expect(page.getByTestId('sales-to-complete-count')).toHaveText('1')
+ await page.getByTestId('sales-tab-to-complete').click()
+ await expect(page.getByTestId('sale-card')).toHaveCount(1)
+ await expect(page.getByTestId('sale-card')).toHaveAttribute('data-sale-id','sale-active')
+ await expect(page.getByTestId('sale-completion-checks')).toContainText('Vendita pronta consegna')
+ await expect(page.getByTestId('sales-sort-priority')).toHaveAttribute('aria-pressed','true')
+ await page.getByTestId('sales-tab-active').click()
+ await expect(page.getByTestId('sale-card')).toHaveCount(2)
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod38 ricerca, ordinamento e preferenza Da completare restano coerenti dopo riavvio',async({page})=>{
+ const state=await boot(page)
+ await page.getByTestId('sales-tab-to-complete').click()
+ await page.getByTestId('sales-sort-delivery').click()
+ await expect(page.getByTestId('sale-card').first()).toHaveAttribute('data-sale-id','sale-ready')
+ const search=page.getByTestId('sales-quick-search')
+ await search.fill('V-COMPACT-4')
+ await expect(page.getByTestId('sales-tab-all')).toHaveAttribute('aria-selected','true')
+ await expect(page.getByTestId('sale-card')).toHaveCount(1)
+ await page.getByTestId('sales-search-clear').click()
+ await expect(page.getByTestId('sales-tab-to-complete')).toHaveAttribute('aria-selected','true')
+ await expect(page.getByTestId('sale-card')).toHaveCount(2)
+ await page.reload()
+ await expect(page.getByRole('heading',{name:'Oggi'})).toBeVisible()
+ const mobile=(page.viewportSize()?.width||1200)<=760
+ await (mobile?page.locator('.mobile-nav button').filter({hasText:'Vendite'}):page.locator('.sidebar nav button').filter({hasText:'Vendite'})).click()
+ await expect(page.getByTestId('sales-tab-to-complete')).toHaveAttribute('aria-selected','true')
+ await expect(page.getByTestId('sales-sort-delivery')).toHaveAttribute('aria-pressed','true')
+ await expect(page.getByTestId('sales-quick-search')).toHaveValue('')
+ await expect(page.getByTestId('sale-card')).toHaveCount(2)
+ expect(state.contractWrites).toBe(0)
+ expect(state.vehicleWrites).toBe(0)
+ expect(state.financeRequests).toBe(0)
 })
