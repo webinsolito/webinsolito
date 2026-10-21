@@ -53,6 +53,9 @@ test('Mod35 scheda compatta mostra dati essenziali e prenotazione urgente senza 
  await expect(card.locator('details')).not.toHaveAttribute('open','')
  await expect(card.locator('.sale-kpis')).not.toBeVisible()
  await expect(card.getByTestId('open-sale-360')).toBeVisible()
+ // Regressione Mod35: le azioni più frequenti devono restare disponibili senza espandere la scheda.
+ await expect(card.getByRole('button',{name:'Avanza a Caparra'})).toBeVisible()
+ await expect(card.getByRole('button',{name:'Prepara checklist'})).toBeVisible()
  expect(state.contractWrites).toBe(0)
  expect(state.vehicleWrites).toBe(0)
  expect(state.financeRequests).toBe(0)
