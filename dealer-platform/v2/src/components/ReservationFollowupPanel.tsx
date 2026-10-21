@@ -3,7 +3,7 @@ import {AlertTriangle,CalendarClock,CheckCircle2,ClipboardList,LockKeyhole,Mail,
 import {
  RESERVATION_CONTACT_OUTCOMES,followupForReservation,isOverdueReservation,isUpcomingReservation,validPreventiveCallback,
  reservationContactPhone,reservationContactTitle,reservationFollowupPrefix,
- reservationNextStep,validReservationCallback,type ReservationContactOutcome
+ reservationNextStep,validReservationCallback,latestReservationCompletion,reservationCompletionPrefix,type ReservationFollowupWindow,type ReservationContactOutcome
 } from '../domain/reservationFollowup'
 import type {Contract,Customer,CustomerInteraction} from '../types'
 
@@ -13,10 +13,11 @@ const dateTime=(iso?:string|null)=>{
  return Number.isNaN(d.getTime())?'—':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
 }
 
-export function ReservationFollowupPanel({contract,customer,interactions,writable,onLog,onPlan}:{
+export function ReservationFollowupPanel({contract,customer,interactions,writable,onLog,onPlan,onComplete}:{
  contract:Contract;customer?:Customer;interactions:CustomerInteraction[];writable:boolean;
  onLog:(channel:string,title:string)=>Promise<void>;
- onPlan:(nextStep:string,iso:string)=>Promise<void>
+ onPlan:(nextStep:string,iso:string)=>Promise<void>;
+ onComplete:(window:ReservationFollowupWindow,note:string)=>Promise<void>
 }){
  const [channel,setChannel]=useState('TELEFONO')
  const [outcome,setOutcome]=useState<ReservationContactOutcome>('NO_REPLY')
@@ -26,13 +27,17 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
  const [busy,setBusy]=useState(false)
  const [error,setError]=useState('')
  const [success,setSuccess]=useState('')
+ const [completionNote,setCompletionNote]=useState('')
  const upcoming=isUpcomingReservation(contract,new Date().toISOString())
  if(!upcoming&&!isOverdueReservation(contract,new Date().toISOString()))return null
  const history=followupForReservation(contract,interactions)
+ const window:ReservationFollowupWindow=upcoming?'SOON':'OVERDUE'
+ const completed=latestReservationCompletion(contract,interactions,window)
  const nextStep=reservationNextStep(contract)
  const conflictingAction=Boolean(customer?.next_step&&customer.next_step!==nextStep)
  const canSchedule=Boolean(callbackAt&&validReservationCallback(callbackAt,new Date().toISOString())&&(!upcoming||validPreventiveCallback(callbackAt,contract.reservation_expires_at,new Date().toISOString()))&&(!conflictingAction||confirmOverwrite))
  const phone=reservationContactPhone(customer?.phone)
+ const hasLinkedAction=customer?.next_step===nextStep
  const save=async()=>{
   setError('');setSuccess('')
   if(!customer){setError('Cliente non disponibile: nessuna registrazione eseguita.');return}
@@ -53,6 +58,18 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
    setSuccess('Richiamo salvato nella scheda cliente. L’auto resta prenotata.')
    setConfirmOverwrite(false)
   }catch(e){setError(e instanceof Error?e.message:'Richiamo non salvato')}
+  finally{setBusy(false)}
+ }
+ const finish=async()=>{
+  setError('');setSuccess('')
+  if(!customer){setError('Cliente non disponibile.');return}
+  if(!completed&&completionNote.trim().length<4){setError('Descrivi brevemente il risultato del richiamo.');return}
+  try{
+   setBusy(true)
+   await onComplete(window,completed?'Richiamo già registrato':completionNote)
+   setCompletionNote('')
+   setSuccess('Richiamo completato e registrato nel CRM. La prenotazione resta invariata.')
+  }catch(e){setError(e instanceof Error?e.message:'Richiamo non completato')}
   finally{setBusy(false)}
  }
  return <section className={'sale360-section reservation-followup-panel'+(upcoming?' preventive':'')} data-testid="reservation-followup-panel" data-booking-state={upcoming?'SOON':'OVERDUE'}>
@@ -99,6 +116,18 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
     <button type="button" className="reservation-followup-secondary" data-testid="reservation-followup-plan"
      disabled={busy||!canSchedule} onClick={()=>void schedule()}><CalendarClock size={16}/> {busy?'Salvataggio…':'Salva richiamo'}</button>
    </div>
+   <div className="reservation-followup-completion" data-testid="reservation-followup-completion">
+    <div className="reservation-followup-subhead"><CheckCircle2 size={17}/><strong>3. Chiudi il richiamo svolto</strong></div>
+    {completed&&<p className="reservation-followup-completed" data-testid="reservation-followup-completed"><CheckCircle2 size={17}/> Completato il {dateTime(completed.happened_at||completed.created_at)}. Resta nello storico CRM; la prenotazione non è annullata.</p>}
+    {!completed&&<label className="reservation-followup-completion-label">Esito dell'attività (obbligatorio)
+     <textarea aria-label="Nota chiusura richiamo" rows={2} maxLength={180} value={completionNote} disabled={busy}
+      placeholder="Es. contattato il cliente, conferma ricevuta" onChange={e=>setCompletionNote(e.target.value)}/>
+    </label>}
+    {(!completed||hasLinkedAction)&&<button type="button" className="reservation-followup-finish" data-testid="reservation-followup-finish"
+     disabled={busy||(!completed&&completionNote.trim().length<4)} onClick={()=>void finish()}>
+     <CheckCircle2 size={16}/> {busy?'Salvataggio…':completed?'Completa chiusura promemoria CRM':'Segna richiamo completato'}
+    </button>}
+   </div>
   </>}
   {error&&<div className="form-error" role="alert">{error}</div>}
   {success&&<div className="reservation-followup-success" role="status">{success}</div>}
@@ -106,7 +135,7 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
    <strong>Ultimi ricontatti della prenotazione</strong>
    {history.length?history.slice(0,4).map(x=><div key={x.id} className="reservation-followup-event">
     <small>{dateTime(x.happened_at||x.created_at)} · {x.channel||'NOTA'}</small>
-    <span>{x.title?.slice(reservationFollowupPrefix(contract).length)}</span>
+    <span>{x.title?.startsWith(reservationCompletionPrefix(contract,'SOON'))?'Richiamo completato · '+x.title.slice(reservationCompletionPrefix(contract,'SOON').length):x.title?.startsWith(reservationCompletionPrefix(contract,'OVERDUE'))?'Richiamo completato · '+x.title.slice(reservationCompletionPrefix(contract,'OVERDUE').length):x.title?.slice(reservationFollowupPrefix(contract).length)}</span>
    </div>):<p>Nessun ricontatto registrato per questa vendita.</p>}
   </div>
   <p className="reservation-followup-footer"><AlertTriangle size={14}/> Se il cliente rinuncia, utilizza separatamente <strong>“Annulla vendita”</strong> con le autorizzazioni previste. Un esito “Rinuncia da verificare” non annulla nulla.</p>
