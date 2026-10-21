@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {AlertTriangle,CalendarClock,CheckCircle2,ClipboardList,LockKeyhole,Mail,Phone,PhoneCall} from 'lucide-react'
 import {
- RESERVATION_CONTACT_OUTCOMES,followupForReservation,isOverdueReservation,
+ RESERVATION_CONTACT_OUTCOMES,followupForReservation,isOverdueReservation,isUpcomingReservation,validPreventiveCallback,
  reservationContactPhone,reservationContactTitle,reservationFollowupPrefix,
  reservationNextStep,validReservationCallback,type ReservationContactOutcome
 } from '../domain/reservationFollowup'
@@ -26,11 +26,12 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
  const [busy,setBusy]=useState(false)
  const [error,setError]=useState('')
  const [success,setSuccess]=useState('')
- if(!isOverdueReservation(contract,new Date().toISOString()))return null
+ const upcoming=isUpcomingReservation(contract,new Date().toISOString())
+ if(!upcoming&&!isOverdueReservation(contract,new Date().toISOString()))return null
  const history=followupForReservation(contract,interactions)
  const nextStep=reservationNextStep(contract)
  const conflictingAction=Boolean(customer?.next_step&&customer.next_step!==nextStep)
- const canSchedule=Boolean(callbackAt&&validReservationCallback(callbackAt,new Date().toISOString())&&(!conflictingAction||confirmOverwrite))
+ const canSchedule=Boolean(callbackAt&&validReservationCallback(callbackAt,new Date().toISOString())&&(!upcoming||validPreventiveCallback(callbackAt,contract.reservation_expires_at,new Date().toISOString()))&&(!conflictingAction||confirmOverwrite))
  const phone=reservationContactPhone(customer?.phone)
  const save=async()=>{
   setError('');setSuccess('')
@@ -45,7 +46,7 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
  }
  const schedule=async()=>{
   setError('');setSuccess('')
-  if(!customer||!canSchedule){setError('Scegli una data futura valida (entro 30 giorni).');return}
+  if(!customer||!canSchedule){setError(upcoming?'Scegli un richiamo prima della scadenza della prenotazione.':'Scegli una data futura valida (entro 30 giorni).');return}
   try{
    setBusy(true)
    await onPlan(nextStep,new Date(callbackAt).toISOString())
@@ -54,10 +55,10 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
   }catch(e){setError(e instanceof Error?e.message:'Richiamo non salvato')}
   finally{setBusy(false)}
  }
- return <section className="sale360-section reservation-followup-panel" data-testid="reservation-followup-panel">
-  <div className="sale360-head"><h3><PhoneCall/> Gestisci prenotazione scaduta</h3></div>
+ return <section className={'sale360-section reservation-followup-panel'+(upcoming?' preventive':'')} data-testid="reservation-followup-panel" data-booking-state={upcoming?'SOON':'OVERDUE'}>
+  <div className="sale360-head"><h3><PhoneCall/> {upcoming?'Previeni la scadenza della prenotazione':'Gestisci prenotazione scaduta'}</h3></div>
   <div className="reservation-followup-warning" data-testid="reservation-followup-lock">
-   <LockKeyhole size={18}/><p><strong>Auto ancora prenotata.</strong> La scadenza è un promemoria: un ricontatto o un richiamo non libera il veicolo. Solo l’annullamento protetto della vendita può farlo.</p>
+   <LockKeyhole size={18}/><p><strong>Auto ancora prenotata.</strong> {upcoming?'Scadrà il '+dateTime(contract.reservation_expires_at)+'. Contatta il cliente e programma il richiamo prima di questa data.':'La scadenza è un promemoria: un ricontatto o un richiamo non libera il veicolo.'} Solo l’annullamento protetto della vendita può liberarlo.</p>
   </div>
   {customer?<div className="reservation-followup-person">
    <div><strong>{[customer.first_name,customer.last_name].filter(Boolean).join(' ')||'Cliente collegato'}</strong><small>Ricontatta il cliente, poi registra l’esito.</small></div>
@@ -87,12 +88,13 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
      disabled={busy||note.trim().length<4} onClick={()=>void save()}><CheckCircle2 size={16}/> {busy?'Salvataggio…':'Registra ricontatto'}</button>
    </div>
    <div className="reservation-followup-subhead"><CalendarClock size={17}/><strong>2. Programma un richiamo (facoltativo)</strong></div>
-   <p className="reservation-followup-explain">Imposta la prossima azione nel CRM. Non modifica la data di prenotazione.</p>
+   <p className="reservation-followup-explain">{upcoming?'Imposta un richiamo prima del termine della prenotazione. Non cambia la scadenza né libera l’auto.':'Imposta la prossima azione nel CRM. Non modifica la data di prenotazione.'}</p>
    {customer.next_step&&<p className="reservation-followup-current">Azione già presente: <strong>{customer.next_step}</strong> {customer.next_contact_at?'· '+dateTime(customer.next_contact_at):''}</p>}
    <div className="reservation-followup-form">
     <label className="reservation-followup-wide">Data e ora richiamo
      <input type="datetime-local" aria-label="Data richiamo prenotazione" value={callbackAt} disabled={busy} onChange={e=>{setCallbackAt(e.target.value);setConfirmOverwrite(false)}}/>
     </label>
+    {upcoming&&callbackAt&&!validPreventiveCallback(callbackAt,contract.reservation_expires_at,new Date().toISOString())&&<p className="reservation-followup-deadline-warning" data-testid="reservation-preventive-deadline-warning">Il richiamo deve essere futuro e svolgersi entro il {dateTime(contract.reservation_expires_at)}. Per spostare la prenotazione usa la proroga autorizzata.</p>}
     {conflictingAction&&<label className="reservation-followup-overwrite"><input type="checkbox" checked={confirmOverwrite} disabled={busy} onChange={e=>setConfirmOverwrite(e.target.checked)}/> Sostituisci la prossima azione CRM esistente (non verrà eliminato lo storico dei contatti).</label>}
     <button type="button" className="reservation-followup-secondary" data-testid="reservation-followup-plan"
      disabled={busy||!canSchedule} onClick={()=>void schedule()}><CalendarClock size={16}/> {busy?'Salvataggio…':'Salva richiamo'}</button>
