@@ -8,7 +8,7 @@ export const DEFAULT_SALES_PREFERENCES:Readonly<SalesPreferences>=Object.freeze(
  sortMode:'PRIORITY',segment:'ACTIVE',viewMode:'COMPACT'
 })
 const SORT_MODES=['PRIORITY','RESERVATION','DELIVERY','RECENT'] as const
-const SEGMENTS=['ALL','ACTIVE','DELIVERED','CANCELLED'] as const
+const SEGMENTS=['ALL','ACTIVE','TO_COMPLETE','DELIVERED','CANCELLED'] as const
 const VIEWS=['COMPACT','EXPANDED'] as const
 const PREFIX='dealer-v2:sales-preferences:v1:'
 
