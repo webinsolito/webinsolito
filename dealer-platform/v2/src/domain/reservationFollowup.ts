@@ -15,6 +15,13 @@ const labels:Record<ReservationContactOutcome,string>={
 export function isOverdueReservation(sale:Contract,nowIso:string){
  return reservationAlert(sale,nowIso)==='OVERDUE'
 }
+export function isUpcomingReservation(sale:Contract,nowIso:string){
+ return reservationAlert(sale,nowIso)==='SOON'
+}
+export function validPreventiveCallback(iso:string,expiry:string|null|undefined,nowIso:string){
+ const expiryMs=expiry?Date.parse(expiry):NaN
+ return validReservationCallback(iso,nowIso)&&Number.isFinite(expiryMs)&&Date.parse(iso)<=expiryMs
+}
 export const reservationFollowupPrefix=(sale:Pick<Contract,'contract_number'>)=>'Prenotazione '+sale.contract_number+' · '
 export function reservationContactTitle(sale:Contract,outcome:ReservationContactOutcome,note:string){
  const cleaned=note.trim().replace(/\s+/g,' ')
