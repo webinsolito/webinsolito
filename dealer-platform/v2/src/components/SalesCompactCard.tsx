@@ -50,8 +50,13 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
    <LockKeyhole size={15}/> Auto prenotata per {customerName} · vendita {contract.contract_number}
    {alert==='OVERDUE'?' · SCADUTA':alert==='SOON'?' · IN SCADENZA':''}
   </p>}
+  {hasActions&&<div className="sale-actions sale-compact-actions" data-testid="sale-card-quick-actions">
+   {checklistWritable&&<button type="button" className="soft-action" disabled={busy} onClick={onChecklist}><ClipboardCheck/> Prepara checklist</button>}
+   {next&&<button type="button" disabled={busy} onClick={()=>onAdvance(next)}><CheckCircle2/> Avanza a {stageName[next]}</button>}
+   {stage==='READY'&&<button type="button" className="delivery-action" disabled={busy} onClick={onDelivery}><ShieldCheck/> Verifica consegna</button>}
+  </div>}
   <details className="sale-compact-expand" data-testid="sale-card-details">
-   <summary aria-label={'Mostra dettagli e azioni '+contract.contract_number}><span>Dettagli{hasActions?' e azioni rapide':''}</span><ChevronDown size={17}/></summary>
+   <summary aria-label={'Mostra dettagli e azioni '+contract.contract_number}><span>Dettagli della vendita</span><ChevronDown size={17}/></summary>
    <div className="sale-compact-expanded">
     <div className="sale-kpis">
      <div><Euro/><span>Prezzo</span><b>{money(contract.price)}</b></div>
@@ -61,11 +66,6 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
     </div>
     <div className="sale-progress" aria-label="Avanzamento vendita">{STAGES.map((item,i)=><span key={item} className={progressIndex>=i?'done':''}>{stageName[item]}</span>)}</div>
     {stage==='READY'&&<p className="sale-compact-signature">{contract.status==='SIGNED'?'Contratto firmato':'Firma contratto ancora necessaria'}</p>}
-    {hasActions&&<div className="sale-actions">
-     {checklistWritable&&<button type="button" className="soft-action" disabled={busy} onClick={onChecklist}><ClipboardCheck/> Prepara checklist</button>}
-     {next&&<button type="button" disabled={busy} onClick={()=>onAdvance(next)}><CheckCircle2/> Avanza a {stageName[next]}</button>}
-     {stage==='READY'&&<button type="button" className="delivery-action" disabled={busy} onClick={onDelivery}><ShieldCheck/> Verifica consegna</button>}
-    </div>}
     <button type="button" className="sale-compact-detail-link" onClick={onOpen}>Apri tutta la Vendita 360° <ChevronRight size={16}/></button>
    </div>
   </details>
