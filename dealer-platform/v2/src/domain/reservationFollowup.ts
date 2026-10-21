@@ -1,5 +1,5 @@
 import type {Contract,CustomerInteraction} from '../types'
-import {reservationAlert} from './reservationDeadlines'
+import {reservationAlert,type ReservationAlert} from './reservationDeadlines'
 
 export type ReservationContactOutcome='NO_REPLY'|'NEEDS_TIME'|'CONFIRMED'|'WITHDRAWAL'
 export const RESERVATION_CONTACT_OUTCOMES=[
@@ -33,6 +33,19 @@ export function followupForReservation(sale:Contract,interactions:CustomerIntera
  const prefix=reservationFollowupPrefix(sale)
  return interactions.filter(x=>x.customer_id===sale.customer_id&&x.title?.startsWith(prefix))
   .sort((a,b)=>String(b.happened_at||b.created_at||'').localeCompare(String(a.happened_at||a.created_at||'')))
+}
+export type ReservationFollowupWindow=Extract<ReservationAlert,'SOON'|'OVERDUE'>
+export const reservationCompletionPrefix=(sale:Contract,window:ReservationFollowupWindow)=>
+ reservationFollowupPrefix(sale)+'Richiamo completato · '+window+' · '+sale.reservation_expires_at+' · '
+export function reservationCompletionTitle(sale:Contract,window:ReservationFollowupWindow,note:string){
+ if(reservationAlert(sale,new Date().toISOString())!==window)throw new Error('Lo stato della prenotazione è cambiato: aggiorna la vendita')
+ const cleaned=note.trim().replace(/\s+/g,' ')
+ if(cleaned.length<4||cleaned.length>180)throw new Error('Inserisci una nota da 4 a 180 caratteri')
+ return reservationCompletionPrefix(sale,window)+cleaned
+}
+export function latestReservationCompletion(sale:Contract,interactions:CustomerInteraction[],window:ReservationFollowupWindow){
+ const last=followupForReservation(sale,interactions)[0]
+ return last?.title?.startsWith(reservationCompletionPrefix(sale,window))?last:null
 }
 export function reservationNextStep(sale:Contract){
  return 'Ricontatto prenotazione '+sale.contract_number

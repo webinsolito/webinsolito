@@ -58,6 +58,19 @@ export async function completeWorkItem(item:VehicleWorkItem){const session=await
 
 export async function saveCustomerNextAction(customer:Customer,draft:CustomerNextActionDraft){const session=await liveSession();requireCustomerWrite(session);const nextStep=String(draft.nextStep||'').trim();if(!nextStep)throw new Error('Inserisci la prossima azione');const rows=await restWrite<Customer[]>(`customers?id=eq.${encodeURIComponent(customer.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{next_step:nextStep,next_contact_at:draft.nextContactAt||null,updated_at:new Date().toISOString()}});return first(rows,'customer_next_action_not_persisted')}
 export async function clearCustomerNextAction(customer:Customer){const session=await liveSession();requireCustomerWrite(session);const rows=await restWrite<Customer[]>(`customers?id=eq.${encodeURIComponent(customer.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{next_step:null,next_contact_at:null,updated_at:new Date().toISOString()}});return first(rows,'customer_next_action_not_cleared')}
+export async function clearMatchingReservationCallback(customer:Customer,expectedNextStep:string){
+ const session=await liveSession()
+ requireCustomerWrite(session)
+ if(!expectedNextStep.startsWith('Ricontatto prenotazione ')||customer.next_step!==expectedNextStep)throw new Error('Il richiamo CRM non corrisponde alla prenotazione')
+ const contactAt=customer.next_contact_at
+ const filter=contactAt?'next_contact_at=eq.'+encodeURIComponent(contactAt):'next_contact_at=is.null'
+ const rows=await restWrite<Customer[]>(
+  'customers?id=eq.'+encodeURIComponent(customer.id)+'&dealer_id=eq.'+encodeURIComponent(session.dealer.id)+'&next_step=eq.'+encodeURIComponent(expectedNextStep)+'&'+filter,
+  {method:'PATCH',body:{next_step:null,next_contact_at:null,updated_at:new Date().toISOString()}}
+ )
+ if(!rows?.length)throw new Error('Il richiamo è stato aggiornato da un altro operatore. Ricarica il CRM.')
+ return rows[0]
+}
 export async function logCustomerInteraction(customer:Customer,draft:CustomerInteractionDraft){const session=await liveSession();requireCustomerWrite(session);const title=String(draft.title||'').trim();const channel=String(draft.channel||'NOTE').toUpperCase();if(!title)throw new Error('Descrizione contatto obbligatoria');if(!CUSTOMER_CHANNELS.has(channel))throw new Error('Canale contatto non valido');return first(await restWrite<CustomerInteraction[]>('customer_interactions',{method:'POST',body:{dealer_id:session.dealer.id,customer_id:customer.id,channel,title,happened_at:new Date().toISOString(),created_by:session.user?.id||null,updated_at:new Date().toISOString()}}),'customer_interaction_not_persisted')}
 
 export async function saveCalendarEvent(draft:CalendarEventDraft){const session=await liveSession();requireCalendarWrite(session);const title=String(draft.title||'').trim();const eventType=String(draft.eventType||'APPOINTMENT').toUpperCase();const priority=String(draft.priority||'NORMAL').toUpperCase();if(!title)throw new Error('Titolo appuntamento obbligatorio');if(!draft.startsAt||Number.isNaN(new Date(draft.startsAt).getTime()))throw new Error('Data appuntamento non valida');if(!CALENDAR_EVENT_TYPES.has(eventType))throw new Error('Tipo appuntamento non valido');if(!CALENDAR_PRIORITIES.has(priority))throw new Error('Priorità appuntamento non valida');return first(await restWrite<CalendarEvent[]>('calendar_events',{method:'POST',body:{dealer_id:session.dealer.id,event_type:eventType,title,starts_at:new Date(draft.startsAt).toISOString(),all_day:Boolean(draft.allDay),status:'OPEN',priority,customer_id:draft.customerId||null,vehicle_id:draft.vehicleId||null,note:String(draft.note||'').trim()||null,source:'MANUAL',created_by:session.user?.id||null,updated_at:new Date().toISOString()}}),'calendar_event_not_persisted')}
