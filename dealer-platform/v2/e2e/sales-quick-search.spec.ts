@@ -85,7 +85,10 @@ test('Mod34 filtri rapidi restringono i risultati e cancellazione ripristina le 
  await expect(page.getByTestId('sale-card')).toContainText('V-404-26')
  await page.getByTestId('sales-search-clear').click()
  await expect(field).toHaveValue('')
- await expect(page.getByTestId('sales-tab-active')).toHaveAttribute('aria-selected','true')
+ // Mod37: a manually selected filter is a saved preference, even after closing a search.
+ await expect(page.getByTestId('sales-tab-cancelled')).toHaveAttribute('aria-selected','true')
+ await expect(page.getByTestId('sale-card')).toHaveCount(1)
+ await page.getByTestId('sales-tab-active').click()
  await expect(page.getByTestId('sale-card')).toHaveCount(2)
  expect(stats.financeRequests).toBe(0)
 })
