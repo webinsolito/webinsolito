@@ -1,0 +1,24 @@
+/* Modifica 34: rapid sale search. Compact and touch-friendly on desktop and iPhone. */
+.sales-search-panel{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin:4px 0 12px;padding:12px 14px;border:1px solid #e0e6e8;border-radius:16px;background:linear-gradient(135deg,#fff,#f8fafb)}
+.sales-search-field{display:flex;align-items:center;gap:10px;flex:1 1 330px;min-width:0;min-height:44px;padding:0 11px;border:1px solid #d8e0e5;border-radius:12px;background:#fff;color:#74818e;transition:border-color .15s,box-shadow .15s}
+.sales-search-field:focus-within{border-color:#9bb3c3;box-shadow:0 0 0 3px rgba(64,105,138,.11)}
+.sales-search-field>svg{flex:0 0 auto;color:#7890a4}
+.sales-search-field input{min-width:0;width:100%;flex:1;height:42px;border:0;outline:0;background:transparent;color:#253241;font:inherit;font-size:12px;font-weight:600}
+.sales-search-field input::placeholder{color:#9aa4af;font-weight:500}
+.sales-search-field input::-webkit-search-cancel-button{display:none}
+.sales-search-clear{display:grid;flex:0 0 auto;place-items:center;width:29px;height:29px;border:0;border-radius:9px;background:#edf1f4;color:#526171;cursor:pointer}
+.sales-search-clear:hover{background:#e2e8ed}
+.sales-search-meta{min-width:0;display:grid;gap:4px;flex:0 1 285px}
+.sales-search-meta span{font-size:11px;font-weight:900;color:#33475b;overflow-wrap:anywhere}
+.sales-search-meta small{font-size:10px;color:#8994a0;line-height:1.4}
+.sales-search-field:focus-within,.sales-search-clear:focus-visible{outline-offset:2px}
+.sales-search-clear:focus-visible{outline:3px solid #9bb3c3}
+@media(max-width:760px){
+ .sales-search-panel{padding:10px;gap:8px;margin:0 0 12px}
+ .sales-search-field{flex-basis:100%;min-height:43px}
+ .sales-search-meta{flex-basis:100%;padding:0 2px}
+ .sales-search-meta small{display:none}
+ .sales-segments{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .sales-segments button{font-size:9px;gap:4px;min-width:0}
+ .sales-segments button b{min-width:18px;height:18px;padding:0 3px}
+}
