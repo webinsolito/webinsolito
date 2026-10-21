@@ -54,6 +54,18 @@ export async function fetchTenantData(session=getSession()):Promise<TenantData>{
 export async function saveVehicle(draft:Partial<VehicleDraft>,vehicleId?:string){const session=await liveSession();requireGarageWrite(session);const check=validateVehicleDraft(draft);if(!check.valid)throw new Error(check.errors[0]);const payload={...normalizeVehicleDraft(check.value),updated_at:new Date().toISOString()};if(vehicleId){const rows=await restWrite<Vehicle[]>(`vehicles?id=eq.${encodeURIComponent(vehicleId)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:payload});return first(rows,'vehicle_update_not_persisted')}const rows=await restWrite<Vehicle[]>('vehicles',{method:'POST',body:{...payload,dealer_id:session.dealer.id}});return first(rows,'vehicle_create_not_persisted')}
 
 export async function saveWorkItem(vehicleId:string,draft:WorkItemDraft){const session=await liveSession();requireGarageWrite(session);const title=String(draft.title||'').trim();if(!title)throw new Error('Titolo lavoro obbligatorio');const body={dealer_id:session.dealer.id,vehicle_id:vehicleId,title,category:draft.category||'PREPARAZIONE',status:'TODO',priority:draft.priority||'NORMAL',due_date:draft.due_date||null,note:String(draft.note||'').trim()||null,updated_at:new Date().toISOString()};return first(await restWrite<VehicleWorkItem[]>('vehicle_work_items',{method:'POST',body}),'work_item_create_not_persisted')}
+export async function reopenDeliveryWorkItem(item:VehicleWorkItem){
+ const session=await liveSession()
+ requireGarageWrite(session)
+ if(item.dealer_id!==session.dealer.id||String(item.category||'').toUpperCase()!=='CONSEGNA'||String(item.status||'').toUpperCase()!=='DONE'||!item.id||!item.vehicle_id||!item.title?.trim())
+  throw new Error('Verifica consegna non modificabile')
+ const scoped=['id=eq.'+encodeURIComponent(item.id),'dealer_id=eq.'+encodeURIComponent(session.dealer.id),
+  'vehicle_id=eq.'+encodeURIComponent(item.vehicle_id),'category=eq.CONSEGNA','status=eq.DONE',
+  'title=eq.'+encodeURIComponent(item.title)]
+ const now=new Date().toISOString()
+ const rows=await restWrite<VehicleWorkItem[]>('vehicle_work_items?'+scoped.join('&'),{method:'PATCH',body:{status:'TODO',completed_at:null,updated_at:now}})
+ return first(rows,'La verifica è stata modificata da un altro operatore. Ricarica e riprova.')
+}
 export async function completeWorkItem(item:VehicleWorkItem){const session=await liveSession();requireGarageWrite(session);const rows=await restWrite<VehicleWorkItem[]>(`vehicle_work_items?id=eq.${encodeURIComponent(item.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{status:'DONE',completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}});return first(rows,'work_item_update_not_persisted')}
 
 export async function saveCustomerNextAction(customer:Customer,draft:CustomerNextActionDraft){const session=await liveSession();requireCustomerWrite(session);const nextStep=String(draft.nextStep||'').trim();if(!nextStep)throw new Error('Inserisci la prossima azione');const rows=await restWrite<Customer[]>(`customers?id=eq.${encodeURIComponent(customer.id)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:{next_step:nextStep,next_contact_at:draft.nextContactAt||null,updated_at:new Date().toISOString()}});return first(rows,'customer_next_action_not_persisted')}

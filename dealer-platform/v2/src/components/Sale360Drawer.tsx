@@ -19,7 +19,7 @@ const dateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new
 const person=(c?:TenantData['customers'][number])=>c?[c.first_name,c.last_name].filter(Boolean).join(' ')||'Cliente':'Cliente non disponibile'
 const vehicle=(v?:TenantData['vehicles'][number])=>v?[v.brand,v.model,v.version].filter(Boolean).join(' ')||'Auto':'Auto non disponibile'
 
-export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onCompleteChecklistItem,onDeliver,onCancel,onExtendReservation,onRecordReservationContact,onScheduleReservationCallback,onCompleteReservationCallback,focusCheckId=null,onAdvanceStage,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onCompleteChecklistItem:(title:string)=>Promise<void>;onAdvanceStage:(stage:string)=>Promise<void>;focusCheckId?:string|null;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;onExtendReservation:(iso:string,reason:string)=>Promise<void>;onRecordReservationContact:(channel:string,title:string)=>Promise<void>;onScheduleReservationCallback:(nextStep:string,iso:string)=>Promise<void>;onCompleteReservationCallback:(window:ReservationFollowupWindow,note:string)=>Promise<void>;deliveryBusy?:boolean}){
+export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onCompleteChecklistItem,onReopenChecklistItem,onDeliver,onCancel,onExtendReservation,onRecordReservationContact,onScheduleReservationCallback,onCompleteReservationCallback,focusCheckId=null,onAdvanceStage,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onCompleteChecklistItem:(title:string)=>Promise<void>;onReopenChecklistItem:(title:string)=>Promise<void>;onAdvanceStage:(stage:string)=>Promise<void>;focusCheckId?:string|null;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;onExtendReservation:(iso:string,reason:string)=>Promise<void>;onRecordReservationContact:(channel:string,title:string)=>Promise<void>;onScheduleReservationCallback:(nextStep:string,iso:string)=>Promise<void>;onCompleteReservationCallback:(window:ReservationFollowupWindow,note:string)=>Promise<void>;deliveryBusy?:boolean}){
  const summary=buildSale360(data,contract,new Date().toISOString())
  const financeVisible=canSeeFinance(session)
  const deliveryWritable=canWriteContracts(session)
@@ -41,6 +41,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
  const [deliveryError,setDeliveryError]=useState('')
  const [pendingChecklistTitle,setPendingChecklistTitle]=useState<string|null>(null)
  const [checklistError,setChecklistError]=useState('')
+ const [undoConfirmTitle,setUndoConfirmTitle]=useState<string|null>(null)
  const terminal=['DELIVERED','CANCELLED'].includes(String(contract.sale_stage||'').toUpperCase())
  const completeChecklist=async(title:string)=>{
   if(pendingChecklistTitle||deliveryBusy)return
@@ -49,6 +50,15 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
   try{await onCompleteChecklistItem(title)}
   catch(err){setChecklistError(err instanceof Error?err.message:'Impossibile completare la verifica')}
   finally{setPendingChecklistTitle(null)}
+ }
+ const reopenChecklist=async(title:string)=>{
+  if(pendingChecklistTitle||deliveryBusy||undoConfirmTitle!==title)return
+  setConfirming(false)
+  setChecklistError('')
+  setPendingChecklistTitle(title)
+  try{await onReopenChecklistItem(title)}
+  catch(err){setChecklistError(err instanceof Error?err.message:'Impossibile correggere la verifica')}
+  finally{setPendingChecklistTitle(null);setUndoConfirmTitle(null)}
  }
  const deliver=async()=>{setDeliveryError('');try{await onDeliver()}catch(err){setDeliveryError(err instanceof Error?err.message:'Impossibile completare la consegna');setConfirming(false)}}
  return <div className="drawer-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside ref={drawerRef} className="drawer sale360-drawer" data-testid="sale-360">
@@ -109,8 +119,16 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
        {item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b>
        {item.done?<span className="sale360-checklist-state">Completata</span>:
         !terminal&&checklistWritable?<button type="button" data-testid="sale360-checklist-complete" aria-label={'Completa '+item.title}
-         disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>void completeChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Segna completata'}</button>:
+         disabled={deliveryBusy||Boolean(pendingChecklistTitle)||Boolean(undoConfirmTitle)} onClick={()=>void completeChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Segna completata'}</button>:
         <span className="sale360-checklist-state">Da verificare</span>}
+       {item.done&&!terminal&&checklistWritable&&<button type="button" className="sale360-checklist-undo" data-testid="sale360-checklist-undo"
+        aria-label={'Correggi '+item.title} disabled={deliveryBusy||Boolean(pendingChecklistTitle)||Boolean(undoConfirmTitle)}
+        onClick={()=>{setChecklistError('');setUndoConfirmTitle(item.title);setConfirming(false)}}>Correggi</button>}
+       {item.done&&undoConfirmTitle===item.title&&!terminal&&checklistWritable&&<div className="sale360-checklist-undo-confirm" data-testid="sale360-checklist-undo-confirm" role="group" aria-label={'Conferma correzione '+item.title}>
+        <p>La verifica «{item.title}» tornerà da completare e bloccherà la consegna finché non sarà ricontrollata. Continuare?</p>
+        <button type="button" data-testid="sale360-checklist-undo-submit" disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>void reopenChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Conferma correzione'}</button>
+        <button type="button" className="cancel" disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>setUndoConfirmTitle(null)}>Annulla</button>
+       </div>}
       </div>)}</div>
      {checklistError&&<div className="sale360-gate-error" role="alert" data-testid="sale360-checklist-error">{checklistError}</div>}
      {!terminal&&!checklistWritable&&<p className="sale360-checklist-hint">Solo gli operatori autorizzati alla gestione Garage possono completare le verifiche.</p>}

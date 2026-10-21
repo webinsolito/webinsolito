@@ -8,14 +8,15 @@ const CUSTOMER='33333333-3333-3333-3333-333333333333'
 const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
-type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number}
+type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean;delivered?:boolean}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[]}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
 async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0}
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[]}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
+ if(options.delivered){state.contract.sale_stage='DELIVERED';state.vehicle.status='CONSEGNATA'}
  if(options.pendingChecklist)state.workItems.push({id:'pending-check',dealer_id:DEALER,vehicle_id:VEHICLE,title:DELIVERY_CHECKLIST[2],category:'CONSEGNA',status:'TODO'})
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
  await page.route(PROJECT+'/**',async route=>{
@@ -35,6 +36,12 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options
     const id=url.searchParams.get('id')?.replace('eq.','')
     const item=state.workItems.find(x=>x.id===id&&x.dealer_id===DEALER)
     if(!item)return json(route,[])
+    if(body?.status==='TODO'){
+     state.undoRequests.push(url.search)
+     if(url.searchParams.get('dealer_id')!=='eq.'+DEALER||url.searchParams.get('vehicle_id')!=='eq.'+VEHICLE
+      ||url.searchParams.get('category')!=='eq.CONSEGNA'||url.searchParams.get('status')!=='eq.DONE'
+      ||url.searchParams.get('title')!=='eq.'+item.title||item.status!=='DONE')return json(route,[])
+    }
     Object.assign(item,body)
     return json(route,[item])
    }
@@ -154,5 +161,64 @@ test('Mod40: ruolo senza permesso Garage visualizza la checklist ma non può cam
  await expect(page.getByTestId('sale360-checklist-complete')).toHaveCount(0)
  await expect(page.getByTestId('sale360-checklist')).toContainText('Da verificare')
  expect(state.workItemPosts).toBe(0)
+ expect(state.workItemPatches).toBe(0)
+})
+
+test('Mod41: conferma necessaria, annulla senza scrivere e corregge solo dopo la seconda azione',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true})
+ const gate=await openGate(page)
+ await expect(gate).toContainText('TUTTO VERDE')
+ const row=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[0]})
+ await row.getByRole('button',{name:'Correggi '+DELIVERY_CHECKLIST[0]}).click()
+ await expect(row.getByTestId('sale360-checklist-undo-confirm')).toContainText('bloccherà la consegna')
+ expect(state.workItemPatches).toBe(0)
+ await row.getByRole('button',{name:'Annulla'}).click()
+ expect(state.workItemPatches).toBe(0)
+ await expect(row.getByTestId('sale360-checklist-undo-confirm')).toHaveCount(0)
+ await row.getByRole('button',{name:'Correggi '+DELIVERY_CHECKLIST[0]}).click()
+ await row.getByTestId('sale360-checklist-undo-submit').click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('6/7')
+ await expect(row).toContainText('Segna completata')
+ await expect(gate.locator('[data-gate-check="checklist"]')).toContainText('1 controlli mancanti')
+ await expect(gate).toContainText('Consegna bloccata')
+ await expect(gate.getByRole('button',{name:/Consegna bloccata/})).toBeDisabled()
+ expect(state.workItemPosts).toBe(0)
+ expect(state.workItemPatches).toBe(1)
+ expect(state.undoRequests).toHaveLength(1)
+ expect(state.workItems[0].status).toBe('TODO')
+ expect(state.workItems[0].completed_at).toBeNull()
+ expect(state.contract.sale_stage).toBe('READY')
+})
+test('Mod41: venditore corregge la propria checklist senza accessi finanziari e può rifare il controllo',async({page})=>{
+ const state=await boot(page,'VENDITORE',{completeChecklist:true,paid:true})
+ const gate=await openGate(page)
+ const row=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[1]})
+ await row.getByRole('button',{name:'Correggi '+DELIVERY_CHECKLIST[1]}).click()
+ await row.getByTestId('sale360-checklist-undo-submit').click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('6/7')
+ await row.getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[1]}).click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('7/7')
+ await expect(gate.locator('[data-gate-check="checklist"]')).toContainText('7 controlli operativi')
+ expect(state.workItemPatches).toBe(2)
+ expect(state.workItemPosts).toBe(0)
+ expect(state.financeRequests).toBe(0)
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
+})
+test('Mod41: amministrazione senza garage_write può vedere spunte ma non correggerle',async({page})=>{
+ const state=await boot(page,'AMMINISTRAZIONE',{completeChecklist:true,paid:true})
+ await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-item')).toHaveCount(7)
+ await expect(page.getByTestId('sale360-checklist-undo')).toHaveCount(0)
+ await expect(page.getByTestId('sale360-checklist-undo-submit')).toHaveCount(0)
+ expect(state.workItemPatches).toBe(0)
+})
+test('Mod41: vendite già consegnate non consentono di rimuovere verifiche',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true,delivered:true})
+ const mobile=(page.viewportSize()?.width||1200)<=760
+ await (mobile?page.locator('.mobile-nav button').filter({hasText:'Vendite'}):page.locator('.sidebar nav button').filter({hasText:'Vendite'})).click()
+ await page.getByTestId('sales-tab-delivered').click()
+ await page.getByTestId('open-sale-360').click()
+ await expect(page.getByTestId('sale360-checklist-item')).toHaveCount(7)
+ await expect(page.getByTestId('sale360-checklist-undo')).toHaveCount(0)
  expect(state.workItemPatches).toBe(0)
 })
