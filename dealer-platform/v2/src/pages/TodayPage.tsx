@@ -5,8 +5,9 @@ import {buildInvoiceSummary} from '../domain/invoices'
 import {buildCollectionSchedule} from '../domain/collections'
 import {buildDeadlineSummary} from '../domain/deadlines'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
-import {buildTodayReservationCallbacks,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
+import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
 import {fetchCollectionFollowups,type InvoiceCollectionFollowup} from '../lib/collectionsApi'
+import {TodayUpcomingReservationPanel} from '../components/TodayUpcomingReservationPanel'
 import type {InvoiceDetail} from '../lib/invoiceApi'
 import {money} from '../lib/format'
 import type {TenantData,View} from '../types'
@@ -53,12 +54,14 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  const dueNow=deadlineSummary.overdue+deadlineSummary.today
  const urgentReservations=activeReservationAlerts(data,nowIso)
  const overdueCallbacks=useMemo(()=>buildTodayReservationCallbacks(data,nowIso),[data,nowIso])
+ const upcomingReservations=useMemo(()=>buildUpcomingReservationCallbacks(data,nowIso),[data,nowIso])
+ const upcomingCount=overdueCallbackCounts(upcomingReservations)
  const bookingCallbackCounts=overdueCallbackCounts(overdueCallbacks)
  const firstBookingToDo=overdueCallbacks.find(row=>row.state!=='SCHEDULED')
  const bookingCallbackRows=showAllBookingCallbacks?overdueCallbacks:overdueCallbacks.slice(0,5)
  const callbackDateTime=(value:string)=>new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value))
 
- return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
+ return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':upcomingCount.toDo?'Prenotazioni in scadenza da contattare prima del termine.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
  <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small></span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button><button onClick={()=>onView('sales')} aria-label="Apri consegne da gestire"><PackageCheck/><span><b>{deliveryActions}</b><small>Consegne da gestire</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
  {urgentReservations.length>0&&<button type="button" className="reservation-alert-banner" data-testid="today-reservation-alert" onClick={onDeadlines}>🔔 {urgentReservations.length} prenotazion{urgentReservations.length===1?'e':'i'} da verificare · Apri Centro Scadenze <ChevronRight/></button>}
  {overdueCallbacks.length>0&&<section className="today-overdue-callbacks section" data-testid="today-overdue-callbacks">
@@ -86,6 +89,7 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
    {showAllBookingCallbacks?'Mostra i primi 5':'Mostra tutti i '+overdueCallbacks.length+' richiami'} <ChevronRight size={16}/>
   </button>}
  </section>}
- <section className="focus-card"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||(firstBookingToDo?'Richiamare '+firstBookingToDo.customerName:'Niente di urgente 🎉')}</h2><p>{allPriorities[0]?.detail||(firstBookingToDo?'Prenotazione '+firstBookingToDo.contractNumber+' scaduta · registra il ricontatto nella vendita.':'Puoi passare ai clienti o al Garage senza emergenze aperte.')}</p></div>{allPriorities[0]?<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>:firstBookingToDo?<button className="focus-cta" onClick={()=>onSale(firstBookingToDo.contractId)}>Apri vendita 360° <ChevronRight/></button>:null}</section>
+ <TodayUpcomingReservationPanel items={upcomingReservations} onSale={onSale}/>
+ <section className="focus-card"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||(firstBookingToDo?'Richiamare '+firstBookingToDo.customerName :upcomingCount.toDo?'Prenotazioni da confermare prima della scadenza':'Niente di urgente 🎉')}</h2><p>{allPriorities[0]?.detail||(firstBookingToDo?'Prenotazione '+firstBookingToDo.contractNumber+' scaduta · registra il ricontatto nella vendita.' :upcomingCount.toDo?'Apri le prenotazioni in scadenza e programma il contatto prima del termine.':'Puoi passare ai clienti o al Garage senza emergenze aperte.')}</p></div>{allPriorities[0]?<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>:firstBookingToDo?<button className="focus-cta" onClick={()=>onSale(firstBookingToDo.contractId)}>Apri vendita 360° <ChevronRight/></button>:upcomingCount.toDo?<button className="focus-cta" onClick={()=>onSale(upcomingReservations.find(row=>row.state!=='SCHEDULED')!.contractId)}>Apri prenotazione <ChevronRight/></button>:null}</section>
  <section className="section"><div className="section-title"><div><p className="eyebrow">CODA DI LAVORO</p><h2>Una lista, in ordine di urgenza</h2></div></div><div className="priority-list">{allPriorities.slice(0,12).map(p=>{const Icon=icon[p.kind];return <button key={p.id} onClick={()=>act(p)} className={'priority-row severity-'+p.severity}><span className="priority-icon"><Icon/></span><span><b>{p.title}</b><small>{p.detail}</small></span><ChevronRight/></button>})}{!allPriorities.length&&<div className="empty-state">Nessuna azione urgente. Ottimo momento per seguire nuovi clienti.</div>}</div></section></>
 }
