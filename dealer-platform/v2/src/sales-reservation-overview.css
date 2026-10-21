@@ -1,0 +1,57 @@
+/* Dealer Cockpit V2, Modifica 33 — operational reservation overview */
+.sales-booking-overview{margin:16px 0 22px;padding:18px;border:1px solid #e5ddd0;border-radius:20px;background:linear-gradient(150deg,#fffdf9,#fff);box-shadow:0 10px 30px rgba(35,39,46,.04)}
+.sales-booking-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:15px}
+.sales-booking-head .eyebrow{color:#9c7441}
+.sales-booking-head h2{display:flex;align-items:center;gap:8px;margin:5px 0 6px;color:#24303c;font-size:18px}
+.sales-booking-head h2 svg{color:#b0884c}
+.sales-booking-head p:not(.eyebrow){margin:0;color:#7e8791;font-size:11px;line-height:1.6}
+.sales-booking-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0 15px}
+.sales-booking-kpi{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 8px;min-width:0;padding:12px;border:1px solid #e8e5df;border-radius:13px;background:#faf9f6;color:#5d6670}
+.sales-booking-kpi svg{grid-row:1/3;color:#a0875b}
+.sales-booking-kpi small{font-weight:850;font-size:10px;line-height:1.3}
+.sales-booking-kpi b{font-size:22px;font-weight:950;line-height:1.1;color:#253341;font-variant-numeric:tabular-nums}
+.sales-booking-kpi.critical{background:#fff2ee;border-color:#f0d1c5}
+.sales-booking-kpi.critical svg,.sales-booking-kpi.critical b{color:#b3533a}
+.sales-booking-kpi.warning{background:#fff8e8;border-color:#ebdcb9}
+.sales-booking-kpi.warning svg,.sales-booking-kpi.warning b{color:#97712f}
+.sales-booking-kpi.success{background:#eff9f1;border-color:#d4e6d6}
+.sales-booking-kpi.success svg,.sales-booking-kpi.success b{color:#397952}
+.sales-booking-toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.sales-booking-toolbar>small{font-size:10px;color:#76818c}
+.sales-booking-filters{display:flex;flex-wrap:wrap;gap:5px}
+.sales-booking-filters button{min-height:35px;display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #e5dfd6;border-radius:10px;background:#fff;color:#586574;font-size:10px;font-weight:850;cursor:pointer}
+.sales-booking-filters button.selected{background:#202f3c;color:#fff;border-color:#202f3c}
+.sales-booking-filters button span{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:6px;background:#edf0f2;color:#45525d;font-size:9px}
+.sales-booking-filters button.selected span{background:#3d505e;color:#fff}
+.sales-booking-rows{display:grid;gap:7px}
+.sales-booking-row{width:100%;min-width:0;display:flex;align-items:center;gap:11px;padding:11px 12px;text-align:left;background:#fff;border:1px solid #eae6df;border-radius:12px;color:#2f3b47;cursor:pointer;transition:border-color .15s,background .15s}
+.sales-booking-row:hover{border-color:#d6b67e;background:#fffdf7}
+.sales-booking-row:focus-visible,.sales-booking-filters button:focus-visible,.sales-booking-more:focus-visible{outline:3px solid #b9975a;outline-offset:2px}
+.sales-booking-row-icon{display:grid;flex:0 0 auto;place-items:center;width:35px;height:35px;border-radius:10px;background:#f0f2f4;color:#6b7784}
+.sales-booking-row.bucket-overdue .sales-booking-row-icon{background:#fff0eb;color:#b95a3d}
+.sales-booking-row.bucket-soon .sales-booking-row-icon{background:#fff5e1;color:#a67929}
+.sales-booking-row-main{min-width:0;flex:1;display:grid;gap:4px}
+.sales-booking-row-main strong{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.sales-booking-row-main strong span{color:#7b8590;font-weight:700}
+.sales-booking-row-main small{font-size:10px;color:#7e8791;line-height:1.4;overflow-wrap:anywhere}
+.sales-booking-row-right{flex:0 0 152px;display:grid;justify-items:end;gap:4px;text-align:right;max-width:180px}
+.sales-booking-row-right small{font-size:9px;color:#7e8791;line-height:1.3;overflow-wrap:anywhere}
+.sales-booking-status{padding:4px 8px;border-radius:7px;background:#edf1f2;color:#536575;font-size:9px;font-weight:900}
+.sales-booking-status.bucket-overdue{background:#fff0eb;color:#a94f37}
+.sales-booking-status.bucket-soon{background:#fff1d5;color:#92651c}
+.sales-booking-status.bucket-no_deadline{background:#f0eff7;color:#69618f}
+.sales-booking-arrow{flex:0 0 auto;color:#a78e67}
+.sales-booking-more{display:flex;align-items:center;justify-content:center;gap:6px;min-height:37px;width:100%;margin-top:9px;border:1px solid #e5dccd;border-radius:11px;background:#fff8ee;color:#8a6639;font-size:10px;font-weight:900;cursor:pointer}
+.sales-booking-empty{padding:17px;text-align:center;color:#818994;font-size:11px}
+@media(max-width:760px){
+ .sales-booking-overview{padding:12px;margin:12px 0 18px}
+ .sales-booking-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .sales-booking-kpi{padding:10px}
+ .sales-booking-kpi b{font-size:20px}
+ .sales-booking-filters{width:100%}
+ .sales-booking-toolbar>small{display:none}
+ .sales-booking-row{flex-wrap:wrap;gap:8px;padding:10px}
+ .sales-booking-row-main{flex:1 1 calc(100% - 51px)}
+ .sales-booking-row-right{margin-left:43px;flex:1;max-width:calc(100% - 72px);justify-items:start;text-align:left}
+ .sales-booking-arrow{margin-left:auto}
+}
