@@ -27,6 +27,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const [focusedVehicleId,setFocusedVehicleId]=useState<string|null>(null)
   const [focusedCustomerId,setFocusedCustomerId]=useState<string|null>(null)
   const [sale360Id,setSale360Id]=useState<string|null>(null)
+   const [focusedCheckId,setFocusedCheckId]=useState<string|null>(null)
   const preferenceKey=salesPreferencesKey(session)
   const [savedPreferences,setSavedPreferences]=useState(()=>({key:preferenceKey,values:readSalesPreferences(preferenceKey)}))
   const preferences=savedPreferences.key===preferenceKey?savedPreferences.values:readSalesPreferences(preferenceKey)
@@ -189,11 +190,12 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         focused={focusedVehicleId===contract.vehicle_id||focusedCustomerId===contract.customer_id}
         writable={writable} checklistWritable={checklistWritable} busy={busy} nowIso={nowIso}
         sortPriority={sortMode==='PRIORITY'?salesPriority(contract,nowIso):null}
-        onOpen={()=>setSale360Id(contract.id)}
+        onOpen={()=>{setFocusedCheckId(null);setSale360Id(contract.id)}}
+        onOpenCheck={checkId=>{if(!completionIndex.get(contract.id)?.checks.some(check=>check.id===checkId))return;setFocusedCheckId(checkId);setSale360Id(contract.id)}}
         onChecklist={()=>void ensureChecklist(contract)}
         onAdvance={stage=>void move(contract,stage)}
-        onDelivery={()=>setSale360Id(contract.id)}/>
+        onDelivery={()=>{setFocusedCheckId(null);setSale360Id(contract.id)}}/>
     })}{!sales.length&&!creating&&<div className="empty-state" data-testid="sales-search-empty">{searchQuery.trim()?'Nessuna vendita trovata. Prova con un altro nome, targa o numero contratto.':segment==='ACTIVE'?'Nessuna vendita attiva. Crea una pratica quando un cliente conferma l’auto.':segment==='TO_COMPLETE'?'Nessuna verifica operativa da completare nelle vendite attive. La consegna definitiva richiede sempre il controllo completo della Vendita 360°.':segment==='DELIVERED'?'Nessuna vendita consegnata.':segment==='CANCELLED'?'Nessuna vendita annullata.':'Nessuna vendita registrata.'}</div>}</div>
-    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} onClose={()=>setSale360Id(null)} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
+    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} focusCheckId={focusedCheckId} onClose={()=>{setSale360Id(null);setFocusedCheckId(null)}} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onAdvanceStage={stage=>move(data.contracts.find(c=>c.id===sale360Id)!,stage)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
   </>
 }

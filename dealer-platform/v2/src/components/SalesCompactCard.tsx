@@ -17,10 +17,10 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onChecklist,onAdvance,onDelivery}:{
+export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onOpenCheck,onChecklist,onAdvance,onDelivery}:{
  contract:Contract;customer?:Customer;vehicle?:Vehicle;checklistDone:number;checklistTotal:number
  focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;completion?:SalesCompletionStatus;defaultExpanded?:boolean
- onOpen:()=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
+ onOpen:()=>void;onOpenCheck:(checkId:string)=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
  const [expanded,setExpanded]=useState(defaultExpanded)
  useEffect(()=>setExpanded(defaultExpanded),[defaultExpanded])
@@ -58,7 +58,9 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
   </p>}
   {completion&&<div className="sale-compact-completion" data-testid="sale-completion-checks">
     <strong>{completion.count} {completion.count===1?'verifica operativa da completare':'verifiche operative da completare'}</strong>
-    <span>{completion.checks.slice(0,3).map(check=>check.label).join(' · ')}{completion.count>3?' · +'+(completion.count-3)+' altre':''}</span>
+    <div className="sale-compact-completion-links" aria-label="Verifiche da completare">
+      {completion.checks.map(check=><button type="button" key={check.id} data-testid={'sale-completion-open-'+check.id} aria-label={'Apri verifica '+check.label+' nella Vendita 360°'} onClick={()=>onOpenCheck(check.id)}><span>{check.label}</span><ChevronRight size={15}/></button>)}
+    </div>
     <small>Per la consegna definitiva verifica anche il gate completo nella Vendita 360°.</small>
   </div>}
   {hasActions&&<div className="sale-actions sale-compact-actions" data-testid="sale-card-quick-actions">
