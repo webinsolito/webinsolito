@@ -57,6 +57,17 @@
 .sale-card-compact .sale-compact-reservation.is-soon{
  color:#88612d;background:#fff8e9;border-color:#f0e2c8
 }
+.sale-card-compact .sale-compact-actions{
+ display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+ margin:0;padding:9px 17px;border-top:1px solid #edf0f1;
+ background:#fff
+}
+.sale-card-compact .sale-compact-actions button{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ min-height:39px;padding:7px 11px;border-radius:10px;
+ font-size:10px;font-weight:850
+}
+.sale-card-compact .sale-compact-actions svg{width:16px;height:16px}
 .sale-card-compact .sale-compact-expand{border-top:1px solid #eaedef;background:#fff}
 .sale-card-compact .sale-compact-expand>summary{
  display:flex;align-items:center;justify-content:space-between;gap:8px;
@@ -97,6 +108,9 @@
  .sale-card-compact .sale-compact-facts{gap:9px 15px;padding:10px 13px;min-height:0}
  .sale-card-compact .sale-compact-facts span{font-size:10px}
  .sale-card-compact .sale-compact-reservation{padding:9px 13px;align-items:flex-start}
+ .sale-card-compact .sale-compact-actions{padding:9px 13px;gap:7px}
+ .sale-card-compact .sale-compact-actions button{flex:1 1 calc(50% - 7px);min-height:44px;padding:8px 7px}
+
  .sale-card-compact .sale-compact-expand>summary{min-height:43px;padding:10px 13px}
  .sale-card-compact .sale-compact-expanded{padding:12px 13px 14px}
  .sale-card-compact .sale-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
