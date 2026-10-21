@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useState} from 'react'
 import {ArrowUpDown,LayoutList,Plus,Search,ShoppingBag,X} from 'lucide-react'
-import {canWriteGarage,clearMatchingReservationCallback,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
+import {canWriteGarage,clearMatchingReservationCallback,completeWorkItem,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
 import {cancelSaleContract,canWriteContracts,createSaleContract,extendSaleReservation,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import {Sale360Drawer} from '../components/Sale360Drawer'
 import {SalesCompactCard} from '../components/SalesCompactCard'
@@ -8,6 +8,7 @@ import {SalesReservationOverview} from '../components/SalesReservationOverview'
 import {filterSalesSegment,searchSales,salesSegment,salesSegmentCounts,type SalesListFilter} from '../domain/salesView'
 import {salesPriority,sortSales} from '../domain/salesSorting'
 import {filterIncompleteSales,incompleteSalesIndex} from '../domain/salesCompletion'
+import {resolveSaleChecklistAction} from '../domain/saleChecklistActions'
 import {readSalesPreferences,saveSalesPreferences,salesPreferencesKey,type SalesPreferences} from '../domain/salesPreferences'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
@@ -126,7 +127,24 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       setError(message);throw new Error(message)
     }finally{setBusy(false)}
   }
-  const ensureChecklist=async(contract:Contract)=>{setBusy(true);setError('');try{const existing=new Set(data.workItems.filter(w=>w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA').map(w=>String(w.title||'').trim()));for(const title of DELIVERY_ITEMS){if(!existing.has(title))await saveWorkItem(contract.vehicle_id,{title,category:'CONSEGNA',priority:'HIGH',note:'Checklist consegna vendita'});}await onRefresh()}catch(err){setError(err instanceof Error?err.message:'Errore checklist consegna')}finally{setBusy(false)}}
+  const completeChecklistItem=async(contract:Contract,title:string):Promise<void>=>{
+    if(!canWriteGarage(session)||contract.dealer_id!==session.dealer.id)throw new Error('Non hai il permesso di modificare questa checklist')
+    if(busy)throw new Error('Operazione già in corso')
+    const resolution=resolveSaleChecklistAction(data,contract,title)
+    if(resolution.kind==='DONE')return
+    setBusy(true);setError('')
+    try{
+      const item=resolution.item??await saveWorkItem(contract.vehicle_id,{title,category:'CONSEGNA',priority:'HIGH',note:'Checklist consegna vendita'})
+      await completeWorkItem(item)
+      await onRefresh()
+    }catch(err){
+      await onRefresh().catch(()=>undefined)
+      const message=err instanceof Error?err.message:'Impossibile completare la verifica'
+      setError(message)
+      throw new Error(message)
+    }finally{setBusy(false)}
+  }
+  const ensureChecklist=async(contract:Contract)=>{setBusy(true);setError('');try{const existing=new Set(data.workItems.filter(w=>w.dealer_id===contract.dealer_id&&w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA'&&String(w.status||'').toUpperCase()!=='CANCELLED').map(w=>String(w.title||'').trim()));for(const title of DELIVERY_ITEMS){if(!existing.has(title))await saveWorkItem(contract.vehicle_id,{title,category:'CONSEGNA',priority:'HIGH',note:'Checklist consegna vendita'});}await onRefresh()}catch(err){setError(err instanceof Error?err.message:'Errore checklist consegna')}finally{setBusy(false)}}
 
   return <>
     <div className="page-heading"><div><p className="eyebrow">VENDITA E CONSEGNA</p><h1>Vendite</h1><p>Dalla trattativa alla consegna, con i blocchi reali che evitano errori.</p></div>{writable&&<button className="primary-action" data-testid="new-sale" onClick={()=>{setSearchQuery('');setSegment('ACTIVE');setCreating(true)}}><Plus/> Nuova vendita</button>}</div>
@@ -196,6 +214,6 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         onAdvance={stage=>void move(contract,stage)}
         onDelivery={()=>{setFocusedCheckId(null);setSale360Id(contract.id)}}/>
     })}{!sales.length&&!creating&&<div className="empty-state" data-testid="sales-search-empty">{searchQuery.trim()?'Nessuna vendita trovata. Prova con un altro nome, targa o numero contratto.':segment==='ACTIVE'?'Nessuna vendita attiva. Crea una pratica quando un cliente conferma l’auto.':segment==='TO_COMPLETE'?'Nessuna verifica operativa da completare nelle vendite attive. La consegna definitiva richiede sempre il controllo completo della Vendita 360°.':segment==='DELIVERED'?'Nessuna vendita consegnata.':segment==='CANCELLED'?'Nessuna vendita annullata.':'Nessuna vendita registrata.'}</div>}</div>
-    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} focusCheckId={focusedCheckId} onClose={()=>{setSale360Id(null);setFocusedCheckId(null)}} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onAdvanceStage={stage=>move(data.contracts.find(c=>c.id===sale360Id)!,stage)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
+    {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} focusCheckId={focusedCheckId} onClose={()=>{setSale360Id(null);setFocusedCheckId(null)}} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onCompleteChecklistItem={title=>completeChecklistItem(data.contracts.find(c=>c.id===sale360Id)!,title)} onAdvanceStage={stage=>move(data.contracts.find(c=>c.id===sale360Id)!,stage)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
   </>
 }

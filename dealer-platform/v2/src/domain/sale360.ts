@@ -8,7 +8,7 @@ const docs=(value?:string)=>/(document|pratic|passaggio|libretto|immatricol|gara
 export function buildSale360(data:TenantData,contract:Contract,nowIso:string){
  const customer=data.customers.find(c=>c.id===contract.customer_id)
  const vehicle=data.vehicles.find(v=>v.id===contract.vehicle_id)
- const deliveryItems=data.workItems.filter(w=>w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA')
+ const deliveryItems=data.workItems.filter(w=>w.dealer_id===contract.dealer_id&&w.vehicle_id===contract.vehicle_id&&w.category==='CONSEGNA')
  const doneTitles=new Set(deliveryItems.filter(w=>String(w.status||'').toUpperCase()==='DONE').map(w=>String(w.title||'').trim()))
  const checklist={done:DELIVERY_CHECKLIST.filter(x=>doneTitles.has(x)).length,total:DELIVERY_CHECKLIST.length,items:DELIVERY_CHECKLIST.map(title=>({title,done:doneTitles.has(title)}))}
  const practices=data.workItems.filter(w=>w.vehicle_id===contract.vehicle_id&&active(w.status)&&(String(w.category||'').toUpperCase()==='DOCUMENTI'||docs(w.title)||docs(w.category))).sort((a,b)=>String(a.due_date||'9999').localeCompare(String(b.due_date||'9999')))
