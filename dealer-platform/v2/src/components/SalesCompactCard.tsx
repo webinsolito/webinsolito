@@ -1,3 +1,4 @@
+import {useEffect,useState} from 'react'
 import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,LockKeyhole,ShieldCheck,UserRound} from 'lucide-react'
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {reservesVehicle} from '../domain/saleReservation'
@@ -15,11 +16,13 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,onOpen,onChecklist,onAdvance,onDelivery}:{
+export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,defaultExpanded=false,onOpen,onChecklist,onAdvance,onDelivery}:{
  contract:Contract;customer?:Customer;vehicle?:Vehicle;checklistDone:number;checklistTotal:number
- focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null
+ focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;defaultExpanded?:boolean
  onOpen:()=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
+ const [expanded,setExpanded]=useState(defaultExpanded)
+ useEffect(()=>setExpanded(defaultExpanded),[defaultExpanded])
  const stage=String(contract.sale_stage||'OPEN').toUpperCase()
  const next=NEXT_STAGE[stage]
  const terminal=stage==='DELIVERED'||stage==='CANCELLED'
@@ -57,7 +60,7 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
    {next&&<button type="button" disabled={busy} onClick={()=>onAdvance(next)}><CheckCircle2/> Avanza a {stageName[next]}</button>}
    {stage==='READY'&&<button type="button" className="delivery-action" disabled={busy} onClick={onDelivery}><ShieldCheck/> Verifica consegna</button>}
   </div>}
-  <details className="sale-compact-expand" data-testid="sale-card-details">
+  <details className="sale-compact-expand" data-testid="sale-card-details" open={expanded} onToggle={e=>setExpanded(e.currentTarget.open)}>
    <summary aria-label={'Mostra dettagli e azioni '+contract.contract_number}><span>Dettagli della vendita</span><ChevronDown size={17}/></summary>
    <div className="sale-compact-expanded">
     <div className="sale-kpis">
