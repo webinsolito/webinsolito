@@ -7,6 +7,7 @@ import {SalesCompactCard} from '../components/SalesCompactCard'
 import {SalesReservationOverview} from '../components/SalesReservationOverview'
 import {filterSalesSegment,searchSales,salesSegment,salesSegmentCounts,type SalesListFilter} from '../domain/salesView'
 import {salesPriority,sortSales} from '../domain/salesSorting'
+import {filterIncompleteSales,incompleteSalesIndex} from '../domain/salesCompletion'
 import {readSalesPreferences,saveSalesPreferences,salesPreferencesKey,type SalesPreferences} from '../domain/salesPreferences'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
@@ -59,10 +60,16 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   },[])
   const allSales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>Number(b.vehicle_id===focusedVehicleId||b.customer_id===focusedCustomerId)-Number(a.vehicle_id===focusedVehicleId||a.customer_id===focusedCustomerId)||String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts,focusedVehicleId,focusedCustomerId])
   const counts=useMemo(()=>salesSegmentCounts(allSales),[allSales])
+  const completionIndex=useMemo(()=>incompleteSalesIndex(data,allSales),[data,allSales])
+  const incompleteCount=completionIndex.size
   const alerts=activeReservationAlerts(data,nowIso)
   const activeSearch=savedPreferences.key===preferenceKey?searchQuery:''
   const visibleSegment=savedPreferences.key===preferenceKey?segment:preferences.segment
-  const sales=useMemo(()=>sortSales(searchSales(data,filterSalesSegment(allSales,visibleSegment),activeSearch),sortMode,nowIso),[data.customers,data.vehicles,allSales,visibleSegment,activeSearch,sortMode,nowIso])
+  const sales=useMemo(()=>{
+    const segmented=filterSalesSegment(allSales,visibleSegment)
+    const filtered=visibleSegment==='TO_COMPLETE'?filterIncompleteSales(segmented,completionIndex):segmented
+    return sortSales(searchSales(data,filtered,activeSearch),sortMode,nowIso)
+  },[data.customers,data.vehicles,allSales,visibleSegment,completionIndex,activeSearch,sortMode,nowIso])
   const changeSearch=(value:string)=>{
     if(value.trim()&&!searchQuery.trim())setSegment('ALL')
     if(!value.trim()&&searchQuery.trim())setSegmentOverride(null)
@@ -141,11 +148,11 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
           aria-label="Cancella ricerca vendite" onClick={resetSearch}><X size={16}/></button>}
       </label>
       <div className="sales-search-meta">
-        <span data-testid="sales-search-count">{searchQuery.trim()?sales.length+' risultati per "'+searchQuery.trim()+'"':segment==='ALL'?'Tutte le vendite':segment==='DELIVERED'?'Vendite consegnate':segment==='CANCELLED'?'Vendite annullate':'Vendite attive'}</span>
+        <span data-testid="sales-search-count">{searchQuery.trim()?sales.length+' risultati per "'+searchQuery.trim()+'"':segment==='ALL'?'Tutte le vendite':segment==='TO_COMPLETE'?'Vendite da completare':segment==='DELIVERED'?'Vendite consegnate':segment==='CANCELLED'?'Vendite annullate':'Vendite attive'}</span>
         <small>La ricerca include anche consegnate e annullate. Seleziona un filtro per restringere.</small>
       </div>
     </section>
-    <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ALL'} className={segment==='ALL'?'active':''} data-testid="sales-tab-all" onClick={()=>chooseSegment('ALL')}><span>Tutte</span><b>{allSales.length}</b></button><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>chooseSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>chooseSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>chooseSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
+    <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ALL'} className={segment==='ALL'?'active':''} data-testid="sales-tab-all" onClick={()=>chooseSegment('ALL')}><span>Tutte</span><b>{allSales.length}</b></button><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>chooseSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='TO_COMPLETE'} className={segment==='TO_COMPLETE'?'active':''} data-testid="sales-tab-to-complete" onClick={()=>chooseSegment('TO_COMPLETE')}><span>Da completare</span><b data-testid="sales-to-complete-count">{incompleteCount}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>chooseSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>chooseSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
 
     <section className="sales-sort-panel" data-testid="sales-sort-panel" aria-label="Ordina elenco vendite">
       <div className="sales-sort-heading"><ArrowUpDown size={16}/><span>Ordina per</span></div>
@@ -176,6 +183,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       const done=new Set(deliveryItems.filter(w=>w.status==='DONE').map(w=>String(w.title||'').trim()))
       const checklistDone=DELIVERY_ITEMS.filter(item=>done.has(item)).length
       return <SalesCompactCard key={contract.id} contract={contract} customer={customer} vehicle={vehicle}
+        completion={visibleSegment==='TO_COMPLETE'?completionIndex.get(contract.id):undefined}
         defaultExpanded={viewMode==='EXPANDED'}
         checklistDone={checklistDone} checklistTotal={DELIVERY_ITEMS.length}
         focused={focusedVehicleId===contract.vehicle_id||focusedCustomerId===contract.customer_id}
@@ -185,7 +193,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         onChecklist={()=>void ensureChecklist(contract)}
         onAdvance={stage=>void move(contract,stage)}
         onDelivery={()=>setSale360Id(contract.id)}/>
-    })}{!sales.length&&!creating&&<div className="empty-state" data-testid="sales-search-empty">{searchQuery.trim()?'Nessuna vendita trovata. Prova con un altro nome, targa o numero contratto.':segment==='ACTIVE'?'Nessuna vendita attiva. Crea una pratica quando un cliente conferma l’auto.':segment==='DELIVERED'?'Nessuna vendita consegnata.':segment==='CANCELLED'?'Nessuna vendita annullata.':'Nessuna vendita registrata.'}</div>}</div>
+    })}{!sales.length&&!creating&&<div className="empty-state" data-testid="sales-search-empty">{searchQuery.trim()?'Nessuna vendita trovata. Prova con un altro nome, targa o numero contratto.':segment==='ACTIVE'?'Nessuna vendita attiva. Crea una pratica quando un cliente conferma l’auto.':segment==='TO_COMPLETE'?'Nessuna verifica operativa da completare nelle vendite attive. La consegna definitiva richiede sempre il controllo completo della Vendita 360°.':segment==='DELIVERED'?'Nessuna vendita consegnata.':segment==='CANCELLED'?'Nessuna vendita annullata.':'Nessuna vendita registrata.'}</div>}</div>
     {sale360Id&&data.contracts.find(c=>c.id===sale360Id)&&<Sale360Drawer contract={data.contracts.find(c=>c.id===sale360Id)!} data={data} session={session} onClose={()=>setSale360Id(null)} onOpenCustomer={onOpenCustomer} onOpenVehicle={onOpenVehicle} onOpenDeliveryAppointment={onOpenDeliveryAppointment} onOpenInvoices={onOpenInvoices} onOpenDeadlines={onOpenDeadlines} onPrepareChecklist={()=>void ensureChecklist(data.contracts.find(c=>c.id===sale360Id)!)} onDeliver={()=>deliver(data.contracts.find(c=>c.id===sale360Id)!)} onCancel={(reason)=>cancelSale(data.contracts.find(c=>c.id===sale360Id)!,reason)} onExtendReservation={(iso,reason)=>extendReservation(data.contracts.find(c=>c.id===sale360Id)!,iso,reason)} onRecordReservationContact={(channel,title)=>recordReservationContact(data.contracts.find(c=>c.id===sale360Id)!,channel,title)} onScheduleReservationCallback={(nextStep,iso)=>planReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,nextStep,iso)} onCompleteReservationCallback={(window,note)=>completeReservationCallback(data.contracts.find(c=>c.id===sale360Id)!,window,note)} deliveryBusy={busy} />}
   </>
 }
