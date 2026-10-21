@@ -32,6 +32,7 @@ import './reservation-completion.css'
 import './sales-reservation-overview.css'
 import './sales-search.css'
 import './sales-compact-cards.css'
+import './sales-sorting.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 

@@ -1,6 +1,7 @@
 import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,LockKeyhole,ShieldCheck,UserRound} from 'lucide-react'
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {reservesVehicle} from '../domain/saleReservation'
+import {salesPriorityLabel,type SalesPriority} from '../domain/salesSorting'
 import type {Contract,Customer,Vehicle} from '../types'
 
 const STAGES=['OPEN','AGREED','DEPOSIT','BALANCE_PENDING','READY','DELIVERED'] as const
@@ -14,9 +15,9 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,onOpen,onChecklist,onAdvance,onDelivery}:{
+export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,onOpen,onChecklist,onAdvance,onDelivery}:{
  contract:Contract;customer?:Customer;vehicle?:Vehicle;checklistDone:number;checklistTotal:number
- focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string
+ focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null
  onOpen:()=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
  const stage=String(contract.sale_stage||'OPEN').toUpperCase()
@@ -28,10 +29,11 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
  const customerName=name(customer?.first_name,customer?.last_name)||'Cliente non disponibile'
  const vehicleName=name(vehicle?.brand,vehicle?.model,vehicle?.version)||'Auto non disponibile'
  const hasActions=writable&&!terminal&&(Boolean(next)||checklistWritable||stage==='READY')
+ const priorityLabel=sortPriority?salesPriorityLabel(sortPriority):''
  return <article className={'sale-card sale-card-compact'+(terminal?' is-terminal':'')+(focused?' vehicle-focus':'')} data-testid="sale-card" data-vehicle-id={contract.vehicle_id} data-sale-id={contract.id}>
   <div className="sale-compact-header">
    <div className="sale-compact-main">
-    <div className="sale-compact-overline"><span className="sale-number">{contract.contract_number}</span><span className={'sale-stage stage-'+stage.toLowerCase()}>{stageName[stage]||stage}</span></div>
+    <div className="sale-compact-overline"><span className="sale-number">{contract.contract_number}</span><span className={'sale-stage stage-'+stage.toLowerCase()}>{stageName[stage]||stage}</span>{priorityLabel&&<span className={'sale-sort-priority priority-'+sortPriority?.toLowerCase()} data-testid="sale-sort-priority">{priorityLabel}</span>}</div>
     <h3>{vehicleName}</h3>
     <div className="sale-compact-identities">
      <span><UserRound size={15}/>{customerName}</span>
