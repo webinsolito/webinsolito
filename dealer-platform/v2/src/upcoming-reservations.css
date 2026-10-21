@@ -1,0 +1,13 @@
+/* Modifica 31 — preventive booking workflow, separate from expired holds. */
+.today-upcoming-reservations{margin:14px 0 20px;padding:17px;border:1px solid #c7ddc7;border-radius:20px;background:linear-gradient(145deg,#f7fbf6,#fff);box-shadow:0 5px 22px rgba(15,35,20,.02)}
+.today-upcoming-reservations .today-callback-head .eyebrow{color:#387650}
+.today-upcoming-reservations .today-callback-head h2 svg{color:#4b865a}
+.today-upcoming-reservations .today-callback-stats span{background:#edf8ef;border-color:#cde1cf;color:#326e43}
+.today-upcoming-reservations .today-callback-stats span:last-child{background:#f4f8f2;border-color:#d6e5d1}
+.today-upcoming-reservations .today-callback-symbol{background:#edf7ed;color:#548355}
+.today-upcoming-reservations .today-callback-row.status-after_expiry{border-color:#edcfab;background:#fff9ef}
+.today-upcoming-reservations .today-callback-row.status-after_expiry .today-callback-state b{color:#a15b25}
+.reservation-followup-panel.preventive{border-color:#c8dec8;background:linear-gradient(180deg,#f9fdf9,#fff 120px)}
+.reservation-followup-panel.preventive .reservation-followup-warning{background:#f0f9ee;border-color:#c7e1c3;color:#32683c}
+.reservation-followup-deadline-warning{grid-column:1/-1;margin:0;border:1px solid #edd4ad;border-radius:8px;padding:9px 10px;background:#fff5e6;color:#865224;font-size:10px;line-height:1.5}
+@media(max-width:760px){.today-upcoming-reservations{padding:12px;margin:12px 0 17px}}
