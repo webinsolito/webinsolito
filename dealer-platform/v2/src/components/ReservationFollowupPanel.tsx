@@ -32,8 +32,12 @@ export function ReservationFollowupPanel({contract,customer,interactions,writabl
  if(!upcoming&&!isOverdueReservation(contract,new Date().toISOString()))return null
  const history=followupForReservation(contract,interactions)
  const window:ReservationFollowupWindow=upcoming?'SOON':'OVERDUE'
- const completed=latestReservationCompletion(contract,interactions,window)
+ const lastCompletion=latestReservationCompletion(contract,interactions,window)
  const nextStep=reservationNextStep(contract)
+ const completedAt=lastCompletion?Date.parse(lastCompletion.happened_at||lastCompletion.created_at||''):NaN
+ const customerUpdatedAt=customer?.updated_at?Date.parse(customer.updated_at):NaN
+ const hasNewCallback=customer?.next_step===nextStep&&Boolean(customer.next_contact_at)&&Number.isFinite(completedAt)&&Number.isFinite(customerUpdatedAt)&&customerUpdatedAt>=completedAt
+ const completed=hasNewCallback?null:lastCompletion
  const conflictingAction=Boolean(customer?.next_step&&customer.next_step!==nextStep)
  const canSchedule=Boolean(callbackAt&&validReservationCallback(callbackAt,new Date().toISOString())&&(!upcoming||validPreventiveCallback(callbackAt,contract.reservation_expires_at,new Date().toISOString()))&&(!conflictingAction||confirmOverwrite))
  const phone=reservationContactPhone(customer?.phone)
