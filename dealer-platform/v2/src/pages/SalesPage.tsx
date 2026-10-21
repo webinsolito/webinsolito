@@ -1,12 +1,13 @@
 import {useEffect,useMemo,useState} from 'react'
-import {ArrowUpDown,Plus,Search,ShoppingBag,X} from 'lucide-react'
+import {ArrowUpDown,LayoutList,Plus,Search,ShoppingBag,X} from 'lucide-react'
 import {canWriteGarage,clearMatchingReservationCallback,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
 import {cancelSaleContract,canWriteContracts,createSaleContract,extendSaleReservation,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import {Sale360Drawer} from '../components/Sale360Drawer'
 import {SalesCompactCard} from '../components/SalesCompactCard'
 import {SalesReservationOverview} from '../components/SalesReservationOverview'
 import {filterSalesSegment,searchSales,salesSegment,salesSegmentCounts,type SalesListFilter} from '../domain/salesView'
-import {salesPriority,sortSales,type SalesSortMode} from '../domain/salesSorting'
+import {salesPriority,sortSales} from '../domain/salesSorting'
+import {readSalesPreferences,saveSalesPreferences,salesPreferencesKey,type SalesPreferences} from '../domain/salesPreferences'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {latestReservationCompletion,reservationCompletionTitle,reservationNextStep,type ReservationFollowupWindow} from '../domain/reservationFollowup'
@@ -25,9 +26,29 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const [focusedVehicleId,setFocusedVehicleId]=useState<string|null>(null)
   const [focusedCustomerId,setFocusedCustomerId]=useState<string|null>(null)
   const [sale360Id,setSale360Id]=useState<string|null>(null)
-  const [segment,setSegment]=useState<SalesListFilter>('ACTIVE')
+  const preferenceKey=salesPreferencesKey(session)
+  const [savedPreferences,setSavedPreferences]=useState(()=>({key:preferenceKey,values:readSalesPreferences(preferenceKey)}))
+  const preferences=savedPreferences.key===preferenceKey?savedPreferences.values:readSalesPreferences(preferenceKey)
+  const [segmentOverride,setSegmentOverride]=useState<SalesListFilter|null>(null)
   const [searchQuery,setSearchQuery]=useState('')
-  const [sortMode,setSortMode]=useState<SalesSortMode>('PRIORITY')
+  const segment=segmentOverride??preferences.segment
+  const sortMode=preferences.sortMode
+  const viewMode=preferences.viewMode
+  const updatePreferences=(patch:Partial<SalesPreferences>)=>{
+    const next={...preferences,...patch}
+    saveSalesPreferences(preferenceKey,next)
+    setSavedPreferences({key:preferenceKey,values:next})
+  }
+  const setSegment=(value:SalesListFilter)=>setSegmentOverride(value)
+  const chooseSegment=(value:SalesListFilter)=>{setSegmentOverride(null);updatePreferences({segment:value})}
+  useEffect(()=>{
+    if(savedPreferences.key===preferenceKey)return
+    setSavedPreferences({key:preferenceKey,values:readSalesPreferences(preferenceKey)})
+    setSegmentOverride(null)
+    setSearchQuery('')
+    setSale360Id(null)
+    setCreating(false)
+  },[savedPreferences.key,preferenceKey])
   const [nowIso,setNowIso]=useState(()=>new Date().toISOString())
   useEffect(()=>{
     const refreshClock=()=>setNowIso(new Date().toISOString())
@@ -39,13 +60,15 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const allSales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>Number(b.vehicle_id===focusedVehicleId||b.customer_id===focusedCustomerId)-Number(a.vehicle_id===focusedVehicleId||a.customer_id===focusedCustomerId)||String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts,focusedVehicleId,focusedCustomerId])
   const counts=useMemo(()=>salesSegmentCounts(allSales),[allSales])
   const alerts=activeReservationAlerts(data,nowIso)
-  const sales=useMemo(()=>sortSales(searchSales(data,filterSalesSegment(allSales,segment),searchQuery),sortMode,nowIso),[data.customers,data.vehicles,allSales,segment,searchQuery,sortMode,nowIso])
+  const activeSearch=savedPreferences.key===preferenceKey?searchQuery:''
+  const visibleSegment=savedPreferences.key===preferenceKey?segment:preferences.segment
+  const sales=useMemo(()=>sortSales(searchSales(data,filterSalesSegment(allSales,visibleSegment),activeSearch),sortMode,nowIso),[data.customers,data.vehicles,allSales,visibleSegment,activeSearch,sortMode,nowIso])
   const changeSearch=(value:string)=>{
     if(value.trim()&&!searchQuery.trim())setSegment('ALL')
-    if(!value.trim()&&searchQuery.trim())setSegment('ACTIVE')
+    if(!value.trim()&&searchQuery.trim())setSegmentOverride(null)
     setSearchQuery(value)
   }
-  const resetSearch=()=>{setSearchQuery('');setSegment('ACTIVE')}
+  const resetSearch=()=>{setSearchQuery('');setSegmentOverride(null)}
   useEffect(()=>{if(!focusContractId&&!focusVehicleId&&!focusCustomerId)return;setFocusedVehicleId(focusVehicleId||null);setFocusedCustomerId(focusCustomerId||null);const exact=focusContractId?data.contracts.find(c=>c.id===focusContractId&&c.template_code==='VENDITA'):undefined;if(exact){setSearchQuery('');setSegment(salesSegment(exact));setSale360Id(exact.id);setCreating(false);onFocusConsumed?.();return}const existing=allSales.find(c=>(!focusVehicleId||c.vehicle_id===focusVehicleId)&&(!focusCustomerId||c.customer_id===focusCustomerId)&&salesSegment(c)==='ACTIVE');if(existing){setSearchQuery('');setSegment('ACTIVE');setSale360Id(existing.id);setCreating(false)}else if(writable){setSearchQuery('');setSegment('ACTIVE');const interestVehicleId=!focusVehicleId&&focusCustomerId?data.customerInterests.find(i=>i.customer_id===focusCustomerId&&String(i.status||'').toUpperCase()!=='PERSA')?.vehicle_id:undefined;const targetVehicleId=focusVehicleId||interestVehicleId||'';const vehicle=targetVehicleId?data.vehicles.find(v=>v.id===targetVehicleId):undefined;setCreating(true);setDraft(current=>({...current,vehicleId:targetVehicleId,customerId:focusCustomerId||current.customerId,price:vehicle?.asking_price??''}))}else setCreating(false);onFocusConsumed?.()},[focusContractId,focusVehicleId,focusCustomerId,focusKey,allSales,writable])
   const selectedReservation=vehicleReservation(data.contracts,draft.vehicleId)
   const selectVehicle=(vehicleId:string)=>{const vehicle=data.vehicles.find(v=>v.id===vehicleId);setDraft(current=>({...current,vehicleId,price:vehicle?.asking_price??current.price}))}
@@ -111,10 +134,10 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       <label className="sales-search-field" htmlFor="sales-quick-search">
         <Search size={19} aria-hidden="true"/>
         <input id="sales-quick-search" type="search" data-testid="sales-quick-search" autoComplete="off"
-          placeholder="Cerca cliente, targa o numero contratto…" value={searchQuery}
+          placeholder="Cerca cliente, targa o numero contratto…" value={activeSearch}
           onChange={e=>changeSearch(e.target.value)} aria-label="Cerca vendite per cliente, targa o contratto"
           onKeyDown={e=>{if(e.key==='Escape')resetSearch()}}/>
-        {searchQuery&&<button type="button" className="sales-search-clear" data-testid="sales-search-clear"
+        {activeSearch&&<button type="button" className="sales-search-clear" data-testid="sales-search-clear"
           aria-label="Cancella ricerca vendite" onClick={resetSearch}><X size={16}/></button>}
       </label>
       <div className="sales-search-meta">
@@ -122,7 +145,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         <small>La ricerca include anche consegnate e annullate. Seleziona un filtro per restringere.</small>
       </div>
     </section>
-    <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ALL'} className={segment==='ALL'?'active':''} data-testid="sales-tab-all" onClick={()=>setSegment('ALL')}><span>Tutte</span><b>{allSales.length}</b></button><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>setSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>setSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>setSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
+    <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ALL'} className={segment==='ALL'?'active':''} data-testid="sales-tab-all" onClick={()=>chooseSegment('ALL')}><span>Tutte</span><b>{allSales.length}</b></button><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>chooseSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>chooseSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>chooseSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
 
     <section className="sales-sort-panel" data-testid="sales-sort-panel" aria-label="Ordina elenco vendite">
       <div className="sales-sort-heading"><ArrowUpDown size={16}/><span>Ordina per</span></div>
@@ -130,9 +153,19 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         {([['PRIORITY','Priorità'],['RESERVATION','Scadenza prenotazione'],['DELIVERY','Data consegna'],['RECENT','Più recenti']] as const).map(([mode,label])=>
           <button type="button" key={mode} data-testid={'sales-sort-'+mode.toLowerCase()}
            className={sortMode===mode?'selected':''} aria-pressed={sortMode===mode}
-           onClick={()=>setSortMode(mode)}>{label}</button>)}
+           onClick={()=>updatePreferences({sortMode:mode})}>{label}</button>)}
       </div>
       <small data-testid="sales-sort-hint">{sortMode==='PRIORITY'?'Prima prenotazioni scadute e consegne urgenti.':sortMode==='RESERVATION'?'Prima le prenotazioni con scadenza più vicina.':sortMode==='DELIVERY'?'Prima le date di consegna più vicine.':'Prima le vendite più recenti.'}</small>
+      <div className="sales-display-options" data-testid="sales-display-options">
+        <div className="sales-display-label"><LayoutList size={15}/><span>Vista schede</span></div>
+        <div className="sales-display-buttons" role="group" aria-label="Visualizzazione delle schede vendita">
+          <button type="button" data-testid="sales-view-compact" aria-pressed={viewMode==='COMPACT'}
+            className={viewMode==='COMPACT'?'selected':''} onClick={()=>updatePreferences({viewMode:'COMPACT'})}>Compatta</button>
+          <button type="button" data-testid="sales-view-expanded" aria-pressed={viewMode==='EXPANDED'}
+            className={viewMode==='EXPANDED'?'selected':''} onClick={()=>updatePreferences({viewMode:'EXPANDED'})}>Dettagli aperti</button>
+        </div>
+        <small>Preferenze memorizzate su questo dispositivo per il tuo account.</small>
+      </div>
     </section>
     {creating&&<section className="sale-create" data-testid="sale-create"><div className="customer-section-head"><div><p className="eyebrow">NUOVA VENDITA</p><h2>Apri pratica vendita</h2></div><button className="icon-ghost" aria-label="Chiudi vendita" onClick={()=>setCreating(false)}><X/></button></div><div className="sale-form-grid"><label><span>CLIENTE</span><select aria-label="CLIENTE VENDITA" disabled={busy} value={draft.customerId} onChange={e=>setDraft({...draft,customerId:e.target.value})}><option value="">Seleziona cliente…</option>{data.customers.filter(c=>!c.deleted_at).map(c=><option key={c.id} value={c.id}>{personName(c)}</option>)}</select></label><label><span>AUTO</span><select aria-label="AUTO VENDITA" disabled={busy} value={draft.vehicleId} onChange={e=>selectVehicle(e.target.value)}><option value="">Seleziona auto…</option>{data.vehicles.filter(v=>!v.deleted_at).map(v=><option key={v.id} value={v.id} disabled={Boolean(vehicleReservation(data.contracts,v.id))||['CONSEGNATA','VENDUTA','DA_CONSEGNARE'].includes(v.status||'')}>{vehicleName(v)}{v.plate?` · ${v.plate}`:''}{vehicleReservation(data.contracts,v.id)?` · PRENOTATA da ${reservationLabel(data,vehicleReservation(data.contracts,v.id)!)} `:''}</option>)}</select></label><label><span>PREZZO VENDITA €</span><input aria-label="PREZZO VENDITA" inputMode="decimal" disabled={busy} value={draft.price} onChange={e=>setDraft({...draft,price:e.target.value})}/></label><label><span>CAPARRA €</span><input aria-label="CAPARRA VENDITA" inputMode="decimal" disabled={busy} value={draft.deposit??''} onChange={e=>setDraft({...draft,deposit:e.target.value})}/></label><label><span>CONSEGNA PREVISTA</span><input aria-label="CONSEGNA PREVISTA" type="datetime-local" disabled={busy} value={draft.plannedDeliveryAt||''} onChange={e=>setDraft({...draft,plannedDeliveryAt:e.target.value})}/></label><label className="wide"><span>NOTE</span><input aria-label="NOTE VENDITA" disabled={busy} value={draft.notes||''} onChange={e=>setDraft({...draft,notes:e.target.value})} placeholder="Permuta, finanziamento, richieste cliente…"/></label></div>{selectedReservation&&<p className="form-error" role="alert" data-testid="vehicle-booking-warning">Auto già prenotata per {reservationLabel(data,selectedReservation)} · vendita {selectedReservation.contract_number}. Scegli un'altra auto.</p>}<div className="workbench-actions"><button data-testid="sale-save" disabled={busy||Boolean(selectedReservation)||!draft.customerId||!draft.vehicleId||!draft.price} onClick={()=>void persist()}><ShoppingBag/> {busy?'Salvataggio…':'Apri vendita'}</button><button className="ghost" onClick={()=>setCreating(false)}><X/> Annulla</button></div></section>}
 
@@ -143,6 +176,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       const done=new Set(deliveryItems.filter(w=>w.status==='DONE').map(w=>String(w.title||'').trim()))
       const checklistDone=DELIVERY_ITEMS.filter(item=>done.has(item)).length
       return <SalesCompactCard key={contract.id} contract={contract} customer={customer} vehicle={vehicle}
+        defaultExpanded={viewMode==='EXPANDED'}
         checklistDone={checklistDone} checklistTotal={DELIVERY_ITEMS.length}
         focused={focusedVehicleId===contract.vehicle_id||focusedCustomerId===contract.customer_id}
         writable={writable} checklistWritable={checklistWritable} busy={busy} nowIso={nowIso}
