@@ -40,3 +40,11 @@
 .sale360-checklist-hint{margin:10px 0 0;font-size:10px;color:#6d7278}
 .sale360-head h3 small{font-size:10px;font-weight:900;color:#598366}
 @media(max-width:760px){.sale360-checklist>div{min-height:58px}.sale360-checklist button{min-height:44px}}
+ 
+/* Modifica 41: deliberate two-step correction of an erroneously completed delivery check. */
+.sale360-checklist .sale360-checklist-undo{border-color:#d8b8a9;background:#fff6f2;color:#8b463a}
+.sale360-checklist-undo-confirm{display:flex;flex:1 0 100%;flex-wrap:wrap;align-items:center;gap:8px;padding:11px;margin-top:5px;border:1px solid #e2bd9e;border-radius:11px;background:#fffaf4}
+.sale360-checklist-undo-confirm p{width:100%;margin:0;font-size:10px;line-height:1.45;color:#775335}
+.sale360-checklist .sale360-checklist-undo-confirm button{margin:0;background:#884b33;color:#fff;border-color:#884b33}
+.sale360-checklist .sale360-checklist-undo-confirm button.cancel{background:#fff;color:#634e40;border-color:#d7c7b9}
+@media(max-width:760px){.sale360-checklist-undo-confirm button{flex:1 0 100%}}
