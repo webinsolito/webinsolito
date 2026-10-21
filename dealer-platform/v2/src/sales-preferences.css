@@ -1,0 +1,23 @@
+/* Modifica 37 — local operator view preferences, compact premium toolbar. */
+.sales-display-options{
+ flex:1 1 100%;display:flex;align-items:center;flex-wrap:wrap;gap:8px 13px;
+ margin-top:2px;padding-top:10px;border-top:1px solid #e4e9eb
+}
+.sales-display-label{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:#596979;font-size:10px;font-weight:900}
+.sales-display-label svg{color:#72889c}
+.sales-display-buttons{display:flex;align-items:center;gap:5px}
+.sales-display-buttons button{
+ min-height:34px;padding:7px 12px;border:1px solid #dce4e9;border-radius:9px;background:#fff;
+ color:#637181;font-size:10px;font-weight:850;cursor:pointer
+}
+.sales-display-buttons button.selected{border-color:#273e50;background:#273e50;color:#fff}
+.sales-display-buttons button:hover:not(.selected){border-color:#b9cbd7;background:#f2f6f8}
+.sales-display-buttons button:focus-visible{outline:3px solid #b79561;outline-offset:2px}
+.sales-display-options>small{flex:1 1 220px;color:#8b949d;font-size:9px;line-height:1.4}
+@media(max-width:760px){
+ .sales-display-options{gap:8px;align-items:stretch}
+ .sales-display-label{flex:1 1 100%}
+ .sales-display-buttons{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sales-display-buttons button{min-width:0;min-height:43px}
+ .sales-display-options>small{flex:1 1 100%;font-size:9px}
+}
