@@ -35,7 +35,7 @@ export function buildReservationCallbacksByWindow(data:Pick<TenantData,'contract
   const completion=latestReservationCompletion(sale,data.customerInteractions.filter(x=>x.dealer_id===sale.dealer_id),window)
   const completedAt=completion?Date.parse(completion.happened_at||completion.created_at||''):NaN
   const editedAt=customer?.updated_at?Date.parse(customer.updated_at):NaN
-  const newCallbackAfterCompletion=validCallback&&Number.isFinite(completedAt)&&Number.isFinite(editedAt)&&editedAt>completedAt
+  const newCallbackAfterCompletion=validCallback&&Number.isFinite(completedAt)&&Number.isFinite(editedAt)&&editedAt>=completedAt
   const state:ReservationCallbackState=completion&&!newCallbackAfterCompletion?'COMPLETED':validCallback?(callbackTime<=now?'CALLBACK_DUE':window==='SOON'&&callbackTime>Date.parse(sale.reservation_expires_at||'')?'AFTER_EXPIRY':'SCHEDULED'):(lastContact?'NEEDS_PLAN':'NEEDS_CONTACT')
   rows.push({
    id:'reservation-callback:'+sale.id,contractId:sale.id,contractNumber:sale.contract_number,
