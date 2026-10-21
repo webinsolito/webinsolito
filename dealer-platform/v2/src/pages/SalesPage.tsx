@@ -3,6 +3,7 @@ import {CalendarClock,CheckCircle2,ClipboardCheck,Euro,Plus,ShieldCheck,Shopping
 import {canWriteGarage,clearMatchingReservationCallback,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
 import {cancelSaleContract,canWriteContracts,createSaleContract,extendSaleReservation,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import {Sale360Drawer} from '../components/Sale360Drawer'
+import {SalesReservationOverview} from '../components/SalesReservationOverview'
 import {filterSalesSegment,salesSegment,salesSegmentCounts,type SalesSegment} from '../domain/salesView'
 import {reservationLabel,reservesVehicle,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts,reservationAlert} from '../domain/reservationDeadlines'
@@ -28,9 +29,17 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const [focusedCustomerId,setFocusedCustomerId]=useState<string|null>(null)
   const [sale360Id,setSale360Id]=useState<string|null>(null)
   const [segment,setSegment]=useState<SalesSegment>('ACTIVE')
+  const [nowIso,setNowIso]=useState(()=>new Date().toISOString())
+  useEffect(()=>{
+    const refreshClock=()=>setNowIso(new Date().toISOString())
+    const interval=window.setInterval(refreshClock,60_000)
+    window.addEventListener('focus',refreshClock)
+    document.addEventListener('visibilitychange',refreshClock)
+    return()=>{window.clearInterval(interval);window.removeEventListener('focus',refreshClock);document.removeEventListener('visibilitychange',refreshClock)}
+  },[])
   const allSales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>Number(b.vehicle_id===focusedVehicleId||b.customer_id===focusedCustomerId)-Number(a.vehicle_id===focusedVehicleId||a.customer_id===focusedCustomerId)||String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts,focusedVehicleId,focusedCustomerId])
   const counts=useMemo(()=>salesSegmentCounts(allSales),[allSales])
-  const alerts=activeReservationAlerts(data,new Date().toISOString())
+  const alerts=activeReservationAlerts(data,nowIso)
   const sales=useMemo(()=>filterSalesSegment(allSales,segment),[allSales,segment])
   useEffect(()=>{if(!focusContractId&&!focusVehicleId&&!focusCustomerId)return;setFocusedVehicleId(focusVehicleId||null);setFocusedCustomerId(focusCustomerId||null);const exact=focusContractId?data.contracts.find(c=>c.id===focusContractId&&c.template_code==='VENDITA'):undefined;if(exact){setSegment(salesSegment(exact));setSale360Id(exact.id);setCreating(false);onFocusConsumed?.();return}const existing=allSales.find(c=>(!focusVehicleId||c.vehicle_id===focusVehicleId)&&(!focusCustomerId||c.customer_id===focusCustomerId)&&salesSegment(c)==='ACTIVE');if(existing){setSegment('ACTIVE');setSale360Id(existing.id);setCreating(false)}else if(writable){setSegment('ACTIVE');const interestVehicleId=!focusVehicleId&&focusCustomerId?data.customerInterests.find(i=>i.customer_id===focusCustomerId&&String(i.status||'').toUpperCase()!=='PERSA')?.vehicle_id:undefined;const targetVehicleId=focusVehicleId||interestVehicleId||'';const vehicle=targetVehicleId?data.vehicles.find(v=>v.id===targetVehicleId):undefined;setCreating(true);setDraft(current=>({...current,vehicleId:targetVehicleId,customerId:focusCustomerId||current.customerId,price:vehicle?.asking_price??''}))}else setCreating(false);onFocusConsumed?.()},[focusContractId,focusVehicleId,focusCustomerId,focusKey,allSales,writable])
   const selectedReservation=vehicleReservation(data.contracts,draft.vehicleId)
@@ -88,6 +97,11 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
     {error&&<div className="form-error customer-global-error">{error}</div>}
 
     {alerts.length>0&&<button type="button" className="reservation-alert-banner" data-testid="sales-reservation-alert" onClick={()=>{setSegment('ACTIVE');setSale360Id(alerts[0].id)}}>🔔 {alerts.length} prenotazion{alerts.length===1?'e':'i'} da verificare · Apri la più urgente</button>}
+    <SalesReservationOverview data={data} nowIso={nowIso} onOpenSale={contractId=>{
+      setSegment('ACTIVE')
+      setCreating(false)
+      setSale360Id(contractId)
+    }}/>
     <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>setSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>setSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>setSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
 
     {creating&&<section className="sale-create" data-testid="sale-create"><div className="customer-section-head"><div><p className="eyebrow">NUOVA VENDITA</p><h2>Apri pratica vendita</h2></div><button className="icon-ghost" aria-label="Chiudi vendita" onClick={()=>setCreating(false)}><X/></button></div><div className="sale-form-grid"><label><span>CLIENTE</span><select aria-label="CLIENTE VENDITA" disabled={busy} value={draft.customerId} onChange={e=>setDraft({...draft,customerId:e.target.value})}><option value="">Seleziona cliente…</option>{data.customers.filter(c=>!c.deleted_at).map(c=><option key={c.id} value={c.id}>{personName(c)}</option>)}</select></label><label><span>AUTO</span><select aria-label="AUTO VENDITA" disabled={busy} value={draft.vehicleId} onChange={e=>selectVehicle(e.target.value)}><option value="">Seleziona auto…</option>{data.vehicles.filter(v=>!v.deleted_at).map(v=><option key={v.id} value={v.id} disabled={Boolean(vehicleReservation(data.contracts,v.id))||['CONSEGNATA','VENDUTA','DA_CONSEGNARE'].includes(v.status||'')}>{vehicleName(v)}{v.plate?` · ${v.plate}`:''}{vehicleReservation(data.contracts,v.id)?` · PRENOTATA da ${reservationLabel(data,vehicleReservation(data.contracts,v.id)!)} `:''}</option>)}</select></label><label><span>PREZZO VENDITA €</span><input aria-label="PREZZO VENDITA" inputMode="decimal" disabled={busy} value={draft.price} onChange={e=>setDraft({...draft,price:e.target.value})}/></label><label><span>CAPARRA €</span><input aria-label="CAPARRA VENDITA" inputMode="decimal" disabled={busy} value={draft.deposit??''} onChange={e=>setDraft({...draft,deposit:e.target.value})}/></label><label><span>CONSEGNA PREVISTA</span><input aria-label="CONSEGNA PREVISTA" type="datetime-local" disabled={busy} value={draft.plannedDeliveryAt||''} onChange={e=>setDraft({...draft,plannedDeliveryAt:e.target.value})}/></label><label className="wide"><span>NOTE</span><input aria-label="NOTE VENDITA" disabled={busy} value={draft.notes||''} onChange={e=>setDraft({...draft,notes:e.target.value})} placeholder="Permuta, finanziamento, richieste cliente…"/></label></div>{selectedReservation&&<p className="form-error" role="alert" data-testid="vehicle-booking-warning">Auto già prenotata per {reservationLabel(data,selectedReservation)} · vendita {selectedReservation.contract_number}. Scegli un'altra auto.</p>}<div className="workbench-actions"><button data-testid="sale-save" disabled={busy||Boolean(selectedReservation)||!draft.customerId||!draft.vehicleId||!draft.price} onClick={()=>void persist()}><ShoppingBag/> {busy?'Salvataggio…':'Apri vendita'}</button><button className="ghost" onClick={()=>setCreating(false)}><X/> Annulla</button></div></section>}
