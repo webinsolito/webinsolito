@@ -1,7 +1,8 @@
 import type {TenantData,Contract} from '../types'
-import {isOverdueReservation,followupForReservation,reservationNextStep} from './reservationFollowup'
+import {followupForReservation,reservationNextStep} from './reservationFollowup'
+import {reservationAlert,type ReservationAlert} from './reservationDeadlines'
 
-export type ReservationCallbackState='NEEDS_CONTACT'|'NEEDS_PLAN'|'CALLBACK_DUE'|'SCHEDULED'
+export type ReservationCallbackState='NEEDS_CONTACT'|'NEEDS_PLAN'|'CALLBACK_DUE'|'SCHEDULED'|'AFTER_EXPIRY'
 export interface TodayReservationCallback{
  id:string
  contractId:string
@@ -15,15 +16,15 @@ export interface TodayReservationCallback{
  lastContactTitle:string|null
 }
 
-const order:Record<ReservationCallbackState,number>={CALLBACK_DUE:0,NEEDS_CONTACT:1,NEEDS_PLAN:2,SCHEDULED:3}
+const order:Record<ReservationCallbackState,number>={CALLBACK_DUE:0,AFTER_EXPIRY:1,NEEDS_CONTACT:2,NEEDS_PLAN:3,SCHEDULED:4}
 const name=(...parts:(string|undefined|null)[])=>parts.filter(Boolean).join(' ').trim()
 
-export function buildTodayReservationCallbacks(data:Pick<TenantData,'contracts'|'customers'|'vehicles'|'customerInteractions'>,nowIso:string):TodayReservationCallback[]{
+export function buildReservationCallbacksByWindow(data:Pick<TenantData,'contracts'|'customers'|'vehicles'|'customerInteractions'>,nowIso:string,window:Extract<ReservationAlert,'SOON'|'OVERDUE'>):TodayReservationCallback[]{
  const now=Date.parse(nowIso)
  if(!Number.isFinite(now))return []
  const rows:TodayReservationCallback[]=[]
  for(const sale of data.contracts){
-  if(!isOverdueReservation(sale,nowIso))continue
+  if(reservationAlert(sale,nowIso)!==window)continue
   const customer=data.customers.find(c=>c.id===sale.customer_id&&c.dealer_id===sale.dealer_id&&!c.deleted_at)
   const vehicle=data.vehicles.find(v=>v.id===sale.vehicle_id&&v.dealer_id===sale.dealer_id&&!v.deleted_at)
   const lastContact=followupForReservation(sale,data.customerInteractions.filter(x=>x.dealer_id===sale.dealer_id))[0]
@@ -31,7 +32,7 @@ export function buildTodayReservationCallbacks(data:Pick<TenantData,'contracts'|
   const rawCallback=callbackMatches?customer?.next_contact_at:null
   const callbackTime=rawCallback?Date.parse(rawCallback):NaN
   const validCallback=Number.isFinite(callbackTime)
-  const state:ReservationCallbackState=validCallback?(callbackTime<=now?'CALLBACK_DUE':'SCHEDULED'):(lastContact?'NEEDS_PLAN':'NEEDS_CONTACT')
+  const state:ReservationCallbackState=validCallback?(callbackTime<=now?'CALLBACK_DUE':window==='SOON'&&callbackTime>Date.parse(sale.reservation_expires_at||'')?'AFTER_EXPIRY':'SCHEDULED'):(lastContact?'NEEDS_PLAN':'NEEDS_CONTACT')
   rows.push({
    id:'reservation-callback:'+sale.id,contractId:sale.id,contractNumber:sale.contract_number,
    customerName:name(customer?.first_name,customer?.last_name)||'Cliente non disponibile',
@@ -46,6 +47,12 @@ export function buildTodayReservationCallbacks(data:Pick<TenantData,'contracts'|
   ||(a.state==='CALLBACK_DUE'&&b.state==='CALLBACK_DUE'?String(a.callbackAt).localeCompare(String(b.callbackAt)):0)
   ||a.expiresAt.localeCompare(b.expiresAt)||a.contractNumber.localeCompare(b.contractNumber,'it'))
 }
+export function buildTodayReservationCallbacks(data:Pick<TenantData,'contracts'|'customers'|'vehicles'|'customerInteractions'>,nowIso:string){
+ return buildReservationCallbacksByWindow(data,nowIso,'OVERDUE')
+}
+export function buildUpcomingReservationCallbacks(data:Pick<TenantData,'contracts'|'customers'|'vehicles'|'customerInteractions'>,nowIso:string){
+ return buildReservationCallbacksByWindow(data,nowIso,'SOON')
+}
 export const overdueCallbackCounts=(rows:TodayReservationCallback[])=>({
  toDo:rows.filter(r=>r.state!=='SCHEDULED').length,
  scheduled:rows.filter(r=>r.state==='SCHEDULED').length
@@ -54,5 +61,6 @@ export const overdueCallbackLabel=(state:ReservationCallbackState)=>({
  NEEDS_CONTACT:'Da ricontattare',
  NEEDS_PLAN:'Contatto registrato · pianifica richiamo',
  CALLBACK_DUE:'Richiamo da fare',
- SCHEDULED:'Richiamo programmato'
+ SCHEDULED:'Richiamo programmato',
+ AFTER_EXPIRY:'Richiamo oltre la scadenza · anticipa'
 })[state]
