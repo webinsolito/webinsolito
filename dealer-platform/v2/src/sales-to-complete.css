@@ -48,3 +48,19 @@
 .sale360-checklist .sale360-checklist-undo-confirm button{margin:0;background:#884b33;color:#fff;border-color:#884b33}
 .sale360-checklist .sale360-checklist-undo-confirm button.cancel{background:#fff;color:#634e40;border-color:#d7c7b9}
 @media(max-width:760px){.sale360-checklist-undo-confirm button{flex:1 0 100%}}
+
+/* Modifica 42 · storico verifiche solo operativo, compatto anche su iPhone. */
+.sale-checklist-history-intro{display:flex;align-items:center;gap:7px;margin:0 0 10px;color:#727477;font-size:10px;line-height:1.5}
+.sale-checklist-history-intro svg{flex:0 0 auto;color:#648568}
+.sale-checklist-history-list{display:grid;gap:8px}
+.sale-checklist-history-event{display:flex;align-items:flex-start;gap:10px;padding:11px;border:1px solid #e8e4dc;border-radius:12px;background:#fcfbf8}
+.sale-checklist-history-event>svg{width:19px;height:19px;color:#598165;flex:0 0 auto}
+.sale-checklist-history-event:has(.lucide-rotate-ccw)>svg{color:#aa703b}
+.sale-checklist-history-copy{min-width:0;flex:1}
+.sale-checklist-history-entry-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px}
+.sale-checklist-history-entry-head b{font-size:11px;color:#303b42}
+.sale-checklist-history-entry-head time{font-size:9px;color:#6e7174}
+.sale-checklist-history-title{margin:5px 0 2px;font-size:10px;font-weight:750;overflow-wrap:anywhere}
+.sale-checklist-history-actor{margin:0;font-size:9px;color:#697177}
+.sale-checklist-history-more{display:flex;justify-content:center;align-items:center;gap:6px;min-height:40px;border:1px solid #d4d5d1;border-radius:10px;background:#fff;color:#42555d;font-size:10px;font-weight:800}
+.sale-checklist-history-more svg{width:15px;height:15px}

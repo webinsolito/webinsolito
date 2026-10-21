@@ -8,6 +8,7 @@ import {buildDeliveryGate} from '../domain/deliveryGate'
 import {SaleCancellationPanel} from './SaleCancellationPanel'
 import {ReservationDeadlinePanel} from './ReservationDeadlinePanel'
 import {ReservationHistoryPanel} from './ReservationHistoryPanel'
+import {SaleChecklistHistoryPanel} from './SaleChecklistHistoryPanel'
 import {ReservationFollowupPanel} from './ReservationFollowupPanel'
 import type {Contract,SessionPayload,TenantData} from '../types'
 import type {ReservationFollowupWindow} from '../domain/reservationFollowup'
@@ -133,6 +134,8 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
      {checklistError&&<div className="sale360-gate-error" role="alert" data-testid="sale360-checklist-error">{checklistError}</div>}
      {!terminal&&!checklistWritable&&<p className="sale360-checklist-hint">Solo gli operatori autorizzati alla gestione Garage possono completare le verifiche.</p>}
    </section>
+
+   <SaleChecklistHistoryPanel contract={contract} workItems={data.workItems}/>
 
    <section className="sale360-contract">
      <div><ShoppingBag/><span><small>PREZZO VENDITA</small><b>{money(contract.price)}</b></span></div>

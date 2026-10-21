@@ -8,14 +8,15 @@ const CUSTOMER='33333333-3333-3333-3333-333333333333'
 const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
-type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean;delivered?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[]}
+type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean;delivered?:boolean;seedHistory?:boolean}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[];checklistHistory:any[];historyReads:string[]}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
 async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[]}
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[],checklistHistory:[],historyReads:[]}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
+ if(options.seedHistory){state.checklistHistory.push({id:'before-existing',dealer_id:DEALER,vehicle_id:VEHICLE,work_item_id:'w0',title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-20T10:20:00Z',actor_name:'Operatore Demo',actor_role:'VENDITORE'})}
  if(options.delivered){state.contract.sale_stage='DELIVERED';state.vehicle.status='CONSEGNATA'}
  if(options.pendingChecklist)state.workItems.push({id:'pending-check',dealer_id:DEALER,vehicle_id:VEHICLE,title:DELIVERY_CHECKLIST[2],category:'CONSEGNA',status:'TODO'})
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
@@ -42,10 +43,20 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options
       ||url.searchParams.get('category')!=='eq.CONSEGNA'||url.searchParams.get('status')!=='eq.DONE'
       ||url.searchParams.get('title')!=='eq.'+item.title||item.status!=='DONE')return json(route,[])
     }
+    const wasDone=item.status==='DONE'
     Object.assign(item,body)
+    if(wasDone!==(item.status==='DONE')&&item.category==='CONSEGNA'){
+     state.checklistHistory.unshift({id:'audit-'+state.checklistHistory.length,dealer_id:DEALER,vehicle_id:VEHICLE,work_item_id:item.id,title:item.title,
+      event_type:item.status==='DONE'?'COMPLETED':'CORRECTED',occurred_at:new Date(Date.now()+state.checklistHistory.length*1000).toISOString(),
+      actor_user_id:'mock-actor',actor_name:role==='ADMIN'?'Supervisore Demo':'Addetto Vendite',actor_role:role})
+    }
     return json(route,[item])
    }
    return json(route,state.workItems)
+  }
+  if(path==='/rest/v1/sale_checklist_events_v420'){
+    state.historyReads.push(url.search)
+    return json(route,state.checklistHistory)
   }
   if(path==='/rest/v1/customers')return json(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
   if(path==='/rest/v1/customer_interactions'||path==='/rest/v1/customer_vehicle_interests')return json(route,[])
@@ -221,4 +232,54 @@ test('Mod41: vendite già consegnate non consentono di rimuovere verifiche',asyn
  await expect(page.getByTestId('sale360-checklist-item')).toHaveCount(7)
  await expect(page.getByTestId('sale360-checklist-undo')).toHaveCount(0)
  expect(state.workItemPatches).toBe(0)
+})
+ 
+test('Mod42: completamento e correzione scrivono uno storico cronologico con operatore e data',async({page})=>{
+ const state=await boot(page,'ADMIN',{pendingChecklist:true,paid:true})
+ await openGate(page)
+ const history=page.getByTestId('sale-checklist-history')
+ await expect(history.getByTestId('sale-checklist-history-empty')).toBeVisible()
+ const row=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]})
+ await row.getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[2]}).click()
+ await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(1)
+ await expect(history.getByTestId('sale-checklist-history-event').first()).toContainText('Verifica completata')
+ await expect(history).toContainText('Supervisore Demo')
+ await expect(history).toContainText(DELIVERY_CHECKLIST[2])
+ await row.getByRole('button',{name:'Correggi '+DELIVERY_CHECKLIST[2]}).click()
+ await row.getByTestId('sale360-checklist-undo-submit').click()
+ await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(2)
+ await expect(history.getByTestId('sale-checklist-history-event').first()).toContainText('Verifica corretta')
+ await expect(history.getByTestId('sale-checklist-history-event').first()).toContainText('Supervisore Demo')
+ expect(state.checklistHistory.map(x=>x.event_type)).toEqual(['CORRECTED','COMPLETED'])
+ expect(state.historyReads.some(s=>s.includes('dealer_id=eq.'+DEALER)&&s.includes('vehicle_id=eq.'+VEHICLE))).toBe(true)
+})
+test('Mod42: lo storico esistente è visibile anche a ruoli senza garage_write, senza modifiche',async({page})=>{
+ const state=await boot(page,'AMMINISTRAZIONE',{completeChecklist:true,seedHistory:true})
+ await openGate(page)
+ const history=page.getByTestId('sale-checklist-history')
+ await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(1)
+ await expect(history).toContainText('Operatore Demo')
+ await expect(page.getByTestId('sale360-checklist-undo')).toHaveCount(0)
+ expect(state.workItemPatches).toBe(0)
+})
+test('Mod42: venditore consulta e aggiorna lo storico ma non riceve dati finanziari',async({page})=>{
+ const state=await boot(page,'VENDITORE',{pendingChecklist:true})
+ await openGate(page)
+ const row=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]})
+ await row.getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[2]}).click()
+ const history=page.getByTestId('sale-checklist-history')
+ await expect(history).toContainText('Addetto Vendite')
+ await history.getByTestId('sale-checklist-history-refresh').click()
+ await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(1)
+ expect(state.financeRequests).toBe(0)
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
+})
+test('Mod42: non mostra un evento restituito per errore da una concessionaria estranea',async({page})=>{
+ const state=await boot(page,'ADMIN',{seedHistory:true})
+ state.checklistHistory.push({id:'foreign',dealer_id:'other-dealer',vehicle_id:VEHICLE,title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-21T18:00:00Z',actor_name:'NON MOSTRARE-ALTRO-DEALER'})
+ await openGate(page)
+ const history=page.getByTestId('sale-checklist-history')
+ await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(1)
+ await expect(history).not.toContainText('NON MOSTRARE-ALTRO-DEALER')
+ expect(state.historyReads.length).toBeGreaterThan(0)
 })
