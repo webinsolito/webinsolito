@@ -52,6 +52,12 @@ describe('Modifica 37 · preferenze di consultazione Vendite per operatore',()=>
   expect(readSalesPreferences(key,blocked)).toEqual(DEFAULT_SALES_PREFERENCES)
   expect(saveSalesPreferences(key,{...DEFAULT_SALES_PREFERENCES},blocked)).toBe(false)
  })
+ it('ricorda il filtro Da completare soltanto per l’operatore selezionato',()=>{
+  const db=storage(),alice=salesPreferencesKey(session('dealer','alice'))!,bob=salesPreferencesKey(session('dealer','bob'))!
+  expect(saveSalesPreferences(alice,{sortMode:'DELIVERY',segment:'TO_COMPLETE',viewMode:'COMPACT'},db)).toBe(true)
+  expect(readSalesPreferences(alice,db)).toMatchObject({sortMode:'DELIVERY',segment:'TO_COMPLETE'})
+  expect(readSalesPreferences(bob,db)).toEqual(DEFAULT_SALES_PREFERENCES)
+ })
  it('l’identità usata nella chiave ha fallback su id profilo o username ma non contiene credenziali',()=>{
   const alt={...session(),user:undefined,profile:{role:'VENDITORE',id:'p123'}} as SessionPayload
   expect(salesPreferencesKey(alt)).toContain('p123')
