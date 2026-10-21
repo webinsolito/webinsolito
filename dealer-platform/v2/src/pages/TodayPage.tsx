@@ -5,7 +5,7 @@ import {buildInvoiceSummary} from '../domain/invoices'
 import {buildCollectionSchedule} from '../domain/collections'
 import {buildDeadlineSummary} from '../domain/deadlines'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
-import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
+import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,completedReservationCallbackCount,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
 import {fetchCollectionFollowups,type InvoiceCollectionFollowup} from '../lib/collectionsApi'
 import {TodayUpcomingReservationPanel} from '../components/TodayUpcomingReservationPanel'
 import type {InvoiceDetail} from '../lib/invoiceApi'
@@ -19,6 +19,7 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  const [followups,setFollowups]=useState<InvoiceCollectionFollowup[]|null>(financeVisible?null:[])
  const [collectionsError,setCollectionsError]=useState(false)
  const [showAllBookingCallbacks,setShowAllBookingCallbacks]=useState(false)
+ const [showCompletedBookingCallbacks,setShowCompletedBookingCallbacks]=useState(false)
  const [nowIso,setNowIso]=useState(()=>new Date().toISOString())
  useEffect(()=>{const tick=()=>setNowIso(new Date().toISOString());const timer=window.setInterval(tick,60_000);window.addEventListener('focus',tick);document.addEventListener('visibilitychange',tick);return()=>{window.clearInterval(timer);window.removeEventListener('focus',tick);document.removeEventListener('visibilitychange',tick)}},[])
  useEffect(()=>{
@@ -57,8 +58,11 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  const upcomingReservations=useMemo(()=>buildUpcomingReservationCallbacks(data,nowIso),[data,nowIso])
  const upcomingCount=overdueCallbackCounts(upcomingReservations)
  const bookingCallbackCounts=overdueCallbackCounts(overdueCallbacks)
- const firstBookingToDo=overdueCallbacks.find(row=>row.state!=='SCHEDULED')
- const bookingCallbackRows=showAllBookingCallbacks?overdueCallbacks:overdueCallbacks.slice(0,5)
+ const completedOverdueCount=completedReservationCallbackCount(overdueCallbacks)
+ const activeOverdueCallbacks=overdueCallbacks.filter(row=>row.state!=='COMPLETED')
+ const completedOverdueCallbacks=overdueCallbacks.filter(row=>row.state==='COMPLETED')
+ const firstBookingToDo=activeOverdueCallbacks.find(row=>row.state!=='SCHEDULED')
+ const bookingCallbackRows=showAllBookingCallbacks?activeOverdueCallbacks:activeOverdueCallbacks.slice(0,5)
  const callbackDateTime=(value:string)=>new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value))
 
  return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':upcomingCount.toDo?'Prenotazioni in scadenza da contattare prima del termine.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
@@ -67,7 +71,7 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
  {overdueCallbacks.length>0&&<section className="today-overdue-callbacks section" data-testid="today-overdue-callbacks">
   <div className="today-callback-head">
    <div><p className="eyebrow">PRENOTAZIONI SCADUTE</p><h2><PhoneCall/> Richiami da seguire</h2><p>Contatta il cliente, registra l'esito e programma il prossimo richiamo. L'auto resta prenotata.</p></div>
-   <div className="today-callback-stats"><span><b data-testid="today-callback-to-do">{bookingCallbackCounts.toDo}</b> da gestire</span><span><b data-testid="today-callback-scheduled">{bookingCallbackCounts.scheduled}</b> programmati</span></div>
+   <div className="today-callback-stats"><span><b data-testid="today-callback-to-do">{bookingCallbackCounts.toDo}</b> da gestire</span><span><b data-testid="today-callback-scheduled">{bookingCallbackCounts.scheduled}</b> programmati</span>{completedOverdueCount>0&&<span><b data-testid="today-callback-completed">{completedOverdueCount}</b> completati</span>}</div>
   </div>
   <div className="today-callback-list">
    {bookingCallbackRows.map(item=><button type="button" key={item.id}
@@ -84,10 +88,19 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
     <ChevronRight size={18} className="today-callback-arrow"/>
    </button>)}
   </div>
-  {overdueCallbacks.length>5&&<button type="button" className="today-callback-more" data-testid="today-callback-show-all"
+  {activeOverdueCallbacks.length>5&&<button type="button" className="today-callback-more" data-testid="today-callback-show-all"
    onClick={()=>setShowAllBookingCallbacks(x=>!x)}>
-   {showAllBookingCallbacks?'Mostra i primi 5':'Mostra tutti i '+overdueCallbacks.length+' richiami'} <ChevronRight size={16}/>
+   {showAllBookingCallbacks?'Mostra i primi 5':'Mostra tutti i '+activeOverdueCallbacks.length+' richiami'} <ChevronRight size={16}/>
   </button>}
+  {completedOverdueCount>0&&<button type="button" className="today-callback-more" data-testid="today-callback-show-completed" onClick={()=>setShowCompletedBookingCallbacks(x=>!x)}>
+   {showCompletedBookingCallbacks?'Nascondi completati':'Mostra '+completedOverdueCount+' richiami completati'} <ChevronRight size={16}/>
+  </button>}
+  {showCompletedBookingCallbacks&&completedOverdueCallbacks.map(item=><button type="button" key={item.id}
+   className="today-callback-row status-completed" data-testid="today-completed-callback-row" onClick={()=>onSale(item.contractId)}>
+   <span className="today-callback-symbol"><PhoneCall size={19}/></span>
+   <span className="today-callback-copy"><strong>{item.customerName} · {item.contractNumber}</strong><small>{item.vehicleName}</small><small>Ultimo contatto: {item.lastContactAt?callbackDateTime(item.lastContactAt):'—'}</small></span>
+   <span className="today-callback-state"><b>Completato</b></span><ChevronRight size={18}/>
+  </button>)}
  </section>}
  <TodayUpcomingReservationPanel items={upcomingReservations} onSale={onSale}/>
  <section className="focus-card"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||(firstBookingToDo?'Richiamare '+firstBookingToDo.customerName :upcomingCount.toDo?'Prenotazioni da confermare prima della scadenza':'Niente di urgente 🎉')}</h2><p>{allPriorities[0]?.detail||(firstBookingToDo?'Prenotazione '+firstBookingToDo.contractNumber+' scaduta · registra il ricontatto nella vendita.' :upcomingCount.toDo?'Apri le prenotazioni in scadenza e programma il contatto prima del termine.':'Puoi passare ai clienti o al Garage senza emergenze aperte.')}</p></div>{allPriorities[0]?<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>:firstBookingToDo?<button className="focus-cta" onClick={()=>onSale(firstBookingToDo.contractId)}>Apri vendita 360° <ChevronRight/></button>:upcomingCount.toDo?<button className="focus-cta" onClick={()=>onSale(upcomingReservations.find(row=>row.state!=='SCHEDULED')!.contractId)}>Apri prenotazione <ChevronRight/></button>:null}</section>
