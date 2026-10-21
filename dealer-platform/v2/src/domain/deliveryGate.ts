@@ -5,7 +5,7 @@ export type DeliveryGateState='PASS'|'BLOCK'|'PRIVATE'
 export interface DeliveryGateCheck{id:string;label:string;state:DeliveryGateState;detail:string}
 
 export function buildDeliveryGate(data:TenantData,contract:Contract,financeVisible:boolean){
- const done=new Set(data.workItems.filter(w=>w.vehicle_id===contract.vehicle_id&&String(w.category||'').toUpperCase()==='CONSEGNA'&&String(w.status||'').toUpperCase()==='DONE').map(w=>String(w.title||'').trim()))
+ const done=new Set(data.workItems.filter(w=>w.dealer_id===contract.dealer_id&&w.vehicle_id===contract.vehicle_id&&String(w.category||'').toUpperCase()==='CONSEGNA'&&String(w.status||'').toUpperCase()==='DONE').map(w=>String(w.title||'').trim()))
  const missingChecklist=DELIVERY_CHECKLIST.filter(title=>!done.has(title))
  const stageReady=String(contract.sale_stage||'').toUpperCase()==='READY'
  const signed=String(contract.status||'').toUpperCase()==='SIGNED'

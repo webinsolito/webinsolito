@@ -19,7 +19,7 @@ const dateTime=(value?:string|null)=>{if(!value)return 'Da definire';const d=new
 const person=(c?:TenantData['customers'][number])=>c?[c.first_name,c.last_name].filter(Boolean).join(' ')||'Cliente':'Cliente non disponibile'
 const vehicle=(v?:TenantData['vehicles'][number])=>v?[v.brand,v.model,v.version].filter(Boolean).join(' ')||'Auto':'Auto non disponibile'
 
-export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onDeliver,onCancel,onExtendReservation,onRecordReservationContact,onScheduleReservationCallback,onCompleteReservationCallback,focusCheckId=null,onAdvanceStage,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onAdvanceStage:(stage:string)=>Promise<void>;focusCheckId?:string|null;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;onExtendReservation:(iso:string,reason:string)=>Promise<void>;onRecordReservationContact:(channel:string,title:string)=>Promise<void>;onScheduleReservationCallback:(nextStep:string,iso:string)=>Promise<void>;onCompleteReservationCallback:(window:ReservationFollowupWindow,note:string)=>Promise<void>;deliveryBusy?:boolean}){
+export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOpenVehicle,onOpenDeliveryAppointment,onOpenInvoices,onOpenDeadlines,onPrepareChecklist,onCompleteChecklistItem,onDeliver,onCancel,onExtendReservation,onRecordReservationContact,onScheduleReservationCallback,onCompleteReservationCallback,focusCheckId=null,onAdvanceStage,deliveryBusy=false}:{contract:Contract;data:TenantData;session:SessionPayload;onClose:()=>void;onOpenCustomer:(id:string)=>void;onOpenVehicle:(id:string)=>void;onOpenDeliveryAppointment:(customerId:string,vehicleId:string)=>void;onOpenInvoices:(invoiceId?:string)=>void;onOpenDeadlines:()=>void;onPrepareChecklist:()=>void;onCompleteChecklistItem:(title:string)=>Promise<void>;onAdvanceStage:(stage:string)=>Promise<void>;focusCheckId?:string|null;onDeliver:()=>Promise<void>;onCancel:(reason:string)=>Promise<void>;onExtendReservation:(iso:string,reason:string)=>Promise<void>;onRecordReservationContact:(channel:string,title:string)=>Promise<void>;onScheduleReservationCallback:(nextStep:string,iso:string)=>Promise<void>;onCompleteReservationCallback:(window:ReservationFollowupWindow,note:string)=>Promise<void>;deliveryBusy?:boolean}){
  const summary=buildSale360(data,contract,new Date().toISOString())
  const financeVisible=canSeeFinance(session)
  const deliveryWritable=canWriteContracts(session)
@@ -39,7 +39,17 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
  const nextStage=NEXT_STAGE[String(contract.sale_stage||'').toUpperCase()]
  const [confirming,setConfirming]=useState(false)
  const [deliveryError,setDeliveryError]=useState('')
+ const [pendingChecklistTitle,setPendingChecklistTitle]=useState<string|null>(null)
+ const [checklistError,setChecklistError]=useState('')
  const terminal=['DELIVERED','CANCELLED'].includes(String(contract.sale_stage||'').toUpperCase())
+ const completeChecklist=async(title:string)=>{
+  if(pendingChecklistTitle||deliveryBusy)return
+  setChecklistError('')
+  setPendingChecklistTitle(title)
+  try{await onCompleteChecklistItem(title)}
+  catch(err){setChecklistError(err instanceof Error?err.message:'Impossibile completare la verifica')}
+  finally{setPendingChecklistTitle(null)}
+ }
  const deliver=async()=>{setDeliveryError('');try{await onDeliver()}catch(err){setDeliveryError(err instanceof Error?err.message:'Impossibile completare la consegna');setConfirming(false)}}
  return <div className="drawer-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside ref={drawerRef} className="drawer sale360-drawer" data-testid="sale-360">
    <header><div><p className="eyebrow">SCHEDA VENDITA 360°</p><h2>{contract.contract_number}</h2><span>{vehicle(summary.vehicle)} · {person(summary.customer)}</span></div><button className="icon-btn" onClick={onClose} aria-label="Chiudi vendita 360"><X/></button></header>
@@ -94,8 +104,16 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    </section>
 
    <section className="sale360-section">
-     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna</h3>{!terminal&&<button onClick={onPrepareChecklist}>Completa checklist</button>}</div>
-     <div className="sale360-checklist">{summary.checklist.items.map(item=><div className={item.done?'done':''} key={item.title}>{item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b></div>)}</div>
+     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={onPrepareChecklist}>Completa checklist</button>}</div>
+     <div className="sale360-checklist" data-testid="sale360-checklist">{summary.checklist.items.map(item=><div className={item.done?'done':''} key={item.title} data-testid="sale360-checklist-item" data-checklist-title={item.title}>
+       {item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b>
+       {item.done?<span className="sale360-checklist-state">Completata</span>:
+        !terminal&&checklistWritable?<button type="button" data-testid="sale360-checklist-complete" aria-label={'Completa '+item.title}
+         disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>void completeChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Segna completata'}</button>:
+        <span className="sale360-checklist-state">Da verificare</span>}
+      </div>)}</div>
+     {checklistError&&<div className="sale360-gate-error" role="alert" data-testid="sale360-checklist-error">{checklistError}</div>}
+     {!terminal&&!checklistWritable&&<p className="sale360-checklist-hint">Solo gli operatori autorizzati alla gestione Garage possono completare le verifiche.</p>}
    </section>
 
    <section className="sale360-contract">

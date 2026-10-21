@@ -8,20 +8,38 @@ const CUSTOMER='33333333-3333-3333-3333-333333333333'
 const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
-type Options={completeChecklist?:boolean;paid?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[]}
+type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
-async function boot(page:Page,role:'ADMIN'|'VENDITORE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[]}
+async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options:Options={}){
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
+ if(options.pendingChecklist)state.workItems.push({id:'pending-check',dealer_id:DEALER,vehicle_id:VEHICLE,title:DELIVERY_CHECKLIST[2],category:'CONSEGNA',status:'TODO'})
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
  await page.route(PROJECT+'/**',async route=>{
   const req=route.request(),url=new URL(req.url()),path=url.pathname,method=req.method(),body=method==='GET'?null:req.postDataJSON() as any
   if(path==='/rest/v1/vehicles')return json(route,[state.vehicle])
   if(path==='/rest/v1/vehicle_media')return json(route,[{id:'media-1',dealer_id:DEALER,vehicle_id:VEHICLE,kind:'PHOTO',object_key:'vehicles/'+VEHICLE+'/photo.jpg',is_cover:true}])
-  if(path==='/rest/v1/vehicle_work_items')return json(route,state.workItems)
+  if(path==='/rest/v1/vehicle_work_items'){
+   if(method==='POST'){
+    state.workItemPosts++
+    const item={...body,id:'new-item-'+state.workItemPosts}
+    if(item.dealer_id!==DEALER||item.vehicle_id!==VEHICLE)return route.fulfill({status:403,contentType:'application/json',body:'{}'})
+    state.workItems.push(item)
+    return json(route,[item])
+   }
+   if(method==='PATCH'){
+    state.workItemPatches++
+    const id=url.searchParams.get('id')?.replace('eq.','')
+    const item=state.workItems.find(x=>x.id===id&&x.dealer_id===DEALER)
+    if(!item)return json(route,[])
+    Object.assign(item,body)
+    return json(route,[item])
+   }
+   return json(route,state.workItems)
+  }
   if(path==='/rest/v1/customers')return json(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
   if(path==='/rest/v1/customer_interactions'||path==='/rest/v1/customer_vehicle_interests')return json(route,[])
   if(path==='/rest/v1/calendar_events')return json(route,state.calendarEvents)
@@ -93,4 +111,48 @@ test('VENDITORE prepara la consegna senza ricevere dati finanziari',async({page}
  await expect(gate.getByRole('button',{name:/Conferma finale/})).toBeDisabled()
  await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
  expect(state.financeRequests).toBe(0)
+})
+test('Mod40: completa una sola voce assente, aggiorna 360 e gate senza chiudere la vendita',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:false,paid:true})
+ const gate=await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('2/7')
+ const target=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]})
+ await target.getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[2]}).click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('3/7')
+ await expect(target).toContainText('Completata')
+ await expect(gate.locator('[data-gate-check="checklist"]')).toContainText('4 controlli mancanti')
+ expect(state.workItemPosts).toBe(1)
+ expect(state.workItemPatches).toBe(1)
+ expect(state.workItems.find(item=>item.title===DELIVERY_CHECKLIST[2])?.status).toBe('DONE')
+ expect(state.contract.sale_stage).toBe('READY')
+ await expect(gate).toContainText('Consegna bloccata')
+})
+test('Mod40: voce già esistente viene completata senza inserire duplicati',async({page})=>{
+ const state=await boot(page,'ADMIN',{pendingChecklist:true})
+ await openGate(page)
+ const target=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]})
+ await target.getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[2]}).click()
+ await expect(target).toContainText('Completata')
+ expect(state.workItemPosts).toBe(0)
+ expect(state.workItemPatches).toBe(1)
+ expect(state.workItems.filter(item=>item.title===DELIVERY_CHECKLIST[2])).toHaveLength(1)
+})
+test('Mod40: venditore completa attività operativa senza leggere dati finanziari',async({page})=>{
+ const state=await boot(page,'VENDITORE',{pendingChecklist:true})
+ const gate=await openGate(page)
+ await page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]}).getByRole('button',{name:'Completa '+DELIVERY_CHECKLIST[2]}).click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('3/7')
+ await expect(gate.locator('[data-gate-check="finance"]')).toBeVisible()
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
+ expect(state.financeRequests).toBe(0)
+ expect(state.contract.sale_stage).toBe('READY')
+})
+test('Mod40: ruolo senza permesso Garage visualizza la checklist ma non può cambiarla',async({page})=>{
+ const state=await boot(page,'AMMINISTRAZIONE',{pendingChecklist:true})
+ await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-item')).toHaveCount(7)
+ await expect(page.getByTestId('sale360-checklist-complete')).toHaveCount(0)
+ await expect(page.getByTestId('sale360-checklist')).toContainText('Da verificare')
+ expect(state.workItemPosts).toBe(0)
+ expect(state.workItemPatches).toBe(0)
 })

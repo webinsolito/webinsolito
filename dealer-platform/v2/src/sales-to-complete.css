@@ -28,3 +28,15 @@
 .sale360-guide-actions button{min-height:38px;padding:8px 12px;border:1px solid #a5743b;border-radius:10px;background:#835827;color:#fff;font-size:10px;font-weight:850;cursor:pointer}
 .sale360-guide-actions button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:760px){.sale-compact-completion-links{grid-template-columns:1fr}.sale-compact-completion-links button{min-height:44px}.sale360-guide-actions button{width:100%}}
+
+/* Modifica 40: checklist consegna azionabile, una voce alla volta. */
+.sale360-checklist>div{min-width:0;flex-wrap:wrap}
+.sale360-checklist>div>b{flex:1 1 125px;line-height:1.45}
+.sale360-checklist>div .sale360-checklist-state{margin-left:auto;font-size:9px;font-weight:850;color:#467251}
+.sale360-checklist>div:not(.done) .sale360-checklist-state{color:#81786b}
+.sale360-checklist button{margin-left:auto;min-height:36px;padding:7px 11px;border:1px solid #ba9159;border-radius:10px;background:#fff9ed;color:#795022;font-size:9px;font-weight:900;cursor:pointer}
+.sale360-checklist button:disabled{opacity:.5;cursor:wait}
+.sale360-checklist button:focus-visible{outline:3px solid #b98745;outline-offset:2px}
+.sale360-checklist-hint{margin:10px 0 0;font-size:10px;color:#6d7278}
+.sale360-head h3 small{font-size:10px;font-weight:900;color:#598366}
+@media(max-width:760px){.sale360-checklist>div{min-height:58px}.sale360-checklist button{min-height:44px}}
