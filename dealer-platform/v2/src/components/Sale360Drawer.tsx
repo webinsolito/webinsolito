@@ -104,7 +104,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    </section>
 
    <section className="sale360-section">
-     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={onPrepareChecklist}>Prepara elenco</button>}</div>
+     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={onPrepareChecklist}>Completa checklist</button>}</div>
      <div className="sale360-checklist" data-testid="sale360-checklist">{summary.checklist.items.map(item=><div className={item.done?'done':''} key={item.title} data-testid="sale360-checklist-item" data-checklist-title={item.title}>
        {item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b>
        {item.done?<span className="sale360-checklist-state">Completata</span>:
