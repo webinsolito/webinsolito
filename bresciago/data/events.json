@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-20T19:34:38.783400+00:00",
-  "count": 75,
+  "generated_at": "2026-10-21T12:20:12.860810+00:00",
+  "count": 74,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 15,
+      "events": 14,
       "errors": 0
     },
     {
@@ -410,21 +410,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/CorrixBrescia.jpeg"
     },
     {
-      "id": "auto-24f53c14fc1275",
-      "title": "Siamo testimoni",
-      "date": "2026-10-19",
-      "end_date": "2026-10-19",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/siamo-testimoni-2515510-2519711",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/siamo-testimoni-fino-30-giugno-2026-1920x600.jpg"
-    },
-    {
       "id": "auto-28183bd79f35c1",
       "title": "Cavallerizza. I colori della danza",
       "date": "2026-10-20",
@@ -453,36 +438,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/ctb-stagione-26-27-20-25-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-3f207197655977",
-      "title": "Emergency Days 2026",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521-2519553-2519717",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/emergency-e-days-2026-20-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-b325f2068f7b3f",
-      "title": "Fondazione BS Musei. ParlaTosio",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/fbm-2026-mini-referendum-camp-2514542-2514720-2514887-2519797",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-parlatosio-carovana-zanardelli-20-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-b109046545ec99",
@@ -530,21 +485,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-la-vittoria-di-brescia-40-fotografi-17lug-1nov-1024x650-1.jpg"
     },
     {
-      "id": "auto-e0255939549d7c",
-      "title": "Mo.Ca 2026 – Facciamo economia",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mo-ca-2026-aperti-per-voi-2515624-2517078-2519705-2519798",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-facciamo-economia-1024x650.jpg"
-    },
-    {
       "id": "auto-23eaca44aaa179",
       "title": "Queriniana. San Francesco a Brescia",
       "date": "2026-10-20",
@@ -558,36 +498,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/queriniana-2026-san-francesco-a-brescia-1024x650.jpg"
-    },
-    {
-      "id": "auto-3dcd3149c0d68c",
-      "title": "Riflessioni sulla partecipazione pubblica",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/riflessioni-sulla-partecipazione-pubblica",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/urban-center-riflessioni-partecipazione-pubblica-20-ottobre-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-87fdee824cbfaa",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-10-20",
-      "end_date": "2026-10-20",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748-2519751",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
       "id": "auto-601488f4aa8696",
@@ -620,6 +530,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-franca-ghitti-16giu26-4apr27-1024x650.jpg"
     },
     {
+      "id": "auto-ecc7ba818c9032",
+      "title": "Brescia inComune",
+      "date": "2026-10-21",
+      "end_date": "2026-10-21",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/brescia-incomune-2518912-2518915-2519322-2519520-2519731",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/brescia-incomune-1024x650.jpg"
+    },
+    {
       "id": "auto-1cd2c4593730cd",
       "title": "La nuova biblioteca del benessere",
       "date": "2026-10-21",
@@ -633,6 +558,51 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/nuova-biblioteca-del-benessere-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-ee7b4e67215039",
+      "title": "Progetti. 100 anni di Renato Borsoni",
+      "date": "2026-10-21",
+      "end_date": "2026-10-21",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2519267-2519327-2519492-2519714",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
+    },
+    {
+      "id": "auto-5de665537c4d08",
+      "title": "Settimane Barocche 2026",
+      "date": "2026-10-21",
+      "end_date": "2026-10-21",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-7b3f50535c2c8f",
+      "title": "Stagione Teatro Grande 2026",
+      "date": "2026-10-21",
+      "end_date": "2026-10-21",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2519702-2519800",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/teatro-grande-stagione-2026-21-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-1a53032982cc47",
@@ -663,6 +633,21 @@
       "note": "La rivoluzione del sapere torna a Brescia e provincia con il Festival Rinascimento Culturale! Scopri di più",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/festival-rinascimento-culturale.jpg"
+    },
+    {
+      "id": "auto-4e3d8de50e7f1c",
+      "title": "Gender Pay Gap a Brescia",
+      "date": "2026-10-22",
+      "end_date": "2026-10-22",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/gender-pay-gap-a-brescia-2519857",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cpo-gender-pay-gap-a-brescia-1024x650.jpg"
     },
     {
       "id": "auto-5387812fb73838",
