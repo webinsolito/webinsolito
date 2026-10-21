@@ -1,11 +1,12 @@
 import {useEffect,useMemo,useState} from 'react'
-import {Plus,Search,ShoppingBag,X} from 'lucide-react'
+import {ArrowUpDown,Plus,Search,ShoppingBag,X} from 'lucide-react'
 import {canWriteGarage,clearMatchingReservationCallback,logCustomerInteraction,saveCustomerNextAction,saveWorkItem} from '../lib/api'
 import {cancelSaleContract,canWriteContracts,createSaleContract,extendSaleReservation,friendlySaleError,updateSaleStage} from '../lib/salesApi'
 import {Sale360Drawer} from '../components/Sale360Drawer'
 import {SalesCompactCard} from '../components/SalesCompactCard'
 import {SalesReservationOverview} from '../components/SalesReservationOverview'
 import {filterSalesSegment,searchSales,salesSegment,salesSegmentCounts,type SalesListFilter} from '../domain/salesView'
+import {salesPriority,sortSales,type SalesSortMode} from '../domain/salesSorting'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {latestReservationCompletion,reservationCompletionTitle,reservationNextStep,type ReservationFollowupWindow} from '../domain/reservationFollowup'
@@ -26,6 +27,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const [sale360Id,setSale360Id]=useState<string|null>(null)
   const [segment,setSegment]=useState<SalesListFilter>('ACTIVE')
   const [searchQuery,setSearchQuery]=useState('')
+  const [sortMode,setSortMode]=useState<SalesSortMode>('PRIORITY')
   const [nowIso,setNowIso]=useState(()=>new Date().toISOString())
   useEffect(()=>{
     const refreshClock=()=>setNowIso(new Date().toISOString())
@@ -37,7 +39,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const allSales=useMemo(()=>data.contracts.filter(c=>c.template_code==='VENDITA').sort((a,b)=>Number(b.vehicle_id===focusedVehicleId||b.customer_id===focusedCustomerId)-Number(a.vehicle_id===focusedVehicleId||a.customer_id===focusedCustomerId)||String(b.contract_date||'').localeCompare(String(a.contract_date||''))),[data.contracts,focusedVehicleId,focusedCustomerId])
   const counts=useMemo(()=>salesSegmentCounts(allSales),[allSales])
   const alerts=activeReservationAlerts(data,nowIso)
-  const sales=useMemo(()=>searchSales(data,filterSalesSegment(allSales,segment),searchQuery),[data.customers,data.vehicles,allSales,segment,searchQuery])
+  const sales=useMemo(()=>sortSales(searchSales(data,filterSalesSegment(allSales,segment),searchQuery),sortMode,nowIso),[data.customers,data.vehicles,allSales,segment,searchQuery,sortMode,nowIso])
   const changeSearch=(value:string)=>{
     if(value.trim()&&!searchQuery.trim())setSegment('ALL')
     if(!value.trim()&&searchQuery.trim())setSegment('ACTIVE')
@@ -122,6 +124,16 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
     </section>
     <div className="sales-segments" role="tablist" aria-label="Filtra vendite"><button role="tab" aria-selected={segment==='ALL'} className={segment==='ALL'?'active':''} data-testid="sales-tab-all" onClick={()=>setSegment('ALL')}><span>Tutte</span><b>{allSales.length}</b></button><button role="tab" aria-selected={segment==='ACTIVE'} className={segment==='ACTIVE'?'active':''} data-testid="sales-tab-active" onClick={()=>setSegment('ACTIVE')}><span>Attive</span><b>{counts.ACTIVE}</b></button><button role="tab" aria-selected={segment==='DELIVERED'} className={segment==='DELIVERED'?'active':''} data-testid="sales-tab-delivered" onClick={()=>setSegment('DELIVERED')}><span>Consegnate</span><b>{counts.DELIVERED}</b></button><button role="tab" aria-selected={segment==='CANCELLED'} className={segment==='CANCELLED'?'active':''} data-testid="sales-tab-cancelled" onClick={()=>setSegment('CANCELLED')}><span>Annullate</span><b>{counts.CANCELLED}</b></button></div>
 
+    <section className="sales-sort-panel" data-testid="sales-sort-panel" aria-label="Ordina elenco vendite">
+      <div className="sales-sort-heading"><ArrowUpDown size={16}/><span>Ordina per</span></div>
+      <div className="sales-sort-options" role="group" aria-label="Criterio di ordinamento">
+        {([['PRIORITY','Priorità'],['RESERVATION','Scadenza prenotazione'],['DELIVERY','Data consegna'],['RECENT','Più recenti']] as const).map(([mode,label])=>
+          <button type="button" key={mode} data-testid={'sales-sort-'+mode.toLowerCase()}
+           className={sortMode===mode?'selected':''} aria-pressed={sortMode===mode}
+           onClick={()=>setSortMode(mode)}>{label}</button>)}
+      </div>
+      <small data-testid="sales-sort-hint">{sortMode==='PRIORITY'?'Prima prenotazioni scadute e consegne urgenti.':sortMode==='RESERVATION'?'Prima le prenotazioni con scadenza più vicina.':sortMode==='DELIVERY'?'Prima le date di consegna più vicine.':'Prima le vendite più recenti.'}</small>
+    </section>
     {creating&&<section className="sale-create" data-testid="sale-create"><div className="customer-section-head"><div><p className="eyebrow">NUOVA VENDITA</p><h2>Apri pratica vendita</h2></div><button className="icon-ghost" aria-label="Chiudi vendita" onClick={()=>setCreating(false)}><X/></button></div><div className="sale-form-grid"><label><span>CLIENTE</span><select aria-label="CLIENTE VENDITA" disabled={busy} value={draft.customerId} onChange={e=>setDraft({...draft,customerId:e.target.value})}><option value="">Seleziona cliente…</option>{data.customers.filter(c=>!c.deleted_at).map(c=><option key={c.id} value={c.id}>{personName(c)}</option>)}</select></label><label><span>AUTO</span><select aria-label="AUTO VENDITA" disabled={busy} value={draft.vehicleId} onChange={e=>selectVehicle(e.target.value)}><option value="">Seleziona auto…</option>{data.vehicles.filter(v=>!v.deleted_at).map(v=><option key={v.id} value={v.id} disabled={Boolean(vehicleReservation(data.contracts,v.id))||['CONSEGNATA','VENDUTA','DA_CONSEGNARE'].includes(v.status||'')}>{vehicleName(v)}{v.plate?` · ${v.plate}`:''}{vehicleReservation(data.contracts,v.id)?` · PRENOTATA da ${reservationLabel(data,vehicleReservation(data.contracts,v.id)!)} `:''}</option>)}</select></label><label><span>PREZZO VENDITA €</span><input aria-label="PREZZO VENDITA" inputMode="decimal" disabled={busy} value={draft.price} onChange={e=>setDraft({...draft,price:e.target.value})}/></label><label><span>CAPARRA €</span><input aria-label="CAPARRA VENDITA" inputMode="decimal" disabled={busy} value={draft.deposit??''} onChange={e=>setDraft({...draft,deposit:e.target.value})}/></label><label><span>CONSEGNA PREVISTA</span><input aria-label="CONSEGNA PREVISTA" type="datetime-local" disabled={busy} value={draft.plannedDeliveryAt||''} onChange={e=>setDraft({...draft,plannedDeliveryAt:e.target.value})}/></label><label className="wide"><span>NOTE</span><input aria-label="NOTE VENDITA" disabled={busy} value={draft.notes||''} onChange={e=>setDraft({...draft,notes:e.target.value})} placeholder="Permuta, finanziamento, richieste cliente…"/></label></div>{selectedReservation&&<p className="form-error" role="alert" data-testid="vehicle-booking-warning">Auto già prenotata per {reservationLabel(data,selectedReservation)} · vendita {selectedReservation.contract_number}. Scegli un'altra auto.</p>}<div className="workbench-actions"><button data-testid="sale-save" disabled={busy||Boolean(selectedReservation)||!draft.customerId||!draft.vehicleId||!draft.price} onClick={()=>void persist()}><ShoppingBag/> {busy?'Salvataggio…':'Apri vendita'}</button><button className="ghost" onClick={()=>setCreating(false)}><X/> Annulla</button></div></section>}
 
     <div className="sales-list sales-list-compact" data-testid="sales-compact-list">{sales.map(contract=>{
@@ -134,6 +146,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
         checklistDone={checklistDone} checklistTotal={DELIVERY_ITEMS.length}
         focused={focusedVehicleId===contract.vehicle_id||focusedCustomerId===contract.customer_id}
         writable={writable} checklistWritable={checklistWritable} busy={busy} nowIso={nowIso}
+        sortPriority={sortMode==='PRIORITY'?salesPriority(contract,nowIso):null}
         onOpen={()=>setSale360Id(contract.id)}
         onChecklist={()=>void ensureChecklist(contract)}
         onAdvance={stage=>void move(contract,stage)}
