@@ -9,12 +9,12 @@ const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
 type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean;delivered?:boolean;seedHistory?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[];checklistHistory:any[];historyReads:string[];snapshotReads:number;snapshotOffline:boolean}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[];checklistHistory:any[];historyReads:string[];snapshotReads:number;snapshotOffline:boolean;operationalReads:number;operationalOffline:boolean;contractPatches:number}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
 async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[],checklistHistory:[],historyReads:[],snapshotReads:0,snapshotOffline:false}
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[],checklistHistory:[],historyReads:[],snapshotReads:0,snapshotOffline:false,operationalReads:0,operationalOffline:false,contractPatches:0}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
  if(options.seedHistory){state.checklistHistory.push({id:'before-existing',dealer_id:DEALER,vehicle_id:VEHICLE,work_item_id:'w0',title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-20T10:20:00Z',actor_name:'Operatore Demo',actor_role:'VENDITORE'})}
  if(options.delivered){state.contract.sale_stage='DELIVERED';state.vehicle.status='CONSEGNATA'}
@@ -22,7 +22,10 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options
  await page.addInitScript(({dealer,role})=>localStorage.setItem('malu23-v2-session',JSON.stringify({access_token:'e2e',refresh_token:'e2e',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:role==='ADMIN'?'admin':'seller'},dealer:{id:dealer,slug:'demo',display_name:'Autosalone Demo'},profile:{display_name:role,username:role.toLowerCase(),role,permissions:{}}})),{dealer:DEALER,role})
  await page.route(PROJECT+'/**',async route=>{
   const req=route.request(),url=new URL(req.url()),path=url.pathname,method=req.method(),body=method==='GET'?null:req.postDataJSON() as any
-  if(path==='/rest/v1/vehicles')return json(route,[state.vehicle])
+  if(path==='/rest/v1/vehicles'){
+    if(url.searchParams.get('select')?.startsWith('id,dealer_id,status')){state.operationalReads++;if(state.operationalOffline)return route.fulfill({status:503,contentType:'application/json',body:'{"message":"Offline"}'})}
+    return json(route,[state.vehicle])
+  }
   if(path==='/rest/v1/vehicle_media')return json(route,[{id:'media-1',dealer_id:DEALER,vehicle_id:VEHICLE,kind:'PHOTO',object_key:'vehicles/'+VEHICLE+'/photo.jpg',is_cover:true}])
   if(path==='/rest/v1/vehicle_work_items'){
    if(method==='GET'&&url.searchParams.get('category')==='eq.CONSEGNA'){
@@ -66,7 +69,11 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options
   if(path==='/rest/v1/customers')return json(route,[{id:CUSTOMER,dealer_id:DEALER,first_name:'Mario',last_name:'Rossi',status:'CLIENTE'}])
   if(path==='/rest/v1/customer_interactions'||path==='/rest/v1/customer_vehicle_interests')return json(route,[])
   if(path==='/rest/v1/calendar_events')return json(route,state.calendarEvents)
-  if(path==='/rest/v1/contracts'){if(method==='PATCH'){Object.assign(state.contract,body,{delivered_at:body.sale_stage==='DELIVERED'?new Date().toISOString():state.contract.delivered_at});if(body.sale_stage==='DELIVERED'){state.vehicle.status='CONSEGNATA';state.calendarEvents.forEach(event=>{if(event.event_type==='DELIVERY'&&event.customer_id===CUSTOMER&&event.vehicle_id===VEHICLE&&event.status==='OPEN')event.status='DONE'})}return json(route,[state.contract])}return json(route,[state.contract])}
+  if(path==='/rest/v1/contracts'){if(method==='PATCH'){
+    state.contractPatches++
+    if(url.searchParams.get('sale_stage')&&url.searchParams.get('sale_stage')!=='eq.'+state.contract.sale_stage)return json(route,[])
+    if(url.searchParams.get('status')&&url.searchParams.get('status')!=='eq.'+state.contract.status)return json(route,[])
+Object.assign(state.contract,body,{delivered_at:body.sale_stage==='DELIVERED'?new Date().toISOString():state.contract.delivered_at});if(body.sale_stage==='DELIVERED'){state.vehicle.status='CONSEGNATA';state.calendarEvents.forEach(event=>{if(event.event_type==='DELIVERY'&&event.customer_id===CUSTOMER&&event.vehicle_id===VEHICLE&&event.status==='OPEN')event.status='DONE'})}return json(route,[state.contract])}return json(route,[state.contract])}
   if(path==='/rest/v1/vehicle_financials'||path==='/rest/v1/vehicle_costs'){state.financeRequests++;return json(route,[])}
   if(path==='/rest/v1/invoices'){state.financeRequests++;return json(route,[{id:INVOICE,dealer_id:DEALER,vehicle_id:VEHICLE,customer_id:CUSTOMER,invoice_type:'SALE',total_amount:25000,paid_amount:options.paid?25000:10000,payment_status:options.paid?'PAID':'PARTIAL',issue_date:day(-2),due_date:day(0)}])}
   if(path==='/rest/v1/invoice_receipts')return json(route,[])
@@ -469,6 +476,45 @@ test('Mod45: rete interrotta viene segnalata senza scrivere né accedere a finan
  await page.getByTestId('sale360-checklist-sync-refresh').click()
  await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
  await expect(gate).toBeVisible()
+ expect(state.financeRequests).toBe(0)
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
+})
+
+test('Mod46: altro operatore cambia fase vendita; pagina e pannello si aggiornano al ritorno',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true})
+ await openGate(page)
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ const before=state.operationalReads
+ state.contract.sale_stage='AGREED';state.contract.updated_at='2026-10-22T11:20:00Z'
+ await page.evaluate(()=>window.dispatchEvent(new Event('focus')))
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('aggiornate da un altro operatore')
+ await expect(page.getByTestId('sale-360')).toContainText('Accordo')
+ expect(state.operationalReads).toBeGreaterThan(before)
+ expect(state.contractPatches).toBe(0)
+})
+test('Mod46: una vendita già cambiata sul server non viene consegnata con stato obsoleto',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true})
+ const gate=await openGate(page)
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ await gate.getByRole('button',{name:'Consegna veicolo'}).click()
+ state.contract.sale_stage='CANCELLED';state.contract.updated_at='2026-10-22T11:21:00Z'
+ await gate.getByRole('button',{name:'Conferma definitivamente'}).click()
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('aggiornate da un altro operatore')
+ await expect(page.getByTestId('sale-360')).toBeVisible()
+ expect(state.contract.sale_stage).toBe('CANCELLED')
+ expect(state.contractPatches).toBe(0)
+})
+test('Mod46: perdita rete blocca modifiche di stato ma non mostra finanze al venditore',async({page})=>{
+ const state=await boot(page,'VENDITORE',{completeChecklist:true})
+ await openGate(page)
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ state.operationalOffline=true
+ await page.getByTestId('sales-availability-refresh').click()
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Verifica disponibilità non disponibile')
+ state.operationalOffline=false
+ await page.getByTestId('sales-availability-refresh').click()
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ expect(state.contractPatches).toBe(0)
  expect(state.financeRequests).toBe(0)
  await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
 })
