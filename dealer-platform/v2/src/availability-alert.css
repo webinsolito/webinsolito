@@ -1,0 +1,19 @@
+/* Modifica 47 · operational availability alerts in Garage and Sales. */
+.dealer-availability-alert{display:flex;align-items:flex-start;gap:9px;margin:9px 12px;padding:10px 12px;border:1px solid #dfbe88;border-radius:12px;background:#fffaed;color:#805923;text-align:left;min-width:0}
+.dealer-availability-alert>svg{flex:0 0 auto;margin-top:1px}
+.dealer-availability-alert span{min-width:0;display:grid;gap:3px}
+.dealer-availability-alert strong{font-size:11px;font-weight:950;letter-spacing:.025em}
+.dealer-availability-alert small{font-size:10px;line-height:1.4;font-weight:550;overflow-wrap:anywhere}
+.dealer-availability-alert.kind-sold{border-color:#e9b8aa;background:#fff3ef;color:#9b392c}
+.dealer-availability-alert.kind-unavailable{border-color:#dfb7ad;background:#fff7f2;color:#924b3b}
+.sale-card .dealer-availability-alert{margin:9px 14px}
+.vehicle-card-v2.garage-photo-card.alert-sold{border-color:#e7b1a3}
+.vehicle-card-v2.garage-photo-card.alert-booked{border-color:#e6cc91}
+.garage-availability-sync{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:6px 0 14px;padding:10px 13px;border:1px solid #d9e5d9;border-radius:12px;background:#f6faf5;color:#48744d;font-size:10px;font-weight:750}
+.garage-availability-sync.updated{border-color:#e2c898;background:#fff9ec;color:#7a5828}
+.garage-availability-sync.offline{border-color:#e7b8ae;background:#fff6f2;color:#a14937}
+.garage-availability-sync.checking{border-color:#e3e3e1;background:#fafafa;color:#697179}
+.garage-availability-sync button{min-height:37px;border:1px solid currentColor;border-radius:9px;background:#fff;color:inherit;padding:7px 12px;font-weight:850;font-size:10px;cursor:pointer}
+.garage-availability-sync button:disabled{opacity:.5}
+.garage-availability-sync button:focus-visible{outline:3px solid #ae7d38}
+@media(max-width:760px){.dealer-availability-alert{margin:9px 10px;padding:11px}.dealer-availability-alert small{font-size:11px}.garage-availability-sync button{min-height:44px}}

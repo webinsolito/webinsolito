@@ -43,7 +43,7 @@ async function boot(page:Page){
  const mobile=(page.viewportSize()?.width||1200)<=760
  await (mobile?page.locator('.mobile-nav button').filter({hasText:'Garage'}):page.locator('.sidebar nav button').filter({hasText:'Garage'})).click()
  await expect(page.getByRole('heading',{name:'Garage'})).toBeVisible()
- return state
+ return {...state,vehicles,sales}
 }
 test('Modifica 28: filtri Garage identificano solo prenotazioni reali e le scadenze',async({page})=>{
  const state=await boot(page)
@@ -90,5 +90,61 @@ test('Modifica 28: stato auto reale, ricerca contratto/cliente e reset dei filtr
  await expect(page.locator('[data-testid^="vehicle-card-"]')).toHaveCount(1)
  await page.getByLabel('Cerca nel Garage').fill('Ada Rossi')
  await expect(page.locator('[data-testid^="vehicle-card-"]')).toHaveCount(3)
+ expect(state.financeRequests).toBe(0)
+})
+
+test('Mod47: prenotata, libera e stato incoerente ben distinti nelle schede Garage',async({page})=>{
+ const state=await boot(page)
+ const booked=page.getByTestId('vehicle-card-'+FUTURE)
+ await expect(booked.getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','BOOKED')
+ await expect(booked.getByTestId('garage-availability-alert')).toContainText('AUTO PRENOTATA')
+ await expect(page.getByTestId('vehicle-card-'+FREE).getByTestId('garage-availability-alert')).toHaveCount(0)
+ const stale=page.getByTestId('vehicle-card-'+STALE).getByTestId('garage-availability-alert')
+ await expect(stale).toHaveAttribute('data-availability','UNAVAILABLE')
+ await expect(stale).toContainText('nessuna prenotazione attiva')
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod47: prenotazione fatta da collega aggiorna automaticamente il Garage al ritorno',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ const free=page.getByTestId('vehicle-card-'+FREE)
+ await expect(free.getByTestId('garage-availability-alert')).toHaveCount(0)
+ state.vehicles.find(v=>v.id===FREE)!.status='PRENOTATA'
+ state.sales.push({...state.sales[0],id:'new-remote-booking',vehicle_id:FREE,contract_number:'B-REMOTE',reservation_expires_at:date(5)})
+ await page.evaluate(()=>window.dispatchEvent(new Event('focus')))
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('aggiornata da un altro operatore')
+ await expect(free.getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','BOOKED')
+ await expect(page.getByTestId('garage-booking-due')).toHaveCount(4)
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod47: auto consegnata da collega passa ad avviso venduta in Garage e Vendite',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ state.vehicles.find(v=>v.id===DUE)!.status='CONSEGNATA'
+ state.sales.find(s=>s.vehicle_id===DUE)!.sale_stage='DELIVERED'
+ await page.getByTestId('garage-availability-refresh').click()
+ const sold=page.getByTestId('vehicle-card-'+DUE).getByTestId('garage-availability-alert')
+ await expect(sold).toHaveAttribute('data-availability','SOLD')
+ await expect(sold).toContainText('AUTO VENDUTA')
+ await expect(page.getByTestId('garage-open-sale-'+DUE)).toHaveCount(0)
+ const mobile=(page.viewportSize()?.width||1200)<=760
+ await (mobile?page.locator('.mobile-nav button').filter({hasText:'Vendite'}):page.locator('.sidebar nav button').filter({hasText:'Vendite'})).click()
+ await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
+ await page.getByTestId('sales-tab-delivered').click()
+ const card=page.getByTestId('sale-card').filter({hasText:'B-DUE'})
+ await expect(card.getByTestId('sale-availability-alert')).toHaveAttribute('data-availability','SOLD')
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod47: Vendite avvisa prenotazione attiva ma non crea allarmi su una trattativa libera',async({page})=>{
+ const state=await boot(page)
+ const mobile=(page.viewportSize()?.width||1200)<=760
+ await (mobile?page.locator('.mobile-nav button').filter({hasText:'Vendite'}):page.locator('.sidebar nav button').filter({hasText:'Vendite'})).click()
+ await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
+ const booked=page.getByTestId('sale-card').filter({hasText:'B-FUTURE'})
+ await expect(booked.getByTestId('sale-availability-alert')).toHaveAttribute('data-availability','BOOKED')
+ await expect(booked.getByTestId('sale-availability-alert')).toContainText('AUTO PRENOTATA')
+ await page.getByTestId('sales-tab-all').click()
+ const cancelled=page.getByTestId('sale-card').filter({hasText:'B-CANCELLED'})
+ await expect(cancelled.getByTestId('sale-availability-alert')).toHaveAttribute('data-availability','UNAVAILABLE')
  expect(state.financeRequests).toBe(0)
 })

@@ -2,6 +2,8 @@ import {useEffect,useState} from 'react'
 import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,LockKeyhole,ShieldCheck,UserRound} from 'lucide-react'
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {reservesVehicle} from '../domain/saleReservation'
+import {AvailabilityAlert} from './AvailabilityAlert'
+import type {VehicleAvailabilityAlert} from '../domain/vehicleAvailabilityAlerts'
 import {salesPriorityLabel,type SalesPriority} from '../domain/salesSorting'
 import type {SalesCompletionStatus} from '../domain/salesCompletion'
 import type {Contract,Customer,Vehicle} from '../types'
@@ -17,8 +19,8 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onOpenCheck,onChecklist,onAdvance,onDelivery}:{
- contract:Contract;customer?:Customer;vehicle?:Vehicle;checklistDone:number;checklistTotal:number
+export function SalesCompactCard({contract,customer,vehicle,availability,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onOpenCheck,onChecklist,onAdvance,onDelivery}:{
+ contract:Contract;customer?:Customer;vehicle?:Vehicle;availability?:VehicleAvailabilityAlert|null;checklistDone:number;checklistTotal:number
  focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;completion?:SalesCompletionStatus;defaultExpanded?:boolean
  onOpen:()=>void;onOpenCheck:(checkId:string)=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
@@ -47,6 +49,7 @@ export function SalesCompactCard({contract,customer,vehicle,checklistDone,checkl
    <button type="button" className="sale360-open sale-compact-open" data-testid="open-sale-360"
     aria-label={'Apri Scheda Vendita 360° '+contract.contract_number} onClick={onOpen}>Apri 360° <ChevronRight size={16}/></button>
   </div>
+  <AvailabilityAlert alert={availability??null} testId="sale-availability-alert"/>
   <div className="sale-compact-facts">
    <span><ClipboardCheck size={15}/> Checklist <b>{checklistDone}/{checklistTotal}</b></span>
    <span><CalendarClock size={15}/> Consegna <b>{readableDate(contract.planned_delivery_at)}</b></span>
