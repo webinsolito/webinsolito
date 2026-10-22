@@ -74,3 +74,28 @@
 @media(max-width:760px){
  .sale360-checklist>div .sale360-checklist-attribution{margin-left:0;font-size:11px}
 }
+
+/* Modifica 44: one-tap contextual audit trail from the delivery checklist. */
+.sale360-checklist .sale360-checklist-history-link{
+ flex:1 1 140px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-width:0;min-height:40px;text-align:left;border:0;border-radius:9px;
+ margin:0;padding:5px 7px;background:transparent;color:inherit;cursor:pointer
+}
+.sale360-checklist .sale360-checklist-history-link>b{font-size:11px;line-height:1.45;overflow-wrap:anywhere}
+.sale360-checklist .sale360-checklist-history-link>svg{flex:0 0 auto;color:#9a7c50}
+.sale360-checklist .sale360-checklist-history-link:hover{background:#f7f2e9}
+.sale360-checklist .sale360-checklist-history-link:focus-visible{outline:3px solid #b98745;outline-offset:2px}
+.sale-checklist-history.focused{border-radius:13px;outline:2px solid #d5b27b;outline-offset:1px;scroll-margin-top:16px}
+.sale-checklist-history-focus{
+ display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;
+ margin:0 0 10px;padding:10px 12px;border:1px solid #ead7b7;border-radius:10px;background:#fff9ef
+}
+.sale-checklist-history-focus span{display:grid;min-width:0;flex:1 1 140px;gap:2px}
+.sale-checklist-history-focus span b{font-size:9px;color:#87683a;text-transform:uppercase}
+.sale-checklist-history-focus span strong{font-size:11px;color:#574129;overflow-wrap:anywhere}
+.sale-checklist-history-focus button{min-height:39px;padding:8px 12px;border:1px solid #b29162;border-radius:9px;background:white;color:#795326;font-size:10px;font-weight:850;cursor:pointer}
+.sale-checklist-history-focus button:focus-visible{outline:3px solid #b98745}
+@media(max-width:760px){
+ .sale360-checklist .sale360-checklist-history-link{min-height:44px}
+ .sale-checklist-history-focus button{width:100%;min-height:44px}
+}

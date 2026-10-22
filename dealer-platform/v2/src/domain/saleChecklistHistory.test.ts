@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest'
-import {inlineChecklistAttribution,saleChecklistHistoryActor,saleChecklistHistoryTitle,visibleSaleChecklistHistory,type SaleChecklistHistoryEvent} from './saleChecklistHistory'
+import {filterSaleChecklistHistory,inlineChecklistAttribution,saleChecklistHistoryActor,saleChecklistHistoryTitle,visibleSaleChecklistHistory,type SaleChecklistHistoryEvent} from './saleChecklistHistory'
 import {DELIVERY_CHECKLIST} from './sale360'
 const base:SaleChecklistHistoryEvent={id:'e1',dealer_id:'dealer',vehicle_id:'vehicle',work_item_id:'work',title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-21T16:30:00Z'}
 const contract={dealer_id:'dealer',vehicle_id:'vehicle'}
@@ -50,5 +50,25 @@ describe('Modifica 43 · operatore e orario accanto alla verifica',()=>{
  it('non inventa autore e data in assenza di eventi precedenti alla registrazione',()=>{
   expect(inlineChecklistAttribution([],items,contract,base.title,true)).toBeNull()
   expect(inlineChecklistAttribution([],items,contract,DELIVERY_CHECKLIST[1],false)).toBeNull()
+ })
+})
+
+describe('Modifica 44 · accesso immediato allo storico della singola verifica',()=>{
+ const related={...base,id:'second',event_type:'CORRECTED' as const,occurred_at:'2026-10-22T07:10:00Z'}
+ const other={...base,id:'another-check',title:DELIVERY_CHECKLIST[1]}
+ const rows=[related,other,base]
+ it('filtra esclusivamente la verifica selezionata, mantenendo tutti gli eventi e l’ordine',()=>{
+  expect(filterSaleChecklistHistory(rows,DELIVERY_CHECKLIST[0]).map(e=>e.id)).toEqual(['second','e1'])
+  expect(rows).toHaveLength(3)
+ })
+ it('mostra lo storico completo quando si annulla il filtro',()=>{
+  expect(filterSaleChecklistHistory(rows,null)).toBe(rows)
+  expect(filterSaleChecklistHistory(rows,undefined)).toBe(rows)
+ })
+ it('non accetta un filtro non appartenente alle 7 verifiche',()=>{
+  expect(filterSaleChecklistHistory(rows,'Saldo privato inventato')).toEqual([])
+ })
+ it('una verifica senza eventi mostra zero eventi, senza fabbricare dati',()=>{
+  expect(filterSaleChecklistHistory(rows,DELIVERY_CHECKLIST[6])).toEqual([])
  })
 })
