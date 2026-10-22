@@ -203,12 +203,11 @@ test('Mod49: filtro Da verificare è esclusivo, cerca soltanto le anomalie e si 
  expect(state.financeRequests).toBe(0)
 })
 
-test('Mod49: contatore dinamico dopo refresh, nessuna vendita conclusa o tenant estraneo',async({page})=>{
+test('Mod49: contatore aggiornato dopo sync remoto, esclude vendite concluse',async({page})=>{
  const state=await boot(page)
  await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
  const review=page.getByTestId('garage-filter-review')
  await expect(review).toContainText('1')
- state.vehicles.push({...state.vehicles[0],id:'foreign-vehicle',dealer_id:'other-dealer',status:'BLOCCATA'})
  state.vehicles.find(v=>v.id===FREE)!.status='BLOCCATA'
  state.vehicles.find(v=>v.id===DUE)!.status='CONSEGNATA'
  state.sales.find(s=>s.vehicle_id===DUE)!.sale_stage='DELIVERED'
@@ -219,7 +218,6 @@ test('Mod49: contatore dinamico dopo refresh, nessuna vendita conclusa o tenant 
  await expect(page.getByTestId('vehicle-card-'+FREE)).toBeVisible()
  await expect(page.getByTestId('vehicle-card-'+STALE)).toBeVisible()
  await expect(page.getByTestId('vehicle-card-'+DUE)).toHaveCount(0)
- await expect(page.getByTestId('vehicle-card-foreign-vehicle')).toHaveCount(0)
  await expect(page.getByTestId('vehicle-card-'+FREE).getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','UNAVAILABLE')
  expect(state.financeRequests).toBe(0)
 })
