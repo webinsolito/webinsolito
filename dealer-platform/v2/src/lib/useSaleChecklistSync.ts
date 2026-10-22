@@ -25,7 +25,7 @@ export function useSaleChecklistSync({contract,data,session,busy,onRefresh}:{
   if(!force&&(polling.current||b||document.visibilityState!=='visible'))return
   if(strict&&b)throw new Error('Completa prima l’operazione in corso.')
   if(!force)polling.current=true
-  if(!strict&&visibleStatus!=='updated')setStatus('checking')
+  if(!strict)setStatus(previous=>previous==='updated'?previous:'checking')
   try{
    const remote=await fetchDeliveryChecklistSnapshot(c.vehicle_id,s)
    // Session/sale may have changed while the browser was fetching.
@@ -47,7 +47,7 @@ export function useSaleChecklistSync({contract,data,session,busy,onRefresh}:{
    setStatus('offline')
    if(strict)throw new Error('Impossibile verificare la checklist sul server. Riprova quando la connessione è disponibile.')
   }finally{if(!force)polling.current=false}
- },[visibleStatus])
+ },[])
  useEffect(()=>{
   setScopeKey(scope);setStatus('checking');setLastChecked(null)
   let active=true
