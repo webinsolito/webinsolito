@@ -51,6 +51,20 @@ export async function fetchTenantData(session=getSession()):Promise<TenantData>{
   finance?rest<TenantData['invoices']>(`invoices?dealer_id=eq.${id}&deleted_at=is.null&select=*&order=issue_date.desc`):Promise.resolve([])
 ]);return {vehicles,media,workItems,customers,customerInteractions,customerInterests,calendarEvents,contracts,financials,costs,invoices}}
 
+/** Non-financial dealer-scoped sales and vehicle availability snapshot. */
+export async function fetchSaleOperationsSnapshot(expected:SessionPayload){
+ const session=await liveSession()
+ if(session.dealer.id!==expected.dealer.id||session.user?.id!==expected.user?.id)throw new Error('Sessione cambiata')
+ const dealer=encodeURIComponent(session.dealer.id)
+ const [vehicles,contracts]=await Promise.all([
+  rest<TenantData['vehicles']>(`vehicles?dealer_id=eq.${dealer}&select=id,dealer_id,status,deleted_at,updated_at`),
+  rest<TenantData['contracts']>(`contracts?dealer_id=eq.${dealer}&template_code=eq.VENDITA&select=id,dealer_id,vehicle_id,customer_id,template_code,status,sale_stage,reservation_expires_at,updated_at`)
+ ])
+ if(!Array.isArray(vehicles)||!Array.isArray(contracts)||vehicles.some(v=>v.dealer_id!==session.dealer.id)
+  ||contracts.some(c=>c.dealer_id!==session.dealer.id||c.template_code!=='VENDITA'))throw new Error('Risposta sincronizzazione non valida')
+ return {vehicles,contracts}
+}
+
 export async function saveVehicle(draft:Partial<VehicleDraft>,vehicleId?:string){const session=await liveSession();requireGarageWrite(session);const check=validateVehicleDraft(draft);if(!check.valid)throw new Error(check.errors[0]);const payload={...normalizeVehicleDraft(check.value),updated_at:new Date().toISOString()};if(vehicleId){const rows=await restWrite<Vehicle[]>(`vehicles?id=eq.${encodeURIComponent(vehicleId)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:payload});return first(rows,'vehicle_update_not_persisted')}const rows=await restWrite<Vehicle[]>('vehicles',{method:'POST',body:{...payload,dealer_id:session.dealer.id}});return first(rows,'vehicle_create_not_persisted')}
 
 /** Read only operational delivery checks for this dealer/vehicle, without finance access. */
