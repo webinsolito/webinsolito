@@ -87,8 +87,8 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
   <div className="garage-reservation-filters" role="group" aria-label="Filtra auto Garage" data-testid="garage-reservation-filters">
    {BOOKING_TABS.map(({key,label,Icon})=>
     <button type="button" key={key} data-testid={`garage-filter-${key.toLowerCase()}`}
-     className={'garage-reservation-filter'+(reservationFilter===key?' active':'')+(key==='OVERDUE'&&counts.OVERDUE?' warning':'')}
-     aria-pressed={reservationFilter===key}
+     className={'garage-reservation-filter'+(!reviewOnly&&reservationFilter===key?' active':'')+(key==='OVERDUE'&&counts.OVERDUE?' warning':'')}
+     aria-pressed={!reviewOnly&&reservationFilter===key}
      onClick={()=>{setReviewOnly(false);setReservationFilter(key)}}>
      <Icon size={18}/><span>{label}</span><b>{counts[key]}</b>
     </button>
