@@ -225,6 +225,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       const checklistDone=DELIVERY_ITEMS.filter(item=>done.has(item)).length
       return <SalesCompactCard key={contract.id} contract={contract} customer={customer} vehicle={vehicle}
         availability={vehicleAvailabilityAlert(vehicle,data.contracts,session.dealer.id)}
+        recentlyChanged={salesSync.recentlyChangedVehicleIds.has(contract.vehicle_id)}
         completion={visibleSegment==='TO_COMPLETE'?completionIndex.get(contract.id):undefined}
         defaultExpanded={viewMode==='EXPANDED'}
         checklistDone={checklistDone} checklistTotal={DELIVERY_ITEMS.length}
