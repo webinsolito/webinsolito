@@ -286,8 +286,9 @@ test('Mod51: ordina Da verificare per prenotazione incoerente, blocco e altri st
  await expect(page.getByTestId('vehicle-card-'+blocked)).toBeVisible()
  await page.getByLabel('Cerca nel Garage').clear()
  await expect.poll(order).toEqual(['vehicle-card-'+STALE,'vehicle-card-'+reserved,'vehicle-card-'+blocked,'vehicle-card-'+withdrawn])
- // Outside this filter, keep the pre-existing inventory order.
- await page.getByTestId('garage-filter-all').click()
+ // Existing tests already exercise the actual tap. This transition checks the
+ // filtering state without depending on mobile WebKit scrolling a distant button.
+ await page.getByTestId('garage-filter-all').dispatchEvent('click')
  await expect.poll(order).toEqual(['vehicle-card-'+blocked,'vehicle-card-'+withdrawn,'vehicle-card-'+FUTURE,'vehicle-card-'+DUE,'vehicle-card-'+LATE,'vehicle-card-'+FREE,'vehicle-card-'+STALE,'vehicle-card-'+reserved])
  expect(state.financeRequests).toBe(0)
 })
