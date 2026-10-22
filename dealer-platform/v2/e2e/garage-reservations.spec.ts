@@ -261,3 +261,52 @@ test('Mod50: auto prenotate correttamente, libere e consegnate non mostrano la g
  await expect(page.getByTestId('vehicle-card-'+STALE).getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','SOLD')
  expect(state.financeRequests).toBe(0)
 })
+
+
+test('Mod51: ordina Da verificare per prenotazione incoerente, blocco e altri stati',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ const withdrawn='22222222-2222-2222-2222-222222222226'
+ const blocked='22222222-2222-2222-2222-222222222227'
+ const reserved='22222222-2222-2222-2222-222222222228'
+ state.vehicles.unshift({...state.vehicles[0],id:withdrawn,status:'RITIRATA',plate:'FF666FF'})
+ state.vehicles.unshift({...state.vehicles[0],id:blocked,status:'BLOCCATA',plate:'GG777GG'})
+ state.vehicles.push({...state.vehicles[0],id:reserved,status:'RISERVATA',plate:'HH888HH'})
+ await page.getByTestId('garage-availability-refresh').click()
+ await expect(page.getByTestId('garage-filter-review')).toContainText('4')
+ await page.getByTestId('garage-filter-review').click()
+ const order=()=>page.locator('.garage-photo-card .garage-card-open').evaluateAll(cards=>cards.map(card=>card.getAttribute('data-testid')))
+ await expect.poll(order).toEqual(['vehicle-card-'+STALE,'vehicle-card-'+reserved,'vehicle-card-'+blocked,'vehicle-card-'+withdrawn])
+ await expect(page.getByTestId('garage-review-priority-'+STALE)).toHaveAttribute('data-review-priority','reservation')
+ await expect(page.getByTestId('garage-review-priority-'+STALE)).toContainText('Prenotazione incoerente')
+ await expect(page.getByTestId('garage-review-priority-'+blocked)).toContainText('Auto bloccata')
+ await expect(page.getByTestId('garage-review-priority-'+withdrawn)).toContainText('Stato da chiarire')
+ await page.getByLabel('Cerca nel Garage').fill('GG777GG')
+ await expect(page.locator('.garage-photo-card')).toHaveCount(1)
+ await expect(page.getByTestId('vehicle-card-'+blocked)).toBeVisible()
+ await page.getByLabel('Cerca nel Garage').clear()
+ await expect.poll(order).toEqual(['vehicle-card-'+STALE,'vehicle-card-'+reserved,'vehicle-card-'+blocked,'vehicle-card-'+withdrawn])
+ // Outside this filter, keep the pre-existing inventory order.
+ await page.getByTestId('garage-filter-all').click()
+ await expect.poll(order).toEqual(['vehicle-card-'+blocked,'vehicle-card-'+withdrawn,'vehicle-card-'+FUTURE,'vehicle-card-'+DUE,'vehicle-card-'+LATE,'vehicle-card-'+FREE,'vehicle-card-'+STALE,'vehicle-card-'+reserved])
+ expect(state.financeRequests).toBe(0)
+})
+
+test('Mod51: la priorità cambia dopo sync senza confondere prenotate e auto vendute',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ state.vehicles.find(v=>v.id===FREE)!.status='BLOCCATA'
+ await page.getByTestId('garage-availability-refresh').click()
+ await page.getByTestId('garage-filter-review').click()
+ const order=()=>page.locator('.garage-photo-card .garage-card-open').evaluateAll(cards=>cards.map(card=>card.getAttribute('data-testid')))
+ await expect.poll(order).toEqual(['vehicle-card-'+STALE,'vehicle-card-'+FREE])
+ state.vehicles.find(v=>v.id===FREE)!.status='PRENOTATA'
+ state.vehicles.find(v=>v.id===STALE)!.status='CONSEGNATA'
+ await page.getByTestId('garage-availability-refresh').click()
+ await expect(page.getByTestId('garage-filter-review')).toContainText('1')
+ await expect.poll(order).toEqual(['vehicle-card-'+FREE])
+ await expect(page.getByTestId('garage-review-priority-'+FREE)).toHaveAttribute('data-review-priority','reservation')
+ await expect(page.getByTestId('vehicle-card-'+STALE)).toHaveCount(0)
+ await expect(page.getByTestId('vehicle-card-'+FUTURE)).toHaveCount(0)
+ expect(state.financeRequests).toBe(0)
+})
