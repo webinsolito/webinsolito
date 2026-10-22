@@ -10,6 +10,7 @@ import {PrivateImage} from '../components/PrivateImage'
 import type {SessionPayload,TenantData} from '../types'
 import {vehicleAvailabilityAlert} from '../domain/vehicleAvailabilityAlerts'
 import {vehicleAvailabilityReviewGuide} from '../domain/vehicleAvailabilityReviewGuide'
+import {compareGarageReviewPriority,garageReviewPriority} from '../domain/garageReviewPriority'
 import {useSalesOperationsSync} from '../lib/useSalesOperationsSync'
 import {AvailabilityAlert} from '../components/AvailabilityAlert'
 import '../garage.css'
@@ -67,6 +68,7 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
    return `${vehicleName(v)} ${v.plate||''} ${v.vin||''} ${label} ${reserve?.contract_number||''}`.toLocaleLowerCase('it').includes(normalized)
   })
   .sort((a,b)=>{
+   if(reviewOnly)return compareGarageReviewPriority(a,b)
    if(reservationFilter==='ALL')return 0
    const aDue=reservationByVehicle.get(a.id)?.reservation_expires_at||'9999'
    const bDue=reservationByVehicle.get(b.id)?.reservation_expires_at||'9999'
@@ -117,6 +119,7 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
     const alert=reserve?reservationAlert(reserve,nowIso):'NONE'
     const availability=vehicleAvailabilityAlert(v,data.contracts,session.dealer.id)
     const guidance=availability?.kind==='UNAVAILABLE'?vehicleAvailabilityReviewGuide(v,data.contracts,session.dealer.id):null
+    const reviewPriority=guidance?garageReviewPriority(v):null
     const recentlyChanged=garageSync.recentlyChangedVehicleIds.has(v.id)
     return <article key={v.id} data-recent-remote={recentlyChanged?'true':undefined} className={'vehicle-card-v2 garage-photo-card'+(recentlyChanged?' remote-status-recent':'')+(availability?' alert-'+availability.kind.toLowerCase():'')+(alert==='OVERDUE'?' garage-reservation-overdue':'')+(alert==='SOON'?' garage-reservation-soon':'')}>
      <button data-testid={`vehicle-card-${v.id}`} className="garage-card-open" onClick={()=>onVehicle(v.id)} aria-label={`Apri auto ${vehicleName(v)}`}>
@@ -139,7 +142,7 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
       </div>
      </button>
      {guidance&&<div className="garage-review-guidance" data-testid={`garage-review-guide-${v.id}`}>
-      <strong>DA CONTROLLARE</strong>
+      <strong className="garage-review-priority" data-testid={`garage-review-priority-${v.id}`} data-review-priority={reviewPriority?.kind}>{reviewPriority?.label}</strong>
       <p>{guidance.reason}</p>
       <small>{guidance.instruction}</small>
       <button type="button" data-testid={`garage-review-open-${v.id}`}
