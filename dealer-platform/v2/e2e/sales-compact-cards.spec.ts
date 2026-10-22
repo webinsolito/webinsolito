@@ -39,7 +39,7 @@ async function boot(page:Page,{role='VENDITORE',fullyReady=false}:{role?:string;
  const mobile=(page.viewportSize()?.width||1200)<=760
  await (mobile?page.locator('.mobile-nav button').filter({hasText:'Vendite'}):page.locator('.sidebar nav button').filter({hasText:'Vendite'})).click()
  await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
- return state
+ return Object.assign(state,{vehicles,contracts})
 }
 test('Mod35 scheda compatta mostra dati essenziali e prenotazione urgente senza sei barre giganti',async({page})=>{
  const state=await boot(page)
@@ -336,4 +336,19 @@ test('Mod39: la guida foto apre la scheda auto con il caricamento foto, anche da
  expect(state.contractWrites).toBe(0)
  expect(state.financeRequests).toBe(0)
  expect(state.vehicleWrites).toBe(0)
+})
+
+test('Mod48: Vendite evidenzia lo stato aggiornato dal collega ma non gli altri dati',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ await expect(page.getByTestId('sales-recent-change')).toHaveCount(0)
+ state.contracts[0].sale_stage='DEPOSIT'
+ await page.getByTestId('sales-availability-refresh').click()
+ const card=page.getByTestId('sale-card').filter({hasText:'V-COMPACT-1'})
+ await expect(card.getByTestId('sales-recent-change')).toContainText('STATO AGGIORNATO ORA')
+ await expect(card).toHaveAttribute('data-recent-remote','true')
+ await expect(card).toContainText('Caparra')
+ expect(state.contractWrites).toBe(0)
+ expect(state.vehicleWrites).toBe(0)
+ expect(state.financeRequests).toBe(0)
 })
