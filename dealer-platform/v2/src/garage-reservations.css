@@ -36,3 +36,12 @@
 .garage-review-filter:focus-visible{outline:3px solid #ad7d3d;outline-offset:2px}
 @media(min-width:761px) and (max-width:1150px){.garage-reservation-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.garage-reservation-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.garage-reservation-filter.garage-review-filter{grid-column:1/-1;min-height:52px}}
+
+/* Modifica 50: guida di controllo nella stessa scheda Garage, non un nuovo flusso. */
+.garage-review-guidance{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:0 12px 12px;padding:11px 12px;border:1px solid #e0c6a0;border-radius:12px;background:#fffaf0;color:#665139;min-width:0}
+.garage-review-guidance>strong{font-size:9px;font-weight:950;letter-spacing:.07em;color:#916329}
+.garage-review-guidance p{margin:0;font-size:11px;font-weight:850;line-height:1.4}
+.garage-review-guidance small{font-size:10px;line-height:1.45;overflow-wrap:anywhere}
+.garage-review-guidance button{min-height:40px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px;padding:8px 12px;border:1px solid #be995c;border-radius:10px;background:#fff;color:#775321;font-size:11px;font-weight:900;cursor:pointer}
+.garage-review-guidance button:focus-visible{outline:3px solid #ad7d3d;outline-offset:2px}
+@media(max-width:760px){.garage-review-guidance{margin:0 10px 12px;padding:12px}.garage-review-guidance button{min-height:44px;width:100%}}
