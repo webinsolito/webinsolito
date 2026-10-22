@@ -1,5 +1,5 @@
 import {useMemo,useState} from 'react'
-import {AlertCircle,ArrowUpRight,CalendarClock,Camera,CarFront,ChevronRight,ClockAlert,LockKeyhole,Plus,Search} from 'lucide-react'
+import {AlertCircle,AlertTriangle,ArrowUpRight,CalendarClock,Camera,CarFront,ChevronRight,ClockAlert,LockKeyhole,Plus,Search} from 'lucide-react'
 import {integer,money,vehicleName} from '../lib/format'
 import {vehicleAgeDays} from '../domain/priorities'
 import {vehicleCompleteness} from '../domain/garage'
@@ -30,6 +30,7 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
  const [query,setQuery]=useState('')
  const [status,setStatus]=useState('ALL')
  const [reservationFilter,setReservationFilter]=useState<GarageReservationFilter>('ALL')
+ const [reviewOnly,setReviewOnly]=useState(false)
  const garageSync=useSalesOperationsSync(data,session,false,onRefresh)
  const nowIso=new Date().toISOString()
  const activeVehicles=data.vehicles.filter(v=>!v.deleted_at)
@@ -49,11 +50,16 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
   return result
  },[data.contracts])
  const counts=garageReservationCounts(activeVehicles,data.contracts,nowIso)
+ // Reuse Mod47 operational alerts; only this dealer's visible, non-deleted vehicles qualify.
+ const reviewVehicleIds=new Set(activeVehicles
+  .filter(v=>v.dealer_id===session.dealer.id&&vehicleAvailabilityAlert(v,data.contracts,session.dealer.id)?.kind==='UNAVAILABLE')
+  .map(v=>v.id))
  const statuses=[...new Set(activeVehicles.map(v=>v.status).filter(Boolean))] as string[]
  const normalized=query.trim().toLocaleLowerCase('it')
  const rows=activeVehicles
   .filter(v=>status==='ALL'||v.status===status)
   .filter(v=>garageReservationFilterMatch(v,data.contracts,reservationFilter,nowIso))
+  .filter(v=>!reviewOnly||reviewVehicleIds.has(v.id))
   .filter(v=>{
    const reserve=reservationByVehicle.get(v.id)
    const label=reserve?reservationLabel(data,reserve):''
@@ -78,15 +84,21 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
    <span>{garageSync.status==='updated'?'Disponibilità aggiornata da un altro operatore':garageSync.status==='offline'?'Sincronizzazione non disponibile · verifica prima di proporre':garageSync.status==='checking'?'Controllo disponibilità auto…':'Disponibilità sincronizzata'}</span>
    <button type="button" data-testid="garage-availability-refresh" onClick={()=>void garageSync.refresh()}>Aggiorna ora</button>
   </div>
-  <div className="garage-reservation-filters" role="group" aria-label="Filtra prenotazioni Garage" data-testid="garage-reservation-filters">
+  <div className="garage-reservation-filters" role="group" aria-label="Filtra auto Garage" data-testid="garage-reservation-filters">
    {BOOKING_TABS.map(({key,label,Icon})=>
     <button type="button" key={key} data-testid={`garage-filter-${key.toLowerCase()}`}
-     className={'garage-reservation-filter'+(reservationFilter===key?' active':'')+(key==='OVERDUE'&&counts.OVERDUE?' warning':'')}
-     aria-pressed={reservationFilter===key}
-     onClick={()=>setReservationFilter(key)}>
+     className={'garage-reservation-filter'+(!reviewOnly&&reservationFilter===key?' active':'')+(key==='OVERDUE'&&counts.OVERDUE?' warning':'')}
+     aria-pressed={!reviewOnly&&reservationFilter===key}
+     onClick={()=>{setReviewOnly(false);setReservationFilter(key)}}>
      <Icon size={18}/><span>{label}</span><b>{counts[key]}</b>
     </button>
    )}
+   <button type="button" data-testid="garage-filter-review"
+    className={'garage-reservation-filter garage-review-filter'+(reviewOnly?' active':'')+(reviewVehicleIds.size?' review-warning':'')}
+    aria-pressed={reviewOnly} aria-label={`Disponibilità da verificare: ${reviewVehicleIds.size} auto`}
+    onClick={()=>{setReservationFilter('ALL');setReviewOnly(previous=>!previous)}}>
+    <AlertTriangle size={18}/><span>Da verificare</span><b>{reviewVehicleIds.size}</b>
+   </button>
   </div>
   <div className="toolbar">
    <label className="search-input"><Search/><input id="global-search" aria-label="Cerca nel Garage" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Targa, modello, cliente o vendita…"/></label>
@@ -136,5 +148,5 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
     </article>
    })}
   </div>
-  {!rows.length&&<div className="empty-state" data-testid="garage-filter-empty">Nessuna auto corrisponde ai filtri. <button type="button" className="garage-clear-filters" onClick={()=>{setReservationFilter('ALL');setStatus('ALL');setQuery('')}}>Mostra tutte le auto</button></div>}
+  {!rows.length&&<div className="empty-state" data-testid="garage-filter-empty">{reviewOnly?'Nessuna auto da verificare corrisponde ai filtri.':'Nessuna auto corrisponde ai filtri.'} <button type="button" className="garage-clear-filters" onClick={()=>{setReviewOnly(false);setReservationFilter('ALL');setStatus('ALL');setQuery('')}}>Mostra tutte le auto</button></div>}
  </>}
