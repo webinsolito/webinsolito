@@ -53,6 +53,17 @@ export async function fetchTenantData(session=getSession()):Promise<TenantData>{
 
 export async function saveVehicle(draft:Partial<VehicleDraft>,vehicleId?:string){const session=await liveSession();requireGarageWrite(session);const check=validateVehicleDraft(draft);if(!check.valid)throw new Error(check.errors[0]);const payload={...normalizeVehicleDraft(check.value),updated_at:new Date().toISOString()};if(vehicleId){const rows=await restWrite<Vehicle[]>(`vehicles?id=eq.${encodeURIComponent(vehicleId)}&dealer_id=eq.${encodeURIComponent(session.dealer.id)}`,{method:'PATCH',body:payload});return first(rows,'vehicle_update_not_persisted')}const rows=await restWrite<Vehicle[]>('vehicles',{method:'POST',body:{...payload,dealer_id:session.dealer.id}});return first(rows,'vehicle_create_not_persisted')}
 
+/** Read only operational delivery checks for this dealer/vehicle, without finance access. */
+export async function fetchDeliveryChecklistSnapshot(vehicleId:string,expected:SessionPayload):Promise<VehicleWorkItem[]>{
+ const session=await liveSession()
+ if(session.dealer.id!==expected.dealer.id||session.user?.id!==expected.user?.id)
+  throw new Error('Sessione cambiata: ricarica la vendita')
+ const dealer=encodeURIComponent(session.dealer.id),vehicle=encodeURIComponent(vehicleId)
+ const rows=await rest<VehicleWorkItem[]>(`vehicle_work_items?dealer_id=eq.${dealer}&vehicle_id=eq.${vehicle}&category=eq.CONSEGNA&select=*&order=created_at.desc`)
+ if(!Array.isArray(rows)||rows.some(row=>row.dealer_id!==session.dealer.id||row.vehicle_id!==vehicle||String(row.category||'').toUpperCase()!=='CONSEGNA'))
+  throw new Error('Risposta sincronizzazione non valida')
+ return rows
+}
 export async function saveWorkItem(vehicleId:string,draft:WorkItemDraft){const session=await liveSession();requireGarageWrite(session);const title=String(draft.title||'').trim();if(!title)throw new Error('Titolo lavoro obbligatorio');const body={dealer_id:session.dealer.id,vehicle_id:vehicleId,title,category:draft.category||'PREPARAZIONE',status:'TODO',priority:draft.priority||'NORMAL',due_date:draft.due_date||null,note:String(draft.note||'').trim()||null,updated_at:new Date().toISOString()};return first(await restWrite<VehicleWorkItem[]>('vehicle_work_items',{method:'POST',body}),'work_item_create_not_persisted')}
 export async function reopenDeliveryWorkItem(item:VehicleWorkItem){
  const session=await liveSession()

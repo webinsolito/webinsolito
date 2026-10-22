@@ -99,3 +99,13 @@
  .sale360-checklist .sale360-checklist-history-link{min-height:44px}
  .sale-checklist-history-focus button{width:100%;min-height:44px}
 }
+
+/* Modifica 45: lightweight cross-device checklist synchronization. */
+.sale360-checklist-sync{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:4px 0 12px;padding:9px 11px;border:1px solid #d9e3d4;border-radius:11px;background:#f6faf5;font-size:10px;color:#48704c;font-weight:750}
+.sale360-checklist-sync.checking{background:#f8f8f7;border-color:#e5e6e4;color:#70716d}
+.sale360-checklist-sync.updated{background:#fff9ec;border-color:#e9cf9a;color:#795a28}
+.sale360-checklist-sync.offline{background:#fff4ee;border-color:#e7c1b5;color:#9b483b}
+.sale360-checklist-sync button{min-height:36px;padding:7px 12px;border:1px solid currentColor;border-radius:9px;background:#fff;color:inherit;cursor:pointer;font-weight:850;font-size:10px}
+.sale360-checklist-sync button:disabled{opacity:.5;cursor:not-allowed}
+.sale360-checklist-sync button:focus-visible{outline:3px solid #ad7532;outline-offset:2px}
+@media(max-width:760px){.sale360-checklist-sync button{min-height:44px}}

@@ -9,12 +9,12 @@ const CONTRACT='44444444-4444-4444-4444-444444444444'
 const INVOICE='55555555-5555-5555-5555-555555555555'
 
 type Options={completeChecklist?:boolean;paid?:boolean;pendingChecklist?:boolean;delivered?:boolean;seedHistory?:boolean}
-type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[];checklistHistory:any[];historyReads:string[]}
+type State={financeRequests:number;contract:any;vehicle:any;calendarEvents:any[];workItems:any[];workItemPosts:number;workItemPatches:number;undoRequests:string[];checklistHistory:any[];historyReads:string[];snapshotReads:number;snapshotOffline:boolean}
 const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function json(route:any,data:unknown){return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})}
 
 async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options:Options={}){
- const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[],checklistHistory:[],historyReads:[]}
+ const state:State={financeRequests:0,vehicle:{id:VEHICLE,dealer_id:DEALER,brand:'Audi',model:'A3',plate:'AB123CD',vin:'WVWZZZ1JZXW000001',status:'IN_VENDITA',asking_price:25000},calendarEvents:[{id:'delivery-event',dealer_id:DEALER,event_type:'DELIVERY',title:'Consegna Audi A3',starts_at:day(0)+'T15:00:00Z',status:'OPEN',priority:'HIGH',customer_id:CUSTOMER,vehicle_id:VEHICLE}],contract:{id:CONTRACT,dealer_id:DEALER,customer_id:CUSTOMER,vehicle_id:VEHICLE,contract_number:'V-2026-300',contract_date:day(-2),template_code:'VENDITA',status:'SIGNED',sale_stage:'READY',price:25000,deposit:3000,planned_delivery_at:day(1)+'T15:00:00Z',sale_invoice_id:INVOICE,financing_amount:0,financing_status:'NOT_REQUESTED'},workItems:[],workItemPosts:0,workItemPatches:0,undoRequests:[],checklistHistory:[],historyReads:[],snapshotReads:0,snapshotOffline:false}
  state.workItems=(options.completeChecklist?DELIVERY_CHECKLIST:DELIVERY_CHECKLIST.slice(0,2)).map((title,i)=>({id:'w'+i,dealer_id:DEALER,vehicle_id:VEHICLE,title,category:'CONSEGNA',status:'DONE'}))
  if(options.seedHistory){state.checklistHistory.push({id:'before-existing',dealer_id:DEALER,vehicle_id:VEHICLE,work_item_id:'w0',title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-20T10:20:00Z',actor_name:'Operatore Demo',actor_role:'VENDITORE'})}
  if(options.delivered){state.contract.sale_stage='DELIVERED';state.vehicle.status='CONSEGNATA'}
@@ -25,6 +25,11 @@ async function boot(page:Page,role:'ADMIN'|'VENDITORE'|'AMMINISTRAZIONE',options
   if(path==='/rest/v1/vehicles')return json(route,[state.vehicle])
   if(path==='/rest/v1/vehicle_media')return json(route,[{id:'media-1',dealer_id:DEALER,vehicle_id:VEHICLE,kind:'PHOTO',object_key:'vehicles/'+VEHICLE+'/photo.jpg',is_cover:true}])
   if(path==='/rest/v1/vehicle_work_items'){
+   if(method==='GET'&&url.searchParams.get('category')==='eq.CONSEGNA'){
+    state.snapshotReads++
+    if(state.snapshotOffline)return route.fulfill({status:503,contentType:'application/json',body:'{"message":"Sincronizzazione non disponibile"}'})
+    return json(route,state.workItems.filter(w=>w.dealer_id===DEALER&&w.vehicle_id===VEHICLE&&w.category==='CONSEGNA'))
+   }
    if(method==='POST'){
     state.workItemPosts++
     const item={...body,id:'new-item-'+state.workItemPosts}
@@ -405,4 +410,65 @@ test('Mod44: aprire lo storico dalla riga non altera completamento, correzione o
  await expect(history.getByTestId('sale-checklist-history-event')).toHaveCount(2)
  await expect(history).toContainText('Verifica corretta')
  expect(state.workItemPatches).toBe(1)
+})
+
+test('Mod45: verifica modificata da altro operatore aggiorna checklist, gate e storico al ritorno in app',async({page})=>{
+ const state=await boot(page,'ADMIN',{pendingChecklist:true,paid:true})
+ const gate=await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
+ const reads=state.snapshotReads
+ const target=state.workItems.find(item=>item.title===DELIVERY_CHECKLIST[2])!
+ target.status='DONE';target.completed_at='2026-10-22T09:30:00Z';target.updated_at=target.completed_at
+ state.checklistHistory.unshift({id:'remote-check',dealer_id:DEALER,vehicle_id:VEHICLE,work_item_id:target.id,
+   title:target.title,event_type:'COMPLETED',occurred_at:target.completed_at,actor_name:'Collega Remoto',actor_role:'OPERATORE'})
+ await page.evaluate(()=>window.dispatchEvent(new Event('focus')))
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('3/7')
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist aggiornata da un altro dispositivo')
+ await expect(page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[2]})).toContainText('Collega Remoto')
+ await expect(gate.locator('[data-gate-check="checklist"]')).toContainText('4 controlli mancanti')
+ expect(state.snapshotReads).toBeGreaterThan(reads)
+ expect(state.workItemPatches).toBe(0)
+})
+test('Mod45: prima della consegna definitiva confronta il server e blocca una conferma obsoleta',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true})
+ const gate=await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
+ await expect(gate).toContainText('TUTTO VERDE')
+ await gate.getByRole('button',{name:'Consegna veicolo'}).click()
+ const target=state.workItems.find(item=>item.title===DELIVERY_CHECKLIST[0])!
+ target.status='TODO';target.completed_at=null;target.updated_at='2026-10-22T09:31:00Z'
+ await gate.getByRole('button',{name:'Conferma definitivamente'}).click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('6/7')
+ await expect(gate).toContainText('Consegna bloccata')
+ await expect(page.getByTestId('sale-360')).toBeVisible()
+ expect(state.contract.sale_stage).toBe('READY')
+ expect(state.workItemPatches).toBe(0)
+})
+test('Mod45: correzione di un dato già aggiornato altrove non sovrascrive la verifica recente',async({page})=>{
+ const state=await boot(page,'ADMIN',{completeChecklist:true,paid:true})
+ await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
+ const row=page.getByTestId('sale360-checklist-item').filter({hasText:DELIVERY_CHECKLIST[0]})
+ await row.getByRole('button',{name:'Correggi '+DELIVERY_CHECKLIST[0]}).click()
+ state.workItems[0].status='TODO';state.workItems[0].completed_at=null;state.workItems[0].updated_at='2026-10-22T09:32:00Z'
+ await row.getByTestId('sale360-checklist-undo-submit').click()
+ await expect(page.getByTestId('sale360-checklist-count')).toHaveText('6/7')
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist aggiornata da un altro dispositivo')
+ expect(state.workItemPatches).toBe(0)
+})
+test('Mod45: rete interrotta viene segnalata senza scrivere né accedere a finanze; recupero manuale',async({page})=>{
+ const state=await boot(page,'VENDITORE',{pendingChecklist:true})
+ const gate=await openGate(page)
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
+ state.snapshotOffline=true
+ await page.getByTestId('sale360-checklist-sync-refresh').click()
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Sincronizzazione non disponibile')
+ await expect(page.getByTestId('sale360-checklist-complete').first()).toBeDisabled()
+ expect(state.workItemPatches).toBe(0)
+ state.snapshotOffline=false
+ await page.getByTestId('sale360-checklist-sync-refresh').click()
+ await expect(page.getByTestId('sale360-checklist-sync')).toContainText('Checklist sincronizzata')
+ await expect(gate).toBeVisible()
+ expect(state.financeRequests).toBe(0)
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
 })
