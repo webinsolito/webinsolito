@@ -504,10 +504,13 @@ test('Mod46: una vendita già cambiata sul server non viene consegnata con stato
  expect(state.contract.sale_stage).toBe('CANCELLED')
  expect(state.contractPatches).toBe(0)
 })
-test('Mod46: perdita rete blocca modifiche di stato ma non mostra finanze al venditore',async({page})=>{
+test('Mod46: perdita rete segnalata e recuperabile senza finanze al venditore',async({page})=>{
  const state=await boot(page,'VENDITORE',{completeChecklist:true})
  await openGate(page)
  await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
+ await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
+ // Il comando manuale è nella pagina Vendite: chiudere correttamente il drawer che copre i pulsanti sottostanti.
+ await page.getByRole('button',{name:'Chiudi vendita 360'}).click()
  state.operationalOffline=true
  await page.getByTestId('sales-availability-refresh').click()
  await expect(page.getByTestId('sales-availability-sync')).toContainText('Verifica disponibilità non disponibile')
@@ -516,5 +519,4 @@ test('Mod46: perdita rete blocca modifiche di stato ma non mostra finanze al ven
  await expect(page.getByTestId('sales-availability-sync')).toContainText('Vendite e auto sincronizzate')
  expect(state.contractPatches).toBe(0)
  expect(state.financeRequests).toBe(0)
- await expect(page.getByTestId('sale-360-finance')).toHaveCount(0)
 })
