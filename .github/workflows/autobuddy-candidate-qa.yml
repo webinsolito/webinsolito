@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - name: Checkout candidate
@@ -37,6 +37,9 @@ jobs:
           node automation/autobuddy/test_backup_guard.cjs
           node automation/autobuddy/test_backup_types.cjs
           node automation/autobuddy/test_backup_recovery_extra.cjs
+
+      - name: Verify all 14 WEBINSOLITO mini-app scripts and critical regressions
+        run: node --test tests/webinsolito-miniapps-regression.cjs
 
       - name: Install Chromium and WebKit
         run: npx playwright install --with-deps chromium webkit
