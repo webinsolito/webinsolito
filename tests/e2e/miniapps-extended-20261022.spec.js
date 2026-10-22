@@ -166,7 +166,13 @@ test('DocPocket rejects a fake PDF rather than archiving arbitrary bytes',async(
 test('ScreenSort saves, classifies and retains an imported screenshot',async({page})=>{
  await goto(page,'screensort');
  await page.locator('#files').setInputFiles({name:'schermo.png',mimeType:'image/png',buffer:png});
- await expect.poll(async()=>await page.locator('#inboxCount').innerText(),{message:'ScreenSort import status: '+await page.locator('#importStatus').innerText()}).toBe('1');
+ await page.waitForTimeout(350);
+ console.log('SCREEN_SORT_DIAGNOSTIC',JSON.stringify({
+   importStatus:await page.locator('#importStatus').innerText(),
+   count:await page.locator('#inboxCount').innerText(),
+   currentName:await page.locator('#currentName').innerText()
+ }));
+ await expect(page.locator('#inboxCount')).toHaveText('1');
  await page.locator('[data-cat]').first().click();
  await expect(page.locator('#archiveCount')).toHaveText('1');
  await page.reload();
