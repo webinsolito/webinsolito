@@ -109,3 +109,13 @@
 .sale360-checklist-sync button:disabled{opacity:.5;cursor:not-allowed}
 .sale360-checklist-sync button:focus-visible{outline:3px solid #ad7532;outline-offset:2px}
 @media(max-width:760px){.sale360-checklist-sync button{min-height:44px}}
+
+/* Modifica 46 · sales and stock coordination, scoped and read-only. */
+.sales-availability-sync{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;margin:8px 0 13px;padding:10px 13px;border:1px solid #d7e4d5;border-radius:11px;background:#f4faf4;color:#47734c;font-size:10px;font-weight:750}
+.sales-availability-sync.checking{border-color:#e1e3e4;background:#f8f8f8;color:#697379}
+.sales-availability-sync.updated{border-color:#dfc28a;background:#fff9ea;color:#795921}
+.sales-availability-sync.offline{border-color:#e2b4ae;background:#fff5f3;color:#94453a}
+.sales-availability-sync button{min-height:37px;padding:7px 12px;border:1px solid currentColor;border-radius:9px;background:#fff;color:inherit;font-size:10px;font-weight:850;cursor:pointer}
+.sales-availability-sync button:disabled{opacity:.5;cursor:not-allowed}
+.sales-availability-sync button:focus-visible{outline:3px solid #ad7532;outline-offset:2px}
+@media(max-width:760px){.sales-availability-sync button{min-height:44px}}

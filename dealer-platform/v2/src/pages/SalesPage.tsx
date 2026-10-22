@@ -10,6 +10,7 @@ import {salesPriority,sortSales} from '../domain/salesSorting'
 import {filterIncompleteSales,incompleteSalesIndex} from '../domain/salesCompletion'
 import {resolveSaleChecklistAction,resolveSaleChecklistUndo} from '../domain/saleChecklistActions'
 import {readSalesPreferences,saveSalesPreferences,salesPreferencesKey,type SalesPreferences} from '../domain/salesPreferences'
+import {useSalesOperationsSync} from '../lib/useSalesOperationsSync'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {latestReservationCompletion,reservationCompletionTitle,reservationNextStep,type ReservationFollowupWindow} from '../domain/reservationFollowup'
@@ -24,6 +25,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   const [creating,setCreating]=useState(false)
   const [draft,setDraft]=useState<SaleDraft>({customerId:'',vehicleId:'',price:'',deposit:'',plannedDeliveryAt:'',notes:''})
   const [busy,setBusy]=useState(false)
+  const salesSync=useSalesOperationsSync(data,session,busy,onRefresh)
   const [error,setError]=useState('')
   const [focusedVehicleId,setFocusedVehicleId]=useState<string|null>(null)
   const [focusedCustomerId,setFocusedCustomerId]=useState<string|null>(null)
@@ -81,11 +83,11 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   useEffect(()=>{if(!focusContractId&&!focusVehicleId&&!focusCustomerId)return;setFocusedVehicleId(focusVehicleId||null);setFocusedCustomerId(focusCustomerId||null);const exact=focusContractId?data.contracts.find(c=>c.id===focusContractId&&c.template_code==='VENDITA'):undefined;if(exact){setSearchQuery('');setSegment(salesSegment(exact));setSale360Id(exact.id);setCreating(false);onFocusConsumed?.();return}const existing=allSales.find(c=>(!focusVehicleId||c.vehicle_id===focusVehicleId)&&(!focusCustomerId||c.customer_id===focusCustomerId)&&salesSegment(c)==='ACTIVE');if(existing){setSearchQuery('');setSegment('ACTIVE');setSale360Id(existing.id);setCreating(false)}else if(writable){setSearchQuery('');setSegment('ACTIVE');const interestVehicleId=!focusVehicleId&&focusCustomerId?data.customerInterests.find(i=>i.customer_id===focusCustomerId&&String(i.status||'').toUpperCase()!=='PERSA')?.vehicle_id:undefined;const targetVehicleId=focusVehicleId||interestVehicleId||'';const vehicle=targetVehicleId?data.vehicles.find(v=>v.id===targetVehicleId):undefined;setCreating(true);setDraft(current=>({...current,vehicleId:targetVehicleId,customerId:focusCustomerId||current.customerId,price:vehicle?.asking_price??''}))}else setCreating(false);onFocusConsumed?.()},[focusContractId,focusVehicleId,focusCustomerId,focusKey,allSales,writable])
   const selectedReservation=vehicleReservation(data.contracts,draft.vehicleId)
   const selectVehicle=(vehicleId:string)=>{const vehicle=data.vehicles.find(v=>v.id===vehicleId);setDraft(current=>({...current,vehicleId,price:vehicle?.asking_price??current.price}))}
-  const persist=async()=>{setBusy(true);setError('');try{await createSaleContract(draft);setSearchQuery('');setSegment('ACTIVE');setCreating(false);setDraft({customerId:'',vehicleId:'',price:'',deposit:'',plannedDeliveryAt:'',notes:''});await onRefresh()}catch(err){setError(friendlySaleError(err))}finally{setBusy(false)}}
-  const move=async(contract:Contract,stage:string)=>{setBusy(true);setError('');try{await updateSaleStage(contract,stage);await onRefresh()}catch(err){setError(friendlySaleError(err))}finally{setBusy(false)}}
-  const deliver=async(contract:Contract)=>{setBusy(true);setError('');try{await updateSaleStage(contract,'DELIVERED');await onRefresh();setSale360Id(null)}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
-  const extendReservation=async(contract:Contract,iso:string,reason:string)=>{setBusy(true);setError('');try{await extendSaleReservation(contract,iso,reason);await onRefresh()}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
-  const cancelSale=async(contract:Contract,reason:string)=>{setBusy(true);setError('');try{await cancelSaleContract(contract,reason);await onRefresh();setSale360Id(null);setSegment('CANCELLED')}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
+  const persist=async()=>{setBusy(true);setError('');try{await salesSync.verifyFresh();await createSaleContract(draft);setSearchQuery('');setSegment('ACTIVE');setCreating(false);setDraft({customerId:'',vehicleId:'',price:'',deposit:'',plannedDeliveryAt:'',notes:''});await onRefresh()}catch(err){setError(friendlySaleError(err))}finally{setBusy(false)}}
+  const move=async(contract:Contract,stage:string)=>{setBusy(true);setError('');try{await salesSync.verifyFresh();await updateSaleStage(contract,stage);await onRefresh()}catch(err){setError(friendlySaleError(err))}finally{setBusy(false)}}
+  const deliver=async(contract:Contract)=>{setBusy(true);setError('');try{await salesSync.verifyFresh();await updateSaleStage(contract,'DELIVERED');await onRefresh();setSale360Id(null)}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
+  const extendReservation=async(contract:Contract,iso:string,reason:string)=>{setBusy(true);setError('');try{await salesSync.verifyFresh();await extendSaleReservation(contract,iso,reason);await onRefresh()}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
+  const cancelSale=async(contract:Contract,reason:string)=>{setBusy(true);setError('');try{await salesSync.verifyFresh();await cancelSaleContract(contract,reason);await onRefresh();setSale360Id(null);setSegment('CANCELLED')}catch(err){const message=friendlySaleError(err);setError(message);throw new Error(message)}finally{setBusy(false)}}
   const recordReservationContact=async(contract:Contract,channel:string,title:string)=>{
     const customer=data.customers.find(c=>c.id===contract.customer_id)
     if(!customer||customer.dealer_id!==session.dealer.id)throw new Error('Cliente non disponibile nella concessionaria')
@@ -164,6 +166,10 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
   return <>
     <div className="page-heading"><div><p className="eyebrow">VENDITA E CONSEGNA</p><h1>Vendite</h1><p>Dalla trattativa alla consegna, con i blocchi reali che evitano errori.</p></div>{writable&&<button className="primary-action" data-testid="new-sale" onClick={()=>{setSearchQuery('');setSegment('ACTIVE');setCreating(true)}}><Plus/> Nuova vendita</button>}</div>
     {error&&<div className="form-error customer-global-error">{error}</div>}
+    <div className={'sales-availability-sync '+salesSync.status} data-testid="sales-availability-sync" role="status" aria-live="polite">
+      <span>{salesSync.status==='updated'?'Vendite e disponibilità aggiornate da un altro operatore':salesSync.status==='offline'?'Verifica disponibilità non disponibile · ricontrolla prima di salvare':salesSync.status==='checking'?'Controllo vendite e auto…':'Vendite e auto sincronizzate'}</span>
+      <button type="button" data-testid="sales-availability-refresh" disabled={busy} onClick={()=>void salesSync.refresh()}>Aggiorna ora</button>
+    </div>
 
     {alerts.length>0&&<button type="button" className="reservation-alert-banner" data-testid="sales-reservation-alert" onClick={()=>{setSegment('ACTIVE');setSale360Id(alerts[0].id)}}>🔔 {alerts.length} prenotazion{alerts.length===1?'e':'i'} da verificare · Apri la più urgente</button>}
     <SalesReservationOverview data={data} nowIso={nowIso} onOpenSale={contractId=>{
