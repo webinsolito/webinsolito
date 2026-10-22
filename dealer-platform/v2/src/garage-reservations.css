@@ -45,3 +45,8 @@
 .garage-review-guidance button{min-height:40px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px;padding:8px 12px;border:1px solid #be995c;border-radius:10px;background:#fff;color:#775321;font-size:11px;font-weight:900;cursor:pointer}
 .garage-review-guidance button:focus-visible{outline:3px solid #ad7d3d;outline-offset:2px}
 @media(max-width:760px){.garage-review-guidance{margin:0 10px 12px;padding:12px}.garage-review-guidance button{min-height:44px;width:100%}}
+
+/* Modifica 51: priorità testuale leggibile, senza nuove colonne o banner. */
+.garage-review-guidance .garage-review-priority{display:block;font-size:10px;letter-spacing:.02em;color:#765c39}
+.garage-review-guidance .garage-review-priority[data-review-priority='reservation']{color:#963f32}
+.garage-review-guidance .garage-review-priority[data-review-priority='blocked']{color:#916329}
