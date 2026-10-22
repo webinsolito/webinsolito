@@ -188,6 +188,7 @@ test('ParkMemo GPS denial is recoverable and successful parking survives reload'
  await expect(page.locator('#saveStatus')).toContainText(/permesso|posizione/i);
  await context.grantPermissions(['geolocation']);
  await context.setGeolocation({latitude:45.54,longitude:10.22});
+ await page.reload();
  await page.locator('#saveBtn').click();
  await expect(page.locator('#activeCard')).toBeVisible();
  await page.reload();
