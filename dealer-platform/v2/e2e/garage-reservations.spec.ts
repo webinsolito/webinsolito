@@ -221,3 +221,43 @@ test('Mod49: contatore aggiornato dopo sync remoto, esclude vendite concluse',as
  await expect(page.getByTestId('vehicle-card-'+FREE).getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','UNAVAILABLE')
  expect(state.financeRequests).toBe(0)
 })
+
+
+test('Mod50: la prenotazione annullata apre direttamente la pratica corretta in Vendita 360',async({page})=>{
+ const state=await boot(page)
+ await page.getByTestId('garage-filter-review').click()
+ const guide=page.getByTestId('garage-review-guide-'+STALE)
+ await expect(guide).toContainText('Stato PRENOTATA')
+ await expect(guide).toContainText('B-CANCELLED')
+ await expect(guide).toContainText('annullata')
+ await page.getByTestId('garage-review-open-'+STALE).click()
+ await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
+ await expect(page.getByTestId('sale-360')).toBeVisible()
+ await expect(page.getByTestId('sale-360').locator('header h2')).toHaveText('B-CANCELLED')
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod50: auto bloccata senza pratica apre la scheda auto senza inventare prenotazioni',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ state.vehicles.find(v=>v.id===FREE)!.status='BLOCCATA'
+ await page.getByTestId('garage-availability-refresh').click()
+ const guide=page.getByTestId('garage-review-guide-'+FREE)
+ await expect(guide).toContainText('Stato BLOCCATA')
+ await expect(guide).toContainText('motivo dello stato')
+ await expect(guide).not.toContainText('B-FUTURE')
+ await page.getByTestId('garage-review-open-'+FREE).click()
+ await expect(page.locator('.garage-drawer-v2 h2')).toContainText('Volvo XC40')
+ expect(state.financeRequests).toBe(0)
+})
+test('Mod50: auto prenotate correttamente, libere e consegnate non mostrano la guida',async({page})=>{
+ const state=await boot(page)
+ await expect(page.getByTestId('garage-review-guide-'+FUTURE)).toHaveCount(0)
+ await expect(page.getByTestId('garage-review-guide-'+FREE)).toHaveCount(0)
+ await expect(page.getByTestId('garage-review-guide-'+STALE)).toHaveCount(1)
+ await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ state.vehicles.find(v=>v.id===STALE)!.status='CONSEGNATA'
+ await page.getByTestId('garage-availability-refresh').click()
+ await expect(page.getByTestId('garage-review-guide-'+STALE)).toHaveCount(0)
+ await expect(page.getByTestId('vehicle-card-'+STALE).getByTestId('garage-availability-alert')).toHaveAttribute('data-availability','SOLD')
+ expect(state.financeRequests).toBe(0)
+})
