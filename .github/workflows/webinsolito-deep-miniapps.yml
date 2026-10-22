@@ -27,7 +27,9 @@ concurrency:
 jobs:
   browser-audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 22
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.1-noble
+    timeout-minutes: 18
     steps:
       - name: Checkout existing WEBINSOLITO code
         uses: actions/checkout@v7
@@ -37,10 +39,8 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22"
-      - name: Install Playwright from project
-        run: |
-          npm install --no-audit --no-fund
-          npx playwright install --with-deps chromium webkit
+      - name: Install test dependencies (browsers already installed in image)
+        run: npm install --no-audit --no-fund
       - name: Serve app source without modifying published data
         shell: bash
         run: |
