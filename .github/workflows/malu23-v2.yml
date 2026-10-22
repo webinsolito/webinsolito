@@ -23,6 +23,9 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
+      options: --user 1001
     timeout-minutes: 25
     defaults:
       run:
@@ -46,7 +49,9 @@ jobs:
           if-no-files-found: error
           retention-days: 3
       - name: Install browser engines
-        run: npx playwright install --with-deps chromium webkit
+        # System libraries ship with the pinned Playwright image; avoid slow Ubuntu mirrors.
+        # npm @playwright/test is 1.64.1, so install its exact browser revisions without apt.
+        run: npx playwright install chromium webkit
       - name: Focused checklist attribution gate
         run: npx playwright test e2e/delivery-gate.spec.ts --grep "Mod43:" --project=chromium-desktop --project=iphone-webkit
       - name: Garage desktop and iPhone gate
