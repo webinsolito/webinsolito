@@ -226,6 +226,7 @@ test('StyleMatch returns an understandable suggested size',async({page})=>{
 test('SafeBuy displays a warning for suspicious purchasing conditions',async({page})=>{
  await goto(page,'safebuy');
  await page.locator('#url').fill('http://example.com/pay/login');
+ await page.locator('details.more summary').click();
  await page.locator('#payment').selectOption('irreversible');
  await page.locator('#pressure').check();
  await page.locator('#scanBtn').click();
