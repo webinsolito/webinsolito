@@ -7,7 +7,10 @@ import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {garageReservationCounts,garageReservationDueLabel,garageReservationFilterMatch,type GarageReservationFilter} from '../domain/garageReservations'
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {PrivateImage} from '../components/PrivateImage'
-import type {TenantData} from '../types'
+import type {SessionPayload,TenantData} from '../types'
+import {vehicleAvailabilityAlert} from '../domain/vehicleAvailabilityAlerts'
+import {useSalesOperationsSync} from '../lib/useSalesOperationsSync'
+import {AvailabilityAlert} from '../components/AvailabilityAlert'
 import '../garage.css'
 
 const BOOKING_TABS=[
@@ -23,10 +26,11 @@ const dateLabel=(iso?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',year:'numeric'}).format(d)
 }
 
-export function GaragePage({data,onVehicle,onCreate,onOpenSale,writable}:{data:TenantData;onVehicle:(id:string)=>void;onCreate:()=>void;onOpenSale:(id:string)=>void;writable:boolean}){
+export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale,writable}:{data:TenantData;session:SessionPayload;onRefresh:()=>Promise<void>;onVehicle:(id:string)=>void;onCreate:()=>void;onOpenSale:(id:string)=>void;writable:boolean}){
  const [query,setQuery]=useState('')
  const [status,setStatus]=useState('ALL')
  const [reservationFilter,setReservationFilter]=useState<GarageReservationFilter>('ALL')
+ const garageSync=useSalesOperationsSync(data,session,false,onRefresh)
  const nowIso=new Date().toISOString()
  const activeVehicles=data.vehicles.filter(v=>!v.deleted_at)
  const mediaByVehicle=useMemo(()=>{
@@ -70,6 +74,10 @@ export function GaragePage({data,onVehicle,onCreate,onOpenSale,writable}:{data:T
     {writable&&<button data-testid="new-vehicle" className="primary garage-new" onClick={onCreate}><Plus/>Nuova auto</button>}
    </div>
   </div>
+  <div className={'garage-availability-sync '+garageSync.status} data-testid="garage-availability-sync" role="status" aria-live="polite">
+   <span>{garageSync.status==='updated'?'Disponibilità aggiornata da un altro operatore':garageSync.status==='offline'?'Sincronizzazione non disponibile · verifica prima di proporre':garageSync.status==='checking'?'Controllo disponibilità auto…':'Disponibilità sincronizzata'}</span>
+   <button type="button" data-testid="garage-availability-refresh" onClick={()=>void garageSync.refresh()}>Aggiorna ora</button>
+  </div>
   <div className="garage-reservation-filters" role="group" aria-label="Filtra prenotazioni Garage" data-testid="garage-reservation-filters">
    {BOOKING_TABS.map(({key,label,Icon})=>
     <button type="button" key={key} data-testid={`garage-filter-${key.toLowerCase()}`}
@@ -94,7 +102,8 @@ export function GaragePage({data,onVehicle,onCreate,onOpenSale,writable}:{data:T
     const issues=[...completeness.missing.slice(0,2),age>=60&&v.status==='IN_VENDITA'?`${age} gg in stock`:null].filter(Boolean)
     const reserve=reservationByVehicle.get(v.id)
     const alert=reserve?reservationAlert(reserve,nowIso):'NONE'
-    return <article key={v.id} className={'vehicle-card-v2 garage-photo-card'+(alert==='OVERDUE'?' garage-reservation-overdue':'')+(alert==='SOON'?' garage-reservation-soon':'')}>
+    const availability=vehicleAvailabilityAlert(v,data.contracts,session.dealer.id)
+    return <article key={v.id} className={'vehicle-card-v2 garage-photo-card'+(availability?' alert-'+availability.kind.toLowerCase():'')+(alert==='OVERDUE'?' garage-reservation-overdue':'')+(alert==='SOON'?' garage-reservation-soon':'')}>
      <button data-testid={`vehicle-card-${v.id}`} className="garage-card-open" onClick={()=>onVehicle(v.id)} aria-label={`Apri auto ${vehicleName(v)}`}>
       <div className="garage-card-media">
        <PrivateImage objectKey={cover?.object_key||v.cover_object_key} alt={vehicleName(v)} className="garage-card-photo"/>
@@ -105,6 +114,7 @@ export function GaragePage({data,onVehicle,onCreate,onOpenSale,writable}:{data:T
        <div><h3>{vehicleName(v)}</h3><p>{v.plate||'Targa —'} · {v.year||'—'} · {integer(v.mileage)} km</p></div>
        {issues.length>0&&<span className="issue-pill"><AlertCircle/> {issues.join(' · ')}</span>}
       </div>
+      <AvailabilityAlert alert={availability} testId="garage-availability-alert"/>
       {reserve&&<div className="vehicle-reservation-owner" data-testid="garage-reservation-owner"><LockKeyhole size={14}/> <span>Prenotata · {reservationLabel(data,reserve)} · {reserve.contract_number}</span></div>}
       <div className="vehicle-card-bottom">
        <div><span>PREZZO</span><b>{v.asking_price?money(v.asking_price):'Da impostare'}</b></div>

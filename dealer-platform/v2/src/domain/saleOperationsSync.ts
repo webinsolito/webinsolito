@@ -5,7 +5,7 @@ export interface SaleOperationsSnapshot{
 }
 const norm=(value:unknown)=>value==null?'':String(value)
 export function saleOperationsFingerprint(snapshot:SaleOperationsSnapshot,dealerId:string):string{
- const vehicles=snapshot.vehicles.filter(v=>v.dealer_id===dealerId)
+ const vehicles=snapshot.vehicles.filter(v=>v.dealer_id===dealerId&&!v.deleted_at)
   .map(v=>[v.id,norm(v.status),norm(v.deleted_at),norm(v.updated_at)]).sort((a,b)=>a[0].localeCompare(b[0]))
  const contracts=snapshot.contracts.filter(c=>c.dealer_id===dealerId&&c.template_code==='VENDITA')
   .map(c=>[c.id,c.vehicle_id,c.customer_id,norm(c.status),norm(c.sale_stage),norm(c.reservation_expires_at),norm(c.updated_at)])

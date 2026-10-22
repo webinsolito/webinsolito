@@ -11,6 +11,7 @@ import {filterIncompleteSales,incompleteSalesIndex} from '../domain/salesComplet
 import {resolveSaleChecklistAction,resolveSaleChecklistUndo} from '../domain/saleChecklistActions'
 import {readSalesPreferences,saveSalesPreferences,salesPreferencesKey,type SalesPreferences} from '../domain/salesPreferences'
 import {useSalesOperationsSync} from '../lib/useSalesOperationsSync'
+import {vehicleAvailabilityAlert} from '../domain/vehicleAvailabilityAlerts'
 import {reservationLabel,vehicleReservation} from '../domain/saleReservation'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {latestReservationCompletion,reservationCompletionTitle,reservationNextStep,type ReservationFollowupWindow} from '../domain/reservationFollowup'
@@ -223,6 +224,7 @@ export function SalesPage({data,session,onRefresh,focusContractId,focusVehicleId
       const done=new Set(deliveryItems.filter(w=>w.status==='DONE').map(w=>String(w.title||'').trim()))
       const checklistDone=DELIVERY_ITEMS.filter(item=>done.has(item)).length
       return <SalesCompactCard key={contract.id} contract={contract} customer={customer} vehicle={vehicle}
+        availability={vehicleAvailabilityAlert(vehicle,data.contracts,session.dealer.id)}
         completion={visibleSegment==='TO_COMPLETE'?completionIndex.get(contract.id):undefined}
         defaultExpanded={viewMode==='EXPANDED'}
         checklistDone={checklistDone} checklistTotal={DELIVERY_ITEMS.length}
