@@ -57,7 +57,7 @@ export async function fetchSaleOperationsSnapshot(expected:SessionPayload){
  if(session.dealer.id!==expected.dealer.id||session.user?.id!==expected.user?.id)throw new Error('Sessione cambiata')
  const dealer=encodeURIComponent(session.dealer.id)
  const [vehicles,contracts]=await Promise.all([
-  rest<TenantData['vehicles']>(`vehicles?dealer_id=eq.${dealer}&select=id,dealer_id,status,deleted_at,updated_at`),
+  rest<TenantData['vehicles']>(`vehicles?dealer_id=eq.${dealer}&deleted_at=is.null&select=id,dealer_id,status,deleted_at,updated_at`),
   rest<TenantData['contracts']>(`contracts?dealer_id=eq.${dealer}&template_code=eq.VENDITA&select=id,dealer_id,vehicle_id,customer_id,template_code,status,sale_stage,reservation_expires_at,updated_at`)
  ])
  if(!Array.isArray(vehicles)||!Array.isArray(contracts)||vehicles.some(v=>v.dealer_id!==session.dealer.id)
