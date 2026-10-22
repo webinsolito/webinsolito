@@ -132,7 +132,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    </section>
 
    <section className="sale360-section">
-     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)||checklistSync.status==='offline'} onClick={onPrepareChecklist}>Completa checklist</button>}</div>
+     <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={onPrepareChecklist}>Completa checklist</button>}</div>
      <div className={'sale360-checklist-sync '+checklistSync.status} data-testid="sale360-checklist-sync" role="status" aria-live="polite">
       <span>{checklistSync.status==='checking'?'Verifica aggiornamenti…':checklistSync.status==='updated'?'Checklist aggiornata da un altro dispositivo':checklistSync.status==='offline'?'Sincronizzazione non disponibile · dati da verificare':'Checklist sincronizzata'}</span>
       <button type="button" data-testid="sale360-checklist-sync-refresh" onClick={()=>void checklistSync.refresh()} disabled={deliveryBusy||Boolean(pendingChecklistTitle)}>Aggiorna ora</button>
