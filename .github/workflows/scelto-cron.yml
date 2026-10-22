@@ -23,12 +23,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          RESPONSE="$(curl -fsSL \
+          RESPONSE="$(curl --silent --show-error --fail-with-body \
+            --retry 2 --retry-delay 2 --retry-connrefused \
+            --connect-timeout 10 --max-time 30 \
             -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=scelto-cron")"
-          TOKEN="$(printf '%s' "$RESPONSE" | jq -r '.value')"
-          test -n "$TOKEN"
-          test "$TOKEN" != "null"
+          TOKEN="$(printf '%s' "$RESPONSE" | jq -er '.value | select(type == "string" and length > 0)')"
+          echo "::add-mask::${TOKEN}"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Run due SCELTO missions
@@ -37,8 +38,25 @@ jobs:
           OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
         run: |
           set -euo pipefail
-          RESPONSE="$(curl -fsSL -X POST \
+          RESPONSE="$(curl --silent --show-error --fail-with-body -X POST \
+            --retry 3 --retry-delay 4 --retry-connrefused \
+            --retry-max-time 160 --connect-timeout 10 --max-time 45 \
             'https://scelto-app-production.up.railway.app/cron/github' \
             -H "Authorization: Bearer ${OIDC_TOKEN}")"
-          echo "$RESPONSE"
-          printf '%s' "$RESPONSE" | jq -e '.ok == true' >/dev/null
+          if ! printf '%s' "$RESPONSE" | jq -e '
+            type == "object" and .ok == true and
+            (.checked | type == "number") and
+            (.alerts | type == "number") and
+            (.found | type == "number") and
+            (.failed == null or (.failed | type == "number")) and
+            ((.failed // 0) == 0)
+          ' >/dev/null; then
+            echo '::error::SCELTO ha restituito una risposta non valida oppure errori nel controllo delle ricerche.'
+            exit 1
+          fi
+          if ! printf '%s' "$RESPONSE" | jq -e '(.failed | type) == "number"' >/dev/null; then
+            echo '::warning::Il backend SCELTO non espone ancora failed: i fallimenti parziali non sono verificabili finché non viene pubblicata la versione aggiornata.'
+          fi
+          SUMMARY="$(printf '%s' "$RESPONSE" | jq -c '{ok, checked, alerts, found, failed: (.failed // "non_esposto"), source}')"
+          printf 'SCELTO_MONITOR %s\n' "$SUMMARY"
+          printf '### SCELTO monitor\n\n%s\n' "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
