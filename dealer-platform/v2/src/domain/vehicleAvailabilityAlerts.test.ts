@@ -31,6 +31,7 @@ describe('Modifica 47 · avvisi disponibilità operativa auto',()=>{
  it('esclude vendite di altre auto e concessionarie, senza usare prezzi o dati cliente',()=>{
   expect(alert(vehicle,[{...booked,vehicle_id:'another'}],dealer)).toBeNull()
   expect(alert(vehicle,[{...booked,dealer_id:'another'}],dealer)).toBeNull()
-  expect(alert(vehicle,[{...booked,price:900000}],dealer)?.detail).not.toContain('900000')
+  const saleWithPrice={...booked,price:900000}
+  expect(alert(vehicle,[saleWithPrice],dealer)?.detail).not.toContain('900000')
  })
 })
