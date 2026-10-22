@@ -40,3 +40,11 @@ export function inlineChecklistAttribution(
  const timestamp=date.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
  return (done?'Completata':'Corretta')+' · '+saleChecklistHistoryActor(row)+' · '+timestamp
 }
+
+// Filter an already authorized, tenant-scoped audit snapshot by one of the 7 delivery checks.
+// No second network request and no other vehicle's historical actions are introduced.
+export function filterSaleChecklistHistory(events:SaleChecklistHistoryEvent[],title:string|null|undefined){
+ if(!title)return events
+ if(!DELIVERY_CHECKLIST.includes(title))return []
+ return events.filter(event=>event.title===title)
+}

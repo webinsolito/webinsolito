@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react'
-import {AlertTriangle,CalendarClock,Car,CheckCircle2,CircleDollarSign,ClipboardCheck,FileText,LockKeyhole,ShieldCheck,ShoppingBag,UserRound,X} from 'lucide-react'
+import {AlertTriangle,CalendarClock,Car,CheckCircle2,CircleDollarSign,ClipboardCheck,FileText,History,LockKeyhole,ShieldCheck,ShoppingBag,UserRound,X} from 'lucide-react'
 import {canSeeFinance,canWriteCustomers,canWriteGarage} from '../lib/api'
 import {canWriteContracts} from '../lib/salesApi'
 import {money} from '../lib/format'
@@ -46,6 +46,17 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
  const [pendingChecklistTitle,setPendingChecklistTitle]=useState<string|null>(null)
  const [checklistError,setChecklistError]=useState('')
  const [undoConfirmTitle,setUndoConfirmTitle]=useState<string|null>(null)
+ const [historySelection,setHistorySelection]=useState<{title:string;revision:number}|null>(null)
+ useEffect(()=>{
+  if(!historySelection)return
+  const frame=window.requestAnimationFrame(()=>{
+   const panel=drawerRef.current?.querySelector<HTMLElement>('[data-testid="sale-checklist-history"]')
+   panel?.scrollIntoView({block:'start',behavior:'auto'})
+   panel?.focus({preventScroll:true})
+  })
+  return()=>window.cancelAnimationFrame(frame)
+ },[historySelection])
+ const openCheckHistory=(title:string)=>setHistorySelection(previous=>({title,revision:(previous?.revision||0)+1}))
  const terminal=['DELIVERED','CANCELLED'].includes(String(contract.sale_stage||'').toUpperCase())
  const completeChecklist=async(title:string)=>{
   if(pendingChecklistTitle||deliveryBusy)return
@@ -120,7 +131,10 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
    <section className="sale360-section">
      <div className="sale360-head"><h3><ClipboardCheck/> Checklist consegna <small data-testid="sale360-checklist-count">{summary.checklist.done}/{summary.checklist.total}</small></h3>{!terminal&&checklistWritable&&<button disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={onPrepareChecklist}>Completa checklist</button>}</div>
      <div className="sale360-checklist" data-testid="sale360-checklist">{summary.checklist.items.map(item=><div className={item.done?'done':''} key={item.title} data-testid="sale360-checklist-item" data-checklist-title={item.title}>
-       {item.done?<CheckCircle2/>:<span className="sale360-dot"/>}<b>{item.title}</b>
+       {item.done?<CheckCircle2/>:<span className="sale360-dot"/>}
+       <button type="button" className="sale360-checklist-history-link" data-testid="sale360-checklist-open-history"
+        aria-label={'Apri storico di '+item.title} aria-controls="sale360-checklist-history-panel"
+        onClick={()=>openCheckHistory(item.title)}><b>{item.title}</b><History size={14} aria-hidden="true"/></button>
        {item.done?<span className="sale360-checklist-state">Completata</span>:
         !terminal&&checklistWritable?<button type="button" data-testid="sale360-checklist-complete" aria-label={'Completa '+item.title}
          disabled={deliveryBusy||Boolean(pendingChecklistTitle)||Boolean(undoConfirmTitle)} onClick={()=>void completeChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Segna completata'}</button>:
@@ -144,7 +158,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
      {!terminal&&!checklistWritable&&<p className="sale360-checklist-hint">Solo gli operatori autorizzati alla gestione Garage possono completare le verifiche.</p>}
    </section>
 
-   <SaleChecklistHistoryPanel history={checklistHistory}/>
+   <SaleChecklistHistoryPanel history={checklistHistory} focusTitle={historySelection?.title??null} onShowAll={()=>setHistorySelection(null)}/>
 
    <section className="sale360-contract">
      <div><ShoppingBag/><span><small>PREZZO VENDITA</small><b>{money(contract.price)}</b></span></div>
