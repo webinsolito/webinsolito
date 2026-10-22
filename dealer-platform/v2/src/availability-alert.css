@@ -17,3 +17,29 @@
 .garage-availability-sync button:disabled{opacity:.5}
 .garage-availability-sync button:focus-visible{outline:3px solid #ae7d38}
 @media(max-width:760px){.dealer-availability-alert{margin:9px 10px;padding:11px}.dealer-availability-alert small{font-size:11px}.garage-availability-sync button{min-height:44px}}
+
+/* Modifica 48 · remote operational changes are highlighted for 30 seconds only. */
+.garage-photo-card.remote-status-recent,.sale-card-compact.remote-status-recent{
+ outline:3px solid #d39b3b;outline-offset:2px;
+ box-shadow:0 0 0 5px rgba(219,163,65,.17),0 12px 32px rgba(108,70,21,.11);
+ animation:remote-card-arrived .65s ease-out
+}
+.remote-status-recent-chip{
+ position:absolute;right:11px;bottom:11px;z-index:2;
+ max-width:calc(100% - 22px);padding:7px 10px;border-radius:9px;
+ background:#fff6dc;color:#795017;border:1px solid #d9ab60;
+ box-shadow:0 2px 12px rgba(0,0,0,.16);
+ font-size:9px;font-weight:950;letter-spacing:.025em
+}
+.sale-remote-status-chip{
+ display:inline-flex;align-items:center;gap:6px;width:fit-content;margin:6px 14px 2px;
+ border:1px solid #d9ab60;border-radius:9px;padding:7px 10px;
+ background:#fff6dc;color:#795017;font-size:10px;font-weight:950
+}
+@keyframes remote-card-arrived{from{outline-color:transparent;box-shadow:none}to{outline-color:#d39b3b}}
+@media(prefers-reduced-motion:reduce){
+ .garage-photo-card.remote-status-recent,.sale-card-compact.remote-status-recent{animation:none}
+}
+@media(max-width:760px){
+ .remote-status-recent-chip,.sale-remote-status-chip{font-size:10px}
+}

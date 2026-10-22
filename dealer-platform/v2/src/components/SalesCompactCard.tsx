@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react'
-import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,LockKeyhole,ShieldCheck,UserRound} from 'lucide-react'
+import {CalendarClock,CheckCircle2,ChevronDown,ChevronRight,ClipboardCheck,Euro,LockKeyhole,RefreshCw,ShieldCheck,UserRound} from 'lucide-react'
 import {reservationAlert} from '../domain/reservationDeadlines'
 import {reservesVehicle} from '../domain/saleReservation'
 import {AvailabilityAlert} from './AvailabilityAlert'
@@ -19,8 +19,8 @@ const readableDate=(value?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 }
 
-export function SalesCompactCard({contract,customer,vehicle,availability,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onOpenCheck,onChecklist,onAdvance,onDelivery}:{
- contract:Contract;customer?:Customer;vehicle?:Vehicle;availability?:VehicleAvailabilityAlert|null;checklistDone:number;checklistTotal:number
+export function SalesCompactCard({contract,customer,vehicle,availability,recentlyChanged=false,checklistDone,checklistTotal,focused,writable,checklistWritable,busy,nowIso,sortPriority,completion,defaultExpanded=false,onOpen,onOpenCheck,onChecklist,onAdvance,onDelivery}:{
+ contract:Contract;customer?:Customer;vehicle?:Vehicle;availability?:VehicleAvailabilityAlert|null;recentlyChanged?:boolean;checklistDone:number;checklistTotal:number
  focused:boolean;writable:boolean;checklistWritable:boolean;busy:boolean;nowIso:string;sortPriority?:SalesPriority|null;completion?:SalesCompletionStatus;defaultExpanded?:boolean
  onOpen:()=>void;onOpenCheck:(checkId:string)=>void;onChecklist:()=>void;onAdvance:(next:string)=>void;onDelivery:()=>void
 }){
@@ -36,7 +36,7 @@ export function SalesCompactCard({contract,customer,vehicle,availability,checkli
  const vehicleName=name(vehicle?.brand,vehicle?.model,vehicle?.version)||'Auto non disponibile'
  const hasActions=writable&&!terminal&&(Boolean(next)||checklistWritable||stage==='READY')
  const priorityLabel=sortPriority?salesPriorityLabel(sortPriority):''
- return <article className={'sale-card sale-card-compact'+(terminal?' is-terminal':'')+(focused?' vehicle-focus':'')} data-testid="sale-card" data-vehicle-id={contract.vehicle_id} data-sale-id={contract.id}>
+ return <article data-recent-remote={recentlyChanged?'true':undefined} className={'sale-card sale-card-compact'+(recentlyChanged?' remote-status-recent':'')+(terminal?' is-terminal':'')+(focused?' vehicle-focus':'')} data-testid="sale-card" data-vehicle-id={contract.vehicle_id} data-sale-id={contract.id}>
   <div className="sale-compact-header">
    <div className="sale-compact-main">
     <div className="sale-compact-overline"><span className="sale-number">{contract.contract_number}</span><span className={'sale-stage stage-'+stage.toLowerCase()}>{stageName[stage]||stage}</span>{priorityLabel&&<span className={'sale-sort-priority priority-'+sortPriority?.toLowerCase()} data-testid="sale-sort-priority">{priorityLabel}</span>}</div>
@@ -49,6 +49,7 @@ export function SalesCompactCard({contract,customer,vehicle,availability,checkli
    <button type="button" className="sale360-open sale-compact-open" data-testid="open-sale-360"
     aria-label={'Apri Scheda Vendita 360° '+contract.contract_number} onClick={onOpen}>Apri 360° <ChevronRight size={16}/></button>
   </div>
+  {recentlyChanged&&<p className="sale-remote-status-chip" data-testid="sales-recent-change" role="status"><RefreshCw size={14} aria-hidden="true"/> STATO AGGIORNATO ORA</p>}
   <AvailabilityAlert alert={availability??null} testId="sale-availability-alert"/>
   <div className="sale-compact-facts">
    <span><ClipboardCheck size={15}/> Checklist <b>{checklistDone}/{checklistTotal}</b></span>

@@ -103,11 +103,13 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
     const reserve=reservationByVehicle.get(v.id)
     const alert=reserve?reservationAlert(reserve,nowIso):'NONE'
     const availability=vehicleAvailabilityAlert(v,data.contracts,session.dealer.id)
-    return <article key={v.id} className={'vehicle-card-v2 garage-photo-card'+(availability?' alert-'+availability.kind.toLowerCase():'')+(alert==='OVERDUE'?' garage-reservation-overdue':'')+(alert==='SOON'?' garage-reservation-soon':'')}>
+    const recentlyChanged=garageSync.recentlyChangedVehicleIds.has(v.id)
+    return <article key={v.id} data-recent-remote={recentlyChanged?'true':undefined} className={'vehicle-card-v2 garage-photo-card'+(recentlyChanged?' remote-status-recent':'')+(availability?' alert-'+availability.kind.toLowerCase():'')+(alert==='OVERDUE'?' garage-reservation-overdue':'')+(alert==='SOON'?' garage-reservation-soon':'')}>
      <button data-testid={`vehicle-card-${v.id}`} className="garage-card-open" onClick={()=>onVehicle(v.id)} aria-label={`Apri auto ${vehicleName(v)}`}>
       <div className="garage-card-media">
        <PrivateImage objectKey={cover?.object_key||v.cover_object_key} alt={vehicleName(v)} className="garage-card-photo"/>
        <span className="status-pill media-status">{(v.status||'—').replaceAll('_',' ')}</span>
+       {recentlyChanged&&<span className="remote-status-recent-chip" data-testid="garage-recent-change" role="status">STATO AGGIORNATO ORA</span>}
        <span className={`completeness-badge ${completeness.percent===100?'complete':''}`}>{completeness.percent}%</span>
       </div>
       <div className="garage-card-copy">
