@@ -22,8 +22,8 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: dealer-platform/v2
@@ -47,6 +47,8 @@ jobs:
           retention-days: 3
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
+      - name: Focused checklist attribution gate
+        run: npx playwright test e2e/delivery-gate.spec.ts --grep "Mod43:" --project=chromium-desktop --project=iphone-webkit
       - name: Garage desktop and iPhone gate
         run: npm run test:e2e
       - name: Assert V2 seller finance hard gate

@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest'
-import {saleChecklistHistoryActor,saleChecklistHistoryTitle,visibleSaleChecklistHistory,type SaleChecklistHistoryEvent} from './saleChecklistHistory'
+import {inlineChecklistAttribution,saleChecklistHistoryActor,saleChecklistHistoryTitle,visibleSaleChecklistHistory,type SaleChecklistHistoryEvent} from './saleChecklistHistory'
 import {DELIVERY_CHECKLIST} from './sale360'
 const base:SaleChecklistHistoryEvent={id:'e1',dealer_id:'dealer',vehicle_id:'vehicle',work_item_id:'work',title:DELIVERY_CHECKLIST[0],event_type:'COMPLETED',occurred_at:'2026-10-21T16:30:00Z'}
 const contract={dealer_id:'dealer',vehicle_id:'vehicle'}
@@ -23,5 +23,32 @@ describe('Modifica 42 · storico checklist in sola lettura',()=>{
   const rows=[base,newer]
   expect(visibleSaleChecklistHistory(rows,contract).map(x=>x.id)).toEqual(['e2','e1'])
   expect(rows[0].id).toBe('e1')
+ })
+})
+
+describe('Modifica 43 · operatore e orario accanto alla verifica',()=>{
+ const items=[
+  {id:'work',dealer_id:'dealer',vehicle_id:'vehicle',title:base.title,category:'CONSEGNA',status:'DONE'},
+  {id:'undo',dealer_id:'dealer',vehicle_id:'vehicle',title:DELIVERY_CHECKLIST[1],category:'CONSEGNA',status:'TODO'}
+ ]
+ it('mostra il completamento solo del lavoro esatto, con ora reale',()=>{
+  const s=inlineChecklistAttribution([{...base,actor_name:'Giulia',actor_role:'VENDITORE'}],items,contract,base.title,true)
+  expect(s).toContain('Completata · Giulia · VENDITORE')
+  expect(s).toContain('21/10/2026')
+ })
+ it('mostra la correzione dopo un vero rollback a TODO',()=>{
+  const event={...base,title:DELIVERY_CHECKLIST[1],work_item_id:'undo',event_type:'CORRECTED' as const,actor_name:'Marco'}
+  expect(inlineChecklistAttribution([event],items,contract,DELIVERY_CHECKLIST[1],false)).toContain('Corretta · Marco')
+  expect(inlineChecklistAttribution([event],items,contract,DELIVERY_CHECKLIST[1],true)).toBeNull()
+ })
+ it('rifiuta eventi di altro lavoro, tenant, auto, o non coerenti con lo stato attuale',()=>{
+  expect(inlineChecklistAttribution([{...base,work_item_id:'another'}],items,contract,base.title,true)).toBeNull()
+  expect(inlineChecklistAttribution([{...base,dealer_id:'foreign'}],items,contract,base.title,true)).toBeNull()
+  expect(inlineChecklistAttribution([{...base,vehicle_id:'other'}],items,contract,base.title,true)).toBeNull()
+  expect(inlineChecklistAttribution([{...base,event_type:'CORRECTED'}],items,contract,base.title,true)).toBeNull()
+ })
+ it('non inventa autore e data in assenza di eventi precedenti alla registrazione',()=>{
+  expect(inlineChecklistAttribution([],items,contract,base.title,true)).toBeNull()
+  expect(inlineChecklistAttribution([],items,contract,DELIVERY_CHECKLIST[1],false)).toBeNull()
  })
 })

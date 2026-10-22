@@ -5,6 +5,8 @@ import {canWriteContracts} from '../lib/salesApi'
 import {money} from '../lib/format'
 import {buildSale360} from '../domain/sale360'
 import {buildDeliveryGate} from '../domain/deliveryGate'
+import {inlineChecklistAttribution} from '../domain/saleChecklistHistory'
+import {useSaleChecklistHistory} from '../lib/useSaleChecklistHistory'
 import {SaleCancellationPanel} from './SaleCancellationPanel'
 import {ReservationDeadlinePanel} from './ReservationDeadlinePanel'
 import {ReservationHistoryPanel} from './ReservationHistoryPanel'
@@ -26,6 +28,7 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
  const deliveryWritable=canWriteContracts(session)
  const checklistWritable=canWriteGarage(session)
  const gate=buildDeliveryGate(data,contract,financeVisible)
+ const checklistHistory=useSaleChecklistHistory(contract,data.workItems)
  const guidedCheck=focusCheckId&&Object.prototype.hasOwnProperty.call(GUIDED_HINTS,focusCheckId)?gate.checks.find(check=>check.id===focusCheckId&&check.state==='BLOCK'):undefined
  const drawerRef=useRef<HTMLElement>(null)
  useEffect(()=>{
@@ -130,12 +133,18 @@ export function Sale360Drawer({contract,data,session,onClose,onOpenCustomer,onOp
         <button type="button" data-testid="sale360-checklist-undo-submit" disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>void reopenChecklist(item.title)}>{pendingChecklistTitle===item.title?'Salvataggio…':'Conferma correzione'}</button>
         <button type="button" className="cancel" disabled={deliveryBusy||Boolean(pendingChecklistTitle)} onClick={()=>setUndoConfirmTitle(null)}>Annulla</button>
        </div>}
+       {(item.done||inlineChecklistAttribution(checklistHistory.events,data.workItems,contract,item.title,item.done))&&
+        <small className="sale360-checklist-attribution" data-testid="sale360-checklist-attribution">
+          {checklistHistory.loading?'Recupero operatore e ora…':checklistHistory.error?'Storico temporaneamente non disponibile':
+           inlineChecklistAttribution(checklistHistory.events,data.workItems,contract,item.title,item.done)||
+           'Operatore e data non registrati nello storico'}
+        </small>}
       </div>)}</div>
      {checklistError&&<div className="sale360-gate-error" role="alert" data-testid="sale360-checklist-error">{checklistError}</div>}
      {!terminal&&!checklistWritable&&<p className="sale360-checklist-hint">Solo gli operatori autorizzati alla gestione Garage possono completare le verifiche.</p>}
    </section>
 
-   <SaleChecklistHistoryPanel contract={contract} workItems={data.workItems}/>
+   <SaleChecklistHistoryPanel history={checklistHistory}/>
 
    <section className="sale360-contract">
      <div><ShoppingBag/><span><small>PREZZO VENDITA</small><b>{money(contract.price)}</b></span></div>

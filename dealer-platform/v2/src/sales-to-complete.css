@@ -64,3 +64,13 @@
 .sale-checklist-history-actor{margin:0;font-size:9px;color:#697177}
 .sale-checklist-history-more{display:flex;justify-content:center;align-items:center;gap:6px;min-height:40px;border:1px solid #d4d5d1;border-radius:10px;background:#fff;color:#42555d;font-size:10px;font-weight:800}
 .sale-checklist-history-more svg{width:15px;height:15px}
+
+/* Modifica 43 · attribution of each check from the same immutable audit feed. */
+.sale360-checklist>div .sale360-checklist-attribution{
+ order:3;flex:0 0 100%;width:100%;display:block;min-width:0;margin:3px 0 0 26px;
+ font-size:10px;line-height:1.5;font-weight:650;color:#667a70;overflow-wrap:anywhere
+}
+.sale360-checklist>div:not(.done) .sale360-checklist-attribution{color:#956a45}
+@media(max-width:760px){
+ .sale360-checklist>div .sale360-checklist-attribution{margin-left:0;font-size:11px}
+}

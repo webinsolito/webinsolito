@@ -1,5 +1,5 @@
 import {DELIVERY_CHECKLIST} from './sale360'
-import type {Contract} from '../types'
+import type {Contract,TenantData} from '../types'
 
 export type SaleChecklistEventType='COMPLETED'|'CORRECTED'
 export interface SaleChecklistHistoryEvent{
@@ -21,4 +21,22 @@ export function visibleSaleChecklistHistory(rows:SaleChecklistHistoryEvent[],con
   &&Boolean(row.id)&&Boolean(row.occurred_at))
   .sort((a,b)=>b.occurred_at.localeCompare(a.occurred_at)||b.id.localeCompare(a.id))
   .slice(0,100)
+}
+
+/** Attribute only a recorded event belonging to the exact work item and current state. */
+export function inlineChecklistAttribution(
+ events:SaleChecklistHistoryEvent[],items:TenantData['workItems'],contract:Pick<Contract,'dealer_id'|'vehicle_id'>,title:string,done:boolean
+):string|null{
+ if(!DELIVERY_CHECKLIST.includes(title))return null
+ const workIds=new Set(items.filter(w=>w.dealer_id===contract.dealer_id&&w.vehicle_id===contract.vehicle_id
+  &&String(w.category||'').toUpperCase()==='CONSEGNA'&&String(w.title||'').trim()===title
+  &&(done?String(w.status||'').toUpperCase()==='DONE':
+   !['DONE','CANCELLED','CHIUSO'].includes(String(w.status||'').toUpperCase()))).map(w=>w.id))
+ if(!workIds.size)return null
+ const row=visibleSaleChecklistHistory(events,contract).find(row=>row.title===title&&workIds.has(row.work_item_id))
+ if(!row||row.event_type!==(done?'COMPLETED':'CORRECTED'))return null
+ const date=new Date(row.occurred_at)
+ if(Number.isNaN(date.getTime()))return null
+ const timestamp=date.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+ return (done?'Completata':'Corretta')+' · '+saleChecklistHistoryActor(row)+' · '+timestamp
 }
