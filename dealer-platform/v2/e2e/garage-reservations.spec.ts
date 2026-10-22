@@ -264,6 +264,8 @@ test('Mod50: auto prenotate correttamente, libere e consegnate non mostrano la g
 
 
 test('Mod51: ordina Da verificare per prenotazione incoerente, blocco e altri stati',async({page})=>{
+ // Multiple successive layout checks take longer on mobile WebKit; keep all assertions.
+ test.setTimeout(90_000)
  const state=await boot(page)
  await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
  const withdrawn='22222222-2222-2222-2222-222222222226'
