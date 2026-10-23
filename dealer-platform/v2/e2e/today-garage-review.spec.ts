@@ -139,7 +139,8 @@ test('Mod53: quando le anomalie sono più di tre, il contatore resta completo e 
  const {stats,vehicles}=await boot(page)
  vehicles.push({...vehicles[0],id:'22222222-2222-2222-2222-222222222227',brand:'Renault',model:'Clio',plate:'HH888HH',status:'PRENOTATA'})
  await menu(page,'Garage')
- await expect(page.getByTestId('garage-availability-sync')).toContainText('Disponibilità sincronizzata')
+ // La sync può essere già stata rilevata come modifica di un collega.
+ await expect(page.getByTestId('garage-availability-sync')).toContainText(/Disponibilità (sincronizzata|aggiornata)/)
  await page.getByTestId('garage-availability-refresh').click()
  await expect(page.getByTestId('garage-filter-review')).toContainText('4')
  await menu(page,'Oggi')
