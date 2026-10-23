@@ -36,3 +36,39 @@ describe('Modifica 52 · conteggio coerente fra OGGI e Garage',()=>{
   expect(result.ids.has('stale')).toBe(true)
  })
 })
+
+
+describe('Modifica 53 · anteprima delle tre auto prioritarie in OGGI',()=>{
+ it('mostra massimo tre auto nell’esatto ordine del filtro Garage, mantenendo il totale completo',()=>{
+  const data={vehicles:[
+   vehicle('other1','RITIRATA'),vehicle('blocked1','BLOCCATA'),vehicle('reserved1','PRENOTATA'),
+   vehicle('other2','FUORI_VENDITA'),vehicle('reserved2','RISERVATA'),vehicle('blocked2','NON_DISPONIBILE'),
+   vehicle('free','IN_VENDITA'),vehicle('sold','CONSEGNATA'),vehicle('booked','PRENOTATA')
+  ],contracts:[booking]}
+  const initial=data.vehicles.map(x=>x.id)
+  const result=summary(data,dealer)
+  expect(result).toMatchObject({total:6,reservation:2,blocked:2,other:2})
+  expect(result.topVehicles.map(v=>v.id)).toEqual(['reserved1','reserved2','blocked1'])
+  expect(data.vehicles.map(x=>x.id)).toEqual(initial)
+ })
+ it('riduce la lista quando un collega risolve lo stato, escludendo veicoli di altri dealer',()=>{
+  const base=[vehicle('a','PRENOTATA'),vehicle('b','BLOCCATA'),vehicle('c','RITIRATA'),{...vehicle('foreign','PRENOTATA'),dealer_id:'another'}]
+  const before=summary({vehicles:base,contracts:[]},dealer)
+  expect(before.topVehicles.map(v=>v.id)).toEqual(['a','b','c'])
+  const updated=base.map(v=>v.id==='a'?{...v,status:'IN_VENDITA'}:v)
+  const after=summary({vehicles:updated,contracts:[]},dealer)
+  expect(after.topVehicles.map(v=>v.id)).toEqual(['b','c'])
+  expect(after.total).toBe(2)
+ })
+ it('non mostra duplicati, auto eliminate o prenotazioni regolari',()=>{
+  const a=vehicle('a','RITIRATA')
+  const result=summary({vehicles:[a,{...a},vehicle('booked','PRENOTATA'),{...a,id:'deleted',deleted_at:'2026-10-22T10:00:00Z'}],contracts:[booking]},dealer)
+  expect(result.topVehicles.map(v=>v.id)).toEqual(['a'])
+  expect(result.total).toBe(1)
+ })
+ it('non mostra nessuna auto in assenza di anomalie',()=>{
+  const result=summary({vehicles:[vehicle('free','IN_VENDITA'),vehicle('booked','PRENOTATA')],contracts:[booking]},dealer)
+  expect(result.topVehicles).toEqual([])
+  expect(result.total).toBe(0)
+ })
+})
