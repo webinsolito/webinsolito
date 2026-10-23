@@ -10,6 +10,7 @@ import {PrivateImage} from '../components/PrivateImage'
 import type {SessionPayload,TenantData} from '../types'
 import {vehicleAvailabilityAlert} from '../domain/vehicleAvailabilityAlerts'
 import {vehicleAvailabilityReviewGuide} from '../domain/vehicleAvailabilityReviewGuide'
+import {buildGarageReviewSummary} from '../domain/garageReviewSummary'
 import {compareGarageReviewPriority,garageReviewPriority} from '../domain/garageReviewPriority'
 import {useSalesOperationsSync} from '../lib/useSalesOperationsSync'
 import {AvailabilityAlert} from '../components/AvailabilityAlert'
@@ -28,11 +29,11 @@ const dateLabel=(iso?:string|null)=>{
  return Number.isNaN(d.getTime())?'Da definire':new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',year:'numeric'}).format(d)
 }
 
-export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale,writable}:{data:TenantData;session:SessionPayload;onRefresh:()=>Promise<void>;onVehicle:(id:string)=>void;onCreate:()=>void;onOpenSale:(id:string)=>void;writable:boolean}){
+export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale,writable,initialReviewOnly=false}:{data:TenantData;session:SessionPayload;onRefresh:()=>Promise<void>;onVehicle:(id:string)=>void;onCreate:()=>void;onOpenSale:(id:string)=>void;writable:boolean;initialReviewOnly?:boolean}){
  const [query,setQuery]=useState('')
  const [status,setStatus]=useState('ALL')
  const [reservationFilter,setReservationFilter]=useState<GarageReservationFilter>('ALL')
- const [reviewOnly,setReviewOnly]=useState(false)
+ const [reviewOnly,setReviewOnly]=useState(initialReviewOnly)
  const garageSync=useSalesOperationsSync(data,session,false,onRefresh)
  const nowIso=new Date().toISOString()
  const activeVehicles=data.vehicles.filter(v=>!v.deleted_at)
@@ -53,9 +54,7 @@ export function GaragePage({data,session,onRefresh,onVehicle,onCreate,onOpenSale
  },[data.contracts])
  const counts=garageReservationCounts(activeVehicles,data.contracts,nowIso)
  // Reuse Mod47 operational alerts; only this dealer's visible, non-deleted vehicles qualify.
- const reviewVehicleIds=new Set(activeVehicles
-  .filter(v=>v.dealer_id===session.dealer.id&&vehicleAvailabilityAlert(v,data.contracts,session.dealer.id)?.kind==='UNAVAILABLE')
-  .map(v=>v.id))
+ const reviewVehicleIds=buildGarageReviewSummary(data,session.dealer.id).ids
  const statuses=[...new Set(activeVehicles.map(v=>v.status).filter(Boolean))] as string[]
  const normalized=query.trim().toLocaleLowerCase('it')
  const rows=activeVehicles
