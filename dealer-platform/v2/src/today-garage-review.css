@@ -8,3 +8,18 @@
 .today-garage-review:hover{border-color:#b99050;background:#fff5e2}
 .today-garage-review:focus-visible{outline:3px solid #b4843e;outline-offset:2px}
 @media(max-width:760px){.today-garage-review{min-height:76px;padding:12px;gap:10px}.today-garage-review-icon{width:36px;height:36px}.today-garage-review-copy strong{font-size:12px}.today-garage-review-copy small{font-size:10px}}
+
+/* Mod53: compact top-three vehicle list, separate accessible tap targets. */
+.today-garage-review-panel{overflow:hidden;margin:0 0 16px;border:1px solid #e3c89d;border-radius:17px;background:#fffdf9}
+.today-garage-review-panel .today-garage-review{margin:0;border:0;border-bottom:1px solid #e8d7b8;border-radius:0;background:#fff8e9}
+.today-garage-review-list{display:grid;padding:0 10px}
+.today-garage-review-vehicle{display:grid;grid-template-columns:36px minmax(0,1fr) 20px;align-items:center;gap:10px;width:100%;min-height:62px;padding:9px 5px;border:0;border-bottom:1px solid #eee9dd;background:transparent;color:#604725;text-align:left;cursor:pointer}
+.today-garage-review-vehicle:last-child{border-bottom:0}
+.today-garage-review-vehicle:hover{background:#fff6e4}
+.today-garage-review-vehicle:focus-visible{outline:3px solid #b4843e;outline-offset:-3px}
+.today-garage-review-vehicle-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:#f5eee1;color:#947142}
+.today-garage-review-vehicle-copy{display:block;min-width:0}
+.today-garage-review-vehicle-copy strong{display:block;font-size:12px;line-height:1.35;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#302a22}
+.today-garage-review-vehicle-copy small{display:block;margin-top:3px;font-size:10px;color:#877258;line-height:1.4;overflow-wrap:anywhere}
+.today-garage-review-more{margin:0;padding:10px 15px;border-top:1px solid #eee9dd;color:#886c45;font-size:10px}
+@media(max-width:760px){.today-garage-review-vehicle{min-height:60px;padding:9px 4px}.today-garage-review-list{padding:0 8px}.today-garage-review-vehicle-copy strong{font-size:12px}.today-garage-review-vehicle-copy small{font-size:10px}}

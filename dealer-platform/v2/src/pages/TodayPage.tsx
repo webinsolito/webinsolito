@@ -6,11 +6,12 @@ import {buildCollectionSchedule} from '../domain/collections'
 import {buildDeadlineSummary} from '../domain/deadlines'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {buildGarageReviewSummary} from '../domain/garageReviewSummary'
+import {garageReviewPriority} from '../domain/garageReviewPriority'
 import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,completedReservationCallbackCount,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
 import {fetchCollectionFollowups,type InvoiceCollectionFollowup} from '../lib/collectionsApi'
 import {TodayUpcomingReservationPanel} from '../components/TodayUpcomingReservationPanel'
 import type {InvoiceDetail} from '../lib/invoiceApi'
-import {money} from '../lib/format'
+import {money,vehicleName} from '../lib/format'
 import type {TenantData,View} from '../types'
 import '../today-garage-review.css'
 
@@ -75,12 +76,24 @@ export function TodayPage({data,dealerId,financeVisible=false,onVehicle,onSale,o
 
  return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':upcomingCount.toDo?'Prenotazioni in scadenza da contattare prima del termine.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
  <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small></span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button><button onClick={()=>onView('sales')} aria-label="Apri consegne da gestire"><PackageCheck/><span><b>{deliveryActions}</b><small>Consegne da gestire</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
- {garageReview.total>0&&<button type="button" className="today-garage-review" data-testid="today-garage-review" onClick={onOpenGarageReview}
-  aria-label={`Apri Garage con ${garageReview.total} auto da verificare`}>
+ {garageReview.total>0&&<section className="today-garage-review-panel" data-testid="today-garage-review-panel" aria-label="Auto con disponibilità da verificare">
+  <button type="button" className="today-garage-review" data-testid="today-garage-review" onClick={onOpenGarageReview}
+   aria-label={`Apri Garage con ${garageReview.total} auto da verificare`}>
    <span className="today-garage-review-icon"><AlertTriangle size={19} aria-hidden="true"/></span>
    <span className="today-garage-review-copy"><strong><b data-testid="today-garage-review-count">{garageReview.total}</b> auto da verificare in Garage</strong><small data-testid="today-garage-review-detail">{garageReviewDetails}</small></span>
    <ChevronRight className="today-garage-review-arrow" size={20} aria-hidden="true"/>
-  </button>}
+  </button>
+  <div className="today-garage-review-list" aria-label="Le prime tre auto da verificare">
+   {garageReview.topVehicles.map(v=><button type="button" key={v.id} className="today-garage-review-vehicle"
+    data-testid={`today-garage-review-car-${v.id}`}
+    onClick={()=>onVehicle(v.id)} aria-label={`Apri scheda auto ${vehicleName(v)}, targa ${v.plate||'non indicata'}`}>
+     <span className="today-garage-review-vehicle-icon"><CarFront size={19} aria-hidden="true"/></span>
+     <span className="today-garage-review-vehicle-copy"><strong>{vehicleName(v)}</strong><small>{v.plate||'Targa non indicata'} · {garageReviewPriority(v).label}</small></span>
+     <ChevronRight size={18} aria-hidden="true"/>
+    </button>)}
+  </div>
+  {garageReview.total>3&&<p className="today-garage-review-more" data-testid="today-garage-review-more">+{garageReview.total-3} altre auto · Apri Garage per vederle tutte</p>}
+ </section>}
  {urgentReservations.length>0&&<button type="button" className="reservation-alert-banner" data-testid="today-reservation-alert" onClick={onDeadlines}>🔔 {urgentReservations.length} prenotazion{urgentReservations.length===1?'e':'i'} da verificare · Apri Centro Scadenze <ChevronRight/></button>}
  {overdueCallbacks.length>0&&<section className="today-overdue-callbacks section" data-testid="today-overdue-callbacks">
   <div className="today-callback-head">
