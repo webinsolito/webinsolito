@@ -42,6 +42,7 @@ export default function App(){
   const [isOwner,setIsOwner]=useState(false)
   const [ownerChecked,setOwnerChecked]=useState(false)
   const [view,setView]=useState<View>('today')
+  const [garageReviewEntry,setGarageReviewEntry]=useState(false)
   const [data,setData]=useState<TenantData>(empty)
   const [busy,setBusy]=useState(false)
   const [error,setError]=useState('')
@@ -53,7 +54,7 @@ export default function App(){
   const [salesFocus,setSalesFocus]=useState<{contractId?:string;vehicleId?:string;customerId?:string;key:number}|null>(null)
   const [calendarFocus,setCalendarFocus]=useState<{vehicleId?:string;customerId?:string;eventType?:string;title?:string;key:number}|null>(null)
 
-  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(null);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
+  const clearLocal=useCallback(()=>{setAccess(null);setAccessBusy(false);setCurrentPassword(undefined);setOnboarding(null);setOnboardingBusy(false);setOnboardingError('');setData(empty);setVehicleId(null);setCustomerFocus(null);setInvoiceFocus(null);setSalesFocus(null);setCalendarFocus(null);setGarageReviewEntry(false);setOwnerMode(false);setIsOwner(false);setOwnerChecked(false)},[])
   const leave=useCallback(()=>{const finish=()=>{logout();setSessionState(null);clearLocal();updateOwnerQuery(false)};if(session?.support_mode)void exitOwnerSupport().finally(finish);else finish()},[session,clearLocal])
 
   useEffect(()=>{
@@ -157,14 +158,16 @@ export default function App(){
   const dealerName=session.dealer.display_name||session.dealer.name||'Concessionaria'
   const isAdmin=session.profile.role==='ADMIN'&&!session.support_mode
   const financeVisible=canSeeFinance(session)
+  const navigate=(target:View)=>{setGarageReviewEntry(false);setView(target)}
+  const openGarageReview=()=>{setGarageReviewEntry(true);setVehicleId(null);setView('garage')}
   const more=<MorePage isAdmin={isAdmin} financeVisible={financeVisible} isOwner={isOwner&&!session.support_mode} onOpenStaff={()=>setView('staff')} onOpenDocuments={()=>setView('documents')} onOpenInvoices={()=>{setInvoiceFocus(null);setView('invoices')}} onOpenCollections={()=>setView('collections')} onOpenDeadlines={()=>setView('deadlines')} onOpenOwner={openOwner}/>
-  return <Shell view={view} onView={setView} profile={session.profile} dealerName={dealerName} onLogout={leave} searchData={data} financeVisible={financeVisible} onSearchVehicle={openVehicle} onSearchCustomer={openCustomerSearch} onSearchInvoice={openInvoiceSearch}>
+  return <Shell view={view} onView={navigate} profile={session.profile} dealerName={dealerName} onLogout={leave} searchData={data} financeVisible={financeVisible} onSearchVehicle={openVehicle} onSearchCustomer={openCustomerSearch} onSearchInvoice={openInvoiceSearch}>
     {session.support_mode&&<div className="owner-live-support"><DoorOpen/><div><b>SUPPORTO OWNER · {dealerName}</b><span>Accesso temporaneo e tracciato · scade {session.support_expires_at?new Intl.DateTimeFormat('it-IT',{hour:'2-digit',minute:'2-digit'}).format(new Date(session.support_expires_at)):'automaticamente'}</span></div><button onClick={()=>void stopSupport()}>Esci dal supporto</button></div>}
     {access.renewal_available&&!session.support_mode&&<RenewalControl session={session} access={access} onApproved={leave}/>} 
     {error&&<div className="load-error">{error}<button onClick={()=>void load()}><RefreshCw/>Riprova</button></div>}
     {busy&&<div className="loading-bar"/>}
-    {view==='today'&&<TodayPage data={data} financeVisible={financeVisible} onVehicle={openVehicle} onSale={openSaleContract} onView={setView} onCollections={()=>setView('collections')} onDeadlines={()=>setView('deadlines')}/>}   
-    {view==='garage'&&<GaragePage data={data} session={session} onRefresh={load} onVehicle={setVehicleId} onOpenSale={openSaleContract} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
+    {view==='today'&&<TodayPage data={data} dealerId={session.dealer.id} financeVisible={financeVisible} onVehicle={openVehicle} onSale={openSaleContract} onView={navigate} onOpenGarageReview={openGarageReview} onCollections={()=>setView('collections')} onDeadlines={()=>setView('deadlines')}/>}   
+    {view==='garage'&&<GaragePage data={data} session={session} initialReviewOnly={garageReviewEntry} onRefresh={load} onVehicle={setVehicleId} onOpenSale={openSaleContract} onCreate={()=>setNewVehicleOpen(true)} writable={canWriteGarage(session)}/>} 
     {view==='clients'&&<ClientsPage data={data} writable={canWriteCustomers(session)} onRefresh={load} focusCustomerId={customerFocus?.id} focusKey={customerFocus?.key} onFocusConsumed={()=>setCustomerFocus(null)} onOpenVehicle={openVehicle} onOpenCalendar={openCustomerAppointment} onOpenSales={openCustomerSales}/>}  
     {view==='calendar'&&<CalendarPage data={data} writable={canWriteCalendar(session)} onRefresh={load} focusVehicleId={calendarFocus?.vehicleId} focusCustomerId={calendarFocus?.customerId} focusEventType={calendarFocus?.eventType} focusTitle={calendarFocus?.title} focusKey={calendarFocus?.key} onFocusConsumed={()=>setCalendarFocus(null)}/>}  
     {view==='sales'&&<SalesPage data={data} session={session} onRefresh={load} focusContractId={salesFocus?.contractId} focusVehicleId={salesFocus?.vehicleId} focusCustomerId={salesFocus?.customerId} focusKey={salesFocus?.key} onFocusConsumed={()=>setSalesFocus(null)} onOpenCustomer={openCustomerSearch} onOpenVehicle={openVehicle} onOpenDeliveryAppointment={openSaleDeliveryAppointment} onOpenInvoices={id=>{if(id)openInvoiceSearch(id);else{setVehicleId(null);setCustomerFocus(null);setSalesFocus(null);setView('invoices')}}} onOpenDeadlines={()=>setView('deadlines')}/>}  
