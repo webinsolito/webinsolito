@@ -1,21 +1,23 @@
 import {useEffect,useMemo,useState} from 'react'
-import {CalendarClock,Camera,CarFront,ChevronRight,Euro,PackageCheck,PhoneCall,Users,Wrench} from 'lucide-react'
+import {AlertTriangle,CalendarClock,Camera,CarFront,ChevronRight,Euro,PackageCheck,PhoneCall,Users,Wrench} from 'lucide-react'
 import {buildPriorities,type PriorityItem} from '../domain/priorities'
 import {buildInvoiceSummary} from '../domain/invoices'
 import {buildCollectionSchedule} from '../domain/collections'
 import {buildDeadlineSummary} from '../domain/deadlines'
 import {activeReservationAlerts} from '../domain/reservationDeadlines'
+import {buildGarageReviewSummary} from '../domain/garageReviewSummary'
 import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,completedReservationCallbackCount,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
 import {fetchCollectionFollowups,type InvoiceCollectionFollowup} from '../lib/collectionsApi'
 import {TodayUpcomingReservationPanel} from '../components/TodayUpcomingReservationPanel'
 import type {InvoiceDetail} from '../lib/invoiceApi'
 import {money} from '../lib/format'
 import type {TenantData,View} from '../types'
+import '../today-garage-review.css'
 
 const icon={PRICE:Euro,PHOTO:Camera,WORK:Wrench,AGE:CarFront,CALENDAR:CalendarClock,CUSTOMER:PhoneCall,DELIVERY:PackageCheck,COLLECTION:Euro}
 const localDay=(date=new Date())=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')
 
-export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onCollections,onDeadlines}:{data:TenantData;financeVisible?:boolean;onVehicle:(id:string)=>void;onSale:(id:string)=>void;onView:(view:View)=>void;onCollections:()=>void;onDeadlines:()=>void}){
+export function TodayPage({data,dealerId,financeVisible=false,onVehicle,onSale,onView,onCollections,onDeadlines,onOpenGarageReview}:{data:TenantData;dealerId:string;financeVisible?:boolean;onVehicle:(id:string)=>void;onSale:(id:string)=>void;onView:(view:View)=>void;onCollections:()=>void;onDeadlines:()=>void;onOpenGarageReview:()=>void}){
  const [followups,setFollowups]=useState<InvoiceCollectionFollowup[]|null>(financeVisible?null:[])
  const [collectionsError,setCollectionsError]=useState(false)
  const [showAllBookingCallbacks,setShowAllBookingCallbacks]=useState(false)
@@ -30,6 +32,12 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
   return()=>{active=false}
  },[financeVisible])
  const priorities=useMemo(()=>buildPriorities(data),[data])
+ const garageReview=useMemo(()=>buildGarageReviewSummary(data,dealerId),[data.vehicles,data.contracts,dealerId])
+ const garageReviewDetails=[
+  garageReview.reservation&&`${garageReview.reservation} prenotazion${garageReview.reservation===1?'e':'i'} incoerent${garageReview.reservation===1?'e':'i'}`,
+  garageReview.blocked&&`${garageReview.blocked} bloccat${garageReview.blocked===1?'a':'e'}`,
+  garageReview.other&&`${garageReview.other} altr${garageReview.other===1?'a':'e'}`
+ ].filter(Boolean).join(' · ')
  const collectionSchedule=useMemo(()=>{
   if(!financeVisible||followups===null)return null
   const invoiceSummary=buildInvoiceSummary(data.invoices as InvoiceDetail[],[],localDay())
@@ -67,6 +75,12 @@ export function TodayPage({data,financeVisible=false,onVehicle,onSale,onView,onC
 
  return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':upcomingCount.toDo?'Prenotazioni in scadenza da contattare prima del termine.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
  <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small></span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button><button onClick={()=>onView('sales')} aria-label="Apri consegne da gestire"><PackageCheck/><span><b>{deliveryActions}</b><small>Consegne da gestire</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
+ {garageReview.total>0&&<button type="button" className="today-garage-review" data-testid="today-garage-review" onClick={onOpenGarageReview}
+  aria-label={`Apri Garage con ${garageReview.total} auto da verificare`}>
+   <span className="today-garage-review-icon"><AlertTriangle size={19} aria-hidden="true"/></span>
+   <span className="today-garage-review-copy"><strong><b data-testid="today-garage-review-count">{garageReview.total}</b> auto da verificare in Garage</strong><small data-testid="today-garage-review-detail">{garageReviewDetails}</small></span>
+   <ChevronRight className="today-garage-review-arrow" size={20} aria-hidden="true"/>
+  </button>}
  {urgentReservations.length>0&&<button type="button" className="reservation-alert-banner" data-testid="today-reservation-alert" onClick={onDeadlines}>🔔 {urgentReservations.length} prenotazion{urgentReservations.length===1?'e':'i'} da verificare · Apri Centro Scadenze <ChevronRight/></button>}
  {overdueCallbacks.length>0&&<section className="today-overdue-callbacks section" data-testid="today-overdue-callbacks">
   <div className="today-callback-head">

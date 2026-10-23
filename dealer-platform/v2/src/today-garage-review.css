@@ -1,0 +1,10 @@
+/* Mod52 · compact cross-page review shortcut for OGGI. */
+.today-garage-review{display:flex;align-items:center;gap:12px;width:100%;min-height:76px;margin:0 0 16px;padding:13px 16px;border:1px solid #e3c89d;border-radius:16px;background:#fffaf0;color:#655035;text-align:left;cursor:pointer}
+.today-garage-review-icon{display:grid;place-items:center;width:40px;height:40px;flex:0 0 auto;border-radius:12px;background:#fbebcf;color:#95672b}
+.today-garage-review-copy{display:flex;flex:1;flex-direction:column;min-width:0;gap:4px}
+.today-garage-review-copy strong{font-size:13px;font-weight:900;color:#4d3820}
+.today-garage-review-copy small{font-size:10px;line-height:1.45;color:#856b4a}
+.today-garage-review-arrow{flex:0 0 auto;color:#95672b}
+.today-garage-review:hover{border-color:#b99050;background:#fff5e2}
+.today-garage-review:focus-visible{outline:3px solid #b4843e;outline-offset:2px}
+@media(max-width:760px){.today-garage-review{min-height:76px;padding:12px;gap:10px}.today-garage-review-icon{width:36px;height:36px}.today-garage-review-copy strong{font-size:12px}.today-garage-review-copy small{font-size:10px}}
