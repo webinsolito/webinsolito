@@ -75,3 +75,15 @@ test("FuelGo displays age of published prices instead of claiming live data",()=
   assert.match(source,/source_date_prices/);
   assert.match(source,/Dati non recenti: verifica il prezzo alla pompa/);
 });
+
+test("DocPocket expiry counts actual calendar dates across daylight saving changes",()=>{
+  const src=scripts("docpocket")[0];
+  const fn=new Function(src.slice(src.indexOf("function days("),src.indexOf("function status("))+"return days")();
+  const today=(year,month,day)=>({getFullYear:()=>year,getMonth:()=>month-1,getDate:()=>day});
+  assert.equal(fn("2026-10-25",today(2026,10,24)),1,"Autumn clock change should be one day, not two");
+  assert.equal(fn("2026-03-29",today(2026,3,28)),1,"Spring clock change should be one day");
+  assert.equal(fn("2028-02-29",today(2028,2,28)),1,"Leap day is one calendar day ahead");
+  assert.equal(fn("2026-10-22",today(2026,10,23)),-1,"Expired yesterday");
+  assert.equal(fn("2026-10-23",today(2026,10,23)),0,"Expires today");
+  assert.equal(fn("2026-02-30",today(2026,2,25)),null,"Reject impossible calendar date");
+});
