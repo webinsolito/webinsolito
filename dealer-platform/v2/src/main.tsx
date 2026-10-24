@@ -35,6 +35,7 @@ import './sales-compact-cards.css'
 import './sales-sorting.css'
 import './sales-preferences.css'
 import './sales-to-complete.css'
+import './today-mobile-ux.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
