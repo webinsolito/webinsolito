@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-24T11:34:13.191552+00:00",
-  "count": 78,
+  "generated_at": "2026-10-24T18:21:34.069648+00:00",
+  "count": 77,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 13,
-      "errors": 0
+      "events": 12,
+      "errors": 1
     },
     {
       "name": "Visit Brescia",
@@ -558,21 +558,6 @@
       "note": "Un viaggio affascinante nel cuore del Medioevo tra usi, antiche leggende e brividi: ogni anno a Borno arriva Haeretica. De Foco, Strie et Deavoli!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Haeretica-Borno.jpg"
-    },
-    {
-      "id": "auto-ef9bdb484fc740",
-      "title": "L'epopea risorgimentale",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/l-epopea-risorgimentale",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/presentazione-epopea-risorgimentale-24-ottobre-2026-1024x650.jpg"
     },
     {
       "id": "auto-9bfee937173cfb",
