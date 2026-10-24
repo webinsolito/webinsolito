@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5"/>
+  <meta name="theme-color" content="#15171b"/>
+  <meta name="description" content="DesignBox: crea grafiche, volantini, etichette e post. Funziona anche senza Internet."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="DesignBox"/>
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png"/>
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg"/>
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <style>body{background:#f4f4f6;color:#25232b;font-family:system-ui}#app{visibility:hidden}</style>
+  <title>DesignBox — Crea e modifica grafiche offline</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand" aria-label="DesignBox"><span class="brand-logo"><span></span><span></span><span></span><span></span></span><span>design<span class="brand-light">box</span></span><span class="brand-beta">STUDIO</span></div>
+      <div class="top-divider"></div>
+      <div class="project-name"><input id="projectTitle" type="text" value="Nuovo progetto" aria-label="Nome progetto" spellcheck="false"/><span id="saveStatus" title="Salvato in locale">● Salvato</span></div>
+      <div class="top-actions">
+        <div class="offline-indicator" id="netStatus"><span class="status-dot"></span><span>Pronto offline</span></div>
+        <button class="icon-btn hide-mobile" id="undoBtn" aria-label="Annulla" title="Annulla (Ctrl+Z)"><span data-icon="undo"></span></button>
+        <button class="icon-btn hide-mobile" id="redoBtn" aria-label="Ripristina" title="Ripristina (Ctrl+Shift+Z)"><span data-icon="redo"></span></button>
+        <button class="icon-btn" id="installBtn" aria-label="Installa DesignBox" title="Installa app"><span data-icon="download"></span></button>
+        <button class="btn btn-primary" id="exportBtn"><span data-icon="export"></span><span>Esporta</span></button>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="rail" aria-label="Strumenti">
+        <button class="rail-btn active" data-section="templates" title="Modelli"><span data-icon="layout"></span><span>Modelli</span></button>
+        <button class="rail-btn" data-section="text" title="Testo"><span data-icon="type"></span><span>Testo</span></button>
+        <button class="rail-btn" data-section="shapes" title="Elementi"><span data-icon="shapes"></span><span>Elementi</span></button>
+        <button class="rail-btn" data-section="uploads" title="Foto"><span data-icon="image"></span><span>Foto</span></button>
+        <button class="rail-btn" data-section="projects" title="Progetti"><span data-icon="folder"></span><span>Progetti</span></button>
+        <div class="rail-bottom"><button class="rail-btn" id="helpBtn" title="Guida"><span data-icon="help"></span><span>Guida</span></button></div>
+      </aside>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><div><div class="eyebrow">IL TUO STUDIO</div><h2 id="sectionTitle">Scegli un modello</h2></div><button class="icon-btn sidebar-close" id="closeSidebar" aria-label="Chiudi pannello"><span data-icon="close"></span></button></div>
+        <div id="sidebarContent" class="sidebar-scroll"></div>
+        <div class="sidebar-footer"><span data-icon="spark"></span> Tutto sul tuo dispositivo. Nessun credito.</div>
+      </aside>
+      <main class="center" id="dropTarget">
+        <div class="canvas-toolbar">
+          <button class="pill-control" id="sizeBtn" title="Formato documento"><span data-icon="resize"></span><span id="sizeLabel">Post Instagram</span><span data-icon="chevron"></span></button>
+          <div class="tool-divider"></div>
+          <button class="pill-control" id="backgroundBtn" title="Colore sfondo"><span data-icon="paint"></span><span>Sfondo</span><span class="tiny-color" id="bgIndicator"></span></button>
+          <div class="grow"></div>
+          <button class="icon-btn mobile-only" id="mobileUndoBtn" title="Annulla"><span data-icon="undo"></span></button>
+          <button class="icon-btn mobile-only" id="mobileRedoBtn" title="Ripristina"><span data-icon="redo"></span></button>
+          <button class="icon-btn zoom-btn" id="zoomOut" title="Riduci zoom"><span data-icon="minus"></span></button>
+          <span class="zoom-text" id="zoomLabel">100%</span>
+          <button class="icon-btn zoom-btn" id="zoomIn" title="Aumenta zoom"><span data-icon="plus"></span></button>
+          <button class="icon-btn" id="fitBtn" title="Adatta alla finestra"><span data-icon="fit"></span></button>
+        </div>
+        <div class="stage" id="stage"><div class="stage-grid"></div><div class="artboard-frame" id="artboardFrame"><canvas id="designCanvas" aria-label="Area di lavoro grafica"></canvas></div><div class="drag-hint" id="dragHint"><span data-icon="image"></span> Rilascia una foto per inserirla</div><button id="editSelectionBtn" class="edit-selection-btn" hidden><span data-icon="sliders"></span> Modifica elemento</button></div>
+        <div class="canvas-bottom"><span class="canvas-caption"><span data-icon="lock"></span> <span id="footerStatus">Preparazione offline…</span></span><span id="canvasDimensions">1080 × 1080 px</span></div>
+      </main>
+      <aside class="inspector" id="inspector"><div class="inspector-heading"><div><div class="eyebrow">PERSONALIZZA</div><h2 id="inspectorTitle">Proprietà</h2></div><button class="icon-btn mobile-only" id="closeInspector"><span data-icon="close"></span></button></div><div id="inspectorContent" class="inspector-scroll"></div></aside>
+      <nav class="mobile-nav" aria-label="Strumenti mobili">
+        <button data-section="templates" class="mobile-tab active"><span data-icon="layout"></span><span>Modelli</span></button>
+        <button data-section="text" class="mobile-tab"><span data-icon="type"></span><span>Testo</span></button>
+        <button data-section="shapes" class="mobile-tab"><span data-icon="shapes"></span><span>Elementi</span></button>
+        <button data-section="uploads" class="mobile-tab"><span data-icon="image"></span><span>Foto</span></button>
+        <button id="propertiesTab" class="mobile-tab"><span data-icon="sliders"></span><span>Modifica</span></button>
+        <button data-section="projects" class="mobile-tab"><span data-icon="folder"></span><span>Progetti</span></button>
+      </nav>
+    </div>
+  </div>
+  <div id="scrim" class="scrim" hidden></div>
+  <div id="popup" class="popup" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="modalBackdrop" class="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="icon-btn modal-x" id="modalClose" aria-label="Chiudi"><span data-icon="close"></span></button><div id="modalBody"></div></div></div>
+  <input id="fileInput" type="file" accept="image/*" multiple hidden/>
+  <input id="backupInput" type="file" accept=".designbox,.json,application/json" hidden/>
+  <script src="./loader.js" defer></script>
+</body>
+</html>
