@@ -1,0 +1,13 @@
+/* Modifica 54: OGGI con un'azione principale immediata, senza duplicati. */
+.today-primary-action{min-height:146px;margin:0 0 16px;padding:20px 22px;align-items:center;box-shadow:0 13px 32px rgba(9,17,28,.11)}
+.today-primary-action h2{font-size:25px;line-height:1.15;letter-spacing:-.5px}
+.today-primary-action p:not(.eyebrow){font-size:12px}
+.today-primary-action .focus-cta{flex-shrink:0;min-height:46px}
+.today-kpi-reservation-count{display:block;margin-top:5px;font-size:10px;font-weight:850;color:#93632e;line-height:1.3}
+.today-kpis [data-testid="today-reservation-alert"]:focus-visible{outline:3px solid #b4843e;outline-offset:2px}
+@media(max-width:760px){
+ .today-primary-action{min-height:0;padding:18px;margin-bottom:13px}
+ .today-primary-action h2{font-size:22px}
+ .today-primary-action .focus-cta{min-height:46px;margin-top:14px}
+ .today-kpi-reservation-count{font-size:9px}
+}
