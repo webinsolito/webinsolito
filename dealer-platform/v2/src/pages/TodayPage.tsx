@@ -15,7 +15,6 @@ import {money,vehicleName} from '../lib/format'
 import type {TenantData,View} from '../types'
 import '../today-garage-review.css'
 import '../today-clarity.css'
-import '../today-mobile-ux.css'
 
 const icon={PRICE:Euro,PHOTO:Camera,WORK:Wrench,AGE:CarFront,CALENDAR:CalendarClock,CUSTOMER:PhoneCall,DELIVERY:PackageCheck,COLLECTION:Euro}
 const localDay=(date=new Date())=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')
