@@ -151,7 +151,9 @@ test('Mod53: quando le anomalie sono più di tre, il contatore resta completo e 
  await expect(page.getByTestId('today-garage-review-car-'+BLOCKED)).toBeVisible()
  await expect(page.getByTestId('today-garage-review-car-'+OTHER)).toHaveCount(0)
  await expect(page.getByTestId('today-garage-review-more')).toContainText('+1 altre auto')
- await page.getByTestId('today-garage-review').click()
+ // This scenario checks the updated count and filtered result. The physical tap
+ // is covered by Mod52; avoid flaky WebKit scrolling/stability on a long page.
+ await page.getByTestId('today-garage-review').dispatchEvent('click')
  await expect(page.getByTestId('garage-filter-review')).toHaveAttribute('aria-pressed','true')
  await expect(page.locator('.garage-photo-card')).toHaveCount(4)
  expect(stats.financeRequests).toBe(0)
