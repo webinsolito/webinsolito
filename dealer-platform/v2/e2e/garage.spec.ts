@@ -81,7 +81,8 @@ for(const width of [320,375]){
  test(`Visual refresh: tutte le sei sezioni mobili sono raggiungibili su ${width}px, senza seconda riga`,async({page})=>{
   await page.setViewportSize({width,height:740})
   const state=await installBackend(page)
-  await login(page)
+  // Venditore: verifies that mobile navigation does not accidentally read finance data.
+  await login(page,'seller')
   const buttons=page.locator('.mobile-nav button')
   await expect(buttons).toHaveCount(6)
   const rects=await buttons.evaluateAll(items=>items.map(item=>{
