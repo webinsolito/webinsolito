@@ -1,0 +1,54 @@
+/* DesignBox 1.5 Product Studio — product-first interface, entirely local. */
+.db-home-mode{background:#f5f3ee!important}
+.db-home-mode .workspace{display:none!important}
+.db-home-mode .topbar{background:#f5f3ee;border-bottom:1px solid #e5e0d8;box-shadow:none}
+.db-home-mode .project-name,.db-home-mode .top-actions #exportBtn,.db-home-mode .top-actions #undoBtn,.db-home-mode .top-actions #redoBtn,.db-home-mode #db-preview-trigger{display:none!important}
+.db-home-mode .brand-beta{background:#e5e1f8;color:#6454a9}
+.db-home-mode .top-actions{margin-left:auto}
+#db-return-home{display:none;align-items:center;justify-content:center;min-height:43px;gap:6px;background:#f5f1ff;color:#5642ae;border:1px solid #ded7f5;border-radius:12px;padding:9px 12px;font-weight:750;font-size:12px;white-space:nowrap;cursor:pointer}
+#db-return-home svg{width:16px;height:16px}
+body:not(.db-home-mode) #db-return-home{display:flex}
+.db-product-home{display:none;color:#24212d;min-height:calc(100dvh - 70px);background:#f5f3ee;padding:clamp(16px,3vw,40px) clamp(14px,4.5vw,70px) 28px;overflow:auto}
+.db-home-mode .db-product-home{display:block}
+.db-home-inner{max-width:1400px;margin:0 auto}
+.db-product-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:clamp(15px,2.5vw,28px)}
+.db-product-tag{display:inline-flex;align-items:center;gap:9px;border:1px solid #dcd5c9;background:#fffdf8;border-radius:20px;padding:9px 12px;color:#5f5b62;font-size:11px;font-weight:800;letter-spacing:.10em}
+.db-product-tag:before{content:'';width:8px;height:8px;flex-shrink:0;border-radius:50%;background:#36b482}
+.db-product-topline>span:last-child{font-size:12px;font-weight:650;color:#88828b}
+.db-home-main{display:grid;grid-template-columns:minmax(310px,.82fr) minmax(410px,1.18fr);gap:clamp(24px,5vw,75px);align-items:center}
+.db-home-eyebrow{color:#6a55c5;text-transform:uppercase;font-size:11px;letter-spacing:.17em;font-weight:850;margin:0 0 16px}
+.db-home-left h1{font-size:clamp(37px,4.4vw,68px);line-height:1.04;letter-spacing:-.066em;font-weight:870;margin:0 0 19px;max-width:680px;color:#211d2b}
+.db-home-left h1 em{font-style:normal;color:#7458e4}
+.db-home-intro{font-size:clamp(14px,1.3vw,17px);color:#6b6674;line-height:1.6;max-width:510px;margin:0 0 29px}
+.db-object-subhead{font-size:12px;font-weight:850;color:#3a3546;letter-spacing:.015em;margin:0 0 12px}
+.db-home-catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:570px}
+.db-home-object{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;cursor:pointer;border:1.5px solid #e2ded9;border-radius:16px;background:#fffdf9;padding:15px;min-height:117px;transition:transform .16s ease,border-color .16s,box-shadow .16s;color:#38323e}
+.db-home-object:hover{transform:translateY(-2px);border-color:#9883ed}
+.db-home-object[aria-pressed="true"]{border-color:#7956e6;background:#f4f0ff;box-shadow:inset 0 0 0 1px #7956e6,0 8px 24px #9e86e520}
+.db-home-object .db-home-symbol{display:flex;justify-content:center;align-items:center;width:38px;height:38px;border-radius:12px;background:#ebe5fc;font-size:22px;font-weight:700;color:#6b51c9}
+.db-home-object strong{font-size:13px;font-weight:800}
+.db-home-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:24px}
+.db-home-primary,.db-home-secondary{min-height:51px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:13px;padding:12px 20px;font-size:14px;font-weight:850;cursor:pointer}
+.db-home-primary{color:white;background:#7555e3;border:1px solid #7555e3;box-shadow:0 11px 22px #694bc02c}
+.db-home-primary:hover{background:#6544d3}
+.db-home-secondary{background:#fffdf9;border:1px solid #ddd8cf;color:#484151}
+.db-home-primary:focus-visible,.db-home-secondary:focus-visible,.db-home-object:focus-visible{outline:3px solid #bea7ff;outline-offset:2px}
+.db-home-assurance{display:flex;flex-wrap:wrap;gap:17px;margin-top:18px;color:#77727e;font-size:12px;font-weight:650}
+.db-home-assurance span:before{content:'✓';color:#16a177;font-weight:900;margin-right:5px}
+.db-home-visual{position:relative;min-width:0;padding:18px;border-radius:29px;background:linear-gradient(155deg,#e7e5f6 0%,#e6e7ea 44%,#d9dfdb 100%);box-shadow:0 16px 46px #3d344116,inset 0 1px #ffffffcc}
+.db-home-visual-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 9px 0;font-size:10px;letter-spacing:.12em;font-weight:850;color:#665f73}
+.db-home-visual-head b{display:inline-flex;background:#ffffffbe;padding:8px 10px;border-radius:20px;color:#4f4470;letter-spacing:0;font-size:11px}
+.db-home-visual canvas{display:block;width:100%;height:auto;aspect-ratio:720/560;border-radius:18px;margin:9px auto 2px}
+.db-home-visual-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#ffffffb3;border-radius:16px;padding:13px 15px}
+.db-home-visual-foot div{display:flex;flex-direction:column;gap:3px}.db-home-visual-foot strong{font-size:13px}.db-home-visual-foot small{font-size:11px;color:#79747f}
+.db-home-visual-foot button{min-height:42px;border:1px solid #d8d3e3;border-radius:12px;background:#fff;color:#5e4cc0;font-weight:800;padding:9px 13px;cursor:pointer}
+.db-home-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:32px;border-top:1px solid #e5dfd7;padding-top:20px}
+.db-home-step{display:flex;gap:11px;align-items:flex-start}.db-home-step b{flex-shrink:0;width:29px;height:29px;border-radius:50%;background:#e9e4f8;color:#6d54ba;display:grid;place-items:center;font-size:12px}.db-home-step strong{font-size:12px;display:block}.db-home-step small{display:block;font-size:11px;line-height:1.5;color:#77717a;margin-top:3px}
+@media(min-width:1400px){.db-home-visual{padding:24px}}
+@media(max-width:950px){.db-home-main{grid-template-columns:minmax(265px,.9fr) minmax(350px,1.1fr);gap:21px}.db-home-left h1{font-size:40px}.db-home-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}.db-home-object{min-height:94px;padding:12px;gap:5px}}
+@media(max-width:700px){.db-product-home{min-height:calc(100dvh - 60px);padding:16px 13px calc(28px + env(safe-area-inset-bottom))}.db-product-topline{margin:0 0 16px}.db-product-topline>span:last-child{display:none}.db-product-tag{font-size:9px;padding:7px 10px}.db-home-main{display:flex;flex-direction:column;gap:14px;align-items:stretch}.db-home-left{display:contents}.db-home-eyebrow{order:1;margin:0;font-size:9px}.db-home-left h1{order:2;font-size:clamp(32px,8.5vw,45px);margin:0;max-width:520px;letter-spacing:-.06em}.db-home-intro{order:3;font-size:12px;line-height:1.45;margin:0 0 3px;max-width:510px}.db-object-subhead{order:5;margin:6px 0 -5px;font-size:11px}.db-home-catalog{order:6;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;padding:2px 2px 8px;margin:0 -2px;max-width:none;scrollbar-width:none}.db-home-catalog::-webkit-scrollbar{display:none}.db-home-object{flex:0 0 116px;min-height:85px;padding:10px 11px;gap:4px;scroll-snap-align:start;border-radius:13px}.db-home-object .db-home-symbol{width:28px;height:28px;font-size:17px;border-radius:8px}.db-home-object strong{font-size:12px}.db-home-visual{order:4;padding:10px;border-radius:19px}.db-home-visual-head{font-size:9px;padding:2px 6px}.db-home-visual-head b{padding:5px 8px}.db-home-visual canvas{margin:3px auto;aspect-ratio:720/490;object-fit:contain}.db-home-visual-foot{padding:9px 11px;border-radius:12px}.db-home-visual-foot strong{font-size:11px}.db-home-visual-foot small{font-size:9px}.db-home-visual-foot button{padding:6px 9px;font-size:11px;min-height:36px}.db-home-ctas{order:7;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:3px 0 0}.db-home-primary,.db-home-secondary{padding:10px;font-size:12px;min-height:46px}.db-home-assurance{order:8;margin:0;gap:10px;font-size:10px}.db-home-steps{margin-top:19px;gap:7px}.db-home-step{gap:6px}.db-home-step b{width:22px;height:22px;font-size:10px}.db-home-step strong{font-size:10px}.db-home-step small{font-size:9px;line-height:1.25}}
+@media(max-width:365px){.db-home-left h1{font-size:31px}.db-home-intro{font-size:11px}.db-home-primary,.db-home-secondary{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.db-home-object{transition:none}}
+/* Home header differs from the compact editing toolbar. */
+.db-home-mode #projectLibraryTop{display:none!important}
+@media(max-width:700px){.db-home-mode .brand>span:nth-child(2){display:inline!important;font-size:18px;letter-spacing:-.04em;font-weight:900}.db-home-mode .brand>span.brand-beta{display:none!important}}
