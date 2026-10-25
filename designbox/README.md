@@ -1,7 +1,12 @@
-# DesignBox 1.3 — PWA offline
+# DesignBox 1.4 — editor responsive offline
 
-Grafica più curata, ricerca e filtri modelli, barra rapida per modificare, duplicare, riordinare ed eliminare elementi. Compatibile con la struttura offline esistente; nessun backend o API esterna.
+Editor grafico PWA locale, con modelli, testi, foto, livelli, esportazioni e backup dei progetti.
 
-La logica editor rimane nel pacchetto locale `payload/`, caricato da `loader.js`. Gli aggiornamenti visuali sono isolati in `polish.css` e `polish.js`. Il service worker versione 1.3 salva anche questi file, senza cancellare i progetti IndexedDB durante l'aggiornamento.
+- iPhone e Android: 5 schede touch, Progetti dalla testata, pannelli inferiori, zoom con comandi grandi, gestione di safe area e tastiera virtuale.
+- Tablet: area grafica ampia e pannelli richiamabili.
+- Windows e desktop: pannelli laterali, comandi completi e scorciatoie da tastiera.
+- Nessuna API remota, nessun login, nessun limite artificiale sulle esportazioni.
+- Apri https://webinsolito.github.io/webinsolito/designbox/ in Safari/Chrome e aggiungi alla schermata Home. Apri una volta online per completare la cache offline.
+- I progetti sono locali al browser: esporta regolarmente il backup .designbox da Progetti; i dati non si sincronizzano fra dispositivi.
 
-**Uso:** aprire `https://webinsolito.github.io/webinsolito/designbox/` in Safari e scegliere Aggiungi alla schermata Home. Dopo il primo caricamento completo i file sono disponibili offline. Esportare periodicamente un backup `.designbox` dalla sezione Progetti.
+Versione cache: `designbox-static-v1.4.0`. Test browser reale su iOS/Android da completare separatamente dai controlli desktop simulati.
