@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-24T18:21:34.069648+00:00",
-  "count": 77,
+  "generated_at": "2026-10-25T11:58:22.789525+00:00",
+  "count": 73,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 12,
-      "errors": 1
+      "events": 8,
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
@@ -440,21 +440,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/festival-rinascimento-culturale.jpg"
     },
     {
-      "id": "auto-d368df3d5a1915",
-      "title": "Convegno Giuseppe Zanardelli",
-      "date": "2026-10-23",
-      "end_date": "2026-10-23",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/fbm-2026-mini-referendum-camp-2514542-2514720-2519907",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-convegno-zanardelli-23-24-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-5387812fb73838",
       "title": "Valle dei Segni Wine Trail 2026",
       "date": "2026-10-23",
@@ -470,36 +455,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Valle-dei-Segni-Wine-Trail-2.webp"
     },
     {
-      "id": "auto-8f1a3f9f20151d",
-      "title": "Biblioteche sociali. Uncinetto",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612-2519922",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/biblioteche-2026-uncinetto-torrelunga-1024x650.jpg"
-    },
-    {
-      "id": "auto-58d4a297699044",
-      "title": "Fall Fest 2026",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/fall-fest-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fall-fest-24-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-1c2872b56cf779",
       "title": "Fondazione Dolci. Domenico Lusetti",
       "date": "2026-10-24",
@@ -513,21 +468,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fondazione-dolci-lusetti-24-ottobre-26-10-gennaio-27-1024x650.jpg"
-    },
-    {
-      "id": "auto-cb813c561d2636",
-      "title": "Giornata Malato Reumatico 2026",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/giornata-malato-reumatico-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/screening-reumatologico-2026-24-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-4880319f0e87c9",
@@ -560,8 +500,8 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Haeretica-Borno.jpg"
     },
     {
-      "id": "auto-9bfee937173cfb",
-      "title": "Marcia per l'accoglienza 2026",
+      "id": "auto-19d32d628cff06",
+      "title": "Meccaniche della Meraviglia 2026",
       "date": "2026-10-24",
       "end_date": "2026-10-24",
       "time": "",
@@ -569,25 +509,10 @@
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/marcia-per-l-accoglienza-2026",
+      "url": "https://comune.brescia.it/it/events/meccaniche-della-meraviglia-2026",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/marcia-per-l-accoglienza-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-78a8937af3662e",
-      "title": "Musica: fuoco dell'anima",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/musica-fuoco-dell-anima",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/banda-isidoro-capitanio-fuoco-nell-anima-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/meccaniche-della-meraviglia-2026-1024x650.jpg"
     },
     {
       "id": "auto-73bccc47f0f75c",
@@ -603,66 +528,6 @@
       "note": "Un intero week-end dedicato alle eccellenze gastronomiche di uno dei Borghi più Belli d'Italia: a Bagolino arriva la Sagra del Bagòss!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/B-Bagoss5_web.jpeg"
-    },
-    {
-      "id": "auto-64dbe035ef6053",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748-2519751-2519892-2519929",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-c8b13482188464",
-      "title": "Stagione concertistica GIA 2026",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-concertistica-gia-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/stagione-gia-2026-24-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-64b5f8b0b9cfdd",
-      "title": "Us da le as 2026. 2° atto",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2519921",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/us-da-le-as-2026-2-atto-24-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-a299e95ec389a3",
-      "title": "Vittoria in movimento",
-      "date": "2026-10-24",
-      "end_date": "2026-10-24",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/vittoria-in-movimento-2519920",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/vittoria-in-movimento-ri-generiamoci-mix-1024x650.jpg"
     },
     {
       "id": "auto-5f424d23ee5181",
@@ -695,6 +560,36 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/camminanotte-villa-carcina.jpg"
     },
     {
+      "id": "auto-66805e1317d4a3",
+      "title": "Centopercento Teatro",
+      "date": "2026-10-25",
+      "end_date": "2026-10-25",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/centopercento-teatro-2519961",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/centopercento-teatro-26-27-25-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-dc878a6eafde41",
+      "title": "CNE 2026. International animation day 2026",
+      "date": "2026-10-25",
+      "end_date": "2026-10-25",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519802-2519987",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-international-animation-day-2026-25-ottobre-1024x650.jpg"
+    },
+    {
       "id": "auto-83351fe914d134",
       "title": "Discesa in gommone sul fiume Oglio 2026",
       "date": "2026-10-25",
@@ -725,6 +620,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
     },
     {
+      "id": "auto-7d56569a950fc1",
+      "title": "Rassegna Ligasacchi 2026",
+      "date": "2026-10-25",
+      "end_date": "2026-10-25",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/rassegna-ligasacchi-2026",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/banda-isidoro-capitanio-rassegna-ligasacchi-1024x650.jpg"
+    },
+    {
       "id": "auto-adc2826d09fbf0",
       "title": "Rassegna Organistica Internazionale Città di Brescia 2026",
       "date": "2026-10-25",
@@ -738,6 +648,36 @@
       "note": "Musica sacra e suggestioni in luoghi di culto della città: ogni anno arriva la Rassegna Organistica Internazionale Città di Brescia!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-Organistica-Internazionale-Citta-di-Brescia.jpg"
+    },
+    {
+      "id": "auto-2b216801810f7c",
+      "title": "Stagione Teatro Grande 2026",
+      "date": "2026-10-25",
+      "end_date": "2026-10-25",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2519702-2519800-2519989",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/teatro-grande-stagione-2026-25-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-6544efd9df22e4",
+      "title": "Us da le as 2026. 2° atto",
+      "date": "2026-10-25",
+      "end_date": "2026-10-25",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2519964",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-da-le-as-2026-2-atto-25-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-3b4eba7d73535a",
