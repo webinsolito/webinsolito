@@ -7,6 +7,8 @@
   const bytes=Uint8Array.from(atob(base64),c=>c.charCodeAt(0));
   const source=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
   const code=JSON.parse(source);
+  /* Match the deployed packed assets when confirming offline readiness. */
+  code.js=code.js.replace("caches.open('designbox-static-v1.1.0')","caches.open('designbox-static-v1.3.0')").replace("cache.match('./app.js')","cache.match('./payload/p5.txt')");
   const style=document.createElement('style');style.textContent=code.css;document.head.appendChild(style);
   document.getElementById('app').style.visibility='visible';
   const script=document.createElement('script');script.textContent=code.js;document.body.appendChild(script);
