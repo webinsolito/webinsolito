@@ -1,5 +1,7 @@
-# DesignBox 1.2 – PWA offline
+# DesignBox 1.3 — PWA offline
 
-Editor grafico locale con salvataggio, modelli, importazione ed esportazioni. Nessun backend o API esterna. Dopo prima installazione la cache offline conserva tutti i file necessari.
+Grafica più curata, ricerca e filtri modelli, barra rapida per modificare, duplicare, riordinare ed eliminare elementi. Compatibile con la struttura offline esistente; nessun backend o API esterna.
 
-La cartella `payload/` contiene il pacchetto compresso di JavaScript e CSS della release 1.1; `loader.js` lo carica localmente con `DecompressionStream`. Le sorgenti originali non compresse sono nel pacchetto ZIP di rilascio.
+La logica editor rimane nel pacchetto locale `payload/`, caricato da `loader.js`. Gli aggiornamenti visuali sono isolati in `polish.css` e `polish.js`. Il service worker versione 1.3 salva anche questi file, senza cancellare i progetti IndexedDB durante l'aggiornamento.
+
+**Uso:** aprire `https://webinsolito.github.io/webinsolito/designbox/` in Safari e scegliere Aggiungi alla schermata Home. Dopo il primo caricamento completo i file sono disponibili offline. Esportare periodicamente un backup `.designbox` dalla sezione Progetti.
