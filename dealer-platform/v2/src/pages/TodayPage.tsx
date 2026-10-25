@@ -8,6 +8,7 @@ import {activeReservationAlerts} from '../domain/reservationDeadlines'
 import {buildGarageReviewSummary} from '../domain/garageReviewSummary'
 import {garageReviewPriority} from '../domain/garageReviewPriority'
 import {buildTodayReservationCallbacks,buildUpcomingReservationCallbacks,completedReservationCallbackCount,overdueCallbackCounts,overdueCallbackLabel} from '../domain/todayReservationCallbacks'
+import {dedupeTodayPriorities,remainingTodayPriorities,selectTodayPrimaryAction} from '../domain/todayNextAction'
 import {fetchCollectionFollowups,type InvoiceCollectionFollowup} from '../lib/collectionsApi'
 import {TodayUpcomingReservationPanel} from '../components/TodayUpcomingReservationPanel'
 import type {InvoiceDetail} from '../lib/invoiceApi'
@@ -54,32 +55,53 @@ export function TodayPage({data,dealerId,financeVisible=false,onVehicle,onSale,o
   due:task.actionDate
  })):[],[collectionSchedule])
  const allPriorities=useMemo(()=>[...priorities,...collectionPriorities].sort((a,b)=>b.severity-a.severity||String(a.due||'').localeCompare(String(b.due||''))).slice(0,30),[priorities,collectionPriorities])
+ const overdueCallbacks=useMemo(()=>buildTodayReservationCallbacks(data,nowIso),[data,nowIso])
+ const upcomingReservations=useMemo(()=>buildUpcomingReservationCallbacks(data,nowIso),[data,nowIso])
+ const operationalPriorities=useMemo(
+  ()=>dedupeTodayPriorities(allPriorities,[...overdueCallbacks,...upcomingReservations]),
+  [allPriorities,overdueCallbacks,upcomingReservations]
+ )
+ const primaryAction=useMemo(
+  ()=>selectTodayPrimaryAction(operationalPriorities,overdueCallbacks,upcomingReservations),
+  [operationalPriorities,overdueCallbacks,upcomingReservations]
+ )
  const stock=data.vehicles.filter(v=>!['CONSEGNATA','VENDUTA','ANNULLATA'].includes(v.status||''))
- const customerActions=priorities.filter(p=>p.kind==='CUSTOMER').length
- const garageActions=priorities.filter(p=>['PRICE','PHOTO','WORK','AGE'].includes(p.kind)).length
- const deliveryActions=priorities.filter(p=>p.kind==='DELIVERY').length
+ const customerActions=operationalPriorities.filter(p=>p.kind==='CUSTOMER').length
+ const garageActions=operationalPriorities.filter(p=>['PRICE','PHOTO','WORK','AGE'].includes(p.kind)).length
+ const deliveryActions=operationalPriorities.filter(p=>p.kind==='DELIVERY').length
  const act=(p:PriorityItem)=>{if(p.kind==='COLLECTION'){onCollections();return}if(p.kind==='DELIVERY'&&p.saleId){onSale(p.saleId);return}if(p.kind==='CUSTOMER'){onView('clients');return}if(p.kind==='CALENDAR'){onView('calendar');return}if(p.vehicleId){onVehicle(p.vehicleId);return}if(p.customerId)onView('clients')}
  const actionLabel=(p?:PriorityItem)=>p?.kind==='COLLECTION'?'Apri scadenziario':p?.kind==='DELIVERY'&&p.saleId?'Apri vendita 360°':p?.kind==='CUSTOMER'?'Apri clienti':p?.kind==='CALENDAR'?'Apri calendario':p?.vehicleId?'Apri auto':'Apri'
  const collectionCount=collectionsError?'—':followups===null?'…':String(collectionSchedule?.todayCount||0)
  const deadlineSummary=useMemo(()=>buildDeadlineSummary(data,localDay(),collectionSchedule?.tasks||[]),[data,collectionSchedule])
  const dueNow=deadlineSummary.overdue+deadlineSummary.today
  const urgentReservations=activeReservationAlerts(data,nowIso)
- const overdueCallbacks=useMemo(()=>buildTodayReservationCallbacks(data,nowIso),[data,nowIso])
- const upcomingReservations=useMemo(()=>buildUpcomingReservationCallbacks(data,nowIso),[data,nowIso])
  const upcomingCount=overdueCallbackCounts(upcomingReservations)
  const bookingCallbackCounts=overdueCallbackCounts(overdueCallbacks)
  const completedOverdueCount=completedReservationCallbackCount(overdueCallbacks)
  const activeOverdueCallbacks=overdueCallbacks.filter(row=>row.state!=='COMPLETED')
  const completedOverdueCallbacks=overdueCallbacks.filter(row=>row.state==='COMPLETED')
- const firstBookingToDo=activeOverdueCallbacks.find(row=>row.state!=='SCHEDULED')
  const bookingCallbackRows=showAllBookingCallbacks?activeOverdueCallbacks:activeOverdueCallbacks.slice(0,5)
- // The primary action has its own shortcut: avoid rendering it twice in the work queue.
- const remainingPriorities=allPriorities.slice(1,13)
+ const remainingPriorities=useMemo(()=>remainingTodayPriorities(operationalPriorities,primaryAction,12),[operationalPriorities,primaryAction])
+ const primaryTitle=primaryAction.source==='PRIORITY'?primaryAction.priority.title:
+  primaryAction.source==='OVERDUE_RESERVATION'?'Richiamare '+primaryAction.callback.customerName:
+  primaryAction.source==='UPCOMING_RESERVATION'?'Confermare '+primaryAction.callback.customerName:'Niente di urgente 🎉'
+ const primaryDetail=primaryAction.source==='PRIORITY'?primaryAction.priority.detail:
+  primaryAction.source==='OVERDUE_RESERVATION'?'Prenotazione '+primaryAction.callback.contractNumber+' scaduta · registra il ricontatto nella vendita.':
+  primaryAction.source==='UPCOMING_RESERVATION'?'Prenotazione '+primaryAction.callback.contractNumber+' in scadenza · contatta il cliente prima del termine.':
+  'Puoi passare ai clienti o al Garage senza emergenze aperte.'
+ const primaryCta=primaryAction.source==='PRIORITY'?actionLabel(primaryAction.priority):
+  primaryAction.source==='OVERDUE_RESERVATION'?'Apri vendita 360°':
+  primaryAction.source==='UPCOMING_RESERVATION'?'Apri prenotazione':''
+ const runPrimary=()=>{
+  if(primaryAction.source==='PRIORITY'){act(primaryAction.priority);return}
+  if(primaryAction.source==='OVERDUE_RESERVATION'||primaryAction.source==='UPCOMING_RESERVATION')onSale(primaryAction.callback.contractId)
+ }
+ const operationalCount=operationalPriorities.length+bookingCallbackCounts.toDo+upcomingCount.toDo
  const callbackDateTime=(value:string)=>new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value))
 
- return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{allPriorities.length?allPriorities.length+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''):firstBookingToDo?'Prenotazioni scadute da richiamare.':upcomingCount.toDo?'Prenotazioni in scadenza da contattare prima del termine.':'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
+ return <><div className="page-heading"><div><p className="eyebrow">COMANDO OPERATIVO</p><h1>Oggi</h1><p>{operationalCount?operationalCount+' azioni concrete da gestire.'+(bookingCallbackCounts.toDo?' · '+bookingCallbackCounts.toDo+' prenotazioni scadute da verificare.':''): 'Nessun blocco urgente. Puoi lavorare sul commerciale.'}</p></div><div className="mini-stat"><span>AUTO ATTIVE</span><b>{stock.length}</b></div></div>
  <div className={'today-kpis '+(financeVisible?'finance':'')}><button onClick={()=>onView('clients')}><Users/><span><b>{customerActions}</b><small>Clienti da ricontattare</small></span></button><button onClick={onDeadlines} data-testid={urgentReservations.length>0?'today-reservation-alert':undefined} aria-label="Apri centro scadenze"><CalendarClock/><span><b>{dueNow}</b><small>Centro scadenze</small>{urgentReservations.length>0&&<small className="today-kpi-reservation-count">{urgentReservations.length} prenotazion{urgentReservations.length===1?'e':'i'} da verificare</small>}</span></button><button onClick={()=>onView('garage')}><CarFront/><span><b>{garageActions}</b><small>Azioni sul Garage</small></span></button><button onClick={()=>onView('sales')} aria-label="Apri consegne da gestire"><PackageCheck/><span><b>{deliveryActions}</b><small>Consegne da gestire</small></span></button>{financeVisible&&<button onClick={onCollections} aria-label="Apri incassi da sollecitare"><Euro/><span><b>{collectionCount}</b><small>{collectionsError?'Scadenziario non disponibile':'Incassi da sollecitare'}</small></span></button>}</div>
- <section className="focus-card today-primary-action" data-testid="today-primary-action"><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{allPriorities[0]?.title||(firstBookingToDo?'Richiamare '+firstBookingToDo.customerName :upcomingCount.toDo?'Prenotazioni da confermare prima della scadenza':'Niente di urgente 🎉')}</h2><p>{allPriorities[0]?.detail||(firstBookingToDo?'Prenotazione '+firstBookingToDo.contractNumber+' scaduta · registra il ricontatto nella vendita.' :upcomingCount.toDo?'Apri le prenotazioni in scadenza e programma il contatto prima del termine.':'Puoi passare ai clienti o al Garage senza emergenze aperte.')}</p></div>{allPriorities[0]?<button className="focus-cta" onClick={()=>act(allPriorities[0])}>{actionLabel(allPriorities[0])} <ChevronRight/></button>:firstBookingToDo?<button className="focus-cta" onClick={()=>onSale(firstBookingToDo.contractId)}>Apri vendita 360° <ChevronRight/></button>:upcomingCount.toDo?<button className="focus-cta" onClick={()=>onSale(upcomingReservations.find(row=>row.state!=='SCHEDULED')!.contractId)}>Apri prenotazione <ChevronRight/></button>:null}</section>
+ <section className="focus-card today-primary-action" data-testid="today-primary-action" data-primary-source={primaryAction.source}><div><p className="eyebrow">PRIMA COSA DA FARE</p><h2>{primaryTitle}</h2><p>{primaryDetail}</p></div>{primaryAction.source!=='NONE'&&<button className="focus-cta" onClick={runPrimary}>{primaryCta} <ChevronRight/></button>}</section>
  {garageReview.total>0&&<section className="today-garage-review-panel" data-testid="today-garage-review-panel" aria-label="Auto con disponibilità da verificare">
   <button type="button" className="today-garage-review" data-testid="today-garage-review" onClick={onOpenGarageReview}
    aria-label={`Apri Garage con ${garageReview.total} auto da verificare`}>
@@ -134,5 +156,5 @@ export function TodayPage({data,dealerId,financeVisible=false,onVehicle,onSale,o
  </section>}
  <TodayUpcomingReservationPanel items={upcomingReservations} onSale={onSale}/>
 
- <section className="section" data-testid="today-other-priorities"><div className="section-title"><div><p className="eyebrow">ALTRE AZIONI</p><h2>Il resto della giornata</h2></div></div><div className="priority-list">{remainingPriorities.map(p=>{const Icon=icon[p.kind];return <button key={p.id} onClick={()=>act(p)} className={'priority-row severity-'+p.severity}><span className="priority-icon"><Icon/></span><span><b>{p.title}</b><small>{p.detail}</small></span><ChevronRight/></button>})}{!remainingPriorities.length&&<div className="empty-state">{allPriorities.length?'La prima attività è già evidenziata sopra.':'Nessuna altra azione urgente.'}</div>}</div></section></>
+ <section className="section" data-testid="today-other-priorities"><div className="section-title"><div><p className="eyebrow">ALTRE AZIONI</p><h2>Il resto della giornata</h2></div></div><div className="priority-list">{remainingPriorities.map(p=>{const Icon=icon[p.kind];return <button key={p.id} onClick={()=>act(p)} className={'priority-row severity-'+p.severity}><span className="priority-icon"><Icon/></span><span><b>{p.title}</b><small>{p.detail}</small></span><ChevronRight/></button>})}{!remainingPriorities.length&&<div className="empty-state">{primaryAction.source==='PRIORITY'&&operationalPriorities.length?'La prima attività è già evidenziata sopra.':'Nessuna altra azione urgente.'}</div>}</div></section></>
 }
