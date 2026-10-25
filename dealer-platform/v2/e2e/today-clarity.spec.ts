@@ -8,7 +8,7 @@ const CUSTOMER='33333333-3333-3333-3333-333333333333'
 const SALE='44444444-4444-4444-4444-444444444444'
 const send=(route:any,data:unknown)=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})
 
-async function boot(page:Page,{withPhoto=false,reservation=false,price=0}:{withPhoto?:boolean;reservation?:boolean;price?:number}={}){
+async function boot(page:Page,{withPhoto=false,reservation=false,reservationExpired=false,price=0}:{withPhoto?:boolean;reservation?:boolean;reservationExpired?:boolean;price?:number}={}){
  const state={financeRequests:0,vehicleWrites:0,contractWrites:0}
  const vehicles=[{id:CAR,dealer_id:DEALER,brand:'Fiat',model:'500',status:'IN_VENDITA',asking_price:price,plate:'AA111AA'}]
  if(reservation)vehicles.push({id:RESERVED,dealer_id:DEALER,brand:'BMW',model:'X1',status:'PRENOTATA',asking_price:19000,plate:'BB222BB'})
@@ -16,7 +16,7 @@ async function boot(page:Page,{withPhoto=false,reservation=false,price=0}:{withP
  const contracts=reservation?[{
   id:SALE,dealer_id:DEALER,vehicle_id:RESERVED,customer_id:CUSTOMER,contract_number:'V-URGENT',
   contract_date:new Date().toISOString().slice(0,10),template_code:'VENDITA',
-  status:'DRAFT',sale_stage:'AGREED',reservation_expires_at:new Date(Date.now()+3600000).toISOString(),
+  status:'DRAFT',sale_stage:'AGREED',reservation_expires_at:new Date(Date.now()+(reservationExpired?-3600000:3600000)).toISOString(),
   price:19000,deposit:0
  }]:[]
  await page.addInitScript(({dealer})=>localStorage.setItem('malu23-v2-session',JSON.stringify({
@@ -57,6 +57,18 @@ test('Mod54: la prima attività è in evidenza e non ricompare nella coda',async
  expect(state.financeRequests).toBe(0)
  expect(state.vehicleWrites).toBe(0)
  expect(state.contractWrites).toBe(0)
+})
+
+test('V57: una prenotazione scaduta diventa la sola azione primaria senza nascondere il lavoro ordinario',async({page})=>{
+ await boot(page,{reservation:true,reservationExpired:true})
+ const hero=page.getByTestId('today-primary-action')
+ await expect(hero).toHaveAttribute('data-primary-source','OVERDUE_RESERVATION')
+ await expect(hero).toContainText('Richiamare Mario Rossi')
+ await expect(hero.getByRole('button',{name:'Apri vendita 360°'})).toBeVisible()
+ const queue=page.getByTestId('today-other-priorities')
+ await expect(queue).toContainText('Fiat 500: manca il prezzo')
+ await expect(queue).toContainText('Fiat 500: mancano le foto')
+ await expect(queue.locator('.priority-row')).toHaveCount(2)
 })
 
 test('Mod54: con una sola priorità non mostra un secondo avviso fittizio',async({page})=>{
