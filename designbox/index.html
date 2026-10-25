@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5"/>
   <meta name="theme-color" content="#15171b"/>
-  <meta name="description" content="DesignBox: crea grafiche, volantini, etichette e post. Funziona anche senza Internet."/>
+  <meta name="description" content="DesignBox: personalizza adesivi, etichette, confezioni e oggetti, anche offline."/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="apple-mobile-web-app-title" content="DesignBox"/>
@@ -14,7 +14,18 @@
   <style>body{background:#f4f4f6;color:#25232b;font-family:system-ui}#app{visibility:hidden}</style>
   <link rel="stylesheet" href="./polish.css"/>
   <link rel="stylesheet" href="./adaptive.css"/>
-  <title>DesignBox — Crea e modifica grafiche offline</title>
+  <style>
+/* DesignBox Object Studio v1.5 — product-first workflow, not a general design suite */
+.db-object-trigger{appearance:none;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #c7c3da;background:#f5f2ff;border-radius:12px;color:#5441ab;padding:11px 14px;min-height:43px;font:700 13px/1.1 system-ui;cursor:pointer;white-space:nowrap}.db-object-trigger:hover{background:#ece7ff}.db-object-trigger>span:first-child{font-size:19px}
+.db-start-guide{padding:0 2px 8px}.db-guide-label{font:750 10px/1.4 system-ui;letter-spacing:.14em;color:#7564bc;margin:0 0 7px}.db-start-guide h3{margin:0 0 7px;font-size:22px;line-height:1.15;letter-spacing:-.04em;color:#252130}.db-start-guide>p:not(.db-guide-label){font-size:13px;color:#626079;line-height:1.55;margin:0 0 16px}.db-guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.db-guide-grid button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:5px;padding:14px 12px;min-height:114px;background:#fff;border:1px solid #e8e4f0;border-radius:16px;box-shadow:0 5px 18px #30244c07;cursor:pointer}.db-guide-grid button:hover,.db-guide-grid button:focus-visible{border-color:#8a71e4;outline:none;background:#fcfaff}.db-guide-grid button b{display:flex;width:36px;height:34px;align-items:center;justify-content:center;border-radius:10px;background:#f0eaff;color:#755ad0;font-size:22px;font-weight:600}.db-guide-grid button strong{font-size:14px;color:#252230}.db-guide-grid button small{font-size:11px;line-height:1.3;color:#777180}.db-guide-hint{margin:14px 0 8px!important;font-size:11px!important}.db-advanced-templates{margin-top:12px;border-top:1px solid #e5e2ea;padding-top:10px}.db-advanced-templates>summary{cursor:pointer;font-size:13px;padding:12px 4px;font-weight:650;color:#585267}.db-advanced-templates summary span{font-size:10px;background:#eeeaf5;color:#645b74;border-radius:20px;padding:4px 7px;margin-left:5px}.db-existing-templates{padding-top:8px}
+.db-object-overlay[hidden]{display:none!important}.db-object-overlay{position:fixed;inset:0;z-index:9901;background:rgba(23,20,35,.65);display:flex;align-items:center;justify-content:center;padding:24px;padding-bottom:max(24px,env(safe-area-inset-bottom));backdrop-filter:blur(9px)}.db-object-dialog{background:#fff;color:#272333;border-radius:25px;box-shadow:0 32px 90px #0e0a23a3;width:min(100%,1050px);max-height:calc(100dvh - 48px);display:flex;flex-direction:column;overflow:hidden}.db-object-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:24px 28px 13px}.db-object-top small{font-size:10px;font-weight:800;letter-spacing:.15em;color:#725cc5}.db-object-top h2{margin:5px 0 5px;font-weight:800;font-size:27px;letter-spacing:-.04em;line-height:1.15}.db-object-top p{color:#68637b;font-size:13px;line-height:1.5;margin:0}.db-object-close{width:43px;height:43px;flex-shrink:0;border-radius:13px;border:1px solid #e6e3eb;background:#f8f7fa;color:#494151;cursor:pointer;font-size:19px}.db-object-body{min-height:0;display:grid;grid-template-columns:235px 1fr;gap:16px;padding:12px 28px 16px}.db-object-catalog{display:grid;align-content:start;gap:8px}.db-object-catalog button{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #e7e2ec;border-radius:13px;background:#fff;padding:12px;cursor:pointer;min-height:68px}.db-object-catalog button.is-selected{background:#f2eeff;border-color:#8b6bf1;box-shadow:inset 0 0 0 1px #8b6bf1}.db-object-symbol{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex-shrink:0;border-radius:10px;background:#f1edf7;color:#6c56ba;font-size:21px}.db-object-catalog strong{display:block;font-size:13px}.db-object-catalog small{display:block;font-size:11px;color:#7e788a;margin-top:4px}.db-object-visual{background:#f7f8fa;border-radius:17px;min-width:0;padding:13px 14px;display:flex;flex-direction:column;align-items:center}.db-object-preview-head{align-self:stretch;display:flex;gap:8px;align-items:center;font-size:10px;font-weight:800;letter-spacing:.06em;color:#687283}.db-live-dot{display:inline-block;width:8px;height:8px;background:#24ad78;border-radius:50%}.db-object-preview-head span:last-child{margin-left:auto;color:#5f48bd;font-size:11px;text-transform:uppercase}.db-object-visual canvas{max-width:100%;min-height:0;height:auto;object-fit:contain;aspect-ratio:720/560}.db-object-visual p{font-size:11px;color:#7c7689;text-align:center;margin:0 0 3px;line-height:1.4}.db-object-actions{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid #eeeaf1}.db-object-actions button{border:1px solid #e5dff0;border-radius:12px;background:#fff;color:#574d67;padding:12px 15px;min-height:44px;font-size:12px;font-weight:750;cursor:pointer}.db-object-actions button:nth-child(2){background:#292330;color:#fff;border-color:#292330}.db-object-actions button:last-child{background:#7053db;color:#fff;border-color:#7053db}.db-object-open{overflow:hidden}
+@media(max-width:940px){.db-object-trigger{padding:10px;min-height:42px}.db-object-trigger span:last-child{display:none}.db-object-trigger>span:first-child{font-size:22px}}
+@media(max-width:700px){.db-object-trigger{min-width:43px;margin-right:2px}.db-object-overlay{align-items:flex-end;padding:0}.db-object-dialog{width:100%;height:auto;max-height:calc(100dvh - env(safe-area-inset-top) - 9px);border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom)}.db-object-top{padding:18px 17px 8px}.db-object-top h2{font-size:22px}.db-object-top p{font-size:11px}.db-object-body{overflow-y:auto;padding:8px 15px 12px;display:flex;flex-direction:column;gap:10px}.db-object-catalog{display:flex;overflow-x:auto;flex-shrink:0;gap:7px;scrollbar-width:none;padding-bottom:3px}.db-object-catalog::-webkit-scrollbar{display:none}.db-object-catalog button{flex:0 0 auto;min-height:43px;padding:7px 10px;gap:7px}.db-object-catalog small{display:none}.db-object-catalog .db-object-symbol{width:24px;height:26px;font-size:15px;border-radius:6px}.db-object-catalog strong{font-size:12px}.db-object-visual{padding:9px 10px}.db-object-visual canvas{width:min(100%,420px);max-height:min(38dvh,310px)}.db-object-visual p{font-size:10px}.db-object-preview-head{font-size:9px}.db-object-actions{padding:11px 14px 9px;display:grid;grid-template-columns:1fr 1fr}.db-object-actions button{font-size:11px;min-height:45px;padding:9px}.db-object-actions button:last-child{grid-column:span 2}.db-guide-grid button{min-height:110px}}
+@media(max-width:380px){.db-object-top h2{font-size:19px}.db-object-top p{display:none}.db-object-visual canvas{max-height:31dvh}.db-object-actions{padding-top:7px}.db-object-actions button{min-height:39px}}
+@media(prefers-reduced-motion:reduce){.db-object-overlay{backdrop-filter:none}}
+
+</style>
+  <title>DesignBox — Dall’idea all’oggetto</title>
 </head>
 <body>
   <div id="app">
@@ -80,5 +91,98 @@
   <script src="./loader.js" defer></script>
   <script src="./polish.js" defer></script>
   <script src="./adaptive.js" defer></script>
+  <script>
+/* DesignBox Object Studio v1.5 — mockups locali, nessuna API o telemetria. */
+(()=>{'use strict';
+const kinds=[
+ {id:'sticker',label:'Adesivo',hint:'Fustellato, pronto da vedere',size:'Logo quadrato',glyph:'✦'},
+ {id:'label',label:'Etichetta',hint:'Su flaconi e prodotti',size:'Etichetta',glyph:'▤'},
+ {id:'box',label:'Confezione',hint:'Scatole e packaging',size:'Etichetta',glyph:'⬡'},
+ {id:'card',label:'Biglietto',hint:'Stampa e presentazione',size:'Biglietto da visita',glyph:'▣'},
+ {id:'bag',label:'Shopper',hint:'Borse e merchandising',size:'Logo quadrato',glyph:'◡'}
+];
+let chosen='sticker',open=false,updateTimer=null,enhancing=false,loadedImages=new Map(),lastRendering=false;
+try{const previous=localStorage.getItem('designbox-object-type');if(kinds.some(k=>k.id===previous))chosen=previous}catch{}
+const byId=id=>document.getElementById(id);
+const bySel=s=>document.querySelector(s);
+const make=(tag,cls,html='')=>{const node=document.createElement(tag);if(cls)node.className=cls;if(html)node.innerHTML=html;return node};
+const htmlEscape=str=>String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rect=(ctx,x,y,w,h,r=0)=>{ctx.beginPath();const rr=Math.max(0,Math.min(r,Math.min(w,h)/2));ctx.roundRect(x,y,w,h,rr)};
+const current=()=>kinds.find(k=>k.id===chosen)||kinds[0];
+const waitCore=()=>window.__designboxDebug?.getDoc;
+function selected(id){chosen=id;try{localStorage.setItem('designbox-object-type',id)}catch{};
+ document.querySelectorAll('[data-db-object]').forEach(el=>{const on=el.dataset.dbObject===id;el.classList.toggle('is-selected',on);if(el.getAttribute('role')==='radio')el.setAttribute('aria-checked',String(on))});
+ const label=byId('db-object-type');if(label)label.textContent=current().label;
+ if(open)render();
+}
+function buildModal(){const node=make('div','db-object-overlay');node.id='db-object-overlay';node.hidden=true;
+ node.innerHTML=`<div class="db-object-dialog" role="dialog" aria-modal="true" aria-labelledby="db-object-title">
+ <div class="db-object-top"><div><small>DESIGNBOX / PRODUCT STUDIO</small><h2 id="db-object-title">Dalla grafica all'oggetto</h2><p>Guarda il tuo progetto applicato a un prodotto, direttamente sul dispositivo.</p></div><button type="button" id="db-object-close" aria-label="Chiudi anteprima" class="db-object-close">✕</button></div>
+ <div class="db-object-body"><div class="db-object-catalog" role="radiogroup" aria-label="Tipo di oggetto">${kinds.map(k=>`<button type="button" data-db-object="${k.id}" role="radio" aria-checked="false"><span class="db-object-symbol">${k.glyph}</span><span><strong>${k.label}</strong><small>${k.hint}</small></span></button>`).join('')}</div>
+ <div class="db-object-visual"><div class="db-object-preview-head"><span class="db-live-dot"></span> ANTEPRIMA SUL PRODOTTO <span id="db-object-type"></span></div><canvas id="db-product-canvas" width="720" height="560" role="img" aria-label="Simulazione grafica del prodotto con il tuo design"></canvas><p>Simulazione grafica orientativa, non modello 3D o tracciato di taglio per la stampa.</p></div></div>
+ <div class="db-object-actions"><button type="button" id="db-object-resize">Adatta il formato</button><button type="button" id="db-object-download">Salva anteprima PNG</button><button type="button" id="db-object-return">Continua a modificare</button></div>
+ </div>`;
+ document.body.appendChild(node);
+ node.addEventListener('click',e=>{if(e.target===node)closeModal()});
+ byId('db-object-close').onclick=closeModal;byId('db-object-return').onclick=closeModal;
+ byId('db-object-download').onclick=()=>{render();const canvas=byId('db-product-canvas');try{canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.download='DesignBox-'+chosen+'-anteprima.png';a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000)},'image/png')}catch(e){console.warn(e);alert('Esportazione anteprima non disponibile su questo dispositivo.')}};
+ byId('db-object-resize').onclick=()=>{closeModal();const sizeBtn=byId('sizeBtn');sizeBtn?.click();setTimeout(()=>{const opt=[...document.querySelectorAll('[data-popup-action]')].find(x=>x.dataset.popupAction==='size:'+current().size);if(opt)opt.click();else sizeBtn?.click()},80)};
+ node.querySelectorAll('[data-db-object]').forEach(b=>b.addEventListener('click',()=>selected(b.dataset.dbObject)));
+ selected(chosen);
+}
+function showModal(){const node=byId('db-object-overlay');if(!node)return;open=true;node.hidden=false;document.body.classList.add('db-object-open');selected(chosen);render();clearInterval(updateTimer);updateTimer=setInterval(()=>{if(open&&!document.hidden)render()},1800);byId('db-object-close').focus()}
+function closeModal(){open=false;clearInterval(updateTimer);byId('db-object-overlay').hidden=true;document.body.classList.remove('db-object-open')}
+function gradient(ctx,c1,c2,y0=60,y1=540){let g=ctx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,c1);g.addColorStop(1,c2);return g}
+function fitImage(ctx,img,x,y,w,h,mode='cover'){if(!img)return;const r=mode==='cover'?Math.max(w/img.width,h/img.height):Math.min(w/img.width,h/img.height);let iw=img.width*r,ih=img.height*r;ctx.drawImage(img,x+(w-iw)/2,y+(h-ih)/2,iw,ih)}
+function getImage(src){if(!src)return null;let obj=loadedImages.get(src);if(obj)return obj.complete&&obj.naturalWidth?obj:null;obj=new Image();obj.onload=()=>{if(open)render()};obj.src=src;loadedImages.set(src,obj);return obj.complete&&obj.naturalWidth?obj:null}
+function texture(){const data=waitCore()?window.__designboxDebug.getDoc():null;
+ const canvas=document.createElement('canvas');canvas.width=620;canvas.height=Math.max(220,Math.min(800,Math.round(620*((data?.height||700)/(data?.width||1000)))));const c=canvas.getContext('2d');c.fillStyle=data?.bg||'#f8fafc';c.fillRect(0,0,canvas.width,canvas.height);if(!data)return canvas;
+ c.save();c.scale(canvas.width/data.width,canvas.height/data.height);
+ for(const el of data.layers||[]){try{c.save();c.globalAlpha=Number(el.opacity??1);c.translate(el.x+el.w/2,el.y+el.h/2);c.rotate((Number(el.rotation)||0)*Math.PI/180);c.translate(-el.w/2,-el.h/2);
+ if(el.kind==='rect'){rect(c,0,0,el.w,el.h,Number(el.radius)||0);c.fillStyle=el.color;c.fill()}
+ if(el.kind==='circle'){c.beginPath();c.ellipse(el.w/2,el.h/2,el.w/2,el.h/2,0,0,Math.PI*2);c.fillStyle=el.color;c.fill()}
+ if(el.kind==='image'){const img=getImage(el.src);if(img){c.save();rect(c,0,0,el.w,el.h,Number(el.radius)||0);c.clip();fitImage(c,img,0,0,el.w,el.h);c.restore()}}
+ if(el.kind==='text'){const fontSize=Number(el.size)||30;c.font=`${Number(el.weight)||700} ${fontSize}px "${String(el.font||'Arial').replace(/["\\]/g,'')}", sans-serif`;c.fillStyle=el.color||'#222';c.textBaseline='top';c.textAlign=el.align||'left';const x=el.align==='center'?el.w/2:el.align==='right'?el.w:0;let y=0;for(const paragraph of String(el.text||'').split('\n')){const words=paragraph.split(/\s+/);let line='';for(const word of words){const test=line?line+' '+word:word;if(c.measureText(test).width>el.w&&line){c.fillText(line,x,y);y+=fontSize*1.1;line=word}else line=test}c.fillText(line,x,y);y+=fontSize*1.1}}
+ c.restore()}catch(e){c.restore();console.warn('Livello anteprima:',e)}}c.restore();return canvas}
+function shadow(c,blur=30,color='rgba(29,32,48,.18)',off=18){c.shadowColor=color;c.shadowBlur=blur;c.shadowOffsetY=off}
+function objectRender(c,img,id){const cw=720,ch=560;c.clearRect(0,0,cw,ch);c.fillStyle=gradient(c,'#f7f9fc','#e8edf1');c.fillRect(0,0,cw,ch);
+ // surface and shadow
+ c.fillStyle='rgba(85,97,110,.08)';c.beginPath();c.ellipse(360,493,246,26,0,0,Math.PI*2);c.fill();
+ if(id==='sticker'){
+ c.save();shadow(c,33,'rgba(42,45,67,.22)',16);rect(c,190,75,344,362,46);c.fillStyle='#fff';c.fill();c.restore();c.save();rect(c,199,84,326,344,36);c.clip();fitImage(c,img,199,84,326,344);c.restore();c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=9;rect(c,195,80,334,352,41);c.stroke();
+ }else if(id==='label'){
+ c.save();shadow(c,33,'rgba(41,48,69,.17)',13);rect(c,260,126,200,315,49);c.fillStyle=gradient(c,'#f1f3e8','#d0d9cb');c.fill();c.restore();c.save();rect(c,275,73,170,91,23);c.fillStyle='#e4e8e7';c.fill();c.fillStyle='#c0c8c7';c.fillRect(279,78,162,17);c.restore();
+ c.save();rect(c,255,199,210,170,10);c.clip();fitImage(c,img,255,199,210,170);c.restore();c.fillStyle='rgba(0,0,0,.05)';c.fillRect(253,199,12,170);c.fillRect(450,199,13,170);
+ }else if(id==='box'){
+ c.save();shadow(c,26);c.fillStyle='#cbbba6';c.beginPath();c.moveTo(490,145);c.lineTo(565,112);c.lineTo(565,392);c.lineTo(490,437);c.closePath();c.fill();c.beginPath();c.moveTo(170,145);c.lineTo(244,112);c.lineTo(565,112);c.lineTo(490,145);c.closePath();c.fillStyle='#e7d9c5';c.fill();c.fillStyle='#fffdf7';c.fillRect(170,145,320,292);c.restore();c.save();c.beginPath();c.rect(170,145,320,292);c.clip();fitImage(c,img,170,145,320,292);c.restore();c.strokeStyle='rgba(80,60,45,.11)';c.strokeRect(170,145,320,292);
+ }else if(id==='card'){
+ c.save();c.translate(356,291);c.rotate(-.11);shadow(c,30);rect(c,-209,-118,436,258,18);c.fillStyle='#fff';c.fill();c.restore();c.save();c.translate(356,291);c.rotate(-.11);rect(c,-206,-115,430,252,15);c.clip();fitImage(c,img,-206,-115,430,252);c.restore();
+ }else if(id==='bag'){
+ c.save();c.strokeStyle='#b7ac96';c.lineWidth=22;c.lineCap='round';c.beginPath();c.moveTo(278,176);c.bezierCurveTo(276,32,445,34,443,176);c.stroke();shadow(c,23);c.beginPath();c.moveTo(212,161);c.lineTo(503,161);c.lineTo(529,460);c.lineTo(184,460);c.closePath();c.fillStyle=gradient(c,'#efe5d3','#d5c6ad',160,465);c.fill();c.restore();c.save();rect(c,254,239,211,183,5);c.clip();fitImage(c,img,254,239,211,183);c.restore();
+ }
+}
+let lastDrawId=0;function render(){if(lastRendering||!open)return;lastRendering=true;try{const c=byId('db-product-canvas')?.getContext('2d');if(c)objectRender(c,texture(),chosen)}catch(e){console.error('Anteprima oggetto:',e)}finally{lastRendering=false;lastDrawId++}}
+function templateEnhance(){const root=byId('sidebarContent'),heading=byId('sectionTitle');if(!root||!heading||!root.querySelector('.template-grid')||root.dataset.objectEnhanced==='yes'||enhancing)return;
+ enhancing=true;root.dataset.objectEnhanced='yes';heading.textContent='Cosa vuoi creare?';const existing=document.createElement('div');existing.className='db-existing-templates';while(root.firstChild)existing.appendChild(root.firstChild);
+ const lead=make('section','db-start-guide');lead.innerHTML=`<p class="db-guide-label">INIZIA DALL'OGGETTO</p><h3>Scegli il risultato.</h3><p>Non serve imparare un editor: scegli dove finirà la tua grafica.</p><div class="db-guide-grid">${kinds.map(k=>`<button type="button" data-db-object="${k.id}"><b>${k.glyph}</b><strong>${k.label}</strong><small>${k.hint}</small></button>`).join('')}</div><p class="db-guide-hint">Il progetto rimane modificabile. Le anteprime sono simulazioni locali.</p>`;
+ const details=make('details','db-advanced-templates');details.innerHTML='<summary>Usa una grafica già pronta <span>opzionale</span></summary>';details.appendChild(existing);root.append(lead,details);
+ lead.querySelectorAll('[data-db-object]').forEach(b=>b.addEventListener('click',()=>{selected(b.dataset.dbObject);showModal()}));enhancing=false;
+}
+function bootstrap(){if(byId('db-object-overlay'))return;
+ document.querySelectorAll('[data-section="templates"]').forEach(b=>{const t=b.querySelector('span:last-child');if(t)t.textContent='Oggetti'});
+ const description=document.querySelector('meta[name="description"]');if(description)description.content='DesignBox: progetta adesivi, etichette, packaging e oggetti con anteprime locali, anche offline.';
+ const header=byId('exportBtn');const preview=make('button','db-object-trigger','<span aria-hidden="true">⬡</span><span>Anteprima oggetto</span>');preview.id='db-preview-trigger';preview.type='button';preview.onclick=showModal;header?.parentElement?.insertBefore(preview,header);
+ buildModal();
+ const observer=new MutationObserver(()=>{if(!enhancing)templateEnhance()});const root=byId('sidebarContent');if(root)observer.observe(root,{childList:true});templateEnhance();
+ try { if(matchMedia('(max-width:700px)').matches && !localStorage.getItem('designbox-product-intro-v15')){localStorage.setItem('designbox-product-intro-v15','1');setTimeout(()=>document.querySelector('.mobile-tab[data-section="templates"]')?.click(),650)} } catch(e) {}
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open){e.stopPropagation();closeModal()}},true);
+ // Reconcile offline status with the actual cache used by this release.
+ const syncOffline=async()=>{try{const cache=await caches.open('designbox-static-v1.5.0');let good=!!(await cache.match('./index.html'))&&!!(await cache.match('./loader.js'));if(good){const el=byId('netStatus'),txt=el?.querySelector('span:last-child');if(el&&txt){txt.textContent=navigator.onLine?'Offline pronto':'Offline attivo';el.dataset.ready='yes';}const footer=byId('footerStatus');if(footer)footer.textContent=navigator.onLine?'Offline pronto · dati sul dispositivo':'Offline · i dati restano sul dispositivo';if(waitCore())window.__designboxDebug.offlineReady=()=>true}}catch(e){console.warn(e)}};
+ window.addEventListener('online',syncOffline);window.addEventListener('offline',syncOffline);navigator.serviceWorker?.ready.then(()=>setTimeout(syncOffline,400)).catch(()=>{});setTimeout(syncOffline,1700);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap,{once:true});else bootstrap();
+})();
+
+</script>
 </body>
 </html>
