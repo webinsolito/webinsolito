@@ -1,5 +1,5 @@
 /* DesignBox offline-first: nessuna chiamata ad API esterne. */
-const CACHE='designbox-static-v1.4.0';
+const CACHE='designbox-static-v1.5.0';
 const CORE=["./","./index.html","./loader.js","./polish.js","./polish.css","./adaptive.css","./adaptive.js","./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png","./icons/apple-touch-icon.png","./payload/p0.txt","./payload/p1.txt","./payload/p2.txt","./payload/p3.txt","./payload/p4.txt","./payload/p5.txt"];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('designbox-')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});
