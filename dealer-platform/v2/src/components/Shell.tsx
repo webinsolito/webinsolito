@@ -28,9 +28,9 @@ export function Shell({
 
  return <div className="app-shell">
   <aside className="sidebar">
-   <div className="brand">
-    <div className="brand-icon"><CarFront aria-hidden="true"/></div>
-    <div><b>{dealerName}</b><span>Dealer Cockpit</span></div>
+   <div className="brand" data-testid="dealer-brand">
+    <div className="brand-icon" aria-hidden="true"><span>DC</span><i/></div>
+    <div className="brand-copy"><span className="brand-product">Dealer Cockpit</span><b>{dealerName}</b><small>OPERATIONS</small></div>
    </div>
    <nav aria-label="Sezioni principali">
     {nav.map(([id,label,Icon])=><button key={id} type="button"

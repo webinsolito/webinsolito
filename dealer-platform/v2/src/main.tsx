@@ -37,6 +37,7 @@ import './sales-preferences.css'
 import './sales-to-complete.css'
 import './today-mobile-ux.css'
 import './dealer-ui-clarity.css'
+import './dealer-identity-v58.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
 
