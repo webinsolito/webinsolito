@@ -39,6 +39,37 @@ async function boot(page:Page,{withPhoto=false,reservation=false,reservationExpi
  return state
 }
 
+test('V58: identità Dealer Cockpit visibile e masthead Oggi senza overflow',async({page})=>{
+ await page.setViewportSize({width:1280,height:800})
+ await boot(page)
+ const brand=page.getByTestId('dealer-brand')
+ await expect(brand).toBeVisible()
+ await expect(brand).toContainText('Dealer Cockpit')
+ await expect(brand).toContainText('Autosalone Demo')
+ await expect(brand.locator('.brand-icon')).toHaveText('DC')
+ const heading=page.getByTestId('today-heading')
+ await expect(heading).toContainText('DEALER COCKPIT / LIVE')
+ await expect(heading).toContainText('OPERATIVO')
+ const rect=await heading.boundingBox()
+ expect(rect).not.toBeNull()
+ expect(rect!.x).toBeGreaterThanOrEqual(0)
+ expect(rect!.x+rect!.width).toBeLessThanOrEqual(1280)
+})
+
+test('V58: identità home compatta su iPhone e navigazione resta in una riga',async({page})=>{
+ await page.setViewportSize({width:375,height:812})
+ await boot(page)
+ const heading=page.getByTestId('today-heading')
+ const headingBox=await heading.boundingBox()
+ expect(headingBox).not.toBeNull()
+ expect(headingBox!.x).toBeGreaterThanOrEqual(0)
+ expect(headingBox!.x+headingBox!.width).toBeLessThanOrEqual(375)
+ const nav=page.locator('.mobile-nav button')
+ await expect(nav).toHaveCount(6)
+ const rows=await nav.evaluateAll(nodes=>nodes.map(n=>Math.round(n.getBoundingClientRect().y)))
+ expect(new Set(rows).size).toBe(1)
+})
+
 test('Mod54: la prima attività è in evidenza e non ricompare nella coda',async({page})=>{
  const state=await boot(page)
  const hero=page.getByTestId('today-primary-action')
