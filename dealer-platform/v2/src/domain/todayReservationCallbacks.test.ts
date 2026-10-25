@@ -30,6 +30,8 @@ describe('Modifica 30 · richiami prenotazioni scadute su Oggi',()=>{
   const interactions=[{id:'interaction',dealer_id:'dealer',customer_id:'customer-not-planned',title:'Prenotazione SALE-not-planned · Non risponde · Ricontattare',happened_at:'2026-10-20T10:00:00Z'}]
   const rows=buildTodayReservationCallbacks(data(sales,customers,interactions),now)
   expect(rows.map(x=>x.state)).toEqual(['CALLBACK_DUE','NEEDS_CONTACT','NEEDS_PLAN','SCHEDULED'])
+  expect(rows[0]).toMatchObject({customerId:'customer-due',linkedCustomerFollowup:true})
+  expect(rows[1]).toMatchObject({customerId:'customer-new',linkedCustomerFollowup:false})
   expect(overdueCallbackCounts(rows)).toEqual({toDo:3,scheduled:1})
   expect(overdueCallbackLabel(rows[2].state)).toContain('pianifica')
  })
