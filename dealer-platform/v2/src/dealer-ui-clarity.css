@@ -1,0 +1,190 @@
+/* Dealer Cockpit V2 · visual system v56.
+   Same features, clearer hierarchy and reliable one-row mobile navigation.
+   Keep this file LAST so individual modules retain their behaviors. */
+:root{
+ --navy:#131e2c;
+ --gold:#b78e4b;
+ --paper:#fff;
+ --muted:#66717e;
+ --line:#e3e5e4;
+ --dealer-canvas:#f5f5f2;
+ --dealer-ink:#24313d;
+ --dealer-soft-shadow:0 9px 28px rgba(20,32,43,.045);
+}
+body{background:var(--dealer-canvas);color:var(--dealer-ink)}
+button:not(:disabled){cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,
+summary:focus-visible{outline:3px solid #b78e4b;outline-offset:2px}
+button:disabled{cursor:not-allowed}
+.sidebar{background:linear-gradient(180deg,#101b29,#101927 75%,#0c1522);border-right:1px solid rgba(255,255,255,.055)}
+.brand{padding:10px 9px 22px;gap:12px}
+.brand-icon{border-radius:15px;background:linear-gradient(145deg,#e5c688,#b58a49);box-shadow:0 4px 15px rgba(5,8,14,.14)}
+.brand b{font-size:15px;letter-spacing:-.02em}
+.brand span{font-size:11px;color:#acb8c5}
+.sidebar nav{gap:5px}
+.sidebar nav button{min-height:48px;gap:13px;padding:0 14px;border-radius:13px;color:#b8c2ce;font-size:13px;font-weight:770}
+.sidebar nav button svg{width:19px;height:19px;flex:0 0 auto}
+.sidebar nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.sidebar nav button.active{background:#253347;color:#fff;box-shadow:inset 3px 0 #d1ae70}
+.sidebar .side-bottom button:hover{color:#fff;background:rgba(255,255,255,.07)}
+.topbar{height:72px;padding:10px 28px;background:rgba(250,250,248,.94);border-color:#e6e7e5;backdrop-filter:blur(15px)}
+.search-shell{min-height:46px;height:46px;max-width:470px;width:min(470px,52vw);background:#fff;border-color:#dfe3e5;color:#677787;box-shadow:0 2px 12px rgba(27,42,56,.025)}
+.search-shell:hover{border-color:#cbb78c}
+.search-shell span{font-size:12px;font-weight:650}
+.identity b{font-size:12px;color:#263442}
+.identity span{font-size:10px;color:#687786}
+.avatar{width:40px;height:40px;border-radius:13px;background:#243548;color:#fff}
+.mobile-view-label{display:none}
+.page{max-width:1460px;padding:25px 29px 110px}
+.page-heading{gap:14px;margin-bottom:17px}
+.page-heading h1{font-size:32px;letter-spacing:-.9px;line-height:1.1;color:#1b2936}
+.page-heading p:not(.eyebrow){font-size:12px;line-height:1.45;color:#667480}
+.eyebrow{color:#936e39;font-size:10px;letter-spacing:.085em}
+.mini-stat{border:1px solid #e4e6e4;border-radius:14px;background:#fff;box-shadow:var(--dealer-soft-shadow)}
+.mini-stat span{font-size:10px;color:#6e7882}
+.mini-stat b{color:#243446;font-size:22px}
+.primary,.primary-action{border-radius:12px;background:#243447;color:#fff;box-shadow:0 3px 13px rgba(21,35,50,.09);font-weight:840}
+.primary:hover,.primary-action:hover{background:#30465e}
+.primary:disabled,.primary-action:disabled{opacity:.5}
+.primary-action{min-height:46px;padding:0 16px}
+.focus-card{border-radius:20px;background:linear-gradient(140deg,#25364b,#121f2e);box-shadow:0 12px 30px rgba(17,29,43,.12)}
+.focus-card h2{letter-spacing:-.6px}
+.focus-cta{border-radius:12px;background:#e0b975;color:#182435}
+.focus-cta:hover{background:#efd29c}
+.section{margin-top:22px}
+.section-title h2{font-size:19px;letter-spacing:-.025em;color:#23313f}
+.empty-state{border-radius:14px;border-color:#d9ddde;color:#687783;background:#fff}
+.priority-row,.client-card,.calendar-row{border-color:#e4e6e6;background:#fff;border-radius:15px;box-shadow:var(--dealer-soft-shadow)}
+.priority-row:hover,.client-card:hover{border-color:#c8d1d3}
+.priority-row b{font-size:13px;line-height:1.4;color:#283746}
+.priority-row small{font-size:11px;line-height:1.4}
+.priority-icon{background:#f1eee8;color:#866538}
+.vehicle-card-v2{border-color:#e1e4e4;background:#fff;border-radius:19px;box-shadow:var(--dealer-soft-shadow)}
+.vehicle-card-v2:hover{box-shadow:0 13px 29px rgba(20,32,43,.085)}
+.vehicle-card-v2 h3{color:#23303d}
+.vehicle-card-v2 p{font-size:12px}
+.garage-photo-card .garage-card-copy .issue-pill{font-size:10px;line-height:1.35}
+.garage-card-open .vehicle-card-bottom span{font-size:10px}
+.garage-card-open .vehicle-card-bottom b{font-size:15px}
+.garage-reservation-filters{gap:8px}
+.garage-reservation-filter{min-height:62px;border-radius:13px;gap:8px}
+.garage-reservation-filter span{font-size:12px;line-height:1.25}
+.garage-reservation-filter b{min-width:30px;height:30px}
+.garage-reservation-filter.active{background:#eef2f3;border-color:#8498a5;color:#233544;box-shadow:inset 0 0 0 1px #b9c4ca}
+.garage-reservation-filter.garage-review-filter.active{background:#fff4df;border-color:#b78e4b}
+.garage-booking-actions>button,.garage-review-guidance button{min-height:44px;font-size:12px}
+.garage-review-guidance p{font-size:12px}
+.garage-review-guidance small{font-size:11px}
+.toolbar .search-input,.toolbar select{min-height:48px;border-radius:13px}
+.toolbar .search-input input{font-size:13px;min-width:0}
+.sale-card.sale-card-compact{border-color:#e1e4e4;border-radius:17px;background:#fff;box-shadow:var(--dealer-soft-shadow)}
+.sale-card-compact .sale-compact-main h3{font-size:18px;color:#23303e}
+.sale-card-compact .sale-compact-identities>span{font-size:12px}
+.sale-card-compact .sale-compact-facts span,.sale-card-compact .sale-compact-facts b{font-size:11px}
+.sale-card-compact .sale-compact-open,.sale-card-compact .sale-compact-detail-link{min-height:44px;font-size:12px}
+.sale-card-compact .sale-compact-actions button{min-height:44px;font-size:12px}
+.sale-card-compact .sale-compact-expand>summary{min-height:44px;font-size:12px}
+.sales-search-panel{border-color:#e1e4e4;border-radius:15px;box-shadow:var(--dealer-soft-shadow)}
+.sales-search-meta span{font-size:12px}
+.sales-search-field{min-height:46px}
+.sales-search-field input{font-size:13px}
+.sales-segments button{min-height:44px;font-size:11px}
+.module-grid article{border:1px solid #e1e5e3;border-radius:17px;box-shadow:var(--dealer-soft-shadow)}
+.module-grid h3{font-size:14px}
+.module-grid p{font-size:11px;line-height:1.45}
+.module-grid article.module-action button{min-height:68px;border-radius:16px}
+.calendar-row h3,.client-copy h3{font-size:14px}
+.calendar-row p,.client-copy p{font-size:11px;line-height:1.4}
+.client-actions a,.calendar-done{min-height:44px;min-width:44px}
+.workbench-grid input,.workbench-grid select,.customer-form-grid input,.customer-form-grid select,.customer-form-grid textarea,
+.sale-form-grid input,.sale-form-grid select{min-height:46px;font-size:14px}
+.today-kpis>button{border-color:#e2e5e4;box-shadow:var(--dealer-soft-shadow)}
+.today-kpis>button small{font-size:11px}
+.today-primary-action{box-shadow:0 13px 31px rgba(14,28,43,.13)}
+.today-garage-review-panel{box-shadow:var(--dealer-soft-shadow)}
+.today-garage-review-vehicle-copy strong{font-size:13px}
+.today-garage-review-vehicle-copy small{font-size:11px}
+@media(min-width:761px) and (max-width:1120px){
+ .page{padding:23px 20px 110px}
+ .sidebar{width:238px}
+ .app-shell{grid-template-columns:238px minmax(0,1fr)}
+}
+@media(max-width:760px){
+ body{background:#f6f6f3}
+ .app-shell{display:block}
+ .topbar{height:62px;padding:8px 14px;gap:10px}
+ .search-shell{width:48px;height:46px;min-height:46px;flex:0 0 48px;border-radius:13px}
+ .mobile-view-label{display:block;flex:1;min-width:0;color:#283849;font-size:14px;font-weight:850;letter-spacing:-.02em}
+ .identity{gap:0}
+ .avatar{width:38px;height:38px;border-radius:12px}
+ .page{padding:17px 13px calc(102px + env(safe-area-inset-bottom))}
+ .page-heading{gap:9px;align-items:center}
+ .page-heading h1{font-size:27px}
+ .page-heading p:not(.eyebrow){font-size:11px;line-height:1.42}
+ .page-heading .eyebrow{font-size:9px}
+ .section{margin-top:19px}
+ .section-title h2{font-size:18px}
+ .primary-action{min-height:48px;font-size:12px;padding:0 12px}
+ .toolbar{gap:8px}
+ .toolbar .search-input,.toolbar select{min-height:48px;font-size:13px}
+ .garage-heading-actions{gap:8px;align-items:center}
+ .garage-new,.garage-new:not(:focus){font-size:12px!important;min-height:48px;padding:0 11px;gap:5px;white-space:nowrap}
+ .garage-new svg{width:17px;height:17px}
+ .garage-reservation-filters{gap:7px}
+ .garage-reservation-filter{min-height:56px;gap:7px;padding:8px 9px}
+ .garage-reservation-filter span{font-size:11px}
+ .garage-reservation-filter>svg{width:16px;height:16px;flex:0 0 16px}
+ .garage-reservation-filter b{min-width:27px;height:27px;font-size:12px}
+ .garage-reservation-filter.garage-review-filter{min-height:48px}
+ .garage-card-open .vehicle-card-bottom span{font-size:10px}
+ .garage-card-open .vehicle-card-bottom b{font-size:15px}
+ .garage-booking-actions>button{min-height:46px}
+ .sale-card-compact .sale-compact-identities>span{font-size:11px}
+ .sale-card-compact .sale-compact-open{min-height:48px}
+ .sale-card-compact .sale-compact-expand>summary{min-height:46px}
+ .sale-card-compact .sale-compact-actions button{min-height:46px}
+ .sales-segments{
+  display:flex;grid-template-columns:none;align-items:stretch;gap:5px;
+  overflow-x:auto;width:100%;max-width:100%;padding:5px;
+  overscroll-behavior-x:contain;scrollbar-width:none;
+ }
+ .sales-segments::-webkit-scrollbar{display:none}
+ .sales-segments button{
+  flex:0 0 auto;min-height:46px;min-width:88px;
+  padding:0 9px;white-space:nowrap;font-size:11px;
+ }
+ .sales-segments button span{overflow:visible;text-overflow:clip}
+ .module-grid{gap:9px}
+ .module-grid article{border-radius:14px}
+ .module-grid article.module-action button{min-height:66px}
+ .calendar-row{gap:8px;padding:12px}
+ .calendar-done{min-width:46px;min-height:46px}
+ .client-actions a{min-width:44px;min-height:44px}
+ .today-garage-review-vehicle{min-height:64px}
+ /* Six existing destinations: keep every one in the SAME row, even at 320px. */
+ .mobile-nav{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:2px;padding:6px 5px calc(6px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.975);border-color:#e1e4e3;
+  box-shadow:0 -8px 25px rgba(18,30,44,.075);
+ }
+ .mobile-nav button{
+  min-width:0;width:100%;min-height:53px;gap:3px;padding:5px 0;
+  border-radius:11px;color:#687582;
+ }
+ .mobile-nav button.active{background:#243548;color:#fff}
+ .mobile-nav svg{width:20px;height:20px}
+ .mobile-nav small{font-size:9px;font-weight:820;line-height:1.2;letter-spacing:-.02em}
+ .mobile-nav button:focus-visible{outline:3px solid #be9758;outline-offset:-2px}
+}
+@media(max-width:360px){
+ .page{padding-left:11px;padding-right:11px}
+ .garage-new,.garage-new:not(:focus){padding:0 8px;font-size:11px!important}
+ .garage-reservation-filter{padding:8px 7px;gap:5px}
+ .garage-reservation-filter span{font-size:10px}
+ .garage-reservation-filter b{min-width:25px}
+ .mobile-nav small{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .vehicle-card-v2:hover{transform:none}
+}

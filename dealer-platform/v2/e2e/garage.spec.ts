@@ -75,3 +75,55 @@ test('OGGI routes overdue customer work and Clienti persists next action plus TE
 test('Calendario creates a valid linked appointment and closes it',async({page})=>{const state=await installBackend(page);await login(page);await openView(page,'Calendario');await page.getByRole('button',{name:'Nuovo appuntamento'}).click();await page.getByPlaceholder('Es. richiamare cliente / consegna / prova auto').fill('Prova Volkswagen Golf');await page.locator('.calendar-create input[type="datetime-local"]').fill('2026-10-16T15:00');await page.locator('.calendar-create select').nth(0).selectOption(CUSTOMER);await page.locator('.calendar-create select').nth(1).selectOption(EXISTING);await page.getByPlaceholder('Dettaglio utile').fill('Confermare 30 minuti prima');await page.getByRole('button',{name:'Salva appuntamento'}).click();await expect(page.getByText('Prova Volkswagen Golf')).toBeVisible();expect(state.calendarEvents).toHaveLength(1);expect(state.calendarEvents[0].customer_id).toBe(CUSTOMER);expect(state.calendarEvents[0].vehicle_id).toBe(EXISTING);expect(state.calendarEvents[0].event_type).toBe('APPOINTMENT');expect(state.calendarEvents[0].priority).toBe('NORMAL');await page.getByTitle('Segna completato').click();await expect.poll(()=>state.calendarEvents[0].status).toBe('DONE');await expect(page.getByText('Prova Volkswagen Golf')).toHaveCount(0)})
 
 test('VENDITORE opens a sale and prepares delivery without finance access',async({page})=>{const state=await installBackend(page);await login(page,'seller');await openView(page,'Vendite');expect(state.financeRequests).toBe(0);await page.getByTestId('new-sale').click();await page.getByLabel('CLIENTE VENDITA').selectOption(CUSTOMER);await page.getByLabel('AUTO VENDITA').selectOption(EXISTING);await expect(page.getByLabel('PREZZO VENDITA')).toHaveValue('21900');await page.getByLabel('CAPARRA VENDITA').fill('2000');await page.getByLabel('CONSEGNA PREVISTA').fill('2026-10-20T15:00');await page.getByTestId('sale-save').click();await expect.poll(()=>state.contracts.length).toBe(1);expect(state.contracts[0].dealer_id).toBe(DEALER);expect(state.contracts[0].template_code).toBe('VENDITA');expect(state.contracts[0].sale_stage).toBe('OPEN');expect(state.contracts[0].contract_number).toMatch(/^V-/);await expect(page.getByTestId('sale-card')).toContainText('Volkswagen Golf');await page.getByRole('button',{name:'Avanza a Accordo'}).click();await expect.poll(()=>state.contracts[0].sale_stage).toBe('AGREED');await page.getByRole('button',{name:'Prepara checklist'}).click();await expect.poll(()=>state.workItems.filter(w=>w.category==='CONSEGNA').length).toBe(7);expect(state.financeRequests).toBe(0)})
+
+
+for(const width of [320,375]){
+ test(`Visual refresh: tutte le sei sezioni mobili sono raggiungibili su ${width}px, senza seconda riga`,async({page})=>{
+  await page.setViewportSize({width,height:740})
+  const state=await installBackend(page)
+  // Venditore: verifies that mobile navigation does not accidentally read finance data.
+  await login(page,'seller')
+  const buttons=page.locator('.mobile-nav button')
+  await expect(buttons).toHaveCount(6)
+  const rects=await buttons.evaluateAll(items=>items.map(item=>{
+   const r=item.getBoundingClientRect()
+   return {left:r.left,top:r.top,right:r.right,width:r.width,height:r.height}
+  }))
+  expect(rects.every(r=>Math.abs(r.top-rects[0].top)<2)).toBe(true)
+  expect(rects.every(r=>r.width>=44&&r.height>=48&&r.right<=width+1)).toBe(true)
+  await expect(page.locator('.mobile-nav button[aria-current="page"]')).toHaveCount(1)
+  await expect(page.locator('.mobile-nav button[aria-current="page"]')).toContainText('Oggi')
+  await expect(page.locator('.mobile-view-label')).toContainText('Oggi')
+  await page.getByRole('button',{name:'Apri ricerca globale'}).click()
+  await expect(page.getByRole('dialog',{name:'Ricerca globale'})).toBeVisible()
+  await page.getByRole('button',{name:'Chiudi ricerca'}).click()
+  await page.locator('.mobile-nav button').filter({hasText:'Altro'}).click()
+  await expect(page.getByRole('heading',{name:'Altro'})).toBeVisible()
+  await expect(page.locator('.mobile-nav button[aria-current="page"]')).toContainText('Altro')
+  await page.locator('.mobile-nav button').filter({hasText:'Garage'}).click()
+  await expect(page.getByRole('heading',{name:'Garage'})).toBeVisible()
+  const create=page.getByTestId('new-vehicle')
+  await expect(create).toBeVisible()
+  await expect(create).toContainText('Nuova auto')
+  const metrics=await create.evaluate(el=>{const r=el.getBoundingClientRect();return {height:r.height,fontSize:parseFloat(getComputedStyle(el).fontSize)}})
+  expect(metrics.height).toBeGreaterThanOrEqual(44)
+  expect(metrics.fontSize).toBeGreaterThanOrEqual(11)
+  expect(state.financeRequests).toBe(0)
+ })
+}
+
+test('Visual refresh: menu desktop e moduli secondari mantengono la voce attiva',async({page})=>{
+ await page.setViewportSize({width:1280,height:800})
+ await installBackend(page)
+ await login(page)
+ await expect(page.locator('.sidebar nav button')).toHaveCount(6)
+ await expect(page.locator('.sidebar nav button[aria-current="page"]')).toContainText('Oggi')
+ await expect(page.locator('.mobile-nav')).toBeHidden()
+ await page.locator('.sidebar nav button').filter({hasText:'Vendite'}).click()
+ await expect(page.getByRole('heading',{name:'Vendite'})).toBeVisible()
+ await expect(page.locator('.sidebar nav button[aria-current="page"]')).toContainText('Vendite')
+ await page.locator('.sidebar nav button').filter({hasText:'Altro'}).click()
+ await expect(page.getByRole('heading',{name:'Altro'})).toBeVisible()
+ await page.getByRole('button',{name:'Apri centro scadenze'}).click()
+ await expect(page.locator('.sidebar nav button[aria-current="page"]')).toContainText('Altro')
+})
