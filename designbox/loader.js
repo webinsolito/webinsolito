@@ -9,7 +9,7 @@
   const code=JSON.parse(source);
   /* Match the deployed packed assets when confirming offline readiness. */
   code.js=code.js.replace("caches.open('designbox-static-v1.1.0')","caches.open('designbox-static-v1.3.0')").replace("cache.match('./app.js')","cache.match('./payload/p5.txt')");
-  const style=document.createElement('style');style.textContent=code.css;document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent=code.css;document.head.appendChild(style);const polishStyle=document.querySelector('link[href="./polish.css"]');if(polishStyle)document.head.appendChild(polishStyle);
   document.getElementById('app').style.visibility='visible';
   const script=document.createElement('script');script.textContent=code.js;document.body.appendChild(script);
 }catch(error){console.error('DesignBox bootstrap:',error);const app=document.getElementById('app');app.style.visibility='visible';app.innerHTML='<main style="font:16px system-ui;padding:32px;max-width:460px;margin:auto"><h1>DesignBox</h1><p>Impossibile completare il caricamento. Controlla la connessione e riapri l’app.</p><button onclick="location.reload()">Riprova</button></main>';}})();
