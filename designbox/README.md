@@ -1,12 +1,12 @@
-# DesignBox 1.4 — editor responsive offline
+# DesignBox 1.5 — Product Studio PWA
 
-Editor grafico PWA locale, con modelli, testi, foto, livelli, esportazioni e backup dei progetti.
+DesignBox non è un clone di Canva: il percorso principale è scegliere un oggetto reale (adesivo, etichetta, confezione, biglietto o shopper), personalizzare la grafica e generare una simulazione del risultato.
 
-- iPhone e Android: 5 schede touch, Progetti dalla testata, pannelli inferiori, zoom con comandi grandi, gestione di safe area e tastiera virtuale.
-- Tablet: area grafica ampia e pannelli richiamabili.
-- Windows e desktop: pannelli laterali, comandi completi e scorciatoie da tastiera.
-- Nessuna API remota, nessun login, nessun limite artificiale sulle esportazioni.
-- Apri https://webinsolito.github.io/webinsolito/designbox/ in Safari/Chrome e aggiungi alla schermata Home. Apri una volta online per completare la cache offline.
-- I progetti sono locali al browser: esporta regolarmente il backup .designbox da Progetti; i dati non si sincronizzano fra dispositivi.
+- Elaborazione, mockup e salvataggio completamente locali, senza account o API a consumo.
+- Editor grafico originale mantenuto per le modifiche di precisione.
+- Pulsante «Anteprima oggetto» con cinque superfici e download PNG.
+- Le anteprime sono simulazioni 2D, **non** modelli 3D o file tecnici fustella.
+- Progetti esistenti conservati con IndexedDB; esportare regolarmente un backup.
+- PWA offline tramite service worker `designbox-static-v1.5.0`.
 
-Versione cache: `designbox-static-v1.4.0`. Test browser reale su iOS/Android da completare separatamente dai controlli desktop simulati.
+La prima visita richiede HTTPS/Internet per salvare gli asset. Poi il motore di editing e le anteprime funzionano offline. I browser possono rimuovere dati locali: il backup esportato è raccomandato.
