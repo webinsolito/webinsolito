@@ -1,12 +1,21 @@
-# DesignBox 1.5 — Product Studio PWA
+# DesignBox Product Studio 1.5.1 — PWA locale
 
-DesignBox non è un clone di Canva: il percorso principale è scegliere un oggetto reale (adesivo, etichetta, confezione, biglietto o shopper), personalizzare la grafica e generare una simulazione del risultato.
+DesignBox è uno studio per personalizzare oggetti (adesivi, etichette, confezioni, biglietti e shopper) partendo dall'anteprima del prodotto, **non un clone di Canva**.
 
-- Elaborazione, mockup e salvataggio completamente locali, senza account o API a consumo.
-- Editor grafico originale mantenuto per le modifiche di precisione.
-- Pulsante «Anteprima oggetto» con cinque superfici e download PNG.
-- Le anteprime sono simulazioni 2D, **non** modelli 3D o file tecnici fustella.
-- Progetti esistenti conservati con IndexedDB; esportare regolarmente un backup.
-- PWA offline tramite service worker `designbox-static-v1.5.0`.
+## Come si usa
 
-La prima visita richiede HTTPS/Internet per salvare gli asset. Poi il motore di editing e le anteprime funzionano offline. I browser possono rimuovere dati locali: il backup esportato è raccomandato.
+1. Scegli l'oggetto nella Home Product Studio.
+2. Guarda l'anteprima grafica locale; puoi esportarla come PNG.
+3. Apri «Personalizza grafica» solo se vuoi modificare testi, immagini, colori o formato.
+4. Torna alla Home con «← Oggetti», senza cancellare il progetto.
+
+## Funzionamento
+
+- Il core 1.1 è conservato nei sei file `payload/*.txt`, decompressi localmente da `loader.js`.
+- `object-studio.js` genera i mockup 2D nel Canvas; non sono file di stampa o modelli 3D realistici.
+- `studio-home.css` e la pagina iniziale in `object-studio.js` realizzano il percorso product-first.
+- Le funzioni principali non richiedono login, crediti, backend o API esterne.
+- I progetti sono salvati in IndexedDB quando disponibile; è consigliato esportare backup `.designbox`.
+- Dopo un primo caricamento HTTPS online, il service worker conserva l'app per l'utilizzo offline.
+
+Per pubblicare su GitHub Pages, mantenere tutti i file della cartella `designbox/` e aprire il percorso `https://webinsolito.github.io/webinsolito/designbox/`.
