@@ -7,6 +7,7 @@ export interface TodayReservationCallback{
  id:string
  contractId:string
  contractNumber:string
+ customerId:string
  customerName:string
  vehicleName:string
  expiresAt:string
@@ -14,6 +15,7 @@ export interface TodayReservationCallback{
  callbackAt:string|null
  lastContactAt:string|null
  lastContactTitle:string|null
+ linkedCustomerFollowup:boolean
 }
 
 const order:Record<ReservationCallbackState,number>={CALLBACK_DUE:0,AFTER_EXPIRY:1,NEEDS_CONTACT:2,NEEDS_PLAN:3,SCHEDULED:4,COMPLETED:5}
@@ -38,13 +40,14 @@ export function buildReservationCallbacksByWindow(data:Pick<TenantData,'contract
   const newCallbackAfterCompletion=validCallback&&Number.isFinite(completedAt)&&Number.isFinite(editedAt)&&editedAt>=completedAt
   const state:ReservationCallbackState=completion&&!newCallbackAfterCompletion?'COMPLETED':validCallback?(callbackTime<=now?'CALLBACK_DUE':window==='SOON'&&callbackTime>Date.parse(sale.reservation_expires_at||'')?'AFTER_EXPIRY':'SCHEDULED'):(lastContact?'NEEDS_PLAN':'NEEDS_CONTACT')
   rows.push({
-   id:'reservation-callback:'+sale.id,contractId:sale.id,contractNumber:sale.contract_number,
+   id:'reservation-callback:'+sale.id,contractId:sale.id,contractNumber:sale.contract_number,customerId:sale.customer_id,
    customerName:name(customer?.first_name,customer?.last_name)||'Cliente non disponibile',
    vehicleName:name(vehicle?.brand,vehicle?.model,vehicle?.plate)||'Auto non disponibile',
    expiresAt:sale.reservation_expires_at!,
    state,callbackAt:validCallback?rawCallback!:null,
    lastContactAt:lastContact?.happened_at||lastContact?.created_at||null,
-   lastContactTitle:lastContact?.title||null
+   lastContactTitle:lastContact?.title||null,
+   linkedCustomerFollowup:callbackMatches
   })
  }
  return rows.sort((a,b)=>order[a.state]-order[b.state]
