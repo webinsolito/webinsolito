@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-27T12:38:53.139295+00:00",
-  "count": 74,
+  "generated_at": "2026-10-27T20:14:25.463201+00:00",
+  "count": 75,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 12,
-      "errors": 0
+      "events": 11,
+      "errors": 1
     },
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 63,
-      "events": 62,
+      "links": 65,
+      "events": 64,
       "errors": 0
     }
   ],
@@ -560,21 +560,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
     },
     {
-      "id": "auto-4671126f66e4c3",
-      "title": "Sguardi. 100 anni di Renato Borsoni",
-      "date": "2026-10-27",
-      "end_date": "2026-10-27",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cavallerizza-renato-corsini-e-mario-cresci-2518279-2518461-2518591-2518712-2519268-2519320-2519488-2519749-2520015",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
-    },
-    {
       "id": "auto-3472b440c4ae74",
       "title": "Una storia di Altri Alfabeti",
       "date": "2026-10-27",
@@ -1085,6 +1070,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Stragardalake-1024x768.jpg"
     },
     {
+      "id": "auto-9518e50151c267",
+      "title": "La Grande Corsa Bianca 2027",
+      "date": "2027-01-22",
+      "end_date": "2027-01-23",
+      "time": "",
+      "place": "Monno (partenza) | Vezza d'Oglio (arrivo) Piazza IV Novembre , Monno",
+      "area": "Brescia e provincia",
+      "cat": "Sport",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/grande-corsa-bianca/",
+      "note": "Una sfida estrema in semi-autosufficienza, tra i paesaggi innevati dei parchi dello Stelvio e dell’Adamello: ogni anno torna la Grande Corsa Bianca!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/La-Grande-Corsa-Bianca.jpg"
+    },
+    {
       "id": "auto-ff4d99d9865525",
       "title": "Fiera dei Santi Faustino e Giovita a Brescia 2027",
       "date": "2027-02-15",
@@ -1098,6 +1098,21 @@
       "note": "Ogni anno il 15 febbraio Brescia ospita la tradizionale fiera dei Santi Faustino e Giovita, patroni della città: scopri i dettagli e le info utili per muoverti!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/fiera-san-faustino-brescia-scaled.jpg"
+    },
+    {
+      "id": "auto-e7a234c6b92157",
+      "title": "Magnifica Salodium 2027",
+      "date": "2027-02-21",
+      "end_date": "2027-02-21",
+      "time": "",
+      "place": "Salò Piazza Enzo Ferrari (partenza e arrivo) , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Sport",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/magnifica-salodium/",
+      "note": "Ogni anno a febbraio torna la Magnifica Salodium, gara di trail tra gli spettacolari scenari del basso lago di Garda: scopri di più|",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/magnifica-salodium.jpg"
     },
     {
       "id": "auto-acc97bf1d19991",
