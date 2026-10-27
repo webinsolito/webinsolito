@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-26T20:44:41.953181+00:00",
-  "count": 73,
+  "generated_at": "2026-10-27T12:38:53.139295+00:00",
+  "count": 74,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 62,
-      "events": 61,
+      "links": 63,
+      "events": 62,
       "errors": 0
     }
   ],
@@ -440,36 +440,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
     },
     {
-      "id": "auto-baeabd6de4e223",
-      "title": "Ciò che rimane acceso",
-      "date": "2026-10-26",
-      "end_date": "2026-10-26",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cio-che-rimane-acceso",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cio-che-rimane-acceso-26-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-b892d6899f11e8",
-      "title": "CNE 2026. Cineconcerto Georges Méliès",
-      "date": "2026-10-26",
-      "end_date": "2026-10-26",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519802-2519987-2520005",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-cineconcerto-melies-26-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-862ffefca6fd89",
       "title": "Siamo testimoni",
       "date": "2026-10-26",
@@ -618,6 +588,36 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-franca-ghitti-16giu26-4apr27-1024x650.jpg"
+    },
+    {
+      "id": "auto-23bb7be5a8d652",
+      "title": "CNE 2026. International animation day 2026",
+      "date": "2026-10-28",
+      "end_date": "2026-10-28",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519802-2519987-2520016",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-international-animation-day-2026-28-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-9849424b8cbf9e",
+      "title": "Stagione Teatro Grande 2026",
+      "date": "2026-10-28",
+      "end_date": "2026-10-28",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2519702-2520018",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/teatro-grande-stagione-2026-28-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-3b4eba7d73535a",
@@ -1053,6 +1053,21 @@
       "note": "La grande festa che apre ufficialmente la stagione sciistica sul comprensorio Pontedilegno-Tonale: ogni anno a dicembre torna il Winter Opening Party!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Winter-Opening-Party-Pontedilegno-Tonale.webp"
+    },
+    {
+      "id": "auto-77df5857a6ec38",
+      "title": "Festa della Polenta a Tremosine sul Garda 2026",
+      "date": "2026-12-07",
+      "end_date": "2026-12-07",
+      "time": "",
+      "place": "Pieve di Tremosine sul Garda Borgo storico , Tremosine sul Garda",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festa-polenta-tremosine/",
+      "note": "Ogni anno Tremosine sul Garda ospita la Festa della Polenta, arricchita dall’imperdibile sfilata dei Krampus!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Polenta-Cusa-Tremosine.jpg"
     },
     {
       "id": "auto-5e6d32bb50b0c5",
