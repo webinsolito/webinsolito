@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-27T20:14:25.463201+00:00",
-  "count": 75,
+  "generated_at": "2026-10-28T13:30:19.134466+00:00",
+  "count": 77,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 11,
-      "errors": 1
+      "events": 12,
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
       "ok": true,
       "links": 65,
-      "events": 64,
+      "events": 65,
       "errors": 0
     }
   ],
@@ -440,21 +440,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
     },
     {
-      "id": "auto-862ffefca6fd89",
-      "title": "Siamo testimoni",
-      "date": "2026-10-26",
-      "end_date": "2026-10-26",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/siamo-testimoni-2518291-2518460-2518599-2518835-2519006-2519483-2520006",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/siamo-testimoni-fino-31-dicembre-2026-1024x650.jpg"
-    },
-    {
       "id": "auto-97cd446e90c772",
       "title": "Cavallerizza. I colori della danza",
       "date": "2026-10-27",
@@ -468,21 +453,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-ad40f4d6f7d062",
-      "title": "CNE 2026. Be kind rewind",
-      "date": "2026-10-27",
-      "end_date": "2026-10-27",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2520008",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-be-king-rewind-1024x650.jpg"
     },
     {
       "id": "auto-7ebcc73c83978b",
@@ -545,8 +515,8 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-la-vittoria-di-brescia-40-fotografi-17lug-1nov-1024x650-1.jpg"
     },
     {
-      "id": "auto-711262b51e6081",
-      "title": "Settimane Barocche 2026",
+      "id": "auto-4671126f66e4c3",
+      "title": "Sguardi. 100 anni di Renato Borsoni",
       "date": "2026-10-27",
       "end_date": "2026-10-27",
       "time": "",
@@ -554,10 +524,10 @@
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748-2520014",
+      "url": "https://comune.brescia.it/it/events/cavallerizza-renato-corsini-e-mario-cresci-2518279-2518461-2518591-2518712-2519268-2519320-2519488-2519749-2520015",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
     },
     {
       "id": "auto-3472b440c4ae74",
@@ -590,6 +560,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-international-animation-day-2026-28-ottobre-1024x650.jpg"
     },
     {
+      "id": "auto-607fa97db2cab9",
+      "title": "Progetti. 100 anni di Renato Borsoni",
+      "date": "2026-10-28",
+      "end_date": "2026-10-28",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2519267-2519327-2519492-2519714-2520017",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
+    },
+    {
       "id": "auto-9849424b8cbf9e",
       "title": "Stagione Teatro Grande 2026",
       "date": "2026-10-28",
@@ -603,6 +588,36 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/teatro-grande-stagione-2026-28-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-6e0eb4325c00b6",
+      "title": "Emergency Days 2026",
+      "date": "2026-10-29",
+      "end_date": "2026-10-29",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521-2519553-2519717-2520045",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/emergency-e-days-2026-29-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-decd41e5be60fb",
+      "title": "Truffe? … No grazie",
+      "date": "2026-10-29",
+      "end_date": "2026-10-29",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/truffe-no-grazie-2515751-2518643-2519007-2519744-2520048",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/anziani-contrasto-truffe-rapp-teatrale-20-maggio-1024x650.jpg"
     },
     {
       "id": "auto-3b4eba7d73535a",
@@ -1143,6 +1158,21 @@
       "note": "Ogni anno a Brescia torna la 1000 Miglia, la storica corsa d'auto d’epoca che ha reso la città celebre in tutto il mondo. Scopri tutti i dettagli!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/mille-miglia-brescia.jpg"
+    },
+    {
+      "id": "auto-4a199f251f4ae3",
+      "title": "Anniversario Sito UNESCO \"I Longobardi in Italia\"",
+      "date": "2027-06-25",
+      "end_date": "2027-06-25",
+      "time": "",
+      "place": "Museo di Santa Giulia e Parco Archeologico di Brescia Romana via dei Musei , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/anniversario-sito-unesco-brescia/",
+      "note": "Ogni anno Brescia celebra il suo patrimonio UNESCO longobardo tra visite, esperienze immersive e concerti. Scopri l'edizione in arrivo!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/brescia-museo-santa-giulia-scaled.jpg"
     }
   ]
 }
