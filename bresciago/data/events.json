@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-29T20:32:41.431756+00:00",
+  "generated_at": "2026-10-30T13:30:31.201060+00:00",
   "count": 71,
   "sources": [
     {
@@ -8,7 +8,7 @@
       "ok": true,
       "links": 15,
       "events": 5,
-      "errors": 2
+      "errors": 0
     },
     {
       "name": "Visit Brescia",
@@ -440,21 +440,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
     },
     {
-      "id": "auto-607fa97db2cab9",
-      "title": "Progetti. 100 anni di Renato Borsoni",
-      "date": "2026-10-28",
-      "end_date": "2026-10-28",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2519267-2519327-2519492-2519714-2520017",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
-    },
-    {
       "id": "auto-d04ce9b573ef1b",
       "title": "Carme 2026. Stefano Cagol",
       "date": "2026-10-29",
@@ -485,21 +470,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/meccaniche-della-meraviglia-2026-1024x650.jpg"
     },
     {
-      "id": "auto-decd41e5be60fb",
-      "title": "Truffe? … No grazie",
-      "date": "2026-10-29",
-      "end_date": "2026-10-29",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/truffe-no-grazie-2515751-2518643-2519007-2519744-2520048",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/anziani-contrasto-truffe-rapp-teatrale-20-maggio-1024x650.jpg"
-    },
-    {
       "id": "auto-6b238a660a8d20",
       "title": "Festival della pace 2026",
       "date": "2026-10-30",
@@ -513,6 +483,36 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/festival-della-pace-2026-aspettando-30-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-6866192fc68694",
+      "title": "Psicogeografia 2026",
+      "date": "2026-10-30",
+      "end_date": "2026-10-30",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/psicogeografia-2026-2519556-2519895-2520047",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/youth-colab-3-0-psicogeografia-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-3d3614b2a1a073",
+      "title": "Biblioteche sociali. Uncinetto",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612-2519922-2520071",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/biblioteche-2026-uncinetto-ghetti-1024x650.jpg"
     },
     {
       "id": "auto-3b4eba7d73535a",
