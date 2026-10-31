@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-30T20:07:24.423247+00:00",
-  "count": 71,
+  "generated_at": "2026-10-31T13:00:58.501422+00:00",
+  "count": 74,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 5,
+      "events": 8,
       "errors": 0
     },
     {
@@ -440,64 +440,19 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
     },
     {
-      "id": "auto-d04ce9b573ef1b",
-      "title": "Carme 2026. Stefano Cagol",
-      "date": "2026-10-29",
-      "end_date": "2026-10-29",
+      "id": "auto-659cad32861f42",
+      "title": "Associazione Perlar 2026",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
       "time": "",
       "place": "Brescia",
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/carme-2026-stefano-cagol-2519174-2519353-2519549-2519801-2520044",
+      "url": "https://comune.brescia.it/it/events/associazione-perlar-2026-2519898-2520076",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-36d73efadd9502",
-      "title": "Meccaniche della Meraviglia 2026",
-      "date": "2026-10-29",
-      "end_date": "2026-10-29",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/meccaniche-della-meraviglia-2026-2520046",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/meccaniche-della-meraviglia-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-6b238a660a8d20",
-      "title": "Festival della pace 2026",
-      "date": "2026-10-30",
-      "end_date": "2026-10-30",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/festival-della-pace-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/festival-della-pace-2026-aspettando-30-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-6866192fc68694",
-      "title": "Psicogeografia 2026",
-      "date": "2026-10-30",
-      "end_date": "2026-10-30",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/psicogeografia-2026-2519556-2519895-2520047",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/youth-colab-3-0-psicogeografia-2026-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/perlar-2026-31-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-3d3614b2a1a073",
@@ -515,6 +470,36 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/biblioteche-2026-uncinetto-ghetti-1024x650.jpg"
     },
     {
+      "id": "auto-c09f24679d5838",
+      "title": "Brescia \"Chiama a raccolta\"",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/brescia-chiama-a-raccolta",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/brescia-chiama-a-raccolta-31-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-270741f8789f35",
+      "title": "CNE 2026. Made in Usa",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-la-nueva-ola-2518604-2519653-2520074",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-made-in-usa-31-ottobre-1024x650.jpg"
+    },
+    {
       "id": "auto-3b4eba7d73535a",
       "title": "Festa d'autunno a Montecampione 2026",
       "date": "2026-10-31",
@@ -528,6 +513,21 @@
       "note": "Una giornata di allegria e svago in famiglia: ogni anno a Montecampione torna la Festa d'autunno!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Montecampione-Ph-Andrea-Sardu.jpg"
+    },
+    {
+      "id": "auto-8bee171770c826",
+      "title": "Giuseppe Zanardelli. Mostra",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/giuseppe-zanardelli-mostra-2516520-2516738-2517027-2517285-2517452-2518422-2518569-2518696-2518944-2519200-2519440-2519618-2519931-2520075",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-mostra-zanardelli-1024x650.jpg"
     },
     {
       "id": "auto-1fbee1db99fb48",
@@ -558,6 +558,51 @@
       "note": "Profumi di Mosto: scopri l'appuntamento speciale alla scoperta delle cantine della Valtènesi e del Garda bresciano!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/vini-valtenesi-garda.jpeg"
+    },
+    {
+      "id": "auto-606d3512af5b80",
+      "title": "Stagione concertistica GIA 2026",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/stagione-concertistica-gia-2026-2520078",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/stagione-gia-2026-31-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-1bb1198f728442",
+      "title": "Us da le as 2026. 2° atto",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2519964-2520081",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-da-le-as-2026-2-atto-31-ottobre-1024x650.jpg"
+    },
+    {
+      "id": "auto-25082b24b23dba",
+      "title": "Vittoria in movimento",
+      "date": "2026-10-31",
+      "end_date": "2026-10-31",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/vittoria-in-movimento-2516033-2520082",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/vittoria-in-movimento-ri-generiamoci-mix-1024x650.jpg"
     },
     {
       "id": "auto-9723081c1ad4d3",
