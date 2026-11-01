@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-31T19:32:38.248091+00:00",
-  "count": 74,
+  "generated_at": "2026-11-01T13:45:38.860165+00:00",
+  "count": 70,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 8,
+      "events": 5,
       "errors": 0
     },
     {
       "name": "Visit Brescia",
       "ok": true,
       "links": 66,
-      "events": 66,
+      "events": 65,
       "errors": 0
     }
   ],
@@ -108,21 +108,6 @@
       "note": "Ogni anno tornano i tour guidati alla scoperta della Rocca d'Anfo, la grande fortezza a picco sulle acque del lago d'Idro: prenota subito!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/rocca-anfo-lago-idro.jpg"
-    },
-    {
-      "id": "auto-6805fd89aa2a38",
-      "title": "Escursioni emozionali guidate a Gargnano 2026",
-      "date": "2026-05-02",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Gargnano Varie location , Gargnano",
-      "area": "Brescia e provincia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/escursioni-guidate-gargnano/",
-      "note": "Ogni anno da maggio a ottobre torna il programma di escursioni emozionali a Gargnano: scopri di più!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/gargnano.jpg"
     },
     {
       "id": "auto-edc396b25d346d",
@@ -440,66 +425,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/halloween.jpg"
     },
     {
-      "id": "auto-659cad32861f42",
-      "title": "Associazione Perlar 2026",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/associazione-perlar-2026-2519898-2520076",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/perlar-2026-31-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-3d3614b2a1a073",
-      "title": "Biblioteche sociali. Uncinetto",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612-2519922-2520071",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/biblioteche-2026-uncinetto-ghetti-1024x650.jpg"
-    },
-    {
-      "id": "auto-c09f24679d5838",
-      "title": "Brescia \"Chiama a raccolta\"",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/brescia-chiama-a-raccolta",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/brescia-chiama-a-raccolta-31-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-270741f8789f35",
-      "title": "CNE 2026. Made in Usa",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-la-nueva-ola-2518604-2519653-2520074",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-made-in-usa-31-ottobre-1024x650.jpg"
-    },
-    {
       "id": "auto-3b4eba7d73535a",
       "title": "Festa d'autunno a Montecampione 2026",
       "date": "2026-10-31",
@@ -560,49 +485,34 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/vini-valtenesi-garda.jpeg"
     },
     {
-      "id": "auto-606d3512af5b80",
-      "title": "Stagione concertistica GIA 2026",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-concertistica-gia-2026-2520078",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/stagione-gia-2026-31-ottobre-1024x650.jpg"
-    },
-    {
-      "id": "auto-1bb1198f728442",
-      "title": "Us da le as 2026. 2° atto",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
+      "id": "auto-17b5f7c4369171",
+      "title": "CNE 2026. International animation day 2026",
+      "date": "2026-11-01",
+      "end_date": "2026-11-01",
       "time": "",
       "place": "Brescia",
       "area": "Brescia",
       "cat": "Altro",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2519964-2520081",
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2519416-2519550-2519802-2519987-2520016-2520073",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-da-le-as-2026-2-atto-31-ottobre-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-international-animation-day-2026-1-novembre-1024x650.jpg"
     },
     {
-      "id": "auto-25082b24b23dba",
-      "title": "Vittoria in movimento",
-      "date": "2026-10-31",
-      "end_date": "2026-10-31",
+      "id": "auto-fc8fb37a2d2a97",
+      "title": "Fiera Ognissanti 2026",
+      "date": "2026-11-01",
+      "end_date": "2026-11-01",
       "time": "",
       "place": "Brescia",
       "area": "Brescia",
-      "cat": "Altro",
+      "cat": "Mercatini",
       "price": null,
-      "url": "https://comune.brescia.it/it/events/vittoria-in-movimento-2516033-2520082",
+      "url": "https://comune.brescia.it/it/events/fiera-ognissanti-2026",
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/vittoria-in-movimento-ri-generiamoci-mix-1024x650.jpg"
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/ognissanti-1-novembre-1024x650.jpg"
     },
     {
       "id": "auto-9723081c1ad4d3",
@@ -633,6 +543,36 @@
       "note": "Un appuntamento imperdibile per tutti i golosi: ogni anno a novembre a Rovato torna il Mese del Manzo all’Olio DE.CO.! Scopri tutti i dettagli",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/manzo-olio.jpg"
+    },
+    {
+      "id": "auto-4c2488a4da5d5b",
+      "title": "Rassegna Ligasacchi 2026",
+      "date": "2026-11-01",
+      "end_date": "2026-11-01",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/rassegna-ligasacchi-2026-2520176",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/banda-isidoro-capitanio-rassegna-ligasacchi-1024x650.jpg"
+    },
+    {
+      "id": "auto-85851ec23a8cba",
+      "title": "Us da le as 2026. 2° atto",
+      "date": "2026-11-01",
+      "end_date": "2026-11-01",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2519964-2520081-2520132",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-da-le-as-2026-2-atto-1-novembre-1024x650.jpg"
     },
     {
       "id": "auto-1decf07eb635fe",
