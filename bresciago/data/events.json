@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-02T16:31:55.110472+00:00",
-  "count": 69,
+  "generated_at": "2026-11-03T14:38:38.018020+00:00",
+  "count": 72,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 56,
-      "events": 56,
+      "links": 59,
+      "events": 59,
       "errors": 0
     }
   ],
@@ -365,6 +365,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/manzo-olio.jpg"
     },
     {
+      "id": "auto-00214568d77248",
+      "title": "Visite alla Limonaia del Castel 2026",
+      "date": "2026-11-01",
+      "end_date": "2026-12-20",
+      "time": "10:00",
+      "place": "Limonaia del Castèl Via Orti,9 , Limone sul Garda",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/visite-limonaia-del-castel-limone/",
+      "note": "Immergersi nel fascino delle antiche limonaie del Lago di Garda: ogni anno riapre la Limonaia del Castel di Limone sul Garda!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Limonaia-del-Castel-Limone.jpg"
+    },
+    {
       "id": "auto-a1045fb7eea841",
       "title": "Siamo testimoni",
       "date": "2026-11-02",
@@ -620,6 +635,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Manerbio-Jazz-Festival.jpeg"
     },
     {
+      "id": "auto-69b16e43a4d43e",
+      "title": "Wonderland Festival 2026",
+      "date": "2026-11-06",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Brescia Varie location , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/wonderland-festival/",
+      "note": "Un ricco programma di teatro, musica, danza, incontri: ogni anno a Brescia e provincia torna Wonderland Festival!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Wonderland-Festival.jpeg"
+    },
+    {
       "id": "auto-82bd903eb43be2",
       "title": "Festa delle mele di Piancogno 2026",
       "date": "2026-11-07",
@@ -678,6 +708,21 @@
       "note": "Ogni anno a novembre Chiari si riempie di libri e di cultura con la Rassegna della MicroEditoria: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-della-Microeditoria.jpg"
+    },
+    {
+      "id": "auto-405210064eb2a3",
+      "title": "GustARTI Borno 2026",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Borno Vari ristoranti , Borno",
+      "area": "Brescia e provincia",
+      "cat": "Cibo",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/gustarti-borno/",
+      "note": "Un'esperienza che unisce sapori tipici, arte e bellezze dell'Altopiano del Sole: ogni anno a novembre torna GUSTARTI Borno!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
     },
     {
       "id": "auto-93db5e395c87f2",
