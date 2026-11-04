@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-03T21:14:57.920683+00:00",
-  "count": 72,
+  "generated_at": "2026-11-04T14:51:51.726977+00:00",
+  "count": 74,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 13,
+      "events": 12,
       "errors": 0
     },
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 59,
-      "events": 59,
+      "links": 62,
+      "events": 62,
       "errors": 0
     }
   ],
@@ -380,21 +380,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Limonaia-del-Castel-Limone.jpg"
     },
     {
-      "id": "auto-a1045fb7eea841",
-      "title": "Siamo testimoni",
-      "date": "2026-11-02",
-      "end_date": "2026-11-02",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/siamo-testimoni-2514236-2520154",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/siamo-testimoni-fino-31-dicembre-2026-1024x650.jpg"
-    },
-    {
       "id": "auto-1c2caa29d3cfc9",
       "title": "Cavallerizza. I colori della danza",
       "date": "2026-11-03",
@@ -410,21 +395,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
     },
     {
-      "id": "auto-ea360c1d1c6bcf",
-      "title": "CNE 2026. Be kind rewind",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cne-2026-focus-wim-wenders-2519178-2519354-2520008-2520134",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-be-king-rewind-1024x650.jpg"
-    },
-    {
       "id": "auto-9b4f47b386bf50",
       "title": "CTB. Sorridere, ridere …",
       "date": "2026-11-03",
@@ -438,36 +408,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/ctb-stagione-26-27-3-8-novembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-6eb42e62eeff33",
-      "title": "Emergency Days 2026",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/emergency-days-2026-2519521-2519553-2519717-2520045-2520137",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/emergency-e-days-2026-3-novembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-737de6ea08e686",
-      "title": "Gender Pay Gap a Brescia",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/gender-pay-gap-a-brescia-2519857-2520177",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cpo-gender-pay-gap-a-brescia-1024x650.jpg"
     },
     {
       "id": "auto-940a81e250d7d3",
@@ -498,21 +438,6 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-b3f833d5605d05",
-      "title": "Stagione Teatro Grande 2026",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-teatro-grande-2026-2519702-2520018-2520156",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/teatro-grande-stagione-2026-28-ottobre-1024x650.jpg"
     },
     {
       "id": "auto-2bd0f7106b8e5a",
@@ -590,11 +515,71 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/mysteria-2026-4-novembre-1024x650.jpg"
     },
     {
-      "id": "auto-bcbdc8ef6db168",
-      "title": "Mysteria, il Festival della Luce 2026",
+      "id": "auto-05ef0a899a78fb",
+      "title": "Progetti. 100 anni di Renato Borsoni",
       "date": "2026-11-04",
-      "end_date": "2026-11-09",
+      "end_date": "2026-11-04",
       "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-and-it-felt-like-home-2519267-2519327-2519492-2519714-2520017-2520152",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-progetti-borsoni-3ott-15nov-1024x650.jpg"
+    },
+    {
+      "id": "auto-f8d09161775734",
+      "title": "Tesori. Mostra a Santa Giulia",
+      "date": "2026-11-04",
+      "end_date": "2026-11-04",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/la-grande-saggezza-2517509-2517698-2517777-2517861-2520140-2520297",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/fbm-2026-tesori-4nov26-22ago27-1024x650.jpg"
+    },
+    {
+      "id": "auto-2372aeae3edaf2",
+      "title": "CNE 2026. Focus Hirokazu Kore'eda",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-hirokazu-kore-eda",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-focus-hirokazu-koreeda-5-novembre-1024x650.jpg"
+    },
+    {
+      "id": "auto-7f47de33f81a02",
+      "title": "Pomeriggi della medicina 2026",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/pomeriggi-della-medicina-2026",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/pomeriggi-della-medicina-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-7408d28797ecb5",
+      "title": "Mysteria, il Festival della Luce 2026",
+      "date": "2026-11-05",
+      "end_date": "2026-11-09",
+      "time": "20:30",
       "place": "Castello di Brescia Via del Castello, 9 , Brescia",
       "area": "Brescia e provincia",
       "cat": "Cultura",
@@ -740,6 +725,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
     },
     {
+      "id": "auto-e033e710a0ffbf",
+      "title": "Rassegna teatrale \"Storie Storie Storie\" 2026/2027",
+      "date": "2026-11-08",
+      "end_date": "2027-01-31",
+      "time": "",
+      "place": "Varie location Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/rassegna-teatro-telaio/",
+      "note": "Tanti appuntamenti domenicali per vivere la magia del teatro: ogni anno da novembre a gennaio torna \"Storie in famiglia\"!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-teatrale-Teatro-Telaio.jpg"
+    },
+    {
       "id": "auto-9cb48353426f1c",
       "title": "Salò Design Market 2026",
       "date": "2026-11-08",
@@ -783,6 +783,21 @@
       "note": "Un palinsesto di visite guidate gratuite alla scoperta del borgo camuno: al via fino a novembre 2026 la rassegna \"Sguardi su Breno\"!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/breno-con-castello.jpg"
+    },
+    {
+      "id": "auto-66ea53a77d7ef0",
+      "title": "Festival della Pace 2026",
+      "date": "2026-11-13",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Brescia Varie location , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-della-pace/",
+      "note": "Ogni anno a Brescia il Festival della Pace: incontri, mostre, eventi e spazi di confronto per riflettere sul mondo che ci circonda. Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Festival-della-Pace-Brescia.jpg"
     },
     {
       "id": "auto-53614954f2909e",
@@ -1068,6 +1083,21 @@
       "note": "Un evento a misura di runners tra i più suggestivi scorci cittadini: ogni anno torna la BAM - Brescia Art Marathon!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/BAM-Brescia-Art-Marathon.webp"
+    },
+    {
+      "id": "auto-c9bb07eaa76a62",
+      "title": "Monte Isola Run the Island 2027",
+      "date": "2027-03-20",
+      "end_date": "2027-03-21",
+      "time": "",
+      "place": "Monte Isola Monte Isola",
+      "area": "Brescia e provincia",
+      "cat": "Sport",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/monte-isola-run-the-island/",
+      "note": "Due giorni di corsa in uno dei luoghi più iconici del lago d'Iseo: il 20 e 21 marzo 2027 arriva Monte Isola Run the Island! Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Monte-Isola-Run-the-Island-2.jpeg"
     },
     {
       "id": "auto-ad8912c4e460ef",
