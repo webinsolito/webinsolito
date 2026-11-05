@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-04T21:28:43.082580+00:00",
-  "count": 74,
+  "generated_at": "2026-11-05T14:56:46.280262+00:00",
+  "count": 71,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 12,
+      "events": 9,
       "errors": 0
     },
     {
@@ -380,81 +380,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Limonaia-del-Castel-Limone.jpg"
     },
     {
-      "id": "auto-1c2caa29d3cfc9",
-      "title": "Cavallerizza. I colori della danza",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cavallerizza-berengo-2519644-2520007-2520133",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-favretto-14ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-9b4f47b386bf50",
-      "title": "CTB. Sorridere, ridere …",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/ctb-tre-variazioni-della-vita-2519819-2520009-2520136",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/ctb-stagione-26-27-3-8-novembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-940a81e250d7d3",
-      "title": "La grande saggezza",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/la-grande-saggezza-2517509-2517698-2517777-2517861-2520140",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-grande-saggezza-14lug26-10gen27-1024x650.jpg"
-    },
-    {
-      "id": "auto-1b15910f8a01a5",
-      "title": "Sguardi. 100 anni di Renato Borsoni",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/cavallerizza-renato-corsini-e-mario-cresci-2518279-2518461-2518591-2518712-2519268-2519320-2519488-2519749-2520015-2520153",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/cavallerizza-2026-sguardi-borsoni-3ott-8nov-1024x650.jpg"
-    },
-    {
-      "id": "auto-2bd0f7106b8e5a",
-      "title": "Una storia di Altri Alfabeti",
-      "date": "2026-11-03",
-      "end_date": "2026-11-03",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/una-storia-di-altri-alfabeti-2516594-2516795-2517121-2517337-2517499-2517860-2517868-2518096-2518283-2518462-2518592-2518751-2518994-2519316-2519484-2519733-2520138",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-franca-ghitti-16giu26-4apr27-1024x650.jpg"
-    },
-    {
       "id": "auto-ab786c261ea720",
       "title": "Fondazione Dolci. Domenico Lusetti",
       "date": "2026-11-04",
@@ -470,21 +395,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fondazione-dolci-lusetti-24-ottobre-26-10-gennaio-27-1024x650.jpg"
     },
     {
-      "id": "auto-08d5b8c89bd896",
-      "title": "Giornata dell'unità nazionale 2026",
-      "date": "2026-11-04",
-      "end_date": "2026-11-04",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/giornata-dell-unita-nazionale-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/celebrazione-4-novembre-2026-1024x650.jpg"
-    },
-    {
       "id": "auto-7dad297853f71c",
       "title": "Mostra \"Tesori. Il grande romanzo dei Musei bresciani. 1826 | 2026\"",
       "date": "2026-11-04",
@@ -498,21 +408,6 @@
       "note": "Dal 4 novembre 2026 al 22 agosto 2027 al Museo di Santa Giulia arriva la mostra \"Tesori. Il grande romanzo dei Musei bresciani. 1826 | 2026\": scopri di più",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/01_Elisabetta-Kaehlbrandt-Laranceto-dettaglio-1920x991-1.jpg"
-    },
-    {
-      "id": "auto-7db25762eca483",
-      "title": "Mysteria Light Festival 2026",
-      "date": "2026-11-04",
-      "end_date": "2026-11-04",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/mysteria-light-festival-2026",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/mysteria-2026-4-novembre-1024x650.jpg"
     },
     {
       "id": "auto-05ef0a899a78fb",
@@ -545,6 +440,21 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/news/fbm-2026-tesori-4nov26-22ago27-1024x650.jpg"
     },
     {
+      "id": "auto-bb5d2325e14ff1",
+      "title": "Carme 2026. Stefano Cagol",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/carme-2026-stefano-cagol-2520195",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
+    },
+    {
       "id": "auto-2372aeae3edaf2",
       "title": "CNE 2026. Focus Hirokazu Kore'eda",
       "date": "2026-11-05",
@@ -558,6 +468,51 @@
       "note": "Sito ufficiale Comune di Brescia",
       "source": "Comune di Brescia",
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-focus-hirokazu-koreeda-5-novembre-1024x650.jpg"
+    },
+    {
+      "id": "auto-63fb040024622b",
+      "title": "CTB. La signora del gioco",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/ctb-la-signora-del-gioco",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/ctb-stagione-26-27-5-19-novembre-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-2ac1e0a5e24cd4",
+      "title": "Mo.Ca 2026. Non ci sono parole",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-non-ci-sono-parole-2514736-2515573-2516036-2516448-2519858-2520300",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/moca-2026-non-ci-sono-parole-1024x650.jpg"
+    },
+    {
+      "id": "auto-e7100dc70883b8",
+      "title": "Mysteria Light Festival 2026",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mysteria-light-festival-2026-2520199",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/mysteria-2026-4-novembre-1024x650.jpg"
     },
     {
       "id": "auto-7f47de33f81a02",
