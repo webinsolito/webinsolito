@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-06T14:35:08.277839+00:00",
-  "count": 62,
+  "generated_at": "2026-11-06T21:02:52.201285+00:00",
+  "count": 68,
   "sources": [
     {
       "name": "Comune di Brescia",
-      "ok": false,
-      "links": 0,
-      "events": 0,
+      "ok": true,
+      "links": 15,
+      "events": 6,
       "errors": 0
     },
     {
@@ -395,6 +395,51 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/01_Elisabetta-Kaehlbrandt-Laranceto-dettaglio-1920x991-1.jpg"
     },
     {
+      "id": "auto-bb5d2325e14ff1",
+      "title": "Carme 2026. Stefano Cagol",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/carme-2026-stefano-cagol-2520195",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/carme-2026-stefano-cagol-25set-15nov-1024x650.jpg"
+    },
+    {
+      "id": "auto-63fb040024622b",
+      "title": "CTB. La signora del gioco",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/ctb-la-signora-del-gioco",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/ctb-stagione-26-27-5-19-novembre-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-e7100dc70883b8",
+      "title": "Mysteria Light Festival 2026",
+      "date": "2026-11-05",
+      "end_date": "2026-11-05",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mysteria-light-festival-2026-2520199",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/mysteria-2026-4-novembre-1024x650.jpg"
+    },
+    {
       "id": "auto-7408d28797ecb5",
       "title": "Mysteria, il Festival della Luce 2026",
       "date": "2026-11-05",
@@ -425,6 +470,36 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Brescia-Scienza.jpg"
     },
     {
+      "id": "auto-28c49eee58f078",
+      "title": "Brescia scienza festival",
+      "date": "2026-11-06",
+      "end_date": "2026-11-06",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/brescia-scienza-festival",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/brescia-scienza-festival-6-8nov26-1024x650.jpg"
+    },
+    {
+      "id": "auto-ef2904c2144e30",
+      "title": "I pomeriggi al CTB 2026-2027",
+      "date": "2026-11-06",
+      "end_date": "2026-11-06",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/i-pomeriggi-al-ctb-2520218",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/ctb-stagione-26-27-pomeriggi-6-novembre-2026-1024x650.jpg"
+    },
+    {
       "id": "auto-be21bff7c6cc34",
       "title": "Manerbio Jazz Festival 2026",
       "date": "2026-11-06",
@@ -438,6 +513,21 @@
       "note": "Celebri protagonisti della scena jazz italiana e internazionale in arrivo nella pianura bresciana: ogni anno in autunno arriva Manerbio Jazz Festival! Clicca qui",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Manerbio-Jazz-Festival.jpeg"
+    },
+    {
+      "id": "auto-fbde2b21e1578d",
+      "title": "Psicogeografia 2026",
+      "date": "2026-11-06",
+      "end_date": "2026-11-06",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/psicogeografia-2026-2519556-2519895-2520047-2520219",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/youth-colab-3-0-psicogeografia-2026-1024x650.jpg"
     },
     {
       "id": "auto-69b16e43a4d43e",
