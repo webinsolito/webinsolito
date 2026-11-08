@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-07T19:36:40.295892+00:00",
-  "count": 72,
+  "generated_at": "2026-11-08T13:49:41.188675+00:00",
+  "count": 71,
   "sources": [
     {
       "name": "Comune di Brescia",
       "ok": true,
       "links": 15,
-      "events": 10,
+      "events": 9,
       "errors": 0
     },
     {
@@ -425,21 +425,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Brescia-Scienza.jpg"
     },
     {
-      "id": "auto-28c49eee58f078",
-      "title": "Brescia scienza festival",
-      "date": "2026-11-06",
-      "end_date": "2026-11-06",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/brescia-scienza-festival",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/brescia-scienza-festival-6-8nov26-1024x650.jpg"
-    },
-    {
       "id": "auto-be21bff7c6cc34",
       "title": "Manerbio Jazz Festival 2026",
       "date": "2026-11-06",
@@ -468,21 +453,6 @@
       "note": "Un ricco programma di teatro, musica, danza, incontri: ogni anno a Brescia e provincia torna Wonderland Festival!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Wonderland-Festival.jpeg"
-    },
-    {
-      "id": "auto-13f6c8afa6daca",
-      "title": "Biblioteche sociali. Uncinetto",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/biblioteche-sociali-uncinetto-2518943-2519198-2519414-2519612-2519922-2520071-2520260",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/biblioteche-2026-uncinetto-ghetti-1024x650.jpg"
     },
     {
       "id": "auto-82bd903eb43be2",
@@ -530,36 +500,6 @@
       "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/fbm-2026-mostra-zanardelli-1024x650.jpg"
     },
     {
-      "id": "auto-58c9044198fd17",
-      "title": "Settimane Barocche 2026",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2519554-2519748-2520014-2520262",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
-    },
-    {
-      "id": "auto-2bba847dfb5fcb",
-      "title": "Stagione concertistica GIA 2026",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/stagione-concertistica-gia-2026-2520078-2520269",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/stagione-gia-2026-7-novembre-1024x650.jpg"
-    },
-    {
       "id": "auto-edb2f314326059",
       "title": "Stagione Teatro Grande 2026",
       "date": "2026-11-07",
@@ -590,66 +530,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana.jpg"
     },
     {
-      "id": "auto-27ec63fd0d1fdf",
-      "title": "Tesori svelati 2026",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/tesori-svelati-2026-2516152-2517025-2518423-2520265",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/queriniana-2026-tesori-svelati-1024x650-1.jpg"
-    },
-    {
-      "id": "auto-323f81da1621f1",
-      "title": "Trame di potere",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/festival-della-pace-2026-2520317",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/festival-della-pace-2026-trame-potere-7-novembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-35944bfb3cf364",
-      "title": "Us da le as 2026. 2° atto",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2520266",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-da-le-as-2026-2-atto-7-novembre-1024x650.jpg"
-    },
-    {
-      "id": "auto-1cff9a5cc95e2f",
-      "title": "Vittoria in movimento",
-      "date": "2026-11-07",
-      "end_date": "2026-11-07",
-      "time": "",
-      "place": "Brescia",
-      "area": "Brescia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://comune.brescia.it/it/events/vittoria-in-movimento-2516033-2520082-2520267",
-      "note": "Sito ufficiale Comune di Brescia",
-      "source": "Comune di Brescia",
-      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/vittoria-in-movimento-ri-generiamoci-mix-1024x650.jpg"
-    },
-    {
       "id": "auto-0306511e8b5afd",
       "title": "Rassegna della MicroEditoria 2026",
       "date": "2026-11-07",
@@ -663,6 +543,36 @@
       "note": "Ogni anno a novembre Chiari si riempie di libri e di cultura con la Rassegna della MicroEditoria: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-della-Microeditoria.jpg"
+    },
+    {
+      "id": "auto-cb302e23c9a064",
+      "title": "Aspettando 1000 chitarre in piazza",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/aspettando-1000-chitarre-in-piazza",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/aspettando-1000-chitarre-in-piazza-2026-1024x650.png"
+    },
+    {
+      "id": "auto-31b6264164f250",
+      "title": "CNE 2026. Focus Hirokazu Kore'eda",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/cne-2026-focus-hirokazu-kore-eda-2520319",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/cne-2026-focus-hirokazu-koreeda-critica-8-novembre-1024x650.jpg"
     },
     {
       "id": "auto-405210064eb2a3",
@@ -680,6 +590,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
     },
     {
+      "id": "auto-771a1a8a6fef24",
+      "title": "Mo.Ca 2026 – Aperti per voi",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/mo-ca-2026-aperti-per-voi-2520321",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/moca.jpeg"
+    },
+    {
       "id": "auto-93db5e395c87f2",
       "title": "Pomeriggi Musicali di Salò 2026",
       "date": "2026-11-08",
@@ -693,6 +618,21 @@
       "note": "Le emozioni della musica da camera protagoniste dell'autunno salodiano: ogni anno a ottobre torna la rassegna Pomeriggi Musicali di Salò!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
+    },
+    {
+      "id": "auto-2d9f9349aa5277",
+      "title": "Rassegna Ligasacchi 2026",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/rassegna-ligasacchi-2026-2520323",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/banda-isidoro-capitanio-rassegna-ligasacchi-1024x650.jpg"
     },
     {
       "id": "auto-e033e710a0ffbf",
@@ -723,6 +663,51 @@
       "note": "Un'imperdibile mostra mercato in uno dei paesi più caratteristici del lago di Garda: scopri di più su Salò Design Market!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Salo-©VisitBrescia-ph-Michele-Rossetti-e1608805012745.jpg"
+    },
+    {
+      "id": "auto-7d007019d07fcf",
+      "title": "Settimane Barocche 2026",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/settimane-barocche-2026-2520324",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/eventi/settimane-barocche-2026-1024x650.jpg"
+    },
+    {
+      "id": "auto-ce432379be9a80",
+      "title": "Teatro Telaio – stagione 26-27",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/teatro-telaio-stagione-26-27",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/teatro-telaio.jpeg"
+    },
+    {
+      "id": "auto-941a0716133f9c",
+      "title": "Us da le as 2026. 2° atto",
+      "date": "2026-11-08",
+      "end_date": "2026-11-08",
+      "time": "",
+      "place": "Brescia",
+      "area": "Brescia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://comune.brescia.it/it/events/us-da-le-as-2026-2-atto-2520326",
+      "note": "Sito ufficiale Comune di Brescia",
+      "source": "Comune di Brescia",
+      "image": "https://brescia-api.cloud.municipiumapp.it/s3/720x960/s3/906/media/argomenti-immagini-standard/eventi/us-de-le-as.jpeg"
     },
     {
       "id": "auto-8faecb77c02d60",
