@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-10T21:24:48.381992+00:00",
-  "count": 57,
+  "generated_at": "2026-11-11T14:41:54.169556+00:00",
+  "count": 58,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 57,
-      "events": 57,
+      "links": 58,
+      "events": 58,
       "errors": 0
     }
   ],
@@ -380,21 +380,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/01_Elisabetta-Kaehlbrandt-Laranceto-dettaglio-1920x991-1.jpg"
     },
     {
-      "id": "auto-7408d28797ecb5",
-      "title": "Mysteria, il Festival della Luce 2026",
-      "date": "2026-11-05",
-      "end_date": "2026-11-09",
-      "time": "20:30",
-      "place": "Castello di Brescia Via del Castello, 9 , Brescia",
-      "area": "Brescia e provincia",
-      "cat": "Cultura",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/mysteria-festival-luce/",
-      "note": "Un percorso tra fascino e mistero, nell'imponente cornice del Castello di Brescia: a novembre 2026 arriva Mysteria, il Festival della Luce!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Mysteria-Festival-delle-culture-fantastiche-2024-Castello-di-Brescia.-Photo-credit-Matteo-Biatta.jpg"
-    },
-    {
       "id": "auto-be21bff7c6cc34",
       "title": "Manerbio Jazz Festival 2026",
       "date": "2026-11-06",
@@ -605,6 +590,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
     },
     {
+      "id": "auto-812677553f6324",
+      "title": "Degustazione di vini in miniera 2026",
+      "date": "2026-11-29",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Miniera Marzoli Via Miniera, 14 , Pezzaze",
+      "area": "Brescia e provincia",
+      "cat": "Cibo",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/degustazione-in-miniera-pezzaze/",
+      "note": "Ogni anno ai vini novembre alla Miniera Marzoli di Pezzaze arriva l'evento \"Degustazione d\": clicca e prenota subito!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Miniera-Marzoli-1.jpg"
+    },
+    {
       "id": "auto-ca117ec9f047dd",
       "title": "Trail della Scala 2026",
       "date": "2026-11-29",
@@ -678,6 +678,21 @@
       "note": "Prosegue per tutto il 2026 Tesori svelati, il ciclo di appuntamenti mensili alla scoperta della Biblioteca Queriniana e dei suoi tesori!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Biblioteca-Queriniana.jpg"
+    },
+    {
+      "id": "auto-290ccc14618d5f",
+      "title": "Visite guidate e percorsi al Teatro Grande 2026",
+      "date": "2026-12-05",
+      "end_date": "2026-12-05",
+      "time": "",
+      "place": "Teatro Grande Corso Giuseppe Zanardelli, 9/A, Brescia, BS, Italia , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/visite-guidate-teatro-grande/",
+      "note": "Un mix di opportunità per conoscere bellezze e curiosità dello storico teatro di Brescia: scopri le visite guidate e i percorsi al Teatro Grande!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/ridotto-teatro-grande-caffe.jpg"
     },
     {
       "id": "auto-76b0e38b1a057b",
