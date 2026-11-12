@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-11T22:14:43.323985+00:00",
-  "count": 58,
+  "generated_at": "2026-11-12T15:34:12.088361+00:00",
+  "count": 59,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 58,
-      "events": 58,
+      "links": 59,
+      "events": 59,
       "errors": 0
     }
   ],
@@ -453,6 +453,21 @@
       "note": "Un appuntamento imperdibile per tutti gli appassionati delle alte quote e gli operatori del settore: il 14 e 15 novembre 2026 a Brescia arriva M come Montagna!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Maniva-montagna-estiva-18.jpg"
+    },
+    {
+      "id": "auto-0a74a5433bafda",
+      "title": "Mercatini ed eventi natalizi a Brescia e provincia 2026/2027",
+      "date": "2026-11-14",
+      "end_date": "2027-01-10",
+      "time": "",
+      "place": "Brescia e provincia Varie location",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mercatini-presepi-eventi-natalizi-brescia/",
+      "note": "La magia del Natale torna a risplendere in provincia di Brescia: scopri i migliori mercatini, presepi e addobbi natalizi della provincia!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Iseo-a-Natale.jpg"
     },
     {
       "id": "auto-01872603652c84",
