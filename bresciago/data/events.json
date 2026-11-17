@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-16T16:22:16.347906+00:00",
-  "count": 49,
+  "generated_at": "2026-11-17T16:26:46.442975+00:00",
+  "count": 58,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 49,
-      "events": 49,
+      "links": 58,
+      "events": 58,
       "errors": 0
     }
   ],
@@ -233,7 +233,7 @@
       "id": "auto-fc2e38714c3191",
       "title": "Settimane Barocche di Brescia 2026",
       "date": "2026-10-04",
-      "end_date": "2026-11-28",
+      "end_date": "2026-12-04",
       "time": "",
       "place": "Brescia e provincia Varie location , Brescia e provincia",
       "area": "Brescia e provincia",
@@ -395,6 +395,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Festival-della-Pace-Brescia.jpg"
     },
     {
+      "id": "auto-fbf089cc8f0a50",
+      "title": "Desenzano che Bella - Mercatino di Natale 2026",
+      "date": "2026-11-14",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Piazza Cappelletti Desenzano del Garda",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/eventi-natale-desenzano/",
+      "note": "Desenzano del Garda si veste di magia natalizia: fino al 6 gennaio 2027 arriva Desenzano che Bella - Mercatino di Natale!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Desenzano-che-Bella-Mercatino-di-Natale.jpeg"
+    },
+    {
       "id": "auto-0a74a5433bafda",
       "title": "Mercatini ed eventi natalizi a Brescia e provincia 2026/2027",
       "date": "2026-11-14",
@@ -425,6 +440,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Festa-Olio-Novello-a-Marone.jpg"
     },
     {
+      "id": "auto-f6266c2e308bc4",
+      "title": "La Strada Winter 2026/2027",
+      "date": "2026-11-21",
+      "end_date": "2026-11-21",
+      "time": "",
+      "place": "Brescia Varie location , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/la-strada-winter/",
+      "note": "Con La Strada Winter ogni anno in programma a Brescia performance di teatro da strada, circo contemporaneo, clown e molto altro. Clicca qui!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/strada-winter-festival-brescia.jpg"
+    },
+    {
       "id": "auto-142a7608efda9a",
       "title": "Rassegna Antiquaria 2026",
       "date": "2026-11-21",
@@ -453,6 +483,66 @@
       "note": "Un'esperienza che unisce sapori tipici, arte e bellezze dell'Altopiano del Sole: ogni anno a novembre torna GUSTARTI Borno!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
+    },
+    {
+      "id": "auto-a997ad0dcf6794",
+      "title": "Pomeriggi Musicali di Salò 2026",
+      "date": "2026-11-22",
+      "end_date": "2026-11-22",
+      "time": "",
+      "place": "Sala dei Provveditori Lungolago Zanardelli, 52 , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/pomeriggi-musicali-salo/",
+      "note": "Le emozioni della musica da camera protagoniste dell'autunno salodiano: ogni anno a ottobre torna la rassegna Pomeriggi Musicali di Salò!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
+    },
+    {
+      "id": "auto-c4987a5c994e8e",
+      "title": "Salò Natale d'Incanto 2026/2027",
+      "date": "2026-11-27",
+      "end_date": "2027-01-10",
+      "time": "",
+      "place": "Salò lungolago, vie del borgo e piazze principali , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/natale-incanto-salo/",
+      "note": "La magia del Natale accende Salò di colori, musica e attrazioni per tutta la famiglia: ogni anno torna \"Salò Natale d'Incanto\"!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/natale-incanto-salo.jpeg"
+    },
+    {
+      "id": "auto-cb77e54a338789",
+      "title": "Natale a Gargnano 2026/2027",
+      "date": "2026-11-28",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Gargnano Varie location , Gargnano",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/natale-a-gargnano/",
+      "note": "Un mese intero di atmosfere magiche, tradizioni e appuntamenti imperdibili: a Gargnano arriva il ricco palinsesto di \"Le Magie del Natale\"! Clicca qui",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Mercatini-Natale-a-Gargnano.jpg"
+    },
+    {
+      "id": "auto-d01654d50cb2e6",
+      "title": "Limonaie d'inverno e Mercato delle Qualità 2026",
+      "date": "2026-11-28",
+      "end_date": "2026-11-29",
+      "time": "10:30",
+      "place": "Chiostro di San Francesco Via Roma, 45 , Gargnano",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/tour-limonaie-inverno-gargnano/",
+      "note": "Ogni anno da novembre a gennaio a Gargnano tornano i tour guidati \"Limonaie d'inverno\": scopri di più!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Limonaie-inverno-Gargnano.jpg"
     },
     {
       "id": "auto-812677553f6324",
@@ -605,6 +695,36 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Polenta-Cusa-Tremosine.jpg"
     },
     {
+      "id": "auto-e643a85aabd363",
+      "title": "Salò Design Market 2026",
+      "date": "2026-12-13",
+      "end_date": "2026-12-13",
+      "time": "",
+      "place": "Salò PIazza Vittorio Emanuele II (fossa) e lungolago , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/salo-design-market/",
+      "note": "Un'imperdibile mostra mercato in uno dei paesi più caratteristici del lago di Garda: scopri di più su Salò Design Market!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Salo-©VisitBrescia-ph-Michele-Rossetti-e1608805012745.jpg"
+    },
+    {
+      "id": "auto-eb6fffefa409b2",
+      "title": "Mercantico a Lonato del Garda 2026",
+      "date": "2026-12-20",
+      "end_date": "2026-12-20",
+      "time": "",
+      "place": "Lonato del Garda Piazza Martiri della Libertà, 7-11 , Lonato",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mercantico-lonato-garda/",
+      "note": "Antiquariato, modernariato, hobbistica e collezionismo: a Lonato del Garda ogni terza domenica del mese arriva Mercantico!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/lonato-mercantico-1.jpg"
+    },
+    {
       "id": "auto-4d0169b515781e",
       "title": "Fiaccolate dei maestri di sci 2026/2027",
       "date": "2026-12-28",
@@ -708,6 +828,21 @@
       "note": "Due giorni di corsa in uno dei luoghi più iconici del lago d'Iseo: il 20 e 21 marzo 2027 arriva Monte Isola Run the Island! Scopri di più",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Monte-Isola-Run-the-Island-2.jpeg"
+    },
+    {
+      "id": "auto-cd590d0637aa86",
+      "title": "4^ Festival Internazionale Silvana Tirini Bonometti 2026/2027",
+      "date": "2027-03-21",
+      "end_date": "2027-03-21",
+      "time": "16:00",
+      "place": "Brescia e Rezzato Varie location , Brescia e Rezzato",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-internazionale-silvana-tirini-bonometti/",
+      "note": "Musiche ed emozioni senza tempo tra Brescia e Rezzato: fino a maggio 2027 torna il Festival Internazionale Silvana Tirini Bonometti!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Santuario-Valverde-organo.jpeg"
     },
     {
       "id": "auto-51ad6c83f1c9dd",
