@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-17T16:26:46.442975+00:00",
-  "count": 58,
+  "generated_at": "2026-11-18T15:57:10.945481+00:00",
+  "count": 59,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 58,
-      "events": 58,
+      "links": 59,
+      "events": 59,
       "errors": 0
     }
   ],
@@ -558,6 +558,21 @@
       "note": "Ogni anno ai vini novembre alla Miniera Marzoli di Pezzaze arriva l'evento \"Degustazione d\": clicca e prenota subito!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Miniera-Marzoli-1.jpg"
+    },
+    {
+      "id": "auto-0a1e267f7be707",
+      "title": "Festival Franciacorta a Brescia 2026",
+      "date": "2026-11-29",
+      "end_date": "2026-11-30",
+      "time": "",
+      "place": "Associazione culturale C.AR.M.E., Museo Diocesano di Brescia Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cibo",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-franciacorta-brescia/",
+      "note": "Un weekend di degustazioni, incontri con cantine e curiosità: il 29 e 30 novembre 2026 il Festival Franciacorta arriva a Brescia!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Festival-Franciacorta-a-Brescia.jpg"
     },
     {
       "id": "auto-ca117ec9f047dd",
