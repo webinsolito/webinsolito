@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-18T15:57:10.945481+00:00",
-  "count": 59,
+  "generated_at": "2026-11-19T16:01:30.443832+00:00",
+  "count": 63,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 59,
-      "events": 59,
+      "links": 63,
+      "events": 63,
       "errors": 0
     }
   ],
@@ -665,6 +665,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/ridotto-teatro-grande-caffe.jpg"
     },
     {
+      "id": "auto-c0122cb38185db",
+      "title": "Festival del Silter DOP 2026",
+      "date": "2026-12-06",
+      "end_date": "2026-12-07",
+      "time": "",
+      "place": "Sala Polifunzionale Via Salimmo, 1 , Ponte di Legno",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-silter-dop/",
+      "note": "Ogni anno a dicembre torna il Festival del Silter DOP, la rassegna interamente dedicata a una delle eccellenze casearie del territorio camuno!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Silter-DOP.jpg"
+    },
+    {
       "id": "auto-76b0e38b1a057b",
       "title": "Verolanuova inaspettata 2026/2027",
       "date": "2026-12-06",
@@ -710,6 +725,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Polenta-Cusa-Tremosine.jpg"
     },
     {
+      "id": "auto-2113946d3bc2aa",
+      "title": "Taglio del Bré 2026",
+      "date": "2026-12-08",
+      "end_date": "2026-12-08",
+      "time": "",
+      "place": "Chiesa di Sant'Antonio Piazza Sant'Antonio , Breno",
+      "area": "Brescia e provincia",
+      "cat": "Cibo",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/taglio-del-bre/",
+      "note": "L’8 dicembre 2026 a Breno torna il Taglio del Bré, l'appuntamento che celebra uno dei formaggi più caratteristici della tradizione casearia della Valle Camonica!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Stagionatura-Bre.jpg"
+    },
+    {
       "id": "auto-e643a85aabd363",
       "title": "Salò Design Market 2026",
       "date": "2026-12-13",
@@ -725,6 +755,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Salo-©VisitBrescia-ph-Michele-Rossetti-e1608805012745.jpg"
     },
     {
+      "id": "auto-09bf872f282f7a",
+      "title": "Natale con Brescia Musei 2026/2027",
+      "date": "2026-12-19",
+      "end_date": "2027-01-05",
+      "time": "",
+      "place": "Musei civici di Brescia Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/natale-con-brescia-musei/",
+      "note": "Mostre, attività per famiglie, visite guidate speciali e il tradizionale Winter Camp: torna il ricco palinsesto di eventi natalizi di Fondazione Brescia Musei!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/santa-giulia-brescia.jpg"
+    },
+    {
       "id": "auto-eb6fffefa409b2",
       "title": "Mercantico a Lonato del Garda 2026",
       "date": "2026-12-20",
@@ -738,6 +783,21 @@
       "note": "Antiquariato, modernariato, hobbistica e collezionismo: a Lonato del Garda ogni terza domenica del mese arriva Mercantico!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/lonato-mercantico-1.jpg"
+    },
+    {
+      "id": "auto-54992d2aa9bb3e",
+      "title": "Winter Camp per bambini e ragazzi 2026/2027",
+      "date": "2026-12-23",
+      "end_date": "2027-01-05",
+      "time": "",
+      "place": "Museo di Santa Giulia, Pinacoteca Tosio Martinengo, AmbienteParco Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Famiglia",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/winter-camp-brescia/",
+      "note": "Winter Camp a Brescia: proposte per bambini e ragazzi durante le feste natalizie. Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/camp-e-laboratori.jpg"
     },
     {
       "id": "auto-4d0169b515781e",
