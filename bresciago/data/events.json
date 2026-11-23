@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-22T21:13:48.741643+00:00",
-  "count": 63,
+  "generated_at": "2026-11-23T18:42:25.366444+00:00",
+  "count": 67,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 63,
-      "events": 63,
+      "links": 67,
+      "events": 67,
       "errors": 0
     }
   ],
@@ -263,7 +263,7 @@
       "id": "auto-ea71ce9d8969de",
       "title": "Festival Rinascimento Culturale 2026",
       "date": "2026-10-22",
-      "end_date": "2026-11-26",
+      "end_date": "2026-12-17",
       "time": "",
       "place": "Brescia e provincia Varie location",
       "area": "Brescia e provincia",
@@ -273,21 +273,6 @@
       "note": "La rivoluzione del sapere torna a Brescia e provincia con il Festival Rinascimento Culturale! Scopri di più",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/festival-rinascimento-culturale.jpg"
-    },
-    {
-      "id": "auto-87cbf53321a59b",
-      "title": "Autunno Longobardo 2026",
-      "date": "2026-10-24",
-      "end_date": "2026-11-21",
-      "time": "",
-      "place": "Varie location Strada del Vino Colli dei Longobardi , Brescia e hinterland, Pianura bresciana",
-      "area": "Brescia e provincia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/autunno-longobardo/",
-      "note": "Degustazioni, visite e molto altro: ogni anno in autunno puoi scoprire la Strada del Vino Colli dei Longobardi, con \"Autunno Longobardo\". Scopri di più!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Consorzio-Vini-Montenetto.jpg"
     },
     {
       "id": "auto-d0a8140745ed1c",
@@ -425,34 +410,34 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Iseo-a-Natale.jpg"
     },
     {
-      "id": "auto-2ecd99450a7d7f",
-      "title": "Festa dell'olio novello di Marone 2026",
+      "id": "auto-b3127ac29da4d0",
+      "title": "Buon Natale Brescia 2026",
       "date": "2026-11-21",
-      "end_date": "2026-11-22",
-      "time": "",
-      "place": "Marone Varie location , Marone",
-      "area": "Brescia e provincia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/festa-olio-novello-marone/",
-      "note": "Un weekend tra gusto, tradizioni ed emozioni sul lago d'Iseo: ogni anno a Marone torna la Festa dell'olio novello!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Festa-Olio-Novello-a-Marone.jpg"
-    },
-    {
-      "id": "auto-f6266c2e308bc4",
-      "title": "La Strada Winter 2026/2027",
-      "date": "2026-11-21",
-      "end_date": "2026-11-21",
+      "end_date": "2027-01-10",
       "time": "",
       "place": "Brescia Varie location , Brescia",
       "area": "Brescia e provincia",
-      "cat": "Cultura",
+      "cat": "Altro",
       "price": null,
-      "url": "https://www.visitbrescia.it/eventi/la-strada-winter/",
-      "note": "Con La Strada Winter ogni anno in programma a Brescia performance di teatro da strada, circo contemporaneo, clown e molto altro. Clicca qui!",
+      "url": "https://www.visitbrescia.it/eventi/buon-natale-brescia/",
+      "note": "A Brescia ogni anno il Natale si festeggia tra la magia di luci, mostre, eventi e tante occasioni di shopping: scopri le novità e gli eventi in arrivo!",
       "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/strada-winter-festival-brescia.jpg"
+      "image": "https://www.visitbrescia.it/wp-content/uploads/brescia-weekend-due-giorni.jpeg"
+    },
+    {
+      "id": "auto-e829507a82418f",
+      "title": "Ingresso gratuito ai musei civici di Brescia - Natale 2026",
+      "date": "2026-11-21",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Musei Civici di Brescia Centro città , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": 0,
+      "url": "https://www.visitbrescia.it/eventi/ingresso-gratuito-musei-civici-brescia/",
+      "note": "Torna l'iniziativa che dà accesso gratuito ai musei civici di Brescia a tutti i nati e/o residenti in provincia di Brescia!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Capitolium-a-Natale.jpg"
     },
     {
       "id": "auto-142a7608efda9a",
@@ -470,36 +455,6 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-Antiquaria-Montichiari-1.jpg"
     },
     {
-      "id": "auto-ad35b5c03c7541",
-      "title": "GustARTI Borno 2026",
-      "date": "2026-11-22",
-      "end_date": "2026-11-22",
-      "time": "",
-      "place": "Borno Vari ristoranti , Borno",
-      "area": "Brescia e provincia",
-      "cat": "Cibo",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/gustarti-borno/",
-      "note": "Un'esperienza che unisce sapori tipici, arte e bellezze dell'Altopiano del Sole: ogni anno a novembre torna GUSTARTI Borno!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
-    },
-    {
-      "id": "auto-a997ad0dcf6794",
-      "title": "Pomeriggi Musicali di Salò 2026",
-      "date": "2026-11-22",
-      "end_date": "2026-11-22",
-      "time": "",
-      "place": "Sala dei Provveditori Lungolago Zanardelli, 52 , Salò",
-      "area": "Brescia e provincia",
-      "cat": "Musica",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/pomeriggi-musicali-salo/",
-      "note": "Le emozioni della musica da camera protagoniste dell'autunno salodiano: ogni anno a ottobre torna la rassegna Pomeriggi Musicali di Salò!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
-    },
-    {
       "id": "auto-c4987a5c994e8e",
       "title": "Salò Natale d'Incanto 2026/2027",
       "date": "2026-11-27",
@@ -513,6 +468,36 @@
       "note": "La magia del Natale accende Salò di colori, musica e attrazioni per tutta la famiglia: ogni anno torna \"Salò Natale d'Incanto\"!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/natale-incanto-salo.jpeg"
+    },
+    {
+      "id": "auto-9fee05dc65a4db",
+      "title": "Eventi natalizi a Ponte di Legno 2026/2027",
+      "date": "2026-11-28",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Ponte di Legno",
+      "area": "Brescia e provincia",
+      "cat": "Mercatini",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/natale-ponte-di-legno/",
+      "note": "La magia delle feste accende l'alta Valle Camonica di un'atmosfera speciale: fino al 6 gennaio 2027 a Ponte di Legno arrivano i Mercatini di Natale e il Villaggio di Babbo Natale!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Mercatini-di-Natale-a-Ponte-di-Legno.webp"
+    },
+    {
+      "id": "auto-d8a1b7f7e000c4",
+      "title": "Festival Viator 2026",
+      "date": "2026-11-28",
+      "end_date": "2026-11-28",
+      "time": "",
+      "place": "Sala delle Tele Via Edmondo De Amicis, 1 , Calvisano",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/festival-viator/",
+      "note": "Ogni anno a novembre e dicembre in provincia di Brescia torna il Festival Viator. Menti, cuori e corpi sulle Vie Francigene del sud: scopri di più!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Festival-Viator.jpg"
     },
     {
       "id": "auto-cb77e54a338789",
@@ -575,6 +560,36 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Festival-Franciacorta-a-Brescia.jpg"
     },
     {
+      "id": "auto-5f28912e327276",
+      "title": "GustARTI Borno 2026",
+      "date": "2026-11-29",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Borno Vari ristoranti , Borno",
+      "area": "Brescia e provincia",
+      "cat": "Cibo",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/gustarti-borno/",
+      "note": "Un'esperienza che unisce sapori tipici, arte e bellezze dell'Altopiano del Sole: ogni anno a novembre torna GUSTARTI Borno!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Borno-ph-Foto-Ottica-Scalvini.jpg"
+    },
+    {
+      "id": "auto-a48680e7f5af82",
+      "title": "Pomeriggi Musicali di Salò 2026",
+      "date": "2026-11-29",
+      "end_date": "2026-11-29",
+      "time": "",
+      "place": "Sala dei Provveditori Lungolago Zanardelli, 52 , Salò",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/pomeriggi-musicali-salo/",
+      "note": "Le emozioni della musica da camera protagoniste dell'autunno salodiano: ogni anno a ottobre torna la rassegna Pomeriggi Musicali di Salò!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Sala-dei-Provveditori-Salo.jpg"
+    },
+    {
       "id": "auto-ca117ec9f047dd",
       "title": "Trail della Scala 2026",
       "date": "2026-11-29",
@@ -620,6 +635,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Ere-da-Nadal-dal-Mut.jpg"
     },
     {
+      "id": "auto-5c76a7093b4a0f",
+      "title": "La Strada Winter 2026/2027",
+      "date": "2026-12-05",
+      "end_date": "2026-12-05",
+      "time": "",
+      "place": "Brescia Varie location , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/la-strada-winter/",
+      "note": "Con La Strada Winter ogni anno in programma a Brescia performance di teatro da strada, circo contemporaneo, clown e molto altro. Clicca qui!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/strada-winter-festival-brescia.jpg"
+    },
+    {
       "id": "auto-1798cba46b6401",
       "title": "Natale nel Borgo a Bienno 2026",
       "date": "2026-12-05",
@@ -633,6 +663,21 @@
       "note": "La magia del Natale in scena ogni anno a Bienno, borgo medievale della Valle Camonica, tra mercatini, spettacoli, caldarroste e tanto altro!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/natale-nel-borgo-bienno.jpg"
+    },
+    {
+      "id": "auto-cc5b9a63c1e479",
+      "title": "Presepi in mostra in Duomo Vecchio 2026",
+      "date": "2026-12-05",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Duomo Vecchio Piazza Paolo VI , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/presepi-in-mostra-duomo-vecchio/",
+      "note": "Attesissimo appuntamento natalizio a Brescia, con la mostra dei presepi in Duomo Vecchio! Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/presepi-mostra-brescia.jpg"
     },
     {
       "id": "auto-d1bea16f09e0bd",
@@ -755,11 +800,11 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Salo-©VisitBrescia-ph-Michele-Rossetti-e1608805012745.jpg"
     },
     {
-      "id": "auto-09bf872f282f7a",
-      "title": "Natale con Brescia Musei 2026/2027",
+      "id": "auto-6d34cc9b05cc2d",
+      "title": "Natale con Brescia Musei 2026",
       "date": "2026-12-19",
-      "end_date": "2027-01-05",
-      "time": "",
+      "end_date": "2027-01-06",
+      "time": "15:30",
       "place": "Musei civici di Brescia Brescia",
       "area": "Brescia e provincia",
       "cat": "Famiglia",
@@ -813,6 +858,21 @@
       "note": "Vivi la magia delle fiaccolate notturne dei maestri di sci sulle più belle piste da sci del comprensorio Pontedilegno-Tonale: scopri di più!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/fiaccolata-capodanno-paradiso.jpg"
+    },
+    {
+      "id": "auto-6a6c217292b858",
+      "title": "Capodanno a Brescia e provincia 2027",
+      "date": "2026-12-31",
+      "end_date": "2027-01-01",
+      "time": "19:00",
+      "place": "Varie location Brescia e provincia",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/capodanno/",
+      "note": "Il Capodanno a Brescia e provincia si festeggia alla grande! Scopri le tante iniziative ed opportunità di svago per la notte più lunga",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Capodanno-in-Piazza-Loggia-1.jpg"
     },
     {
       "id": "auto-5e6d32bb50b0c5",
