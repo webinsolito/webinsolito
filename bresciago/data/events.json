@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-23T18:42:25.366444+00:00",
-  "count": 67,
+  "generated_at": "2026-11-24T18:14:51.587880+00:00",
+  "count": 69,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 67,
-      "events": 67,
+      "links": 69,
+      "events": 69,
       "errors": 0
     }
   ],
@@ -170,19 +170,19 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Parco-Oglio-Nord-in-autunno.jpg"
     },
     {
-      "id": "auto-c276eb77a87f89",
-      "title": "Aperture e Aperitivi in Jazz al Caffè del Teatro Grande 2026",
+      "id": "auto-3473e8d81423aa",
+      "title": "Aperture del Caffè del Teatro Grande 2026",
       "date": "2026-09-12",
       "end_date": "2026-12-27",
       "time": "",
       "place": "Caffè del Teatro Grande - Berlucchi Corso Zanardelli, 9/A , Brescia",
       "area": "Brescia e provincia",
-      "cat": "Musica",
+      "cat": "Cultura",
       "price": null,
       "url": "https://www.visitbrescia.it/eventi/caffe-teatro-grande/",
       "note": "Colazione o aperitivo tra le sale affrescate del Ridotto del Teatro Grande? Scopri di più su orari e aperture del Caffè Berlucchi!",
       "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/aperitivi-jazz-caffe-teatro-grande.jpg"
+      "image": "https://www.visitbrescia.it/wp-content/uploads/ridotto-teatro-grande-caffe.jpg"
     },
     {
       "id": "auto-f997906101ca1e",
@@ -399,7 +399,7 @@
       "title": "Mercatini ed eventi natalizi a Brescia e provincia 2026/2027",
       "date": "2026-11-14",
       "end_date": "2027-01-10",
-      "time": "",
+      "time": "14:00",
       "place": "Brescia e provincia Varie location",
       "area": "Brescia e provincia",
       "cat": "Mercatini",
@@ -408,21 +408,6 @@
       "note": "La magia del Natale torna a risplendere in provincia di Brescia: scopri i migliori mercatini, presepi e addobbi natalizi della provincia!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Iseo-a-Natale.jpg"
-    },
-    {
-      "id": "auto-b3127ac29da4d0",
-      "title": "Buon Natale Brescia 2026",
-      "date": "2026-11-21",
-      "end_date": "2027-01-10",
-      "time": "",
-      "place": "Brescia Varie location , Brescia",
-      "area": "Brescia e provincia",
-      "cat": "Altro",
-      "price": null,
-      "url": "https://www.visitbrescia.it/eventi/buon-natale-brescia/",
-      "note": "A Brescia ogni anno il Natale si festeggia tra la magia di luci, mostre, eventi e tante occasioni di shopping: scopri le novità e gli eventi in arrivo!",
-      "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/brescia-weekend-due-giorni.jpeg"
     },
     {
       "id": "auto-e829507a82418f",
@@ -455,6 +440,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Rassegna-Antiquaria-Montichiari-1.jpg"
     },
     {
+      "id": "auto-b3127ac29da4d0",
+      "title": "Buon Natale Brescia 2026",
+      "date": "2026-11-21",
+      "end_date": "2027-01-10",
+      "time": "18:00",
+      "place": "Brescia Varie location , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/buon-natale-brescia/",
+      "note": "A Brescia ogni anno il Natale si festeggia tra la magia di luci, mostre, eventi e tante occasioni di shopping: scopri le novità e gli eventi in arrivo!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/brescia-weekend-due-giorni.jpeg"
+    },
+    {
       "id": "auto-c4987a5c994e8e",
       "title": "Salò Natale d'Incanto 2026/2027",
       "date": "2026-11-27",
@@ -482,7 +482,7 @@
       "url": "https://www.visitbrescia.it/eventi/natale-ponte-di-legno/",
       "note": "La magia delle feste accende l'alta Valle Camonica di un'atmosfera speciale: fino al 6 gennaio 2027 a Ponte di Legno arrivano i Mercatini di Natale e il Villaggio di Babbo Natale!",
       "source": "Visit Brescia",
-      "image": "https://www.visitbrescia.it/wp-content/uploads/Mercatini-di-Natale-a-Ponte-di-Legno.webp"
+      "image": "https://www.visitbrescia.it/wp-content/uploads/Mercatini-Natale-a-Ponte-di-Legno-scaled.jpeg"
     },
     {
       "id": "auto-d8a1b7f7e000c4",
@@ -618,6 +618,21 @@
       "note": "La musica polifonica nel cuore di Brescia: torna ogni anno la rassegna concertistica Antiche Risonanze!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/rassegna-antiche-risonanze.jpg"
+    },
+    {
+      "id": "auto-471e1b6197c638",
+      "title": "Serata degli auguri - Concerto natalizio 2026",
+      "date": "2026-12-02",
+      "end_date": "2026-12-02",
+      "time": "20:30",
+      "place": "Auditorium S. Barnaba Corso Magenta, 44 , Brescia",
+      "area": "Brescia e provincia",
+      "cat": "Musica",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/concerto-natalizio-lions/",
+      "note": "Giovani talenti del Conservatorio di Brescia in scena all'Auditorium San Barnaba in città: mercoledì 2 dicembre 2026 è in programma il Concerto natalizio!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/San-Barnaba-e-Conservatorio-Brescia.jpg"
     },
     {
       "id": "auto-01aa291331c067",
@@ -768,6 +783,21 @@
       "note": "Ogni anno Tremosine sul Garda ospita la Festa della Polenta, arricchita dall’imperdibile sfilata dei Krampus!",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/Polenta-Cusa-Tremosine.jpg"
+    },
+    {
+      "id": "auto-4347e2a157b39a",
+      "title": "Bagolino Borgo dei Presepi 2026",
+      "date": "2026-12-08",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Bagolino Bagolino",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/bagolino-borgo-presepi/",
+      "note": "Vivi la magia del Natale con \"Bagolino Borgo dei Presepi\": otre 100 realizzazioni nei migliori scorci del paese valsabbino. Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/bagolino-borgo-presepi.jpg"
     },
     {
       "id": "auto-2113946d3bc2aa",
