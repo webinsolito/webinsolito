@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-25T17:35:49.775459+00:00",
-  "count": 69,
+  "generated_at": "2026-11-26T17:16:50.790867+00:00",
+  "count": 71,
   "sources": [
     {
       "name": "Comune di Brescia",
@@ -13,8 +13,8 @@
     {
       "name": "Visit Brescia",
       "ok": true,
-      "links": 69,
-      "events": 69,
+      "links": 71,
+      "events": 71,
       "errors": 0
     }
   ],
@@ -425,6 +425,21 @@
       "image": "https://www.visitbrescia.it/wp-content/uploads/Capitolium-a-Natale.jpg"
     },
     {
+      "id": "auto-8b439d71f71688",
+      "title": "Mostra \"Lampi di Luce, Frammenti di Tempo\"",
+      "date": "2026-11-21",
+      "end_date": "2026-12-13",
+      "time": "",
+      "place": "Villa Ugo Küpfer - Parco delle Tre Ville Via Giuseppe Zanardelli, 73 , Palazzolo sull'Oglio",
+      "area": "Brescia e provincia",
+      "cat": "Cultura",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/mostra-angelo-brescianini/",
+      "note": "A dieci anni dalla scomparsa di Angelo Brescianini, Palazzolo sull'Oglio celebra il suo talento con la mostra antologica \"Lampi di Luce, Frammenti di Tempo\"!",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/ANGELO-BRESCIANINI-Archivio-Storico-Ufficiale-Opere-di-Angelo-Brescianini-4.jpeg"
+    },
+    {
       "id": "auto-142a7608efda9a",
       "title": "Rassegna Antiquaria 2026",
       "date": "2026-11-21",
@@ -798,6 +813,21 @@
       "note": "Vivi la magia del Natale con \"Bagolino Borgo dei Presepi\": otre 100 realizzazioni nei migliori scorci del paese valsabbino. Scopri di più",
       "source": "Visit Brescia",
       "image": "https://www.visitbrescia.it/wp-content/uploads/bagolino-borgo-presepi.jpg"
+    },
+    {
+      "id": "auto-8ff02aced47af1",
+      "title": "Natale a Cemmo 2026",
+      "date": "2026-12-08",
+      "end_date": "2027-01-06",
+      "time": "",
+      "place": "Cemmo Varie location , Capo di Ponte, fraz. Cemmo",
+      "area": "Brescia e provincia",
+      "cat": "Altro",
+      "price": null,
+      "url": "https://www.visitbrescia.it/eventi/natale-a-cemmo/",
+      "note": "Ogni fine anno il cuore della Valle Camonica si veste di atmosfere e fascino natalizio con il palinsesto di Natale a Cemmo! Scopri di più",
+      "source": "Visit Brescia",
+      "image": "https://www.visitbrescia.it/wp-content/uploads/natale-a-cemmo.jpeg"
     },
     {
       "id": "auto-2113946d3bc2aa",
